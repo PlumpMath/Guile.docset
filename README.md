@@ -4,8 +4,10 @@ This is a [Dash][1] docset for the Guile Scheme interpreter.
 
 ### Building
 
-In the root folder, run
+The documentation index generator is written in Ruby. I'd recommend
+ruby 2.0 or greater
 
+    $ gem install bundler
     $ bundle install
     $ rake generate
 
