@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: C Port Interface</title>
+
+<meta name="description" content="Guile Reference Manual: C Port Interface">
+<meta name="keywords" content="Guile Reference Manual: C Port Interface">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="I_002fO-Extensions.html#I_002fO-Extensions" rel="up" title="I/O Extensions">
+<link href="Port-Implementation.html#Port-Implementation" rel="next" title="Port Implementation">
+<link href="I_002fO-Extensions.html#I_002fO-Extensions" rel="prev" title="I/O Extensions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="C-Port-Interface"></a>
+<div class="header">
+<p>
+Next: <a href="Port-Implementation.html#Port-Implementation" accesskey="n" rel="next">Port Implementation</a>, Up: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="u" rel="up">I/O Extensions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="C-Port-Interface-1"></a>
+<h4 class="subsubsection">6.14.11.1 C Port Interface</h4>
+<a name="index-C-port-interface"></a>
+<a name="index-Port_002c-C-interface"></a>
+
+<p>This section describes how to use Scheme ports from C.
+</p>
+<a name="Port-basics"></a>
+<h4 class="subsubheading">Port basics</h4>
+
+<a name="index-ptob"></a>
+<a name="index-scm_005fptob_005fdescriptor"></a>
+<a name="index-scm_005fport"></a>
+<a name="index-SCM_005fPTAB_005fENTRY"></a>
+<a name="index-SCM_005fPTOBNUM"></a>
+<a name="index-scm_005fptobs"></a>
+<p>There are two main data structures.  A port type object (ptob) is of
+type <code>scm_ptob_descriptor</code>.  A port instance is of type
+<code>scm_port</code>.  Given an <code>SCM</code> variable which points to a port,
+the corresponding C port object can be obtained using the
+<code>SCM_PTAB_ENTRY</code> macro.  The ptob can be obtained by using
+<code>SCM_PTOBNUM</code> to give an index into the <code>scm_ptobs</code>
+global array.
+</p>
+<a name="Port-buffers"></a>
+<h4 class="subsubheading">Port buffers</h4>
+
+<p>An input port always has a read buffer and an output port always has a
+write buffer.  However the size of these buffers is not guaranteed to be
+more than one byte (e.g., the <code>shortbuf</code> field in <code>scm_port</code>
+which is used when no other buffer is allocated).  The way in which the
+buffers are allocated depends on the implementation of the ptob.  For
+example in the case of an fport, buffers may be allocated with malloc
+when the port is created, but in the case of an strport the underlying
+string is used as the buffer.
+</p>
+<a name="The-rw_005frandom-flag"></a>
+<h4 class="subsubheading">The <code>rw_random</code> flag</h4>
+
+<p>Special treatment is required for ports which can be seeked at random.
+Before various operations, such as seeking the port or changing from
+input to output on a bidirectional port or vice versa, the port
+implementation must be given a chance to update its state.  The write
+buffer is updated by calling the <code>flush</code> ptob procedure and the
+input buffer is updated by calling the <code>end_input</code> ptob procedure.
+In the case of an fport, <code>flush</code> causes buffered output to be
+written to the file descriptor, while <code>end_input</code> causes the
+descriptor position to be adjusted to account for buffered input which
+was never read.
+</p>
+<p>The special treatment must be performed if the <code>rw_random</code> flag in
+the port is non-zero.
+</p>
+<a name="The-rw_005factive-variable"></a>
+<h4 class="subsubheading">The <code>rw_active</code> variable</h4>
+
+<p>The <code>rw_active</code> variable in the port is only used if
+<code>rw_random</code> is set.  It&rsquo;s defined as an enum with the following
+values:
+</p>
+<dl compact="compact">
+<dt><code>SCM_PORT_READ</code></dt>
+<dd><p>the read buffer may have unread data.
+</p>
+</dd>
+<dt><code>SCM_PORT_WRITE</code></dt>
+<dd><p>the write buffer may have unwritten data.
+</p>
+</dd>
+<dt><code>SCM_PORT_NEITHER</code></dt>
+<dd><p>neither the write nor the read buffer has data.
+</p></dd>
+</dl>
+
+<a name="Reading-from-a-port_002e"></a>
+<h4 class="subsubheading">Reading from a port.</h4>
+
+<p>To read from a port, it&rsquo;s possible to either call existing libguile
+procedures such as <code>scm_getc</code> and <code>scm_read_line</code> or to read
+data from the read buffer directly.  Reading from the buffer involves
+the following steps:
+</p>
+<ol>
+<li> Flush output on the port, if <code>rw_active</code> is <code>SCM_PORT_WRITE</code>.
+
+</li><li> Fill the read buffer, if it&rsquo;s empty, using <code>scm_fill_input</code>.
+
+</li><li> Read the data from the buffer and update the read position in
+the buffer.  Steps 2) and 3) may be repeated as many times as required.
+
+</li><li> Set rw_active to <code>SCM_PORT_READ</code> if <code>rw_random</code> is set.
+
+</li><li> update the port&rsquo;s line and column counts.
+</li></ol>
+
+<a name="Writing-to-a-port_002e"></a>
+<h4 class="subsubheading">Writing to a port.</h4>
+
+<p>To write data to a port, calling <code>scm_lfwrite</code> should be sufficient for
+most purposes.  This takes care of the following steps:
+</p>
+<ol>
+<li> End input on the port, if <code>rw_active</code> is <code>SCM_PORT_READ</code>.
+
+</li><li> Pass the data to the ptob implementation using the <code>write</code> ptob
+procedure.  The advantage of using the ptob <code>write</code> instead of
+manipulating the write buffer directly is that it allows the data to be
+written in one operation even if the port is using the single-byte
+<code>shortbuf</code>.
+
+</li><li> Set <code>rw_active</code> to <code>SCM_PORT_WRITE</code> if <code>rw_random</code>
+is set.
+</li></ol>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Port-Implementation.html#Port-Implementation" accesskey="n" rel="next">Port Implementation</a>, Up: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="u" rel="up">I/O Extensions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

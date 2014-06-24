@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-19 Time/Date conversions</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-19 Time/Date conversions">
+<meta name="keywords" content="Guile Reference Manual: SRFI-19 Time/Date conversions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d19.html#SRFI_002d19" rel="up" title="SRFI-19">
+<link href="SRFI_002d19-Date-to-string.html#SRFI_002d19-Date-to-string" rel="next" title="SRFI-19 Date to string">
+<link href="SRFI_002d19-Date.html#SRFI_002d19-Date" rel="prev" title="SRFI-19 Date">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d19-Time_002fDate-conversions"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d19-Date-to-string.html#SRFI_002d19-Date-to-string" accesskey="n" rel="next">SRFI-19 Date to string</a>, Previous: <a href="SRFI_002d19-Date.html#SRFI_002d19-Date" accesskey="p" rel="prev">SRFI-19 Date</a>, Up: <a href="SRFI_002d19.html#SRFI_002d19" accesskey="u" rel="up">SRFI-19</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d19-Time_002fDate-conversions-1"></a>
+<h4 class="subsubsection">7.5.16.4 SRFI-19 Time/Date conversions</h4>
+<a name="index-time-conversion"></a>
+<a name="index-date-conversion"></a>
+
+<dl>
+<dt><a name="index-date_002d_003ejulian_002dday"></a>Function: <strong>date-&gt;julian-day</strong> <em>date</em></dt>
+<dt><a name="index-date_002d_003emodified_002djulian_002dday"></a>Function: <strong>date-&gt;modified-julian-day</strong> <em>date</em></dt>
+<dt><a name="index-date_002d_003etime_002dmonotonic"></a>Function: <strong>date-&gt;time-monotonic</strong> <em>date</em></dt>
+<dt><a name="index-date_002d_003etime_002dtai"></a>Function: <strong>date-&gt;time-tai</strong> <em>date</em></dt>
+<dt><a name="index-date_002d_003etime_002dutc"></a>Function: <strong>date-&gt;time-utc</strong> <em>date</em></dt>
+</dl>
+<dl>
+<dt><a name="index-julian_002dday_002d_003edate"></a>Function: <strong>julian-day-&gt;date</strong> <em>jdn [tz-offset]</em></dt>
+<dt><a name="index-julian_002dday_002d_003etime_002dmonotonic"></a>Function: <strong>julian-day-&gt;time-monotonic</strong> <em>jdn</em></dt>
+<dt><a name="index-julian_002dday_002d_003etime_002dtai"></a>Function: <strong>julian-day-&gt;time-tai</strong> <em>jdn</em></dt>
+<dt><a name="index-julian_002dday_002d_003etime_002dutc"></a>Function: <strong>julian-day-&gt;time-utc</strong> <em>jdn</em></dt>
+</dl>
+<dl>
+<dt><a name="index-modified_002djulian_002dday_002d_003edate"></a>Function: <strong>modified-julian-day-&gt;date</strong> <em>jdn [tz-offset]</em></dt>
+<dt><a name="index-modified_002djulian_002dday_002d_003etime_002dmonotonic"></a>Function: <strong>modified-julian-day-&gt;time-monotonic</strong> <em>jdn</em></dt>
+<dt><a name="index-modified_002djulian_002dday_002d_003etime_002dtai"></a>Function: <strong>modified-julian-day-&gt;time-tai</strong> <em>jdn</em></dt>
+<dt><a name="index-modified_002djulian_002dday_002d_003etime_002dutc"></a>Function: <strong>modified-julian-day-&gt;time-utc</strong> <em>jdn</em></dt>
+</dl>
+<dl>
+<dt><a name="index-time_002dmonotonic_002d_003edate"></a>Function: <strong>time-monotonic-&gt;date</strong> <em>time [tz-offset]</em></dt>
+<dt><a name="index-time_002dmonotonic_002d_003etime_002dtai"></a>Function: <strong>time-monotonic-&gt;time-tai</strong> <em>time</em></dt>
+<dt><a name="index-time_002dmonotonic_002d_003etime_002dtai_0021"></a>Function: <strong>time-monotonic-&gt;time-tai!</strong> <em>time</em></dt>
+<dt><a name="index-time_002dmonotonic_002d_003etime_002dutc"></a>Function: <strong>time-monotonic-&gt;time-utc</strong> <em>time</em></dt>
+<dt><a name="index-time_002dmonotonic_002d_003etime_002dutc_0021"></a>Function: <strong>time-monotonic-&gt;time-utc!</strong> <em>time</em></dt>
+</dl>
+<dl>
+<dt><a name="index-time_002dtai_002d_003edate"></a>Function: <strong>time-tai-&gt;date</strong> <em>time [tz-offset]</em></dt>
+<dt><a name="index-time_002dtai_002d_003ejulian_002dday"></a>Function: <strong>time-tai-&gt;julian-day</strong> <em>time</em></dt>
+<dt><a name="index-time_002dtai_002d_003emodified_002djulian_002dday"></a>Function: <strong>time-tai-&gt;modified-julian-day</strong> <em>time</em></dt>
+<dt><a name="index-time_002dtai_002d_003etime_002dmonotonic"></a>Function: <strong>time-tai-&gt;time-monotonic</strong> <em>time</em></dt>
+<dt><a name="index-time_002dtai_002d_003etime_002dmonotonic_0021"></a>Function: <strong>time-tai-&gt;time-monotonic!</strong> <em>time</em></dt>
+<dt><a name="index-time_002dtai_002d_003etime_002dutc"></a>Function: <strong>time-tai-&gt;time-utc</strong> <em>time</em></dt>
+<dt><a name="index-time_002dtai_002d_003etime_002dutc_0021"></a>Function: <strong>time-tai-&gt;time-utc!</strong> <em>time</em></dt>
+</dl>
+<dl>
+<dt><a name="index-time_002dutc_002d_003edate"></a>Function: <strong>time-utc-&gt;date</strong> <em>time [tz-offset]</em></dt>
+<dt><a name="index-time_002dutc_002d_003ejulian_002dday"></a>Function: <strong>time-utc-&gt;julian-day</strong> <em>time</em></dt>
+<dt><a name="index-time_002dutc_002d_003emodified_002djulian_002dday"></a>Function: <strong>time-utc-&gt;modified-julian-day</strong> <em>time</em></dt>
+<dt><a name="index-time_002dutc_002d_003etime_002dmonotonic"></a>Function: <strong>time-utc-&gt;time-monotonic</strong> <em>time</em></dt>
+<dt><a name="index-time_002dutc_002d_003etime_002dmonotonic_0021"></a>Function: <strong>time-utc-&gt;time-monotonic!</strong> <em>time</em></dt>
+<dt><a name="index-time_002dutc_002d_003etime_002dtai"></a>Function: <strong>time-utc-&gt;time-tai</strong> <em>time</em></dt>
+<dt><a name="index-time_002dutc_002d_003etime_002dtai_0021"></a>Function: <strong>time-utc-&gt;time-tai!</strong> <em>time</em></dt>
+<dd><br>
+<p>Convert between dates, times and days of the respective types.  For
+instance <code>time-tai-&gt;time-utc</code> accepts a <var>time</var> object of type
+<code>time-tai</code> and returns an object of type <code>time-utc</code>.
+</p>
+<p>The <code>!</code> variants may modify their <var>time</var> argument to form
+their return.  The plain functions create a new object.
+</p>
+<p>For conversions to dates, <var>tz-offset</var> is seconds east of
+Greenwich.  The default is the local timezone, at the given time, as
+provided by the system, using <code>localtime</code> (see <a href="Time.html#Time">Time</a>).
+</p>
+<p>On 32-bit systems, <code>localtime</code> is limited to a 32-bit
+<code>time_t</code>, so a default <var>tz-offset</var> is only available for
+times between Dec 1901 and Jan 2038.  For prior dates an application
+might like to use the value in 1902, though some locations have zone
+changes prior to that.  For future dates an application might like to
+assume today&rsquo;s rules extend indefinitely.  But for correct daylight
+savings transitions it will be necessary to take an offset for the
+same day and time but a year in range and which has the same starting
+weekday and same leap/non-leap (to support rules like last Sunday in
+October).
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d19-Date-to-string.html#SRFI_002d19-Date-to-string" accesskey="n" rel="next">SRFI-19 Date to string</a>, Previous: <a href="SRFI_002d19-Date.html#SRFI_002d19-Date" accesskey="p" rel="prev">SRFI-19 Date</a>, Up: <a href="SRFI_002d19.html#SRFI_002d19" accesskey="u" rel="up">SRFI-19</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

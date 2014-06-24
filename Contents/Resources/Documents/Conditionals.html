@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Conditionals</title>
+
+<meta name="description" content="Guile Reference Manual: Conditionals">
+<meta name="keywords" content="Guile Reference Manual: Conditionals">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Control-Mechanisms.html#Control-Mechanisms" rel="up" title="Control Mechanisms">
+<link href="and-or.html#and-or" rel="next" title="and or">
+<link href="begin.html#begin" rel="prev" title="begin">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Conditionals"></a>
+<div class="header">
+<p>
+Next: <a href="and-or.html#and-or" accesskey="n" rel="next">and or</a>, Previous: <a href="begin.html#begin" accesskey="p" rel="prev">begin</a>, Up: <a href="Control-Mechanisms.html#Control-Mechanisms" accesskey="u" rel="up">Control Mechanisms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Simple-Conditional-Evaluation"></a>
+<h4 class="subsection">6.13.2 Simple Conditional Evaluation</h4>
+
+<a name="index-conditional-evaluation"></a>
+<a name="index-if"></a>
+<a name="index-when"></a>
+<a name="index-unless"></a>
+<a name="index-case"></a>
+<a name="index-cond"></a>
+
+<p>Guile provides three syntactic constructs for conditional evaluation.
+<code>if</code> is the normal if-then-else expression (with an optional else
+branch), <code>cond</code> is a conditional expression with multiple branches
+and <code>case</code> branches if an expression has one of a set of constant
+values.
+</p>
+<dl>
+<dt><a name="index-if-1"></a>syntax: <strong>if</strong> <em>test consequent [alternate]</em></dt>
+<dd><p>All arguments may be arbitrary expressions.  First, <var>test</var> is
+evaluated.  If it returns a true value, the expression <var>consequent</var>
+is evaluated and <var>alternate</var> is ignored.  If <var>test</var> evaluates to
+<code>#f</code>, <var>alternate</var> is evaluated instead.  The values of the
+evaluated branch (<var>consequent</var> or <var>alternate</var>) are returned as
+the values of the <code>if</code> expression.
+</p>
+<p>When <var>alternate</var> is omitted and the <var>test</var> evaluates to
+<code>#f</code>, the value of the expression is not specified.
+</p></dd></dl>
+
+<p>When you go to write an <code>if</code> without an alternate (a <em>one-armed
+<code>if</code></em>), part of what you are expressing is that you don&rsquo;t care
+about the return value (or values) of the expression.  As such, you are
+more interested in the <em>effect</em> of evaluating the consequent
+expression.  (By convention, we use the word <em>statement</em> to refer to
+an expression that is evaluated for effect, not for value).
+</p>
+<p>In such a case, it is considered more clear to express these intentions
+with these special forms, <code>when</code> and <code>unless</code>.  As an added
+bonus, these forms accept multiple statements to evaluate, which are
+implicitly wrapped in a <code>begin</code>.
+</p>
+<dl>
+<dt><a name="index-when-1"></a>Scheme Syntax: <strong>when</strong> <em>test statement1 statement2 ...</em></dt>
+<dt><a name="index-unless-1"></a>Scheme Syntax: <strong>unless</strong> <em>test statement1 statement2 ...</em></dt>
+<dd><p>The actual definitions of these forms are in many ways their most clear
+documentation:
+</p>
+<div class="example">
+<pre class="example">(define-syntax-rule (when test stmt stmt* ...)
+  (if test (begin stmt stmt* ...)))
+
+(define-syntax-rule (unless condition stmt stmt* ...)
+  (if (not test) (begin stmt stmt* ...)))
+</pre></div>
+
+<p>That is to say, <code>when</code> evaluates its consequent statements in order
+if <var>test</var> is true.  <code>unless</code> is the opposite: it evaluates the
+statements if <var>test</var> is false.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-cond-1"></a>syntax: <strong>cond</strong> <em>clause1 clause2 &hellip;</em></dt>
+<dd><p>Each <code>cond</code>-clause must look like this:
+</p>
+<div class="lisp">
+<pre class="lisp">(<var>test</var> <var>expression</var> &hellip;)
+</pre></div>
+
+<p>where <var>test</var> and <var>expression</var> are arbitrary expression, or like
+this
+</p>
+<div class="lisp">
+<pre class="lisp">(<var>test</var> =&gt; <var>expression</var>)
+</pre></div>
+
+<p>where <var>expression</var> must evaluate to a procedure.
+</p>
+<p>The <var>test</var>s of the clauses are evaluated in order and as soon as one
+of them evaluates to a true values, the corresponding <var>expression</var>s
+are evaluated in order and the last value is returned as the value of
+the <code>cond</code>-expression.  For the <code>=&gt;</code> clause type,
+<var>expression</var> is evaluated and the resulting procedure is applied to
+the value of <var>test</var>.  The result of this procedure application is
+then the result of the <code>cond</code>-expression.
+</p>
+<a name="index-SRFI_002d61"></a>
+<a name="index-general-cond-clause"></a>
+<a name="index-multiple-values-and-cond"></a>
+<p>One additional <code>cond</code>-clause is available as an extension to
+standard Scheme:
+</p>
+<div class="lisp">
+<pre class="lisp">(<var>test</var> <var>guard</var> =&gt; <var>expression</var>)
+</pre></div>
+
+<p>where <var>guard</var> and <var>expression</var> must evaluate to procedures.
+For this clause type, <var>test</var> may return multiple values, and
+<code>cond</code> ignores its boolean state; instead, <code>cond</code> evaluates
+<var>guard</var> and applies the resulting procedure to the value(s) of
+<var>test</var>, as if <var>guard</var> were the <var>consumer</var> argument of
+<code>call-with-values</code>.  If the result of that procedure call is a
+true value, it evaluates <var>expression</var> and applies the resulting
+procedure to the value(s) of <var>test</var>, in the same manner as the
+<var>guard</var> was called.
+</p>
+<p>The <var>test</var> of the last <var>clause</var> may be the symbol <code>else</code>.
+Then, if none of the preceding <var>test</var>s is true, the
+<var>expression</var>s following the <code>else</code> are evaluated to produce the
+result of the <code>cond</code>-expression.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-case-1"></a>syntax: <strong>case</strong> <em>key clause1 clause2 &hellip;</em></dt>
+<dd><p><var>key</var> may be any expression, and the <var>clause</var>s must have the form
+</p>
+<div class="lisp">
+<pre class="lisp">((<var>datum1</var> &hellip;) <var>expr1</var> <var>expr2</var> &hellip;)
+</pre></div>
+
+<p>or
+</p>
+<div class="lisp">
+<pre class="lisp">((<var>datum1</var> &hellip;) =&gt; <var>expression</var>)
+</pre></div>
+
+<p>and the last <var>clause</var> may have the form
+</p>
+<div class="lisp">
+<pre class="lisp">(else <var>expr1</var> <var>expr2</var> &hellip;)
+</pre></div>
+
+<p>or
+</p>
+<div class="lisp">
+<pre class="lisp">(else =&gt; <var>expression</var>)
+</pre></div>
+
+<p>All <var>datum</var>s must be distinct.  First, <var>key</var> is evaluated.  The
+result of this evaluation is compared against all <var>datum</var> values using
+<code>eqv?</code>.  When this comparison succeeds, the expression(s) following
+the <var>datum</var> are evaluated from left to right, returning the value of
+the last expression as the result of the <code>case</code> expression.
+</p>
+<p>If the <var>key</var> matches no <var>datum</var> and there is an
+<code>else</code>-clause, the expressions following the <code>else</code> are
+evaluated.  If there is no such clause, the result of the expression is
+unspecified.
+</p>
+<p>For the <code>=&gt;</code> clause types, <var>expression</var> is evaluated and the
+resulting procedure is applied to the value of <var>key</var>.  The result of
+this procedure application is then the result of the
+<code>case</code>-expression.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="and-or.html#and-or" accesskey="n" rel="next">and or</a>, Previous: <a href="begin.html#begin" accesskey="p" rel="prev">begin</a>, Up: <a href="Control-Mechanisms.html#Control-Mechanisms" accesskey="u" rel="up">Control Mechanisms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

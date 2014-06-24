@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Capturing Stacks</title>
+
+<meta name="description" content="Guile Reference Manual: Capturing Stacks">
+<meta name="keywords" content="Guile Reference Manual: Capturing Stacks">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Programmatic-Error-Handling.html#Programmatic-Error-Handling" rel="up" title="Programmatic Error Handling">
+<link href="Pre_002dUnwind-Debugging.html#Pre_002dUnwind-Debugging" rel="next" title="Pre-Unwind Debugging">
+<link href="Catching-Exceptions.html#Catching-Exceptions" rel="prev" title="Catching Exceptions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Capturing-Stacks"></a>
+<div class="header">
+<p>
+Next: <a href="Pre_002dUnwind-Debugging.html#Pre_002dUnwind-Debugging" accesskey="n" rel="next">Pre-Unwind Debugging</a>, Previous: <a href="Catching-Exceptions.html#Catching-Exceptions" accesskey="p" rel="prev">Catching Exceptions</a>, Up: <a href="Programmatic-Error-Handling.html#Programmatic-Error-Handling" accesskey="u" rel="up">Programmatic Error Handling</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Capturing-the-full-error-stack"></a>
+<h4 class="subsubsection">6.25.3.2 Capturing the full error stack</h4>
+
+<p>The other interesting information about an error is the full Scheme
+stack at the point where the error occurred; in other words what
+innermost expression was being evaluated, what was the expression that
+called that one, and so on.  If you want to write your code so that it
+captures and can display this information as well, there are a couple
+important things to understand.
+</p>
+<p>Firstly, the stack at the point of the error needs to be explicitly
+captured by a <code>make-stack</code> call (or the C equivalent
+<code>scm_make_stack</code>).  The Guile library does not do this
+&ldquo;automatically&rdquo; for you, so you will need to write code with a
+<code>make-stack</code> or <code>scm_make_stack</code> call yourself.  (We emphasise
+this point because some people are misled by the fact that the Guile
+interactive REPL code <em>does</em> capture and display the stack
+automatically.  But the Guile interactive REPL is itself a Scheme
+program<a name="DOCF21" href="#FOOT21"><sup>21</sup></a>
+running on top of the Guile library, and which uses <code>catch</code> and
+<code>make-stack</code> in the way we are about to describe to capture the
+stack when an error occurs.)
+</p>
+<p>And secondly, in order to capture the stack effectively at the point
+where the error occurred, the <code>make-stack</code> call must be made before
+Guile unwinds the stack back to the location of the prevailing catch
+expression. This means that the <code>make-stack</code> call must be made
+within the handler of a <code>with-throw-handler</code> expression, or the
+optional &quot;pre-unwind&quot; handler of a <code>catch</code>. (For the full story of
+how these alternatives differ from each other, see <a href="Exceptions.html#Exceptions">Exceptions</a>. The
+main difference is that <code>catch</code> terminates the error, whereas
+<code>with-throw-handler</code> only intercepts it temporarily and then allow
+it to continue propagating up to the next innermost handler.)
+</p>
+<p>So, here are some examples of how to do all this in Scheme and in C.
+For the purpose of these examples we assume that the captured stack
+should be stored in a variable, so that it can be displayed or
+arbitrarily processed later on.  In Scheme:
+</p>
+<div class="lisp">
+<pre class="lisp">(let ((captured-stack #f))
+  (catch #t
+         (lambda ()
+           ;; Execute the code in which
+           ;; you want to catch errors here.
+           ...)
+         (lambda (key . parameters)
+           ;; Put the code which you want
+           ;; to handle an error after the
+           ;; stack has been unwound here.
+           ...)
+         (lambda (key . parameters)
+           ;; Capture the stack here:
+           (set! captured-stack (make-stack #t))))
+  ...
+  (if captured-stack
+      (begin
+        ;; Display or process the captured stack.
+        ...))
+  ...)
+</pre></div>
+
+<p>And in C:
+</p>
+<div class="lisp">
+<pre class="lisp">SCM my_body_proc (void *body_data)
+{
+  /* Execute the code in which
+     you want to catch errors here. */
+  ...
+}
+
+SCM my_handler_proc (void *handler_data,
+                     SCM key,
+                     SCM parameters)
+{
+  /* Put the code which you want
+     to handle an error after the
+     stack has been unwound here. */
+  ...
+}
+
+SCM my_preunwind_proc (void *handler_data,
+                       SCM key,
+                       SCM parameters)
+{
+  /* Capture the stack here: */
+  *(SCM *)handler_data = scm_make_stack (SCM_BOOL_T, SCM_EOL);
+}
+
+{
+  SCM captured_stack = SCM_BOOL_F;
+  ...
+  scm_c_catch (SCM_BOOL_T,
+               my_body_proc, body_data,
+               my_handler_proc, handler_data,
+               my_preunwind_proc, &amp;captured_stack);
+  ...
+  if (captured_stack != SCM_BOOL_F)
+  {
+    /* Display or process the captured stack. */
+    ...
+  }
+  ...
+}
+</pre></div>
+
+<p>Once you have a captured stack, you can interrogate and display its
+details in any way that you want, using the <code>stack-&hellip;</code> and
+<code>frame-&hellip;</code> API described in <a href="Stacks.html#Stacks">Stacks</a> and
+<a href="Frames.html#Frames">Frames</a>.
+</p>
+<p>If you want to print out a backtrace in the same format that the Guile
+REPL does, you can use the <code>display-backtrace</code> procedure to do so.
+You can also use <code>display-application</code> to display an individual
+frame in the Guile REPL format.
+</p>
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT21" href="#DOCF21">(21)</a></h3>
+<p>In effect, it is the default program which is run when
+no commands or script file are specified on the Guile command line.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Pre_002dUnwind-Debugging.html#Pre_002dUnwind-Debugging" accesskey="n" rel="next">Pre-Unwind Debugging</a>, Previous: <a href="Catching-Exceptions.html#Catching-Exceptions" accesskey="p" rel="prev">Catching Exceptions</a>, Up: <a href="Programmatic-Error-Handling.html#Programmatic-Error-Handling" accesskey="u" rel="up">Programmatic Error Handling</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

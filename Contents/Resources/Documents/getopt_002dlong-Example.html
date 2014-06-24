@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: getopt-long Example</title>
+
+<meta name="description" content="Guile Reference Manual: getopt-long Example">
+<meta name="keywords" content="Guile Reference Manual: getopt-long Example">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="getopt_002dlong.html#getopt_002dlong" rel="up" title="getopt-long">
+<link href="Option-Specification.html#Option-Specification" rel="next" title="Option Specification">
+<link href="getopt_002dlong.html#getopt_002dlong" rel="prev" title="getopt-long">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="getopt_002dlong-Example"></a>
+<div class="header">
+<p>
+Next: <a href="Option-Specification.html#Option-Specification" accesskey="n" rel="next">Option Specification</a>, Up: <a href="getopt_002dlong.html#getopt_002dlong" accesskey="u" rel="up">getopt-long</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="A-Short-getopt_002dlong-Example"></a>
+<h4 class="subsection">7.4.1 A Short getopt-long Example</h4>
+
+<p>This section illustrates how <code>getopt-long</code> is used by presenting
+and dissecting a simple example.  The first thing that we need is an
+<em>option specification</em> that tells <code>getopt-long</code> how to parse
+the command line.  This specification is an association list with the
+long option name as the key.  Here is how such a specification might
+look:
+</p>
+<div class="lisp">
+<pre class="lisp">(define option-spec
+  '((version (single-char #\v) (value #f))
+    (help    (single-char #\h) (value #f))))
+</pre></div>
+
+<p>This alist tells <code>getopt-long</code> that it should accept two long
+options, called <em>version</em> and <em>help</em>, and that these options
+can also be selected by the single-letter abbreviations <em>v</em> and
+<em>h</em>, respectively.  The <code>(value #f)</code> clauses indicate that
+neither of the options accepts a value.
+</p>
+<p>With this specification we can use <code>getopt-long</code> to parse a given
+command line:
+</p>
+<div class="lisp">
+<pre class="lisp">(define options (getopt-long (command-line) option-spec))
+</pre></div>
+
+<p>After this call, <code>options</code> contains the parsed command line and is
+ready to be examined by <code>option-ref</code>.  <code>option-ref</code> is called
+like this:
+</p>
+<div class="lisp">
+<pre class="lisp">(option-ref options 'help #f)
+</pre></div>
+
+<p>It expects the parsed command line, a symbol indicating the option to
+examine, and a default value.  The default value is returned if the
+option was not present in the command line, or if the option was present
+but without a value; otherwise the value from the command line is
+returned.  Usually <code>option-ref</code> is called once for each possible
+option that a script supports.
+</p>
+<p>The following example shows a main program which puts all this together
+to parse its command line and figure out what the user wanted.
+</p>
+<div class="lisp">
+<pre class="lisp">(define (main args)
+  (let* ((option-spec '((version (single-char #\v) (value #f))
+                        (help    (single-char #\h) (value #f))))
+         (options (getopt-long args option-spec))
+         (help-wanted (option-ref options 'help #f))
+         (version-wanted (option-ref options 'version #f)))
+    (if (or version-wanted help-wanted)
+        (begin
+          (if version-wanted
+              (display &quot;getopt-long-example version 0.3\n&quot;))
+          (if help-wanted
+              (display &quot;\
+getopt-long-example [options]
+  -v, --version    Display version
+  -h, --help       Display this help
+&quot;)))
+        (begin
+          (display &quot;Hello, World!&quot;) (newline)))))
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Option-Specification.html#Option-Specification" accesskey="n" rel="next">Option Specification</a>, Up: <a href="getopt_002dlong.html#getopt_002dlong" accesskey="u" rel="up">getopt-long</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

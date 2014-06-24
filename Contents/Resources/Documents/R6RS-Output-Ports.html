@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS Output Ports</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS Output Ports">
+<meta name="keywords" content="Guile Reference Manual: R6RS Output Ports">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" rel="up" title="R6RS I/O Ports">
+<link href="R6RS-Binary-Output.html#R6RS-Binary-Output" rel="next" title="R6RS Binary Output">
+<link href="R6RS-Textual-Input.html#R6RS-Textual-Input" rel="prev" title="R6RS Textual Input">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-Output-Ports"></a>
+<div class="header">
+<p>
+Next: <a href="R6RS-Binary-Output.html#R6RS-Binary-Output" accesskey="n" rel="next">R6RS Binary Output</a>, Previous: <a href="R6RS-Textual-Input.html#R6RS-Textual-Input" accesskey="p" rel="prev">R6RS Textual Input</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Output-Ports"></a>
+<h4 class="subsubsection">6.14.10.10 Output Ports</h4>
+
+<dl>
+<dt><a name="index-output_002dport_003f-1"></a>Scheme Procedure: <strong>output-port?</strong> <em>obj</em></dt>
+<dd><p>Returns <code>#t</code> if the argument is an output port (or a
+combined input and output port), <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flush_002doutput_002dport"></a>Scheme Procedure: <strong>flush-output-port</strong> <em>port</em></dt>
+<dd><p>Flushes any buffered output from the buffer of <var>output-port</var> to the
+underlying file, device, or object. The <code>flush-output-port</code>
+procedure returns an unspecified values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-open_002dfile_002doutput_002dport"></a>Scheme Procedure: <strong>open-file-output-port</strong> <em>filename</em></dt>
+<dt><a name="index-open_002dfile_002doutput_002dport-1"></a>Scheme Procedure: <strong>open-file-output-port</strong> <em>filename file-options</em></dt>
+<dt><a name="index-open_002dfile_002doutput_002dport-2"></a>Scheme Procedure: <strong>open-file-output-port</strong> <em>filename file-options buffer-mode</em></dt>
+<dt><a name="index-open_002dfile_002doutput_002dport-3"></a>Scheme Procedure: <strong>open-file-output-port</strong> <em>filename file-options buffer-mode maybe-transcoder</em></dt>
+<dd>
+<p><var>maybe-transcoder</var> must be either a transcoder or <code>#f</code>.
+</p>
+<p>The <code>open-file-output-port</code> procedure returns an output port for the named file.
+</p>
+<p>The <var>file-options</var> argument, which may determine various aspects of
+the returned port (see <a href="R6RS-File-Options.html#R6RS-File-Options">R6RS File Options</a>), defaults to the value of
+<code>(file-options)</code>.
+</p>
+<p>The <var>buffer-mode</var> argument, if supplied,
+must be one of the symbols that name a buffer mode.
+The <var>buffer-mode</var> argument defaults to <code>block</code>.
+</p>
+<p>If <var>maybe-transcoder</var> is a transcoder, it becomes the transcoder
+associated with the port.
+</p>
+<p>If <var>maybe-transcoder</var> is <code>#f</code> or absent,
+the port will be a binary port and will support the
+<code>port-position</code> and <code>set-port-position!</code>  operations.
+Otherwise the port will be a textual port, and whether it supports
+the <code>port-position</code> and <code>set-port-position!</code> operations
+is implementation-dependent (and possibly transcoder-dependent).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-standard_002doutput_002dport"></a>Scheme Procedure: <strong>standard-output-port</strong></dt>
+<dt><a name="index-standard_002derror_002dport"></a>Scheme Procedure: <strong>standard-error-port</strong></dt>
+<dd><p>Returns a fresh binary output port connected to the standard output or
+standard error respectively.  Whether the port supports the
+<code>port-position</code> and <code>set-port-position!</code> operations is
+implementation-dependent.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-current_002doutput_002dport-1"></a>Scheme Procedure: <strong>current-output-port</strong></dt>
+<dt><a name="index-current_002derror_002dport-1"></a>Scheme Procedure: <strong>current-error-port</strong></dt>
+<dd><p>These return default textual ports for regular output and error output.
+Normally, these default ports are associated with standard output, and
+standard error, respectively.  The return value of
+<code>current-output-port</code> can be dynamically re-assigned using the
+<code>with-output-to-file</code> procedure from the <code>io simple (6)</code>
+library (see <a href="rnrs-io-simple.html#rnrs-io-simple">rnrs io simple</a>).  A port returned by one of these
+procedures may or may not have an associated transcoder; if it does, the
+transcoder is implementation-dependent.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="R6RS-Binary-Output.html#R6RS-Binary-Output" accesskey="n" rel="next">R6RS Binary Output</a>, Previous: <a href="R6RS-Textual-Input.html#R6RS-Textual-Input" accesskey="p" rel="prev">R6RS Textual Input</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

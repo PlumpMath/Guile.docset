@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: VHashes</title>
+
+<meta name="description" content="Guile Reference Manual: VHashes">
+<meta name="keywords" content="Guile Reference Manual: VHashes">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compound-Data-Types.html#Compound-Data-Types" rel="up" title="Compound Data Types">
+<link href="Hash-Tables.html#Hash-Tables" rel="next" title="Hash Tables">
+<link href="Alist-Example.html#Alist-Example" rel="prev" title="Alist Example">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="VHashes"></a>
+<div class="header">
+<p>
+Next: <a href="Hash-Tables.html#Hash-Tables" accesskey="n" rel="next">Hash Tables</a>, Previous: <a href="Association-Lists.html#Association-Lists" accesskey="p" rel="prev">Association Lists</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="VList_002dBased-Hash-Lists-or-_0060_0060VHashes_0027_0027"></a>
+<h4 class="subsection">6.7.13 VList-Based Hash Lists or &ldquo;VHashes&rdquo;</h4>
+
+<a name="index-VList_002dbased-hash-lists"></a>
+<a name="index-VHash"></a>
+
+<p>The <code>(ice-9 vlist)</code> module provides an implementation of <em>VList-based
+hash lists</em> (see <a href="VLists.html#VLists">VLists</a>).  VList-based hash lists, or <em>vhashes</em>, are an
+immutable dictionary type similar to association lists that maps <em>keys</em> to
+<em>values</em>.  However, unlike association lists, accessing a value given its
+key is typically a constant-time operation.
+</p>
+<p>The VHash programming interface of <code>(ice-9 vlist)</code> is mostly the same as
+that of association lists found in SRFI-1, with procedure names prefixed by
+<code>vhash-</code> instead of <code>alist-</code> (see <a href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists">SRFI-1 Association Lists</a>).
+</p>
+<p>In addition, vhashes can be manipulated using VList operations:
+</p>
+<div class="example">
+<pre class="example">(vlist-head (vhash-consq 'a 1 vlist-null))
+&rArr; (a . 1)
+
+(define vh1 (vhash-consq 'b 2 (vhash-consq 'a 1 vlist-null)))
+(define vh2 (vhash-consq 'c 3 (vlist-tail vh1)))
+
+(vhash-assq 'a vh2)
+&rArr; (a . 1)
+(vhash-assq 'b vh2)
+&rArr; #f
+(vhash-assq 'c vh2)
+&rArr; (c . 3)
+(vlist-&gt;list vh2)
+&rArr; ((c . 3) (a . 1))
+</pre></div>
+
+<p>However, keep in mind that procedures that construct new VLists
+(<code>vlist-map</code>, <code>vlist-filter</code>, etc.) return raw VLists, not vhashes:
+</p>
+<div class="example">
+<pre class="example">(define vh (alist-&gt;vhash '((a . 1) (b . 2) (c . 3)) hashq))
+(vhash-assq 'a vh)
+&rArr; (a . 1)
+
+(define vl
+  ;; This will create a raw vlist.
+  (vlist-filter (lambda (key+value) (odd? (cdr key+value))) vh))
+(vhash-assq 'a vl)
+&rArr; ERROR: Wrong type argument in position 2
+
+(vlist-&gt;list vl)
+&rArr; ((a . 1) (c . 3))
+</pre></div>
+
+<dl>
+<dt><a name="index-vhash_003f"></a>Scheme Procedure: <strong>vhash?</strong> <em>obj</em></dt>
+<dd><p>Return true if <var>obj</var> is a vhash.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vhash_002dcons"></a>Scheme Procedure: <strong>vhash-cons</strong> <em>key value vhash [hash-proc]</em></dt>
+<dt><a name="index-vhash_002dconsq"></a>Scheme Procedure: <strong>vhash-consq</strong> <em>key value vhash</em></dt>
+<dt><a name="index-vhash_002dconsv"></a>Scheme Procedure: <strong>vhash-consv</strong> <em>key value vhash</em></dt>
+<dd><p>Return a new hash list based on <var>vhash</var> where <var>key</var> is associated with
+<var>value</var>, using <var>hash-proc</var> to compute the hash of <var>key</var>.
+<var>vhash</var> must be either <code>vlist-null</code> or a vhash returned by a previous
+call to <code>vhash-cons</code>.  <var>hash-proc</var> defaults to <code>hash</code> (see <a href="Hash-Table-Reference.html#Hash-Table-Reference"><code>hash</code> procedure</a>).  With <code>vhash-consq</code>, the
+<code>hashq</code> hash function is used; with <code>vhash-consv</code> the <code>hashv</code>
+hash function is used.
+</p>
+<p>All <code>vhash-cons</code> calls made to construct a vhash should use the same
+<var>hash-proc</var>.  Failing to do that, the result is undefined.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vhash_002dassoc"></a>Scheme Procedure: <strong>vhash-assoc</strong> <em>key vhash [equal? [hash-proc]]</em></dt>
+<dt><a name="index-vhash_002dassq"></a>Scheme Procedure: <strong>vhash-assq</strong> <em>key vhash</em></dt>
+<dt><a name="index-vhash_002dassv"></a>Scheme Procedure: <strong>vhash-assv</strong> <em>key vhash</em></dt>
+<dd><p>Return the first key/value pair from <var>vhash</var> whose key is equal to <var>key</var>
+according to the <var>equal?</var> equality predicate (which defaults to
+<code>equal?</code>), and using <var>hash-proc</var> (which defaults to <code>hash</code>) to
+compute the hash of <var>key</var>.  The second form uses <code>eq?</code> as the equality
+predicate and <code>hashq</code> as the hash function; the last form uses <code>eqv?</code>
+and <code>hashv</code>.
+</p>
+<p>Note that it is important to consistently use the same hash function for
+<var>hash-proc</var> as was passed to <code>vhash-cons</code>.  Failing to do that, the
+result is unpredictable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vhash_002ddelete"></a>Scheme Procedure: <strong>vhash-delete</strong> <em>key vhash [equal? [hash-proc]]</em></dt>
+<dt><a name="index-vhash_002ddelq"></a>Scheme Procedure: <strong>vhash-delq</strong> <em>key vhash</em></dt>
+<dt><a name="index-vhash_002ddelv"></a>Scheme Procedure: <strong>vhash-delv</strong> <em>key vhash</em></dt>
+<dd><p>Remove all associations from <var>vhash</var> with <var>key</var>, comparing keys with
+<var>equal?</var> (which defaults to <code>equal?</code>), and computing the hash of
+<var>key</var> using <var>hash-proc</var> (which defaults to <code>hash</code>).  The second
+form uses <code>eq?</code> as the equality predicate and <code>hashq</code> as the hash
+function; the last one uses <code>eqv?</code> and <code>hashv</code>.
+</p>
+<p>Again the choice of <var>hash-proc</var> must be consistent with previous calls to
+<code>vhash-cons</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vhash_002dfold"></a>Scheme Procedure: <strong>vhash-fold</strong> <em>proc init vhash</em></dt>
+<dt><a name="index-vhash_002dfold_002dright"></a>Scheme Procedure: <strong>vhash-fold-right</strong> <em>proc init vhash</em></dt>
+<dd><p>Fold over the key/value elements of <var>vhash</var> in the given direction,
+with each call to <var>proc</var> having the form <code>(<var>proc</var> key value
+result)</code>, where <var>result</var> is the result of the previous call to
+<var>proc</var> and <var>init</var> the value of <var>result</var> for the first call
+to <var>proc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vhash_002dfold_002a"></a>Scheme Procedure: <strong>vhash-fold*</strong> <em>proc init key vhash [equal? [hash]]</em></dt>
+<dt><a name="index-vhash_002dfoldq_002a"></a>Scheme Procedure: <strong>vhash-foldq*</strong> <em>proc init key vhash</em></dt>
+<dt><a name="index-vhash_002dfoldv_002a"></a>Scheme Procedure: <strong>vhash-foldv*</strong> <em>proc init key vhash</em></dt>
+<dd><p>Fold over all the values associated with <var>key</var> in <var>vhash</var>, with each
+call to <var>proc</var> having the form <code>(proc value result)</code>, where
+<var>result</var> is the result of the previous call to <var>proc</var> and <var>init</var> the
+value of <var>result</var> for the first call to <var>proc</var>.
+</p>
+<p>Keys in <var>vhash</var> are hashed using <var>hash</var> are compared using <var>equal?</var>.
+The second form uses <code>eq?</code> as the equality predicate and <code>hashq</code> as
+the hash function; the third one uses <code>eqv?</code> and <code>hashv</code>.
+</p>
+<p>Example:
+</p>
+<div class="example">
+<pre class="example">(define vh
+  (alist-&gt;vhash '((a . 1) (a . 2) (z . 0) (a . 3))))
+
+(vhash-fold* cons '() 'a vh)
+&rArr; (3 2 1)
+
+(vhash-fold* cons '() 'z vh)
+&rArr; (0)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-alist_002d_003evhash"></a>Scheme Procedure: <strong>alist-&gt;vhash</strong> <em>alist [hash-proc]</em></dt>
+<dd><p>Return the vhash corresponding to <var>alist</var>, an association list, using
+<var>hash-proc</var> to compute key hashes.  When omitted, <var>hash-proc</var> defaults
+to <code>hash</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Hash-Tables.html#Hash-Tables" accesskey="n" rel="next">Hash Tables</a>, Previous: <a href="Association-Lists.html#Association-Lists" accesskey="p" rel="prev">Association Lists</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

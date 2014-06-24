@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-27 Default Random Source</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-27 Default Random Source">
+<meta name="keywords" content="Guile Reference Manual: SRFI-27 Default Random Source">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d27.html#SRFI_002d27" rel="up" title="SRFI-27">
+<link href="SRFI_002d27-Random-Sources.html#SRFI_002d27-Random-Sources" rel="next" title="SRFI-27 Random Sources">
+<link href="SRFI_002d27.html#SRFI_002d27" rel="prev" title="SRFI-27">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d27-Default-Random-Source"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d27-Random-Sources.html#SRFI_002d27-Random-Sources" accesskey="n" rel="next">SRFI-27 Random Sources</a>, Up: <a href="SRFI_002d27.html#SRFI_002d27" accesskey="u" rel="up">SRFI-27</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="The-Default-Random-Source"></a>
+<h4 class="subsubsection">7.5.19.1 The Default Random Source</h4>
+<a name="index-SRFI_002d27-1"></a>
+
+<dl>
+<dt><a name="index-random_002dinteger"></a>Function: <strong>random-integer</strong> <em>n</em></dt>
+<dd><p>Return a random number between zero (inclusive) and <var>n</var> (exclusive),
+using the default random source.  The numbers returned have a uniform
+distribution.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_002dreal"></a>Function: <strong>random-real</strong></dt>
+<dd><p>Return a random number in (0,1), using the default random source.  The
+numbers returned have a uniform distribution.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-default_002drandom_002dsource"></a>Function: <strong>default-random-source</strong></dt>
+<dd><p>A random source from which <code>random-integer</code> and <code>random-real</code>
+have been derived using <code>random-source-make-integers</code> and
+<code>random-source-make-reals</code> (see <a href="SRFI_002d27-Random-Number-Generators.html#SRFI_002d27-Random-Number-Generators">SRFI-27 Random Number Generators</a>
+for those procedures).  Note that an assignment to
+<code>default-random-source</code> does not change <code>random-integer</code> or
+<code>random-real</code>; it is also strongly recommended not to assign a new
+value.
+</p></dd></dl>
+
+
+
+
+</body>
+</html>

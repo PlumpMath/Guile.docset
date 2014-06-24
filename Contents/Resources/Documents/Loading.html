@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Loading</title>
+
+<meta name="description" content="Guile Reference Manual: Loading">
+<meta name="keywords" content="Guile Reference Manual: Loading">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" rel="up" title="Read/Load/Eval/Compile">
+<link href="Load-Paths.html#Load-Paths" rel="next" title="Load Paths">
+<link href="Compilation.html#Compilation" rel="prev" title="Compilation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Loading"></a>
+<div class="header">
+<p>
+Next: <a href="Load-Paths.html#Load-Paths" accesskey="n" rel="next">Load Paths</a>, Previous: <a href="Compilation.html#Compilation" accesskey="p" rel="prev">Compilation</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Loading-Scheme-Code-from-File"></a>
+<h4 class="subsection">6.17.6 Loading Scheme Code from File</h4>
+
+<a name="index-load-3"></a>
+<dl>
+<dt><a name="index-load-2"></a>Scheme Procedure: <strong>load</strong> <em>filename [reader]</em></dt>
+<dd><p>Load <var>filename</var> and evaluate its contents in the top-level
+environment.
+</p>
+<p><var>reader</var> if provided should be either <code>#f</code>, or a procedure with
+the signature <code>(lambda (port) &hellip;)</code> which reads the next
+expression from <var>port</var>.  If <var>reader</var> is <code>#f</code> or absent,
+Guile&rsquo;s built-in <code>read</code> procedure is used (see <a href="Scheme-Read.html#Scheme-Read">Scheme Read</a>).
+</p>
+<p>The <var>reader</var> argument takes effect by setting the value of the
+<code>current-reader</code> fluid (see below) before loading the file, and
+restoring its previous value when loading is complete.  The Scheme code
+inside <var>filename</var> can itself change the current reader procedure on
+the fly by setting <code>current-reader</code> fluid.
+</p>
+<p>If the variable <code>%load-hook</code> is defined, it should be bound to a
+procedure that will be called before any code is loaded.  See
+documentation for <code>%load-hook</code> later in this section.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-load_002dcompiled"></a>Scheme Procedure: <strong>load-compiled</strong> <em>filename</em></dt>
+<dd><p>Load the compiled file named <var>filename</var>.
+</p>
+<p>Compiling a source file (see <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile">Read/Load/Eval/Compile</a>) and then
+calling <code>load-compiled</code> on the resulting file is equivalent to
+calling <code>load</code> on the source file.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-primitive_002dload-1"></a>Scheme Procedure: <strong>primitive-load</strong> <em>filename</em></dt>
+<dt><a name="index-scm_005fprimitive_005fload"></a>C Function: <strong>scm_primitive_load</strong> <em>(filename)</em></dt>
+<dd><p>Load the file named <var>filename</var> and evaluate its contents in the
+top-level environment.  <var>filename</var> must either be a full pathname or
+be a pathname relative to the current directory.  If the variable
+<code>%load-hook</code> is defined, it should be bound to a procedure that
+will be called before any code is loaded.  See the documentation for
+<code>%load-hook</code> later in this section.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fprimitive_005fload"></a>C Function: <em>SCM</em> <strong>scm_c_primitive_load</strong> <em>(const char *filename)</em></dt>
+<dd><p><code>scm_primitive_load</code>, but taking a C string instead of an
+<code>SCM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-current_002dreader"></a>Variable: <strong>current-reader</strong></dt>
+<dd><p><code>current-reader</code> holds the read procedure that is currently being
+used by the above loading procedures to read expressions (from the file
+that they are loading).  <code>current-reader</code> is a fluid, so it has an
+independent value in each dynamic root and should be read and set using
+<code>fluid-ref</code> and <code>fluid-set!</code> (see <a href="Fluids-and-Dynamic-States.html#Fluids-and-Dynamic-States">Fluids and Dynamic States</a>).
+</p>
+<p>Changing <code>current-reader</code> is typically useful to introduce local
+syntactic changes, such that code following the <code>fluid-set!</code> call
+is read using the newly installed reader.  The <code>current-reader</code>
+change should take place at evaluation time when the code is evaluated,
+or at compilation time when the code is compiled:
+</p>
+<a name="index-eval_002dwhen-1"></a>
+<div class="example">
+<pre class="example">(eval-when (compile eval)
+  (fluid-set! current-reader my-own-reader))
+</pre></div>
+
+<p>The <code>eval-when</code> form above ensures that the <code>current-reader</code>
+change occurs at the right time.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0025load_002dhook"></a>Variable: <strong>%load-hook</strong></dt>
+<dd><p>A procedure to be called <code>(%load-hook <var>filename</var>)</code> whenever a
+file is loaded, or <code>#f</code> for no such call.  <code>%load-hook</code> is
+used by all of the loading functions (<code>load</code> and
+<code>primitive-load</code>, and <code>load-from-path</code> and
+<code>primitive-load-path</code> documented in the next section).
+</p>
+<p>For example an application can set this to show what&rsquo;s loaded,
+</p>
+<div class="example">
+<pre class="example">(set! %load-hook (lambda (filename)
+                   (format #t &quot;Loading ~a ...\n&quot; filename)))
+(load-from-path &quot;foo.scm&quot;)
+-| Loading /usr/local/share/guile/site/foo.scm ...
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-current_002dload_002dport"></a>Scheme Procedure: <strong>current-load-port</strong></dt>
+<dt><a name="index-scm_005fcurrent_005fload_005fport"></a>C Function: <strong>scm_current_load_port</strong> <em>()</em></dt>
+<dd><p>Return the current-load-port.
+The load port is used internally by <code>primitive-load</code>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Load-Paths.html#Load-Paths" accesskey="n" rel="next">Load Paths</a>, Previous: <a href="Compilation.html#Compilation" accesskey="p" rel="prev">Compilation</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

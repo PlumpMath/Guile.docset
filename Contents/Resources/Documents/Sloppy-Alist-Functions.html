@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Sloppy Alist Functions</title>
+
+<meta name="description" content="Guile Reference Manual: Sloppy Alist Functions">
+<meta name="keywords" content="Guile Reference Manual: Sloppy Alist Functions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Association-Lists.html#Association-Lists" rel="up" title="Association Lists">
+<link href="Alist-Example.html#Alist-Example" rel="next" title="Alist Example">
+<link href="Removing-Alist-Entries.html#Removing-Alist-Entries" rel="prev" title="Removing Alist Entries">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Sloppy-Alist-Functions"></a>
+<div class="header">
+<p>
+Next: <a href="Alist-Example.html#Alist-Example" accesskey="n" rel="next">Alist Example</a>, Previous: <a href="Removing-Alist-Entries.html#Removing-Alist-Entries" accesskey="p" rel="prev">Removing Alist Entries</a>, Up: <a href="Association-Lists.html#Association-Lists" accesskey="u" rel="up">Association Lists</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Sloppy-Alist-Functions-1"></a>
+<h4 class="subsubsection">6.7.12.5 Sloppy Alist Functions</h4>
+
+<p><code>sloppy-assq</code>, <code>sloppy-assv</code> and <code>sloppy-assoc</code> behave
+like the corresponding non-<code>sloppy-</code> procedures, except that they
+return <code>#f</code> when the specified association list is not well-formed,
+where the non-<code>sloppy-</code> versions would signal an error.
+</p>
+<p>Specifically, there are two conditions for which the non-<code>sloppy-</code>
+procedures signal an error, which the <code>sloppy-</code> procedures handle
+instead by returning <code>#f</code>.  Firstly, if the specified alist as a
+whole is not a proper list:
+</p>
+<div class="example">
+<pre class="example">(assoc &quot;mary&quot; '((1 . 2) (&quot;key&quot; . &quot;door&quot;) . &quot;open sesame&quot;))
+&rArr;
+ERROR: In procedure assoc in expression (assoc &quot;mary&quot; (quote #)):
+ERROR: Wrong type argument in position 2 (expecting
+   association list): ((1 . 2) (&quot;key&quot; . &quot;door&quot;) . &quot;open sesame&quot;)
+
+(sloppy-assoc &quot;mary&quot; '((1 . 2) (&quot;key&quot; . &quot;door&quot;) . &quot;open sesame&quot;))
+&rArr;
+#f
+</pre></div>
+
+<p>Secondly, if one of the entries in the specified alist is not a pair:
+</p>
+<div class="example">
+<pre class="example">(assoc 2 '((1 . 1) 2 (3 . 9)))
+&rArr;
+ERROR: In procedure assoc in expression (assoc 2 (quote #)):
+ERROR: Wrong type argument in position 2 (expecting
+   association list): ((1 . 1) 2 (3 . 9))
+
+(sloppy-assoc 2 '((1 . 1) 2 (3 . 9)))
+&rArr;
+#f
+</pre></div>
+
+<p>Unless you are explicitly working with badly formed association lists,
+it is much safer to use the non-<code>sloppy-</code> procedures, because they
+help to highlight coding and data errors that the <code>sloppy-</code>
+versions would silently cover up.
+</p>
+<dl>
+<dt><a name="index-sloppy_002dassq"></a>Scheme Procedure: <strong>sloppy-assq</strong> <em>key alist</em></dt>
+<dt><a name="index-scm_005fsloppy_005fassq"></a>C Function: <strong>scm_sloppy_assq</strong> <em>(key, alist)</em></dt>
+<dd><p>Behaves like <code>assq</code> but does not do any error checking.
+Recommended only for use in Guile internals.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sloppy_002dassv"></a>Scheme Procedure: <strong>sloppy-assv</strong> <em>key alist</em></dt>
+<dt><a name="index-scm_005fsloppy_005fassv"></a>C Function: <strong>scm_sloppy_assv</strong> <em>(key, alist)</em></dt>
+<dd><p>Behaves like <code>assv</code> but does not do any error checking.
+Recommended only for use in Guile internals.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sloppy_002dassoc"></a>Scheme Procedure: <strong>sloppy-assoc</strong> <em>key alist</em></dt>
+<dt><a name="index-scm_005fsloppy_005fassoc"></a>C Function: <strong>scm_sloppy_assoc</strong> <em>(key, alist)</em></dt>
+<dd><p>Behaves like <code>assoc</code> but does not do any error checking.
+Recommended only for use in Guile internals.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Alist-Example.html#Alist-Example" accesskey="n" rel="next">Alist Example</a>, Previous: <a href="Removing-Alist-Entries.html#Removing-Alist-Entries" accesskey="p" rel="prev">Removing Alist Entries</a>, Up: <a href="Association-Lists.html#Association-Lists" accesskey="u" rel="up">Association Lists</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

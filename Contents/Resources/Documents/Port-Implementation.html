@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Port Implementation</title>
+
+<meta name="description" content="Guile Reference Manual: Port Implementation">
+<meta name="keywords" content="Guile Reference Manual: Port Implementation">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="I_002fO-Extensions.html#I_002fO-Extensions" rel="up" title="I/O Extensions">
+<link href="BOM-Handling.html#BOM-Handling" rel="next" title="BOM Handling">
+<link href="C-Port-Interface.html#C-Port-Interface" rel="prev" title="C Port Interface">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Port-Implementation"></a>
+<div class="header">
+<p>
+Previous: <a href="C-Port-Interface.html#C-Port-Interface" accesskey="p" rel="prev">C Port Interface</a>, Up: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="u" rel="up">I/O Extensions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Port-Implementation-1"></a>
+<h4 class="subsubsection">6.14.11.2 Port Implementation</h4>
+<a name="index-Port-implementation"></a>
+
+<p>This section describes how to implement a new port type in C.
+</p>
+<p>As described in the previous section, a port type object (ptob) is
+a structure of type <code>scm_ptob_descriptor</code>.  A ptob is created by
+calling <code>scm_make_port_type</code>.
+</p>
+<dl>
+<dt><a name="index-scm_005fmake_005fport_005ftype"></a>Function: <em>scm_t_bits</em> <strong>scm_make_port_type</strong> <em>(char *name, int (*fill_input) (SCM port), void (*write) (SCM port, const void *data, size_t size))</em></dt>
+<dd><p>Return a new port type object.  The <var>name</var>, <var>fill_input</var> and
+<var>write</var> parameters are initial values for those port type fields,
+as described below.  The other fields are initialized with default
+values and can be changed later.
+</p></dd></dl>
+
+<p>All of the elements of the ptob, apart from <code>name</code>, are procedures
+which collectively implement the port behaviour.  Creating a new port
+type mostly involves writing these procedures.
+</p>
+<dl compact="compact">
+<dt><code>name</code></dt>
+<dd><p>A pointer to a NUL terminated string: the name of the port type.  This
+is the only element of <code>scm_ptob_descriptor</code> which is not
+a procedure.  Set via the first argument to <code>scm_make_port_type</code>.
+</p>
+</dd>
+<dt><code>mark</code></dt>
+<dd><p>Called during garbage collection to mark any SCM objects that a port
+object may contain.  It doesn&rsquo;t need to be set unless the port has
+<code>SCM</code> components.  Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fmark"></a>Function: <em>void</em> <strong>scm_set_port_mark</strong> <em>(scm_t_bits tc, SCM (*mark) (SCM port))</em></dt>
+</dl>
+
+</dd>
+<dt><code>free</code></dt>
+<dd><p>Called when the port is collected during gc.  It
+should free any resources used by the port.
+Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005ffree"></a>Function: <em>void</em> <strong>scm_set_port_free</strong> <em>(scm_t_bits tc, size_t (*free) (SCM port))</em></dt>
+</dl>
+
+</dd>
+<dt><code>print</code></dt>
+<dd><p>Called when <code>write</code> is called on the port object, to print a
+port description.  E.g., for an fport it may produce something like:
+<code>#&lt;input: /etc/passwd 3&gt;</code>.   Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fprint"></a>Function: <em>void</em> <strong>scm_set_port_print</strong> <em>(scm_t_bits tc, int (*print) (SCM port, SCM dest_port, scm_print_state *pstate))</em></dt>
+<dd><p>The first argument <var>port</var> is the object being printed, the second
+argument <var>dest_port</var> is where its description should go.
+</p></dd></dl>
+
+</dd>
+<dt><code>equalp</code></dt>
+<dd><p>Not used at present.  Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fequalp"></a>Function: <em>void</em> <strong>scm_set_port_equalp</strong> <em>(scm_t_bits tc, SCM (*equalp) (SCM, SCM))</em></dt>
+</dl>
+
+</dd>
+<dt><code>close</code></dt>
+<dd><p>Called when the port is closed, unless it was collected during gc.  It
+should free any resources used by the port.
+Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fclose"></a>Function: <em>void</em> <strong>scm_set_port_close</strong> <em>(scm_t_bits tc, int (*close) (SCM port))</em></dt>
+</dl>
+
+</dd>
+<dt><code>write</code></dt>
+<dd><p>Accept data which is to be written using the port.  The port implementation
+may choose to buffer the data instead of processing it directly.
+Set via the third argument to <code>scm_make_port_type</code>.
+</p>
+</dd>
+<dt><code>flush</code></dt>
+<dd><p>Complete the processing of buffered output data.  Reset the value of
+<code>rw_active</code> to <code>SCM_PORT_NEITHER</code>.
+Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fflush"></a>Function: <em>void</em> <strong>scm_set_port_flush</strong> <em>(scm_t_bits tc, void (*flush) (SCM port))</em></dt>
+</dl>
+
+</dd>
+<dt><code>end_input</code></dt>
+<dd><p>Perform any synchronization required when switching from input to output
+on the port.  Reset the value of <code>rw_active</code> to <code>SCM_PORT_NEITHER</code>.
+Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fend_005finput"></a>Function: <em>void</em> <strong>scm_set_port_end_input</strong> <em>(scm_t_bits tc, void (*end_input) (SCM port, int offset))</em></dt>
+</dl>
+
+</dd>
+<dt><code>fill_input</code></dt>
+<dd><p>Read new data into the read buffer and return the first character.  It
+can be assumed that the read buffer is empty when this procedure is called.
+Set via the second argument to <code>scm_make_port_type</code>.
+</p>
+</dd>
+<dt><code>input_waiting</code></dt>
+<dd><p>Return a lower bound on the number of bytes that could be read from the
+port without blocking.  It can be assumed that the current state of
+<code>rw_active</code> is <code>SCM_PORT_NEITHER</code>.
+Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005finput_005fwaiting"></a>Function: <em>void</em> <strong>scm_set_port_input_waiting</strong> <em>(scm_t_bits tc, int (*input_waiting) (SCM port))</em></dt>
+</dl>
+
+</dd>
+<dt><code>seek</code></dt>
+<dd><p>Set the current position of the port.  The procedure can not make
+any assumptions about the value of <code>rw_active</code> when it&rsquo;s
+called.  It can reset the buffers first if desired by using something
+like:
+</p>
+<div class="example">
+<pre class="example">if (pt-&gt;rw_active == SCM_PORT_READ)
+  scm_end_input (port);
+else if (pt-&gt;rw_active == SCM_PORT_WRITE)
+  ptob-&gt;flush (port);
+</pre></div>
+
+<p>However note that this will have the side effect of discarding any data
+in the unread-char buffer, in addition to any side effects from the
+<code>end_input</code> and <code>flush</code> ptob procedures.  This is undesirable
+when seek is called to measure the current position of the port, i.e.,
+<code>(seek p 0 SEEK_CUR)</code>.  The libguile fport and string port
+implementations take care to avoid this problem.
+</p>
+<p>The procedure is set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005fseek"></a>Function: <em>void</em> <strong>scm_set_port_seek</strong> <em>(scm_t_bits tc, scm_t_off (*seek) (SCM port, scm_t_off offset, int whence))</em></dt>
+</dl>
+
+</dd>
+<dt><code>truncate</code></dt>
+<dd><p>Truncate the port data to be specified length.  It can be assumed that the
+current state of <code>rw_active</code> is <code>SCM_PORT_NEITHER</code>.
+Set using
+</p>
+<dl>
+<dt><a name="index-scm_005fset_005fport_005ftruncate"></a>Function: <em>void</em> <strong>scm_set_port_truncate</strong> <em>(scm_t_bits tc, void (*truncate) (SCM port, scm_t_off length))</em></dt>
+</dl>
+
+</dd>
+</dl>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="C-Port-Interface.html#C-Port-Interface" accesskey="p" rel="prev">C Port Interface</a>, Up: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="u" rel="up">I/O Extensions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

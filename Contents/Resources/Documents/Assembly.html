@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Assembly</title>
+
+<meta name="description" content="Guile Reference Manual: Assembly">
+<meta name="keywords" content="Guile Reference Manual: Assembly">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" rel="up" title="Compiling to the Virtual Machine">
+<link href="Bytecode-and-Objcode.html#Bytecode-and-Objcode" rel="next" title="Bytecode and Objcode">
+<link href="GLIL.html#GLIL" rel="prev" title="GLIL">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Assembly"></a>
+<div class="header">
+<p>
+Next: <a href="Bytecode-and-Objcode.html#Bytecode-and-Objcode" accesskey="n" rel="next">Bytecode and Objcode</a>, Previous: <a href="GLIL.html#GLIL" accesskey="p" rel="prev">GLIL</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Assembly-1"></a>
+<h4 class="subsection">9.4.5 Assembly</h4>
+
+<p>Assembly is an S-expression-based, human-readable representation of
+the actual bytecodes that will be emitted for the VM. As such, it is a
+useful intermediate language both for compilation and for
+decompilation.
+</p>
+<p>Besides the fact that it is not a record-based language, assembly
+differs from GLIL in four main ways:
+</p>
+<ul>
+<li> Labels have been resolved to byte offsets in the program.
+</li><li> Constants inside procedures have either been expressed as inline
+instructions or cached in object arrays.
+</li><li> Procedures with metadata (source location information, liveness
+extents, procedure names, generic properties, etc) have had their
+metadata serialized out to thunks.
+</li><li> All expressions correspond directly to VM instructions &ndash; i.e.,
+there is no <code>&lt;glil-lexical&gt;</code> which can be a ref or a set.
+</li></ul>
+
+<p>Assembly is isomorphic to the bytecode that it compiles to. You can
+compile to bytecode, then decompile back to assembly, and you have the
+same assembly code.
+</p>
+<p>The general form of assembly instructions is the following:
+</p>
+<div class="lisp">
+<pre class="lisp">(<var>inst</var> <var>arg</var> ...)
+</pre></div>
+
+<p>The <var>inst</var> names a VM instruction, and its <var>arg</var>s will be
+embedded in the instruction stream. The easiest way to see assembly is
+to play around with it at the REPL, as can be seen in this annotated
+example:
+</p>
+<div class="example">
+<pre class="example">scheme@(guile-user)&gt; ,pp (compile '(+ 32 10) #:to 'assembly)
+(load-program
+  ((:LCASE16 . 2))  ; Labels, unused in this case.
+  8                 ; Length of the thunk that was compiled.
+  (load-program     ; Metadata thunk.
+    ()
+    17
+    #f              ; No metadata thunk for the metadata thunk.
+    (make-eol)
+    (make-eol)
+    (make-int8 2)   ; Liveness extents, source info, and arities,
+    (make-int8 8)   ; in a format that Guile knows how to parse.
+    (make-int8:0)
+    (list 0 3)
+    (list 0 1)
+    (list 0 3)
+    (return))
+  (assert-nargs-ee/locals 0)  ; Prologue.
+  (make-int8 32)    ; Actual code starts here.
+  (make-int8 10)
+  (add)
+  (return))
+</pre></div>
+
+<p>Of course you can switch the REPL to assembly and enter in assembly
+S-expressions directly, like with other languages, though it is more
+difficult, given that the length fields have to be correct.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Bytecode-and-Objcode.html#Bytecode-and-Objcode" accesskey="n" rel="next">Bytecode and Objcode</a>, Previous: <a href="GLIL.html#GLIL" accesskey="p" rel="prev">GLIL</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

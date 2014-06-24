@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: General Information about Modules</title>
+
+<meta name="description" content="Guile Reference Manual: General Information about Modules">
+<meta name="keywords" content="Guile Reference Manual: General Information about Modules">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Modules.html#Modules" rel="up" title="Modules">
+<link href="Using-Guile-Modules.html#Using-Guile-Modules" rel="next" title="Using Guile Modules">
+<link href="Modules.html#Modules" rel="prev" title="Modules">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="General-Information-about-Modules"></a>
+<div class="header">
+<p>
+Next: <a href="Using-Guile-Modules.html#Using-Guile-Modules" accesskey="n" rel="next">Using Guile Modules</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="General-Information-about-Modules-1"></a>
+<h4 class="subsection">6.19.1 General Information about Modules</h4>
+
+<p>A Guile module can be thought of as a collection of named procedures,
+variables and macros.  More precisely, it is a set of <em>bindings</em>
+of symbols (names) to Scheme objects.
+</p>
+<p>Within a module, all bindings are visible.  Certain bindings
+can be declared <em>public</em>, in which case they are added to the
+module&rsquo;s so-called <em>export list</em>; this set of public bindings is
+called the module&rsquo;s <em>public interface</em> (see <a href="Creating-Guile-Modules.html#Creating-Guile-Modules">Creating Guile Modules</a>).
+</p>
+<p>A client module <em>uses</em> a providing module&rsquo;s bindings by either
+accessing the providing module&rsquo;s public interface, or by building a
+custom interface (and then accessing that).  In a custom interface, the
+client module can <em>select</em> which bindings to access and can also
+algorithmically <em>rename</em> bindings.  In contrast, when using the
+providing module&rsquo;s public interface, the entire export list is available
+without renaming (see <a href="Using-Guile-Modules.html#Using-Guile-Modules">Using Guile Modules</a>).
+</p>
+<p>All Guile modules have a unique <em>module name</em>, for example
+<code>(ice-9 popen)</code> or <code>(srfi srfi-11)</code>.  Module names are lists
+of one or more symbols.
+</p>
+<p>When Guile goes to use an interface from a module, for example
+<code>(ice-9 popen)</code>, Guile first looks to see if it has loaded
+<code>(ice-9 popen)</code> for any reason.  If the module has not been loaded
+yet, Guile searches a <em>load path</em> for a file that might define it,
+and loads that file.
+</p>
+<p>The following subsections go into more detail on using, creating,
+installing, and otherwise manipulating modules and the module system.
+</p>
+
+
+
+</body>
+</html>

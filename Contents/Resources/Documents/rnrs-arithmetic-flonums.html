@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs arithmetic flonums</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs arithmetic flonums">
+<meta name="keywords" content="Guile Reference Manual: rnrs arithmetic flonums">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-arithmetic-bitwise.html#rnrs-arithmetic-bitwise" rel="next" title="rnrs arithmetic bitwise">
+<link href="rnrs-arithmetic-fixnums.html#rnrs-arithmetic-fixnums" rel="prev" title="rnrs arithmetic fixnums">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-arithmetic-flonums"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-arithmetic-bitwise.html#rnrs-arithmetic-bitwise" accesskey="n" rel="next">rnrs arithmetic bitwise</a>, Previous: <a href="rnrs-arithmetic-fixnums.html#rnrs-arithmetic-fixnums" accesskey="p" rel="prev">rnrs arithmetic fixnums</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-arithmetic-flonums-1"></a>
+<h4 class="subsubsection">7.6.2.20 rnrs arithmetic flonums</h4>
+
+<p>The <code>(rnrs arithmetic flonums (6))</code> library provides procedures for
+performing arithmetic operations on inexact representations of real
+numbers, which R6RS refers to as <em>flonums</em>.
+</p>
+<p>Unless otherwise specified, all of the procedures below take flonums as
+arguments, and will raise an <code>&amp;assertion</code> condition if passed a 
+non-flonum argument.
+</p>
+<dl>
+<dt><a name="index-flonum_003f"></a>Scheme Procedure: <strong>flonum?</strong> <em>obj</em></dt>
+<dd><p>Returns <code>#t</code> if <var>obj</var> is a flonum, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-real_002d_003eflonum"></a>Scheme Procedure: <strong>real-&gt;flonum</strong> <em>x</em></dt>
+<dd><p>Returns the flonum that is numerically closest to the real number 
+<var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fl_003d_003f"></a>Scheme Procedure: <strong>fl=?</strong> <em>fl1 fl2 fl3 ...</em></dt>
+<dt><a name="index-fl_003c_003f"></a>Scheme Procedure: <strong>fl&lt;?</strong> <em>fl1 fl2 fl3 ...</em></dt>
+<dt><a name="index-fl_003c_003d_003f"></a>Scheme Procedure: <strong>fl&lt;=?</strong> <em>fl1 fl2 fl3 ...</em></dt>
+<dt><a name="index-fl_003e_003f"></a>Scheme Procedure: <strong>fl&gt;?</strong> <em>fl1 fl2 fl3 ...</em></dt>
+<dt><a name="index-fl_003e_003d_003f"></a>Scheme Procedure: <strong>fl&gt;=?</strong> <em>fl1 fl2 fl3 ...</em></dt>
+<dd><p>These procedures return <code>#t</code> if their flonum arguments are
+(respectively): equal, monotonically increasing, monotonically
+decreasing, monotonically nondecreasing, or monotonically nonincreasing;
+<code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flinteger_003f"></a>Scheme Procedure: <strong>flinteger?</strong> <em>fl</em></dt>
+<dt><a name="index-flzero_003f"></a>Scheme Procedure: <strong>flzero?</strong> <em>fl</em></dt>
+<dt><a name="index-flpositive_003f"></a>Scheme Procedure: <strong>flpositive?</strong> <em>fl</em></dt>
+<dt><a name="index-flnegative_003f"></a>Scheme Procedure: <strong>flnegative?</strong> <em>fl</em></dt>
+<dt><a name="index-flodd_003f"></a>Scheme Procedure: <strong>flodd?</strong> <em>fl</em></dt>
+<dt><a name="index-fleven_003f"></a>Scheme Procedure: <strong>fleven?</strong> <em>fl</em></dt>
+<dd><p>These numerical predicates return <code>#t</code> if <var>fl</var> is,
+respectively, an integer, zero, greater than zero, less than zero, odd,
+even, <code>#f</code> otherwise.  In the case of <code>flodd?</code> and 
+<code>fleven?</code>, <var>fl</var> must be an integer-valued flonum.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flfinite_003f"></a>Scheme Procedure: <strong>flfinite?</strong> <em>fl</em></dt>
+<dt><a name="index-flinfinite_003f"></a>Scheme Procedure: <strong>flinfinite?</strong> <em>fl</em></dt>
+<dt><a name="index-flnan_003f"></a>Scheme Procedure: <strong>flnan?</strong> <em>fl</em></dt>
+<dd><p>These numerical predicates return <code>#t</code> if <var>fl</var> is, 
+respectively, not infinite, infinite, or a <code>NaN</code> value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flmax"></a>Scheme Procedure: <strong>flmax</strong> <em>fl1 fl2 ...</em></dt>
+<dt><a name="index-flmin"></a>Scheme Procedure: <strong>flmin</strong> <em>fl1 fl2 ...</em></dt>
+<dd><p>These procedures return the maximum or minimum of their arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fl_002b"></a>Scheme Procedure: <strong>fl+</strong> <em>fl1 ...</em></dt>
+<dt><a name="index-fl_002a"></a>Scheme Procedure: <strong>fl*</strong> <em>fl ...</em></dt>
+<dd><p>These procedures return the sum or product of their arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fl_002d"></a>Scheme Procedure: <strong>fl-</strong> <em>fl1 fl2 ...</em></dt>
+<dt><a name="index-fl_002d-1"></a>Scheme Procedure: <strong>fl-</strong> <em>fl</em></dt>
+<dt><a name="index-fl_002f"></a>Scheme Procedure: <strong>fl/</strong> <em>fl1 fl2 ...</em></dt>
+<dt><a name="index-fl_002f-1"></a>Scheme Procedure: <strong>fl/</strong> <em>fl</em></dt>
+<dd><p>These procedures return, respectively, the difference or quotient of
+their arguments when called with two arguments; when called with a
+single argument, they return the additive or multiplicative inverse of
+<var>fl</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flabs"></a>Scheme Procedure: <strong>flabs</strong> <em>fl</em></dt>
+<dd><p>Returns the absolute value of <var>fl</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fldiv_002dand_002dmod"></a>Scheme Procedure: <strong>fldiv-and-mod</strong> <em>fl1 fl2</em></dt>
+<dt><a name="index-fldiv"></a>Scheme Procedure: <strong>fldiv</strong> <em>fl1 fl2</em></dt>
+<dt><a name="index-fldmod"></a>Scheme Procedure: <strong>fldmod</strong> <em>fl1 fl2</em></dt>
+<dt><a name="index-fldiv0_002dand_002dmod0"></a>Scheme Procedure: <strong>fldiv0-and-mod0</strong> <em>fl1 fl2</em></dt>
+<dt><a name="index-fldiv0"></a>Scheme Procedure: <strong>fldiv0</strong> <em>fl1 fl2</em></dt>
+<dt><a name="index-flmod0"></a>Scheme Procedure: <strong>flmod0</strong> <em>fl1 fl2</em></dt>
+<dd><p>These procedures implement number-theoretic division on flonums;
+See <a href="../rnrs base/index.html">(rnrs base)</a>, for a description for their semantics.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flnumerator"></a>Scheme Procedure: <strong>flnumerator</strong> <em>fl</em></dt>
+<dt><a name="index-fldenominator"></a>Scheme Procedure: <strong>fldenominator</strong> <em>fl</em></dt>
+<dd><p>These procedures return the numerator or denominator of <var>fl</var> as a
+flonum.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flfloor"></a>Scheme Procedure: <strong>flfloor</strong> <em>fl1</em></dt>
+<dt><a name="index-flceiling"></a>Scheme Procedure: <strong>flceiling</strong> <em>fl</em></dt>
+<dt><a name="index-fltruncate"></a>Scheme Procedure: <strong>fltruncate</strong> <em>fl</em></dt>
+<dt><a name="index-flround"></a>Scheme Procedure: <strong>flround</strong> <em>fl</em></dt>
+<dd><p>These procedures are identical to the <code>floor</code>, <code>ceiling</code>,
+<code>truncate</code>, and <code>round</code> procedures provided by Guile&rsquo;s core
+library.  See <a href="Arithmetic.html#Arithmetic">Arithmetic</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flexp"></a>Scheme Procedure: <strong>flexp</strong> <em>fl</em></dt>
+<dt><a name="index-fllog"></a>Scheme Procedure: <strong>fllog</strong> <em>fl</em></dt>
+<dt><a name="index-fllog-1"></a>Scheme Procedure: <strong>fllog</strong> <em>fl1 fl2 </em></dt>
+<dt><a name="index-flsin"></a>Scheme Procedure: <strong>flsin</strong> <em>fl</em></dt>
+<dt><a name="index-flcos"></a>Scheme Procedure: <strong>flcos</strong> <em>fl</em></dt>
+<dt><a name="index-fltan"></a>Scheme Procedure: <strong>fltan</strong> <em>fl</em></dt>
+<dt><a name="index-flasin"></a>Scheme Procedure: <strong>flasin</strong> <em>fl</em></dt>
+<dt><a name="index-flacos"></a>Scheme Procedure: <strong>flacos</strong> <em>fl</em></dt>
+<dt><a name="index-flatan"></a>Scheme Procedure: <strong>flatan</strong> <em>fl</em></dt>
+<dt><a name="index-flatan-1"></a>Scheme Procedure: <strong>flatan</strong> <em>fl1 fl2</em></dt>
+<dd><p>These procedures, which compute the usual transcendental functions, are
+the flonum variants of the procedures provided by the R6RS base library
+(see <a href="../rnrs base/index.html">(rnrs base)</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flsqrt"></a>Scheme Procedure: <strong>flsqrt</strong> <em>fl</em></dt>
+<dd><p>Returns the square root of <var>fl</var>.  If <var>fl</var> is <code>-0.0</code>, 
+<var>-0.0</var> is returned; for other negative values, a <code>NaN</code> value
+is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flexpt"></a>Scheme Procedure: <strong>flexpt</strong> <em>fl1 fl2</em></dt>
+<dd><p>Returns the value of <var>fl1</var> raised to the power of <var>fl2</var>.
+</p></dd></dl>
+
+<p>The following condition types are provided to allow Scheme 
+implementations that do not support infinities or <code>NaN</code> values
+to indicate that a computation resulted in such a value.  Guile supports
+both of these, so these conditions will never be raised by Guile&rsquo;s 
+standard libraries implementation.
+</p>
+<dl>
+<dt><a name="index-_0026no_002dinfinities"></a>Condition Type: <strong>&amp;no-infinities</strong></dt>
+<dt><a name="index-make_002dno_002dinfinities_002dviolation"></a>Scheme Procedure: <strong>make-no-infinities-violation</strong> <em>obj</em></dt>
+<dt><a name="index-no_002dinfinities_002dviolation_003f"></a>Scheme Procedure: <strong>no-infinities-violation?</strong></dt>
+<dd><p>A condition type indicating that a computation resulted in an infinite
+value on a Scheme implementation incapable of representing infinities.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0026no_002dnans"></a>Condition Type: <strong>&amp;no-nans</strong></dt>
+<dt><a name="index-make_002dno_002dnans_002dviolation"></a>Scheme Procedure: <strong>make-no-nans-violation</strong> <em>obj</em></dt>
+<dt><a name="index-no_002dnans_002dviolation_003f"></a>Scheme Procedure: <strong>no-nans-violation?</strong> <em>obj</em></dt>
+<dd><p>A condition type indicating that a computation resulted in a <code>NaN</code>
+value on a Scheme implementation incapable of representing <code>NaN</code>s.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fixnum_002d_003eflonum"></a>Scheme Procedure: <strong>fixnum-&gt;flonum</strong> <em>fx</em></dt>
+<dd><p>Returns the flonum that is numerically closest to the fixnum <var>fx</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-arithmetic-bitwise.html#rnrs-arithmetic-bitwise" accesskey="n" rel="next">rnrs arithmetic bitwise</a>, Previous: <a href="rnrs-arithmetic-fixnums.html#rnrs-arithmetic-fixnums" accesskey="p" rel="prev">rnrs arithmetic fixnums</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

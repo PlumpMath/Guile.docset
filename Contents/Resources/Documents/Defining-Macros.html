@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Defining Macros</title>
+
+<meta name="description" content="Guile Reference Manual: Defining Macros">
+<meta name="keywords" content="Guile Reference Manual: Defining Macros">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Macros.html#Macros" rel="up" title="Macros">
+<link href="Syntax-Rules.html#Syntax-Rules" rel="next" title="Syntax Rules">
+<link href="Macros.html#Macros" rel="prev" title="Macros">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Defining-Macros"></a>
+<div class="header">
+<p>
+Next: <a href="Syntax-Rules.html#Syntax-Rules" accesskey="n" rel="next">Syntax Rules</a>, Up: <a href="Macros.html#Macros" accesskey="u" rel="up">Macros</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Defining-Macros-1"></a>
+<h4 class="subsection">6.10.1 Defining Macros</h4>
+
+<p>A macro is a binding between a keyword and a syntax transformer. Since it&rsquo;s
+difficult to discuss <code>define-syntax</code> without discussing the format of
+transformers, consider the following example macro definition:
+</p>
+<div class="example">
+<pre class="example">(define-syntax when
+  (syntax-rules ()
+    ((when condition exp ...)
+     (if condition
+         (begin exp ...)))))
+
+(when #t
+  (display &quot;hey ho\n&quot;) 
+  (display &quot;let's go\n&quot;))
+-| hey ho
+-| let's go
+</pre></div>
+
+<p>In this example, the <code>when</code> binding is bound with <code>define-syntax</code>.
+Syntax transformers are discussed in more depth in <a href="Syntax-Rules.html#Syntax-Rules">Syntax Rules</a> and
+<a href="Syntax-Case.html#Syntax-Case">Syntax Case</a>.
+</p>
+<dl>
+<dt><a name="index-define_002dsyntax"></a>Syntax: <strong>define-syntax</strong> <em>keyword transformer</em></dt>
+<dd><p>Bind <var>keyword</var> to the syntax transformer obtained by evaluating
+<var>transformer</var>.
+</p>
+<p>After a macro has been defined, further instances of <var>keyword</var> in Scheme
+source code will invoke the syntax transformer defined by <var>transformer</var>.
+</p></dd></dl>
+
+<p>One can also establish local syntactic bindings with <code>let-syntax</code>.
+</p>
+<dl>
+<dt><a name="index-let_002dsyntax"></a>Syntax: <strong>let-syntax</strong> <em>((keyword transformer) &hellip;) exp1 exp2 &hellip;</em></dt>
+<dd><p>Bind each <var>keyword</var> to its corresponding <var>transformer</var> while
+expanding <var>exp1</var> <var>exp2</var> <small class="enddots">...</small>.
+</p>
+<p>A <code>let-syntax</code> binding only exists at expansion-time. 
+</p>
+<div class="example">
+<pre class="example">(let-syntax ((unless
+              (syntax-rules ()
+                ((unless condition exp ...)
+                 (if (not condition)
+                     (begin exp ...))))))
+  (unless #t
+    (primitive-exit 1))
+  &quot;rock rock rock&quot;)
+&rArr; &quot;rock rock rock&quot;
+</pre></div>
+</dd></dl>
+
+<p>A <code>define-syntax</code> form is valid anywhere a definition may appear: at the
+top-level, or locally. Just as a local <code>define</code> expands out to an instance
+of <code>letrec</code>, a local <code>define-syntax</code> expands out to
+<code>letrec-syntax</code>.
+</p>
+<dl>
+<dt><a name="index-letrec_002dsyntax"></a>Syntax: <strong>letrec-syntax</strong> <em>((keyword transformer) &hellip;) exp1 exp2 &hellip;</em></dt>
+<dd><p>Bind each <var>keyword</var> to its corresponding <var>transformer</var> while
+expanding <var>exp1</var> <var>exp2</var> <small class="enddots">...</small>.
+</p>
+<p>In the spirit of <code>letrec</code> versus <code>let</code>, an expansion produced by
+<var>transformer</var> may reference a <var>keyword</var> bound by the
+same <var>letrec-syntax</var>.
+</p>
+<div class="example">
+<pre class="example">(letrec-syntax ((my-or
+                 (syntax-rules ()
+                   ((my-or)
+                    #t)
+                   ((my-or exp)
+                    exp)
+                   ((my-or exp rest ...)
+                    (let ((t exp))
+                      (if t
+                          t
+                          (my-or rest ...)))))))
+  (my-or #f &quot;rockaway beach&quot;))
+&rArr; &quot;rockaway beach&quot;
+</pre></div>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Syntax-Rules.html#Syntax-Rules" accesskey="n" rel="next">Syntax Rules</a>, Up: <a href="Macros.html#Macros" accesskey="u" rel="up">Macros</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Complex</title>
+
+<meta name="description" content="Guile Reference Manual: Complex">
+<meta name="keywords" content="Guile Reference Manual: Complex">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Numbers.html#Numbers" rel="up" title="Numbers">
+<link href="Arithmetic.html#Arithmetic" rel="next" title="Arithmetic">
+<link href="Conversion.html#Conversion" rel="prev" title="Conversion">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Complex"></a>
+<div class="header">
+<p>
+Next: <a href="Arithmetic.html#Arithmetic" accesskey="n" rel="next">Arithmetic</a>, Previous: <a href="Conversion.html#Conversion" accesskey="p" rel="prev">Conversion</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Complex-Number-Operations"></a>
+<h4 class="subsubsection">6.6.2.10 Complex Number Operations</h4>
+<a name="index-make_002drectangular-2"></a>
+<a name="index-make_002dpolar-2"></a>
+<a name="index-real_002dpart-2"></a>
+<a name="index-imag_002dpart-2"></a>
+<a name="index-magnitude-2"></a>
+<a name="index-angle-2"></a>
+
+<dl>
+<dt><a name="index-make_002drectangular"></a>Scheme Procedure: <strong>make-rectangular</strong> <em>real_part imaginary_part</em></dt>
+<dt><a name="index-scm_005fmake_005frectangular"></a>C Function: <strong>scm_make_rectangular</strong> <em>(real_part, imaginary_part)</em></dt>
+<dd><p>Return a complex number constructed of the given <var>real-part</var> and <var>imaginary-part</var> parts.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dpolar"></a>Scheme Procedure: <strong>make-polar</strong> <em>mag ang</em></dt>
+<dt><a name="index-scm_005fmake_005fpolar"></a>C Function: <strong>scm_make_polar</strong> <em>(mag, ang)</em></dt>
+<dd><a name="index-polar-form-1"></a>
+<p>Return the complex number <var>mag</var> * e^(i * <var>ang</var>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-real_002dpart"></a>Scheme Procedure: <strong>real-part</strong> <em>z</em></dt>
+<dt><a name="index-scm_005freal_005fpart"></a>C Function: <strong>scm_real_part</strong> <em>(z)</em></dt>
+<dd><p>Return the real part of the number <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-imag_002dpart"></a>Scheme Procedure: <strong>imag-part</strong> <em>z</em></dt>
+<dt><a name="index-scm_005fimag_005fpart"></a>C Function: <strong>scm_imag_part</strong> <em>(z)</em></dt>
+<dd><p>Return the imaginary part of the number <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-magnitude"></a>Scheme Procedure: <strong>magnitude</strong> <em>z</em></dt>
+<dt><a name="index-scm_005fmagnitude"></a>C Function: <strong>scm_magnitude</strong> <em>(z)</em></dt>
+<dd><p>Return the magnitude of the number <var>z</var>. This is the same as
+<code>abs</code> for real arguments, but also allows complex numbers.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-angle"></a>Scheme Procedure: <strong>angle</strong> <em>z</em></dt>
+<dt><a name="index-scm_005fangle"></a>C Function: <strong>scm_angle</strong> <em>(z)</em></dt>
+<dd><p>Return the angle of the complex number <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fmake_005frectangular"></a>C Function: <em>SCM</em> <strong>scm_c_make_rectangular</strong> <em>(double re, double im)</em></dt>
+<dt><a name="index-scm_005fc_005fmake_005fpolar"></a>C Function: <em>SCM</em> <strong>scm_c_make_polar</strong> <em>(double x, double y)</em></dt>
+<dd><p>Like <code>scm_make_rectangular</code> or <code>scm_make_polar</code>,
+respectively, but these functions take <code>double</code>s as their
+arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005freal_005fpart"></a>C Function: <em>double</em> <strong>scm_c_real_part</strong> <em>(z)</em></dt>
+<dt><a name="index-scm_005fc_005fimag_005fpart"></a>C Function: <em>double</em> <strong>scm_c_imag_part</strong> <em>(z)</em></dt>
+<dd><p>Returns the real or imaginary part of <var>z</var> as a <code>double</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fmagnitude"></a>C Function: <em>double</em> <strong>scm_c_magnitude</strong> <em>(z)</em></dt>
+<dt><a name="index-scm_005fc_005fangle"></a>C Function: <em>double</em> <strong>scm_c_angle</strong> <em>(z)</em></dt>
+<dd><p>Returns the magnitude or angle of <var>z</var> as a <code>double</code>.
+</p></dd></dl>
+
+
+
+
+
+</body>
+</html>

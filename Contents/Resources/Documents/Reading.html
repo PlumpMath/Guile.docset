@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Reading</title>
+
+<meta name="description" content="Guile Reference Manual: Reading">
+<meta name="keywords" content="Guile Reference Manual: Reading">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Writing.html#Writing" rel="next" title="Writing">
+<link href="Ports.html#Ports" rel="prev" title="Ports">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Reading"></a>
+<div class="header">
+<p>
+Next: <a href="Writing.html#Writing" accesskey="n" rel="next">Writing</a>, Previous: <a href="Ports.html#Ports" accesskey="p" rel="prev">Ports</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Reading-1"></a>
+<h4 class="subsection">6.14.2 Reading</h4>
+<a name="index-Reading"></a>
+
+<p>[Generic procedures for reading from ports.]
+</p>
+<p>These procedures pertain to reading characters and strings from
+ports. To read general S-expressions from ports, See <a href="Scheme-Read.html#Scheme-Read">Scheme Read</a>.
+</p>
+<a name="index-eof_002dobject_003f-3"></a>
+<a name="index-End-of-file-object"></a>
+<dl>
+<dt><a name="index-eof_002dobject_003f"></a>Scheme Procedure: <strong>eof-object?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005feof_005fobject_005fp"></a>C Function: <strong>scm_eof_object_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is an end-of-file object; otherwise
+return <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dready_003f-1"></a>
+<dl>
+<dt><a name="index-char_002dready_003f"></a>Scheme Procedure: <strong>char-ready?</strong> <em>[port]</em></dt>
+<dt><a name="index-scm_005fchar_005fready_005fp"></a>C Function: <strong>scm_char_ready_p</strong> <em>(port)</em></dt>
+<dd><p>Return <code>#t</code> if a character is ready on input <var>port</var>
+and return <code>#f</code> otherwise.  If <code>char-ready?</code> returns
+<code>#t</code> then the next <code>read-char</code> operation on
+<var>port</var> is guaranteed not to hang.  If <var>port</var> is a file
+port at end of file then <code>char-ready?</code> returns <code>#t</code>.
+</p>
+<p><code>char-ready?</code> exists to make it possible for a
+program to accept characters from interactive ports without
+getting stuck waiting for input.  Any input editors associated
+with such ports must make sure that characters whose existence
+has been asserted by <code>char-ready?</code> cannot be rubbed out.
+If <code>char-ready?</code> were to return <code>#f</code> at end of file,
+a port at end of file would be indistinguishable from an
+interactive port that has no ready characters.
+</p></dd></dl>
+
+<a name="index-read_002dchar-3"></a>
+<dl>
+<dt><a name="index-read_002dchar"></a>Scheme Procedure: <strong>read-char</strong> <em>[port]</em></dt>
+<dt><a name="index-scm_005fread_005fchar"></a>C Function: <strong>scm_read_char</strong> <em>(port)</em></dt>
+<dd><p>Return the next character available from <var>port</var>, updating
+<var>port</var> to point to the following character.  If no more
+characters are available, the end-of-file object is returned.
+</p>
+<p>When <var>port</var>&rsquo;s data cannot be decoded according to its
+character encoding, a <code>decoding-error</code> is raised and
+<var>port</var> points past the erroneous byte sequence.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fread"></a>C Function: <em>size_t</em> <strong>scm_c_read</strong> <em>(SCM port, void *buffer, size_t size)</em></dt>
+<dd><p>Read up to <var>size</var> bytes from <var>port</var> and store them in
+<var>buffer</var>.  The return value is the number of bytes actually read,
+which can be less than <var>size</var> if end-of-file has been reached.
+</p>
+<p>Note that this function does not update <code>port-line</code> and
+<code>port-column</code> below.
+</p></dd></dl>
+
+<a name="index-peek_002dchar-3"></a>
+<dl>
+<dt><a name="index-peek_002dchar"></a>Scheme Procedure: <strong>peek-char</strong> <em>[port]</em></dt>
+<dt><a name="index-scm_005fpeek_005fchar"></a>C Function: <strong>scm_peek_char</strong> <em>(port)</em></dt>
+<dd><p>Return the next character available from <var>port</var>,
+<em>without</em> updating <var>port</var> to point to the following
+character.  If no more characters are available, the
+end-of-file object is returned.
+</p>
+<p>The value returned by
+a call to <code>peek-char</code> is the same as the value that would
+have been returned by a call to <code>read-char</code> on the same
+port.  The only difference is that the very next call to
+<code>read-char</code> or <code>peek-char</code> on that <var>port</var> will
+return the value returned by the preceding call to
+<code>peek-char</code>.  In particular, a call to <code>peek-char</code> on
+an interactive port will hang waiting for input whenever a call
+to <code>read-char</code> would have hung.
+</p>
+<p>As for <code>read-char</code>, a <code>decoding-error</code> may be raised
+if such a situation occurs.  However, unlike with <code>read-char</code>,
+<var>port</var> still points at the beginning of the erroneous byte
+sequence when the error is raised.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unread_002dchar"></a>Scheme Procedure: <strong>unread-char</strong> <em>cobj [port]</em></dt>
+<dt><a name="index-scm_005funread_005fchar"></a>C Function: <strong>scm_unread_char</strong> <em>(cobj, port)</em></dt>
+<dd><p>Place character <var>cobj</var> in <var>port</var> so that it will be read by the
+next read operation.  If called multiple times, the unread characters
+will be read again in last-in first-out order.  If <var>port</var> is
+not supplied, the current input port is used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unread_002dstring"></a>Scheme Procedure: <strong>unread-string</strong> <em>str port</em></dt>
+<dt><a name="index-scm_005funread_005fstring"></a>C Function: <strong>scm_unread_string</strong> <em>(str, port)</em></dt>
+<dd><p>Place the string <var>str</var> in <var>port</var> so that its characters will
+be read from left-to-right as the next characters from <var>port</var>
+during subsequent read operations.  If called multiple times, the
+unread characters will be read again in last-in first-out order.  If
+<var>port</var> is not supplied, the <code>current-input-port</code> is used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-drain_002dinput"></a>Scheme Procedure: <strong>drain-input</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fdrain_005finput"></a>C Function: <strong>scm_drain_input</strong> <em>(port)</em></dt>
+<dd><p>This procedure clears a port&rsquo;s input buffers, similar
+to the way that force-output clears the output buffer.  The
+contents of the buffers are returned as a single string, e.g.,
+</p>
+<div class="lisp">
+<pre class="lisp">(define p (open-input-file ...))
+(drain-input p) =&gt; empty string, nothing buffered yet.
+(unread-char (read-char p) p)
+(drain-input p) =&gt; initial chars from p, up to the buffer size.
+</pre></div>
+
+<p>Draining the buffers may be useful for cleanly finishing
+buffered I/O so that the file descriptor can be used directly
+for further input.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002dcolumn"></a>Scheme Procedure: <strong>port-column</strong> <em>port</em></dt>
+<dt><a name="index-port_002dline"></a>Scheme Procedure: <strong>port-line</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fport_005fcolumn"></a>C Function: <strong>scm_port_column</strong> <em>(port)</em></dt>
+<dt><a name="index-scm_005fport_005fline"></a>C Function: <strong>scm_port_line</strong> <em>(port)</em></dt>
+<dd><p>Return the current column number or line number of <var>port</var>.
+If the number is
+unknown, the result is #f.  Otherwise, the result is a 0-origin integer
+- i.e. the first character of the first line is line 0, column 0.
+(However, when you display a file position, for example in an error
+message, we recommend you add 1 to get 1-origin integers.  This is
+because lines and column numbers traditionally start with 1, and that is
+what non-programmers will find most natural.)
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dport_002dcolumn_0021"></a>Scheme Procedure: <strong>set-port-column!</strong> <em>port column</em></dt>
+<dt><a name="index-set_002dport_002dline_0021"></a>Scheme Procedure: <strong>set-port-line!</strong> <em>port line</em></dt>
+<dt><a name="index-scm_005fset_005fport_005fcolumn_005fx"></a>C Function: <strong>scm_set_port_column_x</strong> <em>(port, column)</em></dt>
+<dt><a name="index-scm_005fset_005fport_005fline_005fx"></a>C Function: <strong>scm_set_port_line_x</strong> <em>(port, line)</em></dt>
+<dd><p>Set the current column or line number of <var>port</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Writing.html#Writing" accesskey="n" rel="next">Writing</a>, Previous: <a href="Ports.html#Ports" accesskey="p" rel="prev">Ports</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

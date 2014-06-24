@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Writing</title>
+
+<meta name="description" content="Guile Reference Manual: Writing">
+<meta name="keywords" content="Guile Reference Manual: Writing">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Closing.html#Closing" rel="next" title="Closing">
+<link href="Reading.html#Reading" rel="prev" title="Reading">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Writing"></a>
+<div class="header">
+<p>
+Next: <a href="Closing.html#Closing" accesskey="n" rel="next">Closing</a>, Previous: <a href="Reading.html#Reading" accesskey="p" rel="prev">Reading</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Writing-1"></a>
+<h4 class="subsection">6.14.3 Writing</h4>
+<a name="index-Writing"></a>
+
+<p>[Generic procedures for writing to ports.]
+</p>
+<p>These procedures are for writing characters and strings to
+ports. For more information on writing arbitrary Scheme objects to
+ports, See <a href="Scheme-Write.html#Scheme-Write">Scheme Write</a>.
+</p>
+<dl>
+<dt><a name="index-get_002dprint_002dstate"></a>Scheme Procedure: <strong>get-print-state</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fget_005fprint_005fstate"></a>C Function: <strong>scm_get_print_state</strong> <em>(port)</em></dt>
+<dd><p>Return the print state of the port <var>port</var>.  If <var>port</var>
+has no associated print state, <code>#f</code> is returned.
+</p></dd></dl>
+
+<a name="index-newline-3"></a>
+<dl>
+<dt><a name="index-newline"></a>Scheme Procedure: <strong>newline</strong> <em>[port]</em></dt>
+<dt><a name="index-scm_005fnewline"></a>C Function: <strong>scm_newline</strong> <em>(port)</em></dt>
+<dd><p>Send a newline to <var>port</var>.
+If <var>port</var> is omitted, send to the current output port.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002dwith_002dprint_002dstate"></a>Scheme Procedure: <strong>port-with-print-state</strong> <em>port [pstate]</em></dt>
+<dt><a name="index-scm_005fport_005fwith_005fprint_005fstate"></a>C Function: <strong>scm_port_with_print_state</strong> <em>(port, pstate)</em></dt>
+<dd><p>Create a new port which behaves like <var>port</var>, but with an
+included print state <var>pstate</var>.  <var>pstate</var> is optional.
+If <var>pstate</var> isn&rsquo;t supplied and <var>port</var> already has
+a print state, the old print state is reused.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-simple_002dformat"></a>Scheme Procedure: <strong>simple-format</strong> <em>destination message . args</em></dt>
+<dt><a name="index-scm_005fsimple_005fformat"></a>C Function: <strong>scm_simple_format</strong> <em>(destination, message, args)</em></dt>
+<dd><p>Write <var>message</var> to <var>destination</var>, defaulting to
+the current output port.
+<var>message</var> can contain <code>~A</code> (was <code>%s</code>) and
+<code>~S</code> (was <code>%S</code>) escapes.  When printed,
+the escapes are replaced with corresponding members of
+<var>args</var>:
+<code>~A</code> formats using <code>display</code> and <code>~S</code> formats
+using <code>write</code>.
+If <var>destination</var> is <code>#t</code>, then use the current output
+port, if <var>destination</var> is <code>#f</code>, then return a string
+containing the formatted text. Does not add a trailing newline.
+</p></dd></dl>
+
+<a name="index-write_002dchar-3"></a>
+<dl>
+<dt><a name="index-write_002dchar"></a>Scheme Procedure: <strong>write-char</strong> <em>chr [port]</em></dt>
+<dt><a name="index-scm_005fwrite_005fchar"></a>C Function: <strong>scm_write_char</strong> <em>(chr, port)</em></dt>
+<dd><p>Send character <var>chr</var> to <var>port</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fwrite"></a>C Function: <em>void</em> <strong>scm_c_write</strong> <em>(SCM port, const void *buffer, size_t size)</em></dt>
+<dd><p>Write <var>size</var> bytes at <var>buffer</var> to <var>port</var>.
+</p>
+<p>Note that this function does not update <code>port-line</code> and
+<code>port-column</code> (see <a href="Reading.html#Reading">Reading</a>).
+</p></dd></dl>
+
+<a name="index-fflush"></a>
+<dl>
+<dt><a name="index-force_002doutput"></a>Scheme Procedure: <strong>force-output</strong> <em>[port]</em></dt>
+<dt><a name="index-scm_005fforce_005foutput"></a>C Function: <strong>scm_force_output</strong> <em>(port)</em></dt>
+<dd><p>Flush the specified output port, or the current output port if <var>port</var>
+is omitted.  The current output buffer contents are passed to the
+underlying port implementation (e.g., in the case of fports, the
+data will be written to the file and the output buffer will be cleared.)
+It has no effect on an unbuffered port.
+</p>
+<p>The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-flush_002dall_002dports"></a>Scheme Procedure: <strong>flush-all-ports</strong></dt>
+<dt><a name="index-scm_005fflush_005fall_005fports"></a>C Function: <strong>scm_flush_all_ports</strong> <em>()</em></dt>
+<dd><p>Equivalent to calling <code>force-output</code> on
+all open output ports.  The return value is unspecified.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Closing.html#Closing" accesskey="n" rel="next">Closing</a>, Previous: <a href="Reading.html#Reading" accesskey="p" rel="prev">Reading</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

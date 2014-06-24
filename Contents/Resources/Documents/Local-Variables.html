@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Local Variables</title>
+
+<meta name="description" content="Guile Reference Manual: Local Variables">
+<meta name="keywords" content="Guile Reference Manual: Local Variables">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="About-Closure.html#About-Closure" rel="up" title="About Closure">
+<link href="Chaining.html#Chaining" rel="next" title="Chaining">
+<link href="About-Environments.html#About-Environments" rel="prev" title="About Environments">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Local-Variables"></a>
+<div class="header">
+<p>
+Next: <a href="Chaining.html#Chaining" accesskey="n" rel="next">Chaining</a>, Previous: <a href="About-Environments.html#About-Environments" accesskey="p" rel="prev">About Environments</a>, Up: <a href="About-Closure.html#About-Closure" accesskey="u" rel="up">About Closure</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Local-Variables-and-Environments"></a>
+<h4 class="subsection">3.4.2 Local Variables and Environments</h4>
+
+<a name="index-local-variable"></a>
+<a name="index-variable_002c-local"></a>
+<a name="index-local-environment"></a>
+<a name="index-environment_002c-local"></a>
+
+<p>We have seen how to create top level variables using the <code>define</code>
+syntax (see <a href="Definition.html#Definition">Definition</a>).  It is often useful to create variables
+that are more limited in their scope, typically as part of a procedure
+body.  In Scheme, this is done using the <code>let</code> syntax, or one of
+its modified forms <code>let*</code> and <code>letrec</code>.  These syntaxes are
+described in full later in the manual (see <a href="Local-Bindings.html#Local-Bindings">Local Bindings</a>).  Here
+our purpose is to illustrate their use just enough that we can see how
+local variables work.
+</p>
+<p>For example, the following code uses a local variable <code>s</code> to
+simplify the computation of the area of a triangle given the lengths of
+its three sides.
+</p>
+<div class="lisp">
+<pre class="lisp">(define a 5.3)
+(define b 4.7)
+(define c 2.8)
+
+(define area
+  (let ((s (/ (+ a b c) 2)))
+    (sqrt (* s (- s a) (- s b) (- s c)))))
+</pre></div>
+
+<p>The effect of the <code>let</code> expression is to create a new environment
+and, within this environment, an association between the name <code>s</code>
+and a new location whose initial value is obtained by evaluating
+<code>(/ (+ a b c) 2)</code>.  The expressions in the body of the <code>let</code>,
+namely <code>(sqrt (* s (- s a) (- s b) (- s c)))</code>, are then evaluated
+in the context of the new environment, and the value of the last
+expression evaluated becomes the value of the whole <code>let</code>
+expression, and therefore the value of the variable <code>area</code>.
+</p>
+
+
+
+
+</body>
+</html>

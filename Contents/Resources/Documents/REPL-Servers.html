@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: REPL Servers</title>
+
+<meta name="description" content="Guile Reference Manual: REPL Servers">
+<meta name="keywords" content="Guile Reference Manual: REPL Servers">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" rel="up" title="Read/Load/Eval/Compile">
+<link href="Cooperative-REPL-Servers.html#Cooperative-REPL-Servers" rel="next" title="Cooperative REPL Servers">
+<link href="Local-Inclusion.html#Local-Inclusion" rel="prev" title="Local Inclusion">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="REPL-Servers"></a>
+<div class="header">
+<p>
+Next: <a href="Cooperative-REPL-Servers.html#Cooperative-REPL-Servers" accesskey="n" rel="next">Cooperative REPL Servers</a>, Previous: <a href="Local-Inclusion.html#Local-Inclusion" accesskey="p" rel="prev">Local Inclusion</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="REPL-Servers-1"></a>
+<h4 class="subsection">6.17.12 REPL Servers</h4>
+
+<a name="index-REPL-server"></a>
+
+<p>The procedures in this section are provided by
+</p><div class="lisp">
+<pre class="lisp">(use-modules (system repl server))
+</pre></div>
+
+<p>When an application is written in Guile, it is often convenient to
+allow the user to be able to interact with it by evaluating Scheme
+expressions in a REPL.
+</p>
+<p>The procedures of this module allow you to spawn a <em>REPL server</em>,
+which permits interaction over a local or TCP connection.  Guile itself
+uses them internally to implement the <samp>--listen</samp> switch,
+<a href="Command_002dline-Options.html#Command_002dline-Options">Command-line Options</a>.
+</p>
+<dl>
+<dt><a name="index-make_002dtcp_002dserver_002dsocket"></a>Scheme Procedure: <strong>make-tcp-server-socket</strong> <em>[#:host=#f]                           [#:addr] [#:port=37146]</em></dt>
+<dd><p>Return a stream socket bound to a given address <var>addr</var> and port
+number <var>port</var>. If the <var>host</var> is given, and <var>addr</var> is not,
+then the <var>host</var> string is converted to an address.  If neither is
+given, we use the loopback address.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dunix_002ddomain_002dserver_002dsocket"></a>Scheme Procedure: <strong>make-unix-domain-server-socket</strong> <em>[#:path=&quot;/tmp/guile-socket&quot;]</em></dt>
+<dd><p>Return a UNIX domain socket, bound to a given <var>path</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-run_002dserver"></a>Scheme Procedure: <strong>run-server</strong> <em>[server-socket]</em></dt>
+<dt><a name="index-spawn_002dserver"></a>Scheme Procedure: <strong>spawn-server</strong> <em>[server-socket]</em></dt>
+<dd><p>Create and run a REPL, making it available over the given
+<var>server-socket</var>.  If <var>server-socket</var> is not provided, it
+defaults to the socket created by calling <code>make-tcp-server-socket</code>
+with no arguments.
+</p>
+<p><code>run-server</code> runs the server in the current thread, whereas
+<code>spawn-server</code> runs the server in a new thread.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stop_002dserver_002dand_002dclients_0021"></a>Scheme Procedure: <strong>stop-server-and-clients!</strong></dt>
+<dd><p>Closes the connection on all running server sockets.
+</p>
+<p>Please note that in the current implementation, the REPL threads are
+cancelled without unwinding their stacks.  If any of them are holding
+mutexes or are within a critical section, the results are unspecified.
+</p></dd></dl>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Fluids and Dynamic States</title>
+
+<meta name="description" content="Guile Reference Manual: Fluids and Dynamic States">
+<meta name="keywords" content="Guile Reference Manual: Fluids and Dynamic States">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Scheduling.html#Scheduling" rel="up" title="Scheduling">
+<link href="Parameters.html#Parameters" rel="next" title="Parameters">
+<link href="Critical-Sections.html#Critical-Sections" rel="prev" title="Critical Sections">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Fluids-and-Dynamic-States"></a>
+<div class="header">
+<p>
+Next: <a href="Parameters.html#Parameters" accesskey="n" rel="next">Parameters</a>, Previous: <a href="Critical-Sections.html#Critical-Sections" accesskey="p" rel="prev">Critical Sections</a>, Up: <a href="Scheduling.html#Scheduling" accesskey="u" rel="up">Scheduling</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Fluids-and-Dynamic-States-1"></a>
+<h4 class="subsection">6.21.7 Fluids and Dynamic States</h4>
+
+<a name="index-fluids"></a>
+
+<p>A <em>fluid</em> is an object that can store one value per <em>dynamic
+state</em>.  Each thread has a current dynamic state, and when accessing a
+fluid, this current dynamic state is used to provide the actual value.
+In this way, fluids can be used for thread local storage, but they are
+in fact more flexible: dynamic states are objects of their own and can
+be made current for more than one thread at the same time, or only be
+made current temporarily, for example.
+</p>
+<p>Fluids can also be used to simulate the desirable effects of
+dynamically scoped variables.  Dynamically scoped variables are useful
+when you want to set a variable to a value during some dynamic extent
+in the execution of your program and have them revert to their
+original value when the control flow is outside of this dynamic
+extent.  See the description of <code>with-fluids</code> below for details.
+</p>
+<p>New fluids are created with <code>make-fluid</code> and <code>fluid?</code> is
+used for testing whether an object is actually a fluid.  The values
+stored in a fluid can be accessed with <code>fluid-ref</code> and
+<code>fluid-set!</code>.
+</p>
+<dl>
+<dt><a name="index-make_002dfluid"></a>Scheme Procedure: <strong>make-fluid</strong> <em>[dflt]</em></dt>
+<dt><a name="index-scm_005fmake_005ffluid"></a>C Function: <strong>scm_make_fluid</strong> <em>()</em></dt>
+<dt><a name="index-scm_005fmake_005ffluid_005fwith_005fdefault"></a>C Function: <strong>scm_make_fluid_with_default</strong> <em>(dflt)</em></dt>
+<dd><p>Return a newly created fluid, whose initial value is <var>dflt</var>, or
+<code>#f</code> if <var>dflt</var> is not given.
+Fluids are objects that can hold one
+value per dynamic state.  That is, modifications to this value are
+only visible to code that executes with the same dynamic state as
+the modifying code.  When a new dynamic state is constructed, it
+inherits the values from its parent.  Because each thread normally executes
+with its own dynamic state, you can use fluids for thread local storage.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dunbound_002dfluid"></a>Scheme Procedure: <strong>make-unbound-fluid</strong></dt>
+<dt><a name="index-scm_005fmake_005funbound_005ffluid"></a>C Function: <strong>scm_make_unbound_fluid</strong> <em>()</em></dt>
+<dd><p>Return a new fluid that is initially unbound (instead of being
+implicitly bound to some definite value).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fluid_003f"></a>Scheme Procedure: <strong>fluid?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005ffluid_005fp"></a>C Function: <strong>scm_fluid_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a fluid; otherwise, return
+<code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fluid_002dref"></a>Scheme Procedure: <strong>fluid-ref</strong> <em>fluid</em></dt>
+<dt><a name="index-scm_005ffluid_005fref"></a>C Function: <strong>scm_fluid_ref</strong> <em>(fluid)</em></dt>
+<dd><p>Return the value associated with <var>fluid</var> in the current
+dynamic root.  If <var>fluid</var> has not been set, then return
+its default value. Calling <code>fluid-ref</code> on an unbound fluid produces
+a runtime error.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fluid_002dset_0021"></a>Scheme Procedure: <strong>fluid-set!</strong> <em>fluid value</em></dt>
+<dt><a name="index-scm_005ffluid_005fset_005fx"></a>C Function: <strong>scm_fluid_set_x</strong> <em>(fluid, value)</em></dt>
+<dd><p>Set the value associated with <var>fluid</var> in the current dynamic root.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fluid_002dunset_0021"></a>Scheme Procedure: <strong>fluid-unset!</strong> <em>fluid</em></dt>
+<dt><a name="index-scm_005ffluid_005funset_005fx"></a>C Function: <strong>scm_fluid_unset_x</strong> <em>(fluid)</em></dt>
+<dd><p>Disassociate the given fluid from any value, making it unbound.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fluid_002dbound_003f"></a>Scheme Procedure: <strong>fluid-bound?</strong> <em>fluid</em></dt>
+<dt><a name="index-scm_005ffluid_005fbound_005fp"></a>C Function: <strong>scm_fluid_bound_p</strong> <em>(fluid)</em></dt>
+<dd><p>Returns <code>#t</code> if the given fluid is bound to a value, otherwise
+<code>#f</code>.
+</p></dd></dl>
+
+<p><code>with-fluids*</code> temporarily changes the values of one or more fluids,
+so that the given procedure and each procedure called by it access the
+given values.  After the procedure returns, the old values are restored.
+</p>
+<dl>
+<dt><a name="index-with_002dfluid_002a"></a>Scheme Procedure: <strong>with-fluid*</strong> <em>fluid value thunk</em></dt>
+<dt><a name="index-scm_005fwith_005ffluid"></a>C Function: <strong>scm_with_fluid</strong> <em>(fluid, value, thunk)</em></dt>
+<dd><p>Set <var>fluid</var> to <var>value</var> temporarily, and call <var>thunk</var>.
+<var>thunk</var> must be a procedure with no argument.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-with_002dfluids_002a"></a>Scheme Procedure: <strong>with-fluids*</strong> <em>fluids values thunk</em></dt>
+<dt><a name="index-scm_005fwith_005ffluids"></a>C Function: <strong>scm_with_fluids</strong> <em>(fluids, values, thunk)</em></dt>
+<dd><p>Set <var>fluids</var> to <var>values</var> temporary, and call <var>thunk</var>.
+<var>fluids</var> must be a list of fluids and <var>values</var> must be the
+same number of their values to be applied.  Each substitution is done
+in the order given.  <var>thunk</var> must be a procedure with no argument.
+It is called inside a <code>dynamic-wind</code> and the fluids are
+set/restored when control enter or leaves the established dynamic
+extent.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-with_002dfluids"></a>Scheme Macro: <strong>with-fluids</strong> <em>((fluid value) &hellip;) body1 body2 &hellip;</em></dt>
+<dd><p>Execute body <var>body1</var> <var>body2</var> &hellip;  while each <var>fluid</var> is
+set to the corresponding <var>value</var>.  Both <var>fluid</var> and <var>value</var>
+are evaluated and <var>fluid</var> must yield a fluid.  The body is executed
+inside a <code>dynamic-wind</code> and the fluids are set/restored when
+control enter or leaves the established dynamic extent.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fwith_005ffluids"></a>C Function: <em>SCM</em> <strong>scm_c_with_fluids</strong> <em>(SCM fluids, SCM vals, SCM (*cproc)(void *), void *data)</em></dt>
+<dt><a name="index-scm_005fc_005fwith_005ffluid"></a>C Function: <em>SCM</em> <strong>scm_c_with_fluid</strong> <em>(SCM fluid, SCM val, SCM (*cproc)(void *), void *data)</em></dt>
+<dd><p>The function <code>scm_c_with_fluids</code> is like <code>scm_with_fluids</code>
+except that it takes a C function to call instead of a Scheme thunk.
+</p>
+<p>The function <code>scm_c_with_fluid</code> is similar but only allows one
+fluid to be set instead of a list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fdynwind_005ffluid"></a>C Function: <em>void</em> <strong>scm_dynwind_fluid</strong> <em>(SCM fluid, SCM val)</em></dt>
+<dd><p>This function must be used inside a pair of calls to
+<code>scm_dynwind_begin</code> and <code>scm_dynwind_end</code> (see <a href="Dynamic-Wind.html#Dynamic-Wind">Dynamic Wind</a>).  During the dynwind context, the fluid <var>fluid</var> is set to
+<var>val</var>.
+</p>
+<p>More precisely, the value of the fluid is swapped with a &lsquo;backup&rsquo;
+value whenever the dynwind context is entered or left.  The backup
+value is initialized with the <var>val</var> argument.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002ddynamic_002dstate"></a>Scheme Procedure: <strong>make-dynamic-state</strong> <em>[parent]</em></dt>
+<dt><a name="index-scm_005fmake_005fdynamic_005fstate"></a>C Function: <strong>scm_make_dynamic_state</strong> <em>(parent)</em></dt>
+<dd><p>Return a copy of the dynamic state object <var>parent</var>
+or of the current dynamic state when <var>parent</var> is omitted.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dynamic_002dstate_003f"></a>Scheme Procedure: <strong>dynamic-state?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fdynamic_005fstate_005fp"></a>C Function: <strong>scm_dynamic_state_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a dynamic state object;
+return <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005fdynamic_005fstate"></a>C Procedure: <em>int</em> <strong>scm_is_dynamic_state</strong> <em>(SCM obj)</em></dt>
+<dd><p>Return non-zero if <var>obj</var> is a dynamic state object;
+return zero otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-current_002ddynamic_002dstate"></a>Scheme Procedure: <strong>current-dynamic-state</strong></dt>
+<dt><a name="index-scm_005fcurrent_005fdynamic_005fstate"></a>C Function: <strong>scm_current_dynamic_state</strong> <em>()</em></dt>
+<dd><p>Return the current dynamic state object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dcurrent_002ddynamic_002dstate"></a>Scheme Procedure: <strong>set-current-dynamic-state</strong> <em>state</em></dt>
+<dt><a name="index-scm_005fset_005fcurrent_005fdynamic_005fstate"></a>C Function: <strong>scm_set_current_dynamic_state</strong> <em>(state)</em></dt>
+<dd><p>Set the current dynamic state object to <var>state</var>
+and return the previous current dynamic state object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-with_002ddynamic_002dstate"></a>Scheme Procedure: <strong>with-dynamic-state</strong> <em>state proc</em></dt>
+<dt><a name="index-scm_005fwith_005fdynamic_005fstate"></a>C Function: <strong>scm_with_dynamic_state</strong> <em>(state, proc)</em></dt>
+<dd><p>Call <var>proc</var> while <var>state</var> is the current dynamic
+state object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fdynwind_005fcurrent_005fdynamic_005fstate"></a>C Procedure: <em>void</em> <strong>scm_dynwind_current_dynamic_state</strong> <em>(SCM state)</em></dt>
+<dd><p>Set the current dynamic state to <var>state</var> for the current dynwind
+context.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fwith_005fdynamic_005fstate"></a>C Procedure: <em>void *</em> <strong>scm_c_with_dynamic_state</strong> <em>(SCM state, void *(*func)(void *), void *data)</em></dt>
+<dd><p>Like <code>scm_with_dynamic_state</code>, but call <var>func</var> with
+<var>data</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Parameters.html#Parameters" accesskey="n" rel="next">Parameters</a>, Previous: <a href="Critical-Sections.html#Critical-Sections" accesskey="p" rel="prev">Critical Sections</a>, Up: <a href="Scheduling.html#Scheduling" accesskey="u" rel="up">Scheduling</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

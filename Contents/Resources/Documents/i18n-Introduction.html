@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: i18n Introduction</title>
+
+<meta name="description" content="Guile Reference Manual: i18n Introduction">
+<meta name="keywords" content="Guile Reference Manual: i18n Introduction">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Internationalization.html#Internationalization" rel="up" title="Internationalization">
+<link href="Text-Collation.html#Text-Collation" rel="next" title="Text Collation">
+<link href="Internationalization.html#Internationalization" rel="prev" title="Internationalization">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="i18n-Introduction"></a>
+<div class="header">
+<p>
+Next: <a href="Text-Collation.html#Text-Collation" accesskey="n" rel="next">Text Collation</a>, Previous: <a href="Internationalization.html#Internationalization" accesskey="p" rel="prev">Internationalization</a>, Up: <a href="Internationalization.html#Internationalization" accesskey="u" rel="up">Internationalization</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Internationalization-with-Guile"></a>
+<h4 class="subsection">6.24.1 Internationalization with Guile</h4>
+
+<p>In order to make use of the functions described thereafter, the
+<code>(ice-9 i18n)</code> module must be imported in the usual way:
+</p>
+<div class="example">
+<pre class="example">(use-modules (ice-9 i18n))
+</pre></div>
+
+<a name="index-cultural-conventions"></a>
+
+<p>The <code>(ice-9 i18n)</code> module provides procedures to manipulate text
+and other data in a way that conforms to the cultural conventions
+chosen by the user.  Each region of the world or language has its own
+customs to, for instance, represent real numbers, classify characters,
+collate text, etc.  All these aspects comprise the so-called
+&ldquo;cultural conventions&rdquo; of that region or language.
+</p>
+<a name="index-locale-1"></a>
+<a name="index-locale-category"></a>
+
+<p>Computer systems typically refer to a set of cultural conventions as a
+<em>locale</em>.  For each particular aspect that comprise those cultural
+conventions, a <em>locale category</em> is defined.  For instance, the
+way characters are classified is defined by the <code>LC_CTYPE</code>
+category, while the language in which program messages are issued to
+the user is defined by the <code>LC_MESSAGES</code> category
+(see <a href="Locales.html#Locales">General Locale Information</a> for details).
+</p>
+<a name="index-locale-object"></a>
+
+<p>The procedures provided by this module allow the development of
+programs that adapt automatically to any locale setting.  As we will
+see later, many of these procedures can optionally take a <em>locale
+object</em> argument.  This additional argument defines the locale
+settings that must be followed by the invoked procedure.  When it is
+omitted, then the current locale settings of the process are followed
+(see <a href="Locales.html#Locales"><code>setlocale</code></a>).
+</p>
+<p>The following procedures allow the manipulation of such locale
+objects.
+</p>
+<dl>
+<dt><a name="index-make_002dlocale"></a>Scheme Procedure: <strong>make-locale</strong> <em>category-list locale-name [base-locale]</em></dt>
+<dt><a name="index-scm_005fmake_005flocale"></a>C Function: <strong>scm_make_locale</strong> <em>(category_list, locale_name, base_locale)</em></dt>
+<dd><p>Return a reference to a data structure representing a set of locale
+datasets.  <var>locale-name</var> should be a string denoting a particular
+locale (e.g., <code>&quot;aa_DJ&quot;</code>) and <var>category-list</var> should be either
+a list of locale categories or a single category as used with
+<code>setlocale</code> (see <a href="Locales.html#Locales"><code>setlocale</code></a>).  Optionally, if
+<code>base-locale</code> is passed, it should be a locale object denoting
+settings for categories not listed in <var>category-list</var>.
+</p>
+<p>The following invocation creates a locale object that combines the use
+of Swedish for messages and character classification with the
+default settings for the other categories (i.e., the settings of the
+default <code>C</code> locale which usually represents conventions in use in
+the USA):
+</p>
+<div class="example">
+<pre class="example">(make-locale (list LC_MESSAGES LC_CTYPE) &quot;sv_SE&quot;)
+</pre></div>
+
+<p>The following example combines the use of Esperanto messages and
+conventions with monetary conventions from Croatia:
+</p>
+<div class="example">
+<pre class="example">(make-locale LC_MONETARY &quot;hr_HR&quot;
+             (make-locale LC_ALL &quot;eo_EO&quot;))
+</pre></div>
+
+<p>A <code>system-error</code> exception (see <a href="Handling-Errors.html#Handling-Errors">Handling Errors</a>) is raised by
+<code>make-locale</code> when <var>locale-name</var> does not match any of the
+locales compiled on the system.  Note that on non-GNU systems, this
+error may be raised later, when the locale object is actually used.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-locale_003f"></a>Scheme Procedure: <strong>locale?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005flocale_005fp"></a>C Function: <strong>scm_locale_p</strong> <em>(obj)</em></dt>
+<dd><p>Return true if <var>obj</var> is a locale object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0025global_002dlocale"></a>Scheme Variable: <strong>%global-locale</strong></dt>
+<dt><a name="index-scm_005fglobal_005flocale"></a>C Variable: <strong>scm_global_locale</strong></dt>
+<dd><p>This variable is bound to a locale object denoting the current process
+locale as installed using <code>setlocale ()</code> (see <a href="Locales.html#Locales">Locales</a>).  It
+may be used like any other locale object, including as a third
+argument to <code>make-locale</code>, for instance.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Text-Collation.html#Text-Collation" accesskey="n" rel="next">Text Collation</a>, Previous: <a href="Internationalization.html#Internationalization" accesskey="p" rel="prev">Internationalization</a>, Up: <a href="Internationalization.html#Internationalization" accesskey="u" rel="up">Internationalization</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

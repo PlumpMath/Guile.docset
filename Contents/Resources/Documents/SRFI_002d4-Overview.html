@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-4 Overview</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-4 Overview">
+<meta name="keywords" content="Guile Reference Manual: SRFI-4 Overview">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d4.html#SRFI_002d4" rel="up" title="SRFI-4">
+<link href="SRFI_002d4-API.html#SRFI_002d4-API" rel="next" title="SRFI-4 API">
+<link href="SRFI_002d4.html#SRFI_002d4" rel="prev" title="SRFI-4">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d4-Overview"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d4-API.html#SRFI_002d4-API" accesskey="n" rel="next">SRFI-4 API</a>, Up: <a href="SRFI_002d4.html#SRFI_002d4" accesskey="u" rel="up">SRFI-4</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d4-_002d-Overview"></a>
+<h4 class="subsubsection">7.5.5.1 SRFI-4 - Overview</h4>
+
+<p>Uniform numeric vectors can be useful since they consume less memory
+than the non-uniform, general vectors.  Also, since the types they can
+store correspond directly to C types, it is easier to work with them
+efficiently on a low level.  Consider image processing as an example,
+where you want to apply a filter to some image.  While you could store
+the pixels of an image in a general vector and write a general
+convolution function, things are much more efficient with uniform
+vectors: the convolution function knows that all pixels are unsigned
+8-bit values (say), and can use a very tight inner loop.
+</p>
+<p>This is implemented in Scheme by having the compiler notice calls to the SRFI-4
+accessors, and inline them to appropriate compiled code. From C you have access
+to the raw array; functions for efficiently working with uniform numeric vectors
+from C are listed at the end of this section.
+</p>
+<p>Uniform numeric vectors are the special case of one dimensional uniform
+numeric arrays.
+</p>
+<p>There are 12 standard kinds of uniform numeric vectors, and they all have their
+own complement of constructors, accessors, and so on. Procedures that operate on
+a specific kind of uniform numeric vector have a &ldquo;tag&rdquo; in their name,
+indicating the element type.
+</p>
+<dl compact="compact">
+<dt><code>u8</code></dt>
+<dd><p>unsigned 8-bit integers
+</p>
+</dd>
+<dt><code>s8</code></dt>
+<dd><p>signed 8-bit integers
+</p>
+</dd>
+<dt><code>u16</code></dt>
+<dd><p>unsigned 16-bit integers
+</p>
+</dd>
+<dt><code>s16</code></dt>
+<dd><p>signed 16-bit integers
+</p>
+</dd>
+<dt><code>u32</code></dt>
+<dd><p>unsigned 32-bit integers
+</p>
+</dd>
+<dt><code>s32</code></dt>
+<dd><p>signed 32-bit integers
+</p>
+</dd>
+<dt><code>u64</code></dt>
+<dd><p>unsigned 64-bit integers
+</p>
+</dd>
+<dt><code>s64</code></dt>
+<dd><p>signed 64-bit integers
+</p>
+</dd>
+<dt><code>f32</code></dt>
+<dd><p>the C type <code>float</code>
+</p>
+</dd>
+<dt><code>f64</code></dt>
+<dd><p>the C type <code>double</code>
+</p>
+</dd>
+</dl>
+
+<p>In addition, Guile supports uniform arrays of complex numbers, with the
+nonstandard tags:
+</p>
+<dl compact="compact">
+<dt><code>c32</code></dt>
+<dd><p>complex numbers in rectangular form with the real and imaginary part
+being a <code>float</code>
+</p>
+</dd>
+<dt><code>c64</code></dt>
+<dd><p>complex numbers in rectangular form with the real and imaginary part
+being a <code>double</code>
+</p>
+</dd>
+</dl>
+
+<p>The external representation (ie. read syntax) for these vectors is
+similar to normal Scheme vectors, but with an additional tag from the
+tables above indicating the vector&rsquo;s type.  For example,
+</p>
+<div class="lisp">
+<pre class="lisp">#u16(1 2 3)
+#f64(3.1415 2.71)
+</pre></div>
+
+<p>Note that the read syntax for floating-point here conflicts with
+<code>#f</code> for false.  In Standard Scheme one can write <code>(1 #f3)</code>
+for a three element list <code>(1 #f 3)</code>, but for Guile <code>(1 #f3)</code>
+is invalid.  <code>(1 #f 3)</code> is almost certainly what one should write
+anyway to make the intention clear, so this is rarely a problem.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d4-API.html#SRFI_002d4-API" accesskey="n" rel="next">SRFI-4 API</a>, Up: <a href="SRFI_002d4.html#SRFI_002d4" accesskey="u" rel="up">SRFI-4</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

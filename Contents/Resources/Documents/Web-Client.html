@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Web Client</title>
+
+<meta name="description" content="Guile Reference Manual: Web Client">
+<meta name="keywords" content="Guile Reference Manual: Web Client">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Web.html#Web" rel="up" title="Web">
+<link href="Web-Server.html#Web-Server" rel="next" title="Web Server">
+<link href="Responses.html#Responses" rel="prev" title="Responses">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Web-Client"></a>
+<div class="header">
+<p>
+Next: <a href="Web-Server.html#Web-Server" accesskey="n" rel="next">Web Server</a>, Previous: <a href="Responses.html#Responses" accesskey="p" rel="prev">Responses</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Web-Client-1"></a>
+<h4 class="subsection">7.3.8 Web Client</h4>
+
+<p><code>(web client)</code> provides a simple, synchronous HTTP client, built on
+the lower-level HTTP, request, and response modules.
+</p>
+<div class="example">
+<pre class="example">(use-modules (web client))
+</pre></div>
+
+<dl>
+<dt><a name="index-open_002dsocket_002dfor_002duri"></a>Scheme Procedure: <strong>open-socket-for-uri</strong> <em>uri</em></dt>
+<dd><p>Return an open input/output port for a connection to URI.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-http_002dget"></a>Scheme Procedure: <strong>http-get</strong> <em>uri arg...</em></dt>
+<dt><a name="index-http_002dhead"></a>Scheme Procedure: <strong>http-head</strong> <em>uri arg...</em></dt>
+<dt><a name="index-http_002dpost"></a>Scheme Procedure: <strong>http-post</strong> <em>uri arg...</em></dt>
+<dt><a name="index-http_002dput"></a>Scheme Procedure: <strong>http-put</strong> <em>uri arg...</em></dt>
+<dt><a name="index-http_002ddelete"></a>Scheme Procedure: <strong>http-delete</strong> <em>uri arg...</em></dt>
+<dt><a name="index-http_002dtrace"></a>Scheme Procedure: <strong>http-trace</strong> <em>uri arg...</em></dt>
+<dt><a name="index-http_002doptions"></a>Scheme Procedure: <strong>http-options</strong> <em>uri arg...</em></dt>
+<dd>
+<p>Connect to the server corresponding to <var>uri</var> and make a request over
+HTTP, using the appropriate method (<code>GET</code>, <code>HEAD</code>, etc.).
+</p>
+<p>All of these procedures have the same prototype: a URI followed by an
+optional sequence of keyword arguments.  These keyword arguments allow
+you to modify the requests in various ways, for example attaching a body
+to the request, or setting specific headers.  The following table lists
+the keyword arguments and their default values.
+</p>
+<dl compact="compact">
+<dt><code>#:body #f</code></dt>
+<dt><code>#:port (open-socket-for-uri <var>uri</var>)]</code></dt>
+<dt><code>#:version '(1 . 1)</code></dt>
+<dt><code>#:keep-alive? #f</code></dt>
+<dt><code>#:headers '()</code></dt>
+<dt><code>#:decode-body? #t</code></dt>
+<dt><code>#:streaming? #f</code></dt>
+</dl>
+
+<p>If you already have a port open, pass it as <var>port</var>.  Otherwise, a
+connection will be opened to the server corresponding to <var>uri</var>.  Any
+extra headers in the alist <var>headers</var> will be added to the request.
+</p>
+<p>If <var>body</var> is not <code>#f</code>, a message body will also be sent with
+the HTTP request.  If <var>body</var> is a string, it is encoded according to
+the content-type in <var>headers</var>, defaulting to UTF-8.  Otherwise
+<var>body</var> should be a bytevector, or <code>#f</code> for no body.  Although a
+message body may be sent with any request, usually only <code>POST</code> and
+<code>PUT</code> requests have bodies.
+</p>
+<p>If <var>decode-body?</var> is true, as is the default, the body of the
+response will be decoded to string, if it is a textual content-type.
+Otherwise it will be returned as a bytevector.
+</p>
+<p>However, if <var>streaming?</var> is true, instead of eagerly reading the
+response body from the server, this function only reads off the headers.
+The response body will be returned as a port on which the data may be
+read.
+</p>
+<p>Unless <var>keep-alive?</var> is true, the port will be closed after the full
+response body has been read.
+</p>
+<p>Returns two values: the response read from the server, and the response
+body as a string, bytevector, #f value, or as a port (if
+<var>streaming?</var> is true).
+</p></dd></dl>
+
+<p><code>http-get</code> is useful for making one-off requests to web sites.  If
+you are writing a web spider or some other client that needs to handle a
+number of requests in parallel, it&rsquo;s better to build an event-driven URL
+fetcher, similar in structure to the web server (see <a href="Web-Server.html#Web-Server">Web Server</a>).
+</p>
+<p>Another option, good but not as performant, would be to use threads,
+possibly via par-map or futures.
+</p>
+<dl>
+<dt><a name="index-current_002dhttp_002dproxy"></a>Scheme Parameter: <strong>current-http-proxy</strong></dt>
+<dd><p>Either <code>#f</code> or a non-empty string containing the URL of the HTTP
+proxy server to be used by the procedures in the <code>(web client)</code>
+module, including <code>open-socket-for-uri</code>.  Its initial value is
+based on the <code>http_proxy</code> environment variable.
+</p>
+<div class="example">
+<pre class="example">(current-http-proxy) &rArr; &quot;http://localhost:8123/&quot;
+(parameterize ((current-http-proxy #f))
+  (http-get &quot;http://example.com/&quot;))  ; temporarily bypass proxy
+(current-http-proxy) &rArr; &quot;http://localhost:8123/&quot;
+</pre></div>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Web-Server.html#Web-Server" accesskey="n" rel="next">Web Server</a>, Previous: <a href="Responses.html#Responses" accesskey="p" rel="prev">Responses</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

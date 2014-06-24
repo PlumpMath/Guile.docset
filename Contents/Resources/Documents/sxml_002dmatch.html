@@ -1,0 +1,457 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: sxml-match</title>
+
+<meta name="description" content="Guile Reference Manual: sxml-match">
+<meta name="keywords" content="Guile Reference Manual: sxml-match">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="The-Scheme-shell-_0028scsh_0029.html#The-Scheme-shell-_0028scsh_0029" rel="next" title="The Scheme shell (scsh)">
+<link href="Expect.html#Expect" rel="prev" title="Expect">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="sxml_002dmatch"></a>
+<div class="header">
+<p>
+Next: <a href="The-Scheme-shell-_0028scsh_0029.html#The-Scheme-shell-_0028scsh_0029" accesskey="n" rel="next">The Scheme shell (scsh)</a>, Previous: <a href="Expect.html#Expect" accesskey="p" rel="prev">Expect</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="sxml_002dmatch_003a-Pattern-Matching-of-SXML"></a>
+<h3 class="section">7.16 <code>sxml-match</code>: Pattern Matching of SXML</h3>
+
+<a name="index-pattern-matching-_0028SXML_0029"></a>
+<a name="index-SXML-pattern-matching"></a>
+
+<p>The <code>(sxml match)</code> module provides syntactic forms for pattern
+matching of SXML trees, in a &ldquo;by example&rdquo; style reminiscent of the
+pattern matching of the <code>syntax-rules</code> and <code>syntax-case</code> macro
+systems.  See <a href="SXML.html#SXML">SXML</a>, for more information on SXML.
+</p>
+<p>The following example<a name="DOCF26" href="#FOOT26"><sup>26</sup></a> provides a brief
+illustration, transforming a music album catalog language into HTML.
+</p>
+<div class="lisp">
+<pre class="lisp">(define (album-&gt;html x)
+  (sxml-match x
+    [(album (@ (title ,t)) (catalog (num ,n) (fmt ,f)) ...)
+     `(ul (li ,t)
+          (li (b ,n) (i ,f)) ...)]))
+</pre></div>
+
+<p>Three macros are provided: <code>sxml-match</code>, <code>sxml-match-let</code>, and
+<code>sxml-match-let*</code>.
+</p>
+<p>Compared to a standard s-expression pattern matcher (see <a href="Pattern-Matching.html#Pattern-Matching">Pattern Matching</a>), <code>sxml-match</code> provides the following benefits:
+</p>
+<ul>
+<li> matching of SXML elements does not depend on any degree of normalization of the
+SXML;
+</li><li> matching of SXML attributes (within an element) is under-ordered; the order of
+the attributes specified within the pattern need not match the ordering with the
+element being matched;
+</li><li> all attributes specified in the pattern must be present in the element being
+matched; in the spirit that XML is &rsquo;extensible&rsquo;, the element being matched may
+include additional attributes not specified in the pattern.
+</li></ul>
+
+<p>The present module is a descendant of WebIt!, and was inspired by an
+s-expression pattern matcher developed by Erik Hilsdale, Dan Friedman, and Kent
+Dybvig at Indiana University.
+</p>
+<a name="Syntax"></a>
+<h4 class="unnumberedsubsec">Syntax</h4>
+
+<p><code>sxml-match</code> provides <code>case</code>-like form for pattern matching of XML
+nodes.
+</p>
+<dl>
+<dt><a name="index-sxml_002dmatch"></a>Scheme Syntax: <strong>sxml-match</strong> <em>input-expression clause1 clause2 &hellip;</em></dt>
+<dd><p>Match <var>input-expression</var>, an SXML tree, according to the given <var>clause</var>s
+(one or more), each consisting of a pattern and one or more expressions to be
+evaluated if the pattern match succeeds.  Optionally, each <var>clause</var> within
+<code>sxml-match</code> may include a <em>guard expression</em>.
+</p></dd></dl>
+
+<p>The pattern notation is based on that of Scheme&rsquo;s <code>syntax-rules</code> and
+<code>syntax-case</code> macro systems.  The grammar for the <code>sxml-match</code> syntax
+is given below:
+</p>
+<pre class="verbatim">match-form ::= (sxml-match input-expression
+                 clause+)
+
+clause ::= [node-pattern action-expression+]
+         | [node-pattern (guard expression*) action-expression+]
+
+node-pattern ::= literal-pattern
+               | pat-var-or-cata
+               | element-pattern
+               | list-pattern
+
+literal-pattern ::= string
+                  | character
+                  | number
+                  | #t
+                  | #f
+
+attr-list-pattern ::= (@ attribute-pattern*)
+                    | (@ attribute-pattern* . pat-var-or-cata)
+
+attribute-pattern ::= (tag-symbol attr-val-pattern)
+
+attr-val-pattern ::= literal-pattern
+                   | pat-var-or-cata
+                   | (pat-var-or-cata default-value-expr)
+
+element-pattern ::= (tag-symbol attr-list-pattern?)
+                  | (tag-symbol attr-list-pattern? nodeset-pattern)
+                  | (tag-symbol attr-list-pattern?
+                                nodeset-pattern? . pat-var-or-cata)
+
+list-pattern ::= (list nodeset-pattern)
+               | (list nodeset-pattern? . pat-var-or-cata)
+               | (list)
+
+nodeset-pattern ::= node-pattern
+                  | node-pattern ...
+                  | node-pattern nodeset-pattern
+                  | node-pattern ... nodeset-pattern
+
+pat-var-or-cata ::= (unquote var-symbol)
+                  | (unquote [var-symbol*])
+                  | (unquote [cata-expression -&gt; var-symbol*])
+</pre>
+<p>Within a list or element body pattern, ellipses may appear only once, but may be
+followed by zero or more node patterns.
+</p>
+<p>Guard expressions cannot refer to the return values of catamorphisms.
+</p>
+<p>Ellipses in the output expressions must appear only in an expression context;
+ellipses are not allowed in a syntactic form.
+</p>
+<p>The sections below illustrate specific aspects of the <code>sxml-match</code> pattern
+matcher.
+</p>
+<a name="Matching-XML-Elements"></a>
+<h4 class="unnumberedsubsec">Matching XML Elements</h4>
+
+<p>The example below illustrates the pattern matching of an XML element:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(e (@ (i 1)) 3 4 5)
+  [(e (@ (i ,d)) ,a ,b ,c) (list d a b c)]
+  [,otherwise #f])
+</pre></div>
+
+<p>Each clause in <code>sxml-match</code> contains two parts: a pattern and one or more
+expressions which are evaluated if the pattern is successfully match.  The
+example above matches an element <code>e</code> with an attribute <code>i</code> and three
+children.
+</p>
+<p>Pattern variables are must be &ldquo;unquoted&rdquo; in the pattern.  The above expression
+binds <var>d</var> to <code>1</code>, <var>a</var> to <code>3</code>, <var>b</var> to <code>4</code>, and <var>c</var>
+to <code>5</code>.
+</p>
+<a name="Ellipses-in-Patterns"></a>
+<h4 class="unnumberedsubsec">Ellipses in Patterns</h4>
+
+<p>As in <code>syntax-rules</code>, ellipses may be used to specify a repeated pattern.
+Note that the pattern <code>item ...</code> specifies zero-or-more matches of the
+pattern <code>item</code>.
+</p>
+<p>The use of ellipses in a pattern is illustrated in the code fragment below,
+where nested ellipses are used to match the children of repeated instances of an
+<code>a</code> element, within an element <code>d</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(define x '(d (a 1 2 3) (a 4 5) (a 6 7 8) (a 9 10)))
+
+(sxml-match x
+  [(d (a ,b ...) ...)
+   (list (list b ...) ...)])
+</pre></div>
+
+<p>The above expression returns a value of <code>((1 2 3) (4 5) (6 7 8) (9 10))</code>.
+</p>
+<a name="Ellipses-in-Quasiquote_0027d-Output"></a>
+<h4 class="unnumberedsubsec">Ellipses in Quasiquote&rsquo;d Output</h4>
+
+<p>Within the body of an <code>sxml-match</code> form, a slightly extended version of
+quasiquote is provided, which allows the use of ellipses.  This is illustrated
+in the example below.
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(e 3 4 5 6 7)
+  [(e ,i ... 6 7) `(&quot;start&quot; ,(list 'wrap i) ... &quot;end&quot;)]
+  [,otherwise #f])
+</pre></div>
+
+<p>The general pattern is that <code>`(something ,i ...)</code> is rewritten as
+<code>`(something ,@i)</code>.
+</p>
+<a name="Matching-Nodesets"></a>
+<h4 class="unnumberedsubsec">Matching Nodesets</h4>
+
+<p>A nodeset pattern is designated by a list in the pattern, beginning the
+identifier list.  The example below illustrates matching a nodeset.
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(&quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot;)
+  [(list ,a ,b ,c ,d ,e)
+   `((p ,a) (p ,b) (p ,c) (p ,d) (p ,e))])
+</pre></div>
+
+<p>This example wraps each nodeset item in an HTML paragraph element.  This example
+can be rewritten and simplified through using ellipsis:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(&quot;i&quot; &quot;j&quot; &quot;k&quot; &quot;l&quot; &quot;m&quot;)
+  [(list ,i ...)
+   `((p ,i) ...)])
+</pre></div>
+
+<p>This version will match nodesets of any length, and wrap each item in the
+nodeset in an HTML paragraph element.
+</p>
+<a name="Matching-the-_0060_0060Rest_0027_0027-of-a-Nodeset"></a>
+<h4 class="unnumberedsubsec">Matching the &ldquo;Rest&rdquo; of a Nodeset</h4>
+
+<p>Matching the &ldquo;rest&rdquo; of a nodeset is achieved by using a <code>. rest)</code> pattern
+at the end of an element or nodeset pattern.
+</p>
+<p>This is illustrated in the example below:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(e 3 (f 4 5 6) 7)
+  [(e ,a (f . ,y) ,d)
+   (list a y d)])
+</pre></div>
+
+<p>The above expression returns <code>(3 (4 5 6) 7)</code>.
+</p>
+<a name="Matching-the-Unmatched-Attributes"></a>
+<h4 class="unnumberedsubsec">Matching the Unmatched Attributes</h4>
+
+<p>Sometimes it is useful to bind a list of attributes present in the element being
+matched, but which do not appear in the pattern.  This is achieved by using a
+<code>. rest)</code> pattern at the end of the attribute list pattern.  This is
+illustrated in the example below:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(a (@ (z 1) (y 2) (x 3)) 4 5 6)
+  [(a (@ (y ,www) . ,qqq) ,t ,u ,v)
+   (list www qqq t u v)])
+</pre></div>
+
+<p>The above expression matches the attribute <code>y</code> and binds a list of the
+remaining attributes to the variable <var>qqq</var>.  The result of the above
+expression is <code>(2 ((z 1) (x 3)) 4 5 6)</code>.
+</p>
+<p>This type of pattern also allows the binding of all attributes:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(a (@ (z 1) (y 2) (x 3)))
+  [(a (@ . ,qqq))
+   qqq])
+</pre></div>
+
+<a name="Default-Values-in-Attribute-Patterns"></a>
+<h4 class="unnumberedsubsec">Default Values in Attribute Patterns</h4>
+
+<p>It is possible to specify a default value for an attribute which is used if the
+attribute is not present in the element being matched.  This is illustrated in
+the following example:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(e 3 4 5)
+  [(e (@ (z (,d 1))) ,a ,b ,c) (list d a b c)])
+</pre></div>
+
+<p>The value <code>1</code> is used when the attribute <code>z</code> is absent from the
+element <code>e</code>.
+</p>
+<a name="Guards-in-Patterns"></a>
+<h4 class="unnumberedsubsec">Guards in Patterns</h4>
+
+<p>Guards may be added to a pattern clause via the <code>guard</code> keyword.  A guard
+expression may include zero or more expressions which are evaluated only if the
+pattern is matched.  The body of the clause is only evaluated if the guard
+expressions evaluate to <code>#t</code>.
+</p>
+<p>The use of guard expressions is illustrated below:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match '(a 2 3)
+  ((a ,n) (guard (number? n)) n)
+  ((a ,m ,n) (guard (number? m) (number? n)) (+ m n)))
+</pre></div>
+
+<a name="Catamorphisms"></a>
+<h4 class="unnumberedsubsec">Catamorphisms</h4>
+
+<p>The example below illustrates the use of explicit recursion within an
+<code>sxml-match</code> form.  This example implements a simple calculator for the
+basic arithmetic operations, which are represented by the XML elements
+<code>plus</code>, <code>minus</code>, <code>times</code>, and <code>div</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(define simple-eval
+  (lambda (x)
+    (sxml-match x
+      [,i (guard (integer? i)) i]
+      [(plus ,x ,y) (+ (simple-eval x) (simple-eval y))]
+      [(times ,x ,y) (* (simple-eval x) (simple-eval y))]
+      [(minus ,x ,y) (- (simple-eval x) (simple-eval y))]
+      [(div ,x ,y) (/ (simple-eval x) (simple-eval y))]
+      [,otherwise (error &quot;simple-eval: invalid expression&quot; x)])))
+</pre></div>
+
+<p>Using the catamorphism feature of <code>sxml-match</code>, a more concise version of
+<code>simple-eval</code> can be written.  The pattern <code>,[x]</code> recursively invokes
+the pattern matcher on the value bound in this position.
+</p>
+<div class="lisp">
+<pre class="lisp">(define simple-eval
+  (lambda (x)
+    (sxml-match x
+      [,i (guard (integer? i)) i]
+      [(plus ,[x] ,[y]) (+ x y)]
+      [(times ,[x] ,[y]) (* x y)]
+      [(minus ,[x] ,[y]) (- x y)]
+      [(div ,[x] ,[y]) (/ x y)]
+      [,otherwise (error &quot;simple-eval: invalid expression&quot; x)])))
+</pre></div>
+
+<a name="Named_002dCatamorphisms"></a>
+<h4 class="unnumberedsubsec">Named-Catamorphisms</h4>
+
+<p>It is also possible to explicitly name the operator in the &ldquo;cata&rdquo; position.
+Where <code>,[id*]</code> recurs to the top of the current <code>sxml-match</code>,
+<code>,[cata -&gt; id*]</code> recurs to <code>cata</code>.  <code>cata</code> must evaluate to a
+procedure which takes one argument, and returns as many values as there are
+identifiers following <code>-&gt;</code>.
+</p>
+<p>Named catamorphism patterns allow processing to be split into multiple, mutually
+recursive procedures.  This is illustrated in the example below: a
+transformation that formats a &ldquo;TV Guide&rdquo; into HTML.
+</p>
+<div class="lisp">
+<pre class="lisp">(define (tv-guide-&gt;html g)
+  (define (cast-list cl)
+    (sxml-match cl
+      [(CastList (CastMember (Character (Name ,ch)) (Actor (Name ,a))) ...)
+       `(div (ul (li ,ch &quot;: &quot; ,a) ...))]))
+  (define (prog p)
+    (sxml-match p
+      [(Program (Start ,start-time) (Duration ,dur) (Series ,series-title)
+                (Description ,desc ...))
+       `(div (p ,start-time
+                (br) ,series-title
+                (br) ,desc ...))]
+      [(Program (Start ,start-time) (Duration ,dur) (Series ,series-title)
+                (Description ,desc ...)
+                ,[cast-list -&gt; cl])
+       `(div (p ,start-time
+                (br) ,series-title
+                (br) ,desc ...)
+             ,cl)]))
+  (sxml-match g
+    [(TVGuide (@ (start ,start-date)
+                 (end ,end-date))
+              (Channel (Name ,nm) ,[prog -&gt; p] ...) ...)
+     `(html (head (title &quot;TV Guide&quot;))
+            (body (h1 &quot;TV Guide&quot;)
+                  (div (h2 ,nm) ,p ...) ...))]))
+</pre></div>
+
+<a name="sxml_002dmatch_002dlet-and-sxml_002dmatch_002dlet_002a"></a>
+<h4 class="unnumberedsubsec"><code>sxml-match-let</code> and <code>sxml-match-let*</code></h4>
+
+<dl>
+<dt><a name="index-sxml_002dmatch_002dlet"></a>Scheme Syntax: <strong>sxml-match-let</strong> <em>((pat expr) ...) expression0 expression ...</em></dt>
+<dt><a name="index-sxml_002dmatch_002dlet_002a"></a>Scheme Syntax: <strong>sxml-match-let*</strong> <em>((pat expr) ...) expression0 expression ...</em></dt>
+<dd><p>These forms generalize the <code>let</code> and <code>let*</code> forms of Scheme to allow
+an XML pattern in the binding position, rather than a simple variable.
+</p></dd></dl>
+
+<p>For example, the expression below:
+</p>
+<div class="lisp">
+<pre class="lisp">(sxml-match-let ([(a ,i ,j) '(a 1 2)])
+  (+ i j))
+</pre></div>
+
+<p>binds the variables <var>i</var> and <var>j</var> to <code>1</code> and <code>2</code> in the XML
+value given.
+</p>
+
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT26" href="#DOCF26">(26)</a></h3>
+<p>This example is taken from a paper by
+Krishnamurthi et al.  Their paper was the first to show the usefulness of the
+<code>syntax-rules</code> style of pattern matching for transformation of XML, though
+the language described, XT3D, is an XML language.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="The-Scheme-shell-_0028scsh_0029.html#The-Scheme-shell-_0028scsh_0029" accesskey="n" rel="next">The Scheme shell (scsh)</a>, Previous: <a href="Expect.html#Expect" accesskey="p" rel="prev">Expect</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

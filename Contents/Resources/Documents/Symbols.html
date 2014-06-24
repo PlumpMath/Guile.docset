@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Symbols</title>
+
+<meta name="description" content="Guile Reference Manual: Symbols">
+<meta name="keywords" content="Guile Reference Manual: Symbols">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Simple-Data-Types.html#Simple-Data-Types" rel="up" title="Simple Data Types">
+<link href="Symbol-Data.html#Symbol-Data" rel="next" title="Symbol Data">
+<link href="Bytevectors-as-Uniform-Vectors.html#Bytevectors-as-Uniform-Vectors" rel="prev" title="Bytevectors as Uniform Vectors">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Symbols"></a>
+<div class="header">
+<p>
+Next: <a href="Keywords.html#Keywords" accesskey="n" rel="next">Keywords</a>, Previous: <a href="Bytevectors.html#Bytevectors" accesskey="p" rel="prev">Bytevectors</a>, Up: <a href="Simple-Data-Types.html#Simple-Data-Types" accesskey="u" rel="up">Simple Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Symbols-1"></a>
+<h4 class="subsection">6.6.7 Symbols</h4>
+<a name="index-Symbols"></a>
+
+<p>Symbols in Scheme are widely used in three ways: as items of discrete
+data, as lookup keys for alists and hash tables, and to denote variable
+references.
+</p>
+<p>A <em>symbol</em> is similar to a string in that it is defined by a
+sequence of characters.  The sequence of characters is known as the
+symbol&rsquo;s <em>name</em>.  In the usual case &mdash; that is, where the symbol&rsquo;s
+name doesn&rsquo;t include any characters that could be confused with other
+elements of Scheme syntax &mdash; a symbol is written in a Scheme program by
+writing the sequence of characters that make up the name, <em>without</em>
+any quotation marks or other special syntax.  For example, the symbol
+whose name is &ldquo;multiply-by-2&rdquo; is written, simply:
+</p>
+<div class="lisp">
+<pre class="lisp">multiply-by-2
+</pre></div>
+
+<p>Notice how this differs from a <em>string</em> with contents
+&ldquo;multiply-by-2&rdquo;, which is written with double quotation marks, like
+this:
+</p>
+<div class="lisp">
+<pre class="lisp">&quot;multiply-by-2&quot;
+</pre></div>
+
+<p>Looking beyond how they are written, symbols are different from strings
+in two important respects.
+</p>
+<p>The first important difference is uniqueness.  If the same-looking
+string is read twice from two different places in a program, the result
+is two <em>different</em> string objects whose contents just happen to be
+the same.  If, on the other hand, the same-looking symbol is read twice
+from two different places in a program, the result is the <em>same</em>
+symbol object both times.
+</p>
+<p>Given two read symbols, you can use <code>eq?</code> to test whether they are
+the same (that is, have the same name).  <code>eq?</code> is the most
+efficient comparison operator in Scheme, and comparing two symbols like
+this is as fast as comparing, for example, two numbers.  Given two
+strings, on the other hand, you must use <code>equal?</code> or
+<code>string=?</code>, which are much slower comparison operators, to
+determine whether the strings have the same contents.
+</p>
+<div class="lisp">
+<pre class="lisp">(define sym1 (quote hello))
+(define sym2 (quote hello))
+(eq? sym1 sym2) &rArr; #t
+
+(define str1 &quot;hello&quot;)
+(define str2 &quot;hello&quot;)
+(eq? str1 str2) &rArr; #f
+(equal? str1 str2) &rArr; #t
+</pre></div>
+
+<p>The second important difference is that symbols, unlike strings, are not
+self-evaluating.  This is why we need the <code>(quote &hellip;)</code>s in the
+example above: <code>(quote hello)</code> evaluates to the symbol named
+&quot;hello&quot; itself, whereas an unquoted <code>hello</code> is <em>read</em> as the
+symbol named &quot;hello&quot; and evaluated as a variable reference &hellip; about
+which more below (see <a href="Symbol-Variables.html#Symbol-Variables">Symbol Variables</a>).
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Data.html#Symbol-Data" accesskey="1">Symbol Data</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Symbols as discrete data.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Keys.html#Symbol-Keys" accesskey="2">Symbol Keys</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Symbols as lookup keys.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Variables.html#Symbol-Variables" accesskey="3">Symbol Variables</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Symbols as denoting variables.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Primitives.html#Symbol-Primitives" accesskey="4">Symbol Primitives</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Operations related to symbols.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Props.html#Symbol-Props" accesskey="5">Symbol Props</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Function slots and property lists.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Read-Syntax.html#Symbol-Read-Syntax" accesskey="6">Symbol Read Syntax</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Extended read syntax for symbols.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Symbol-Uninterned.html#Symbol-Uninterned" accesskey="7">Symbol Uninterned</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Uninterned symbols.
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Keywords.html#Keywords" accesskey="n" rel="next">Keywords</a>, Previous: <a href="Bytevectors.html#Bytevectors" accesskey="p" rel="prev">Bytevectors</a>, Up: <a href="Simple-Data-Types.html#Simple-Data-Types" accesskey="u" rel="up">Simple Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

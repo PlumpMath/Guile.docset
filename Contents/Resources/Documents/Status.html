@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Status</title>
+
+<meta name="description" content="Guile Reference Manual: Status">
+<meta name="keywords" content="Guile Reference Manual: Status">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="History.html#History" rel="up" title="History">
+<link href="Data-Representation.html#Data-Representation" rel="next" title="Data Representation">
+<link href="A-Timeline-of-Selected-Guile-Releases.html#A-Timeline-of-Selected-Guile-Releases" rel="prev" title="A Timeline of Selected Guile Releases">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Status"></a>
+<div class="header">
+<p>
+Previous: <a href="A-Timeline-of-Selected-Guile-Releases.html#A-Timeline-of-Selected-Guile-Releases" accesskey="p" rel="prev">A Timeline of Selected Guile Releases</a>, Up: <a href="History.html#History" accesskey="u" rel="up">History</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Status_002c-or_003a-Your-Help-Needed"></a>
+<h4 class="subsection">9.1.5 Status, or: Your Help Needed</h4>
+
+<p>Guile has achieved much of what it set out to achieve, but there is
+much remaining to do.
+</p>
+<p>There is still the old problem of bringing existing applications into
+a more Emacs-like experience. Guile has had some successes in this
+respect, but still most applications in the GNU system are without
+Guile integration.
+</p>
+<p>Getting Guile to those applications takes an investment, the
+&ldquo;hacktivation energy&rdquo; needed to wire Guile into a program that only
+pays off once it is good enough to enable new kinds of behavior. This
+would be a great way for new hackers to contribute: take an
+application that you use and that you know well, think of something
+that it can&rsquo;t yet do, and figure out a way to integrate Guile and
+implement that task in Guile.
+</p>
+<p>With time, perhaps this exposure can reverse itself, whereby programs
+can run under Guile instead of vice versa, eventually resulting in the
+Emacsification of the entire GNU system. Indeed, this is the reason
+for the naming of the many Guile modules that live in the <code>ice-9</code>
+namespace, a nod to the fictional substance in Kurt Vonnegut&rsquo;s
+novel, Cat&rsquo;s Cradle, capable of acting as a seed crystal to
+crystallize the mass of software.
+</p>
+<p>Implicit to this whole discussion is the idea that dynamic languages
+are somehow better than languages like C. While languages like C have
+their place, Guile&rsquo;s take on this question is that yes, Scheme is more
+expressive than C, and more fun to write. This realization carries an
+imperative with it to write as much code in Scheme as possible rather
+than in other languages.
+</p>
+<p>These days it is possible to write extensible applications almost
+entirely from high-level languages, through byte-code and native
+compilation, speed gains in the underlying hardware, and foreign call
+interfaces in the high-level language. Smalltalk systems are like
+this, as are Common Lisp-based systems. While there already are a
+number of pure-Guile applications out there, users still need to drop
+down to C for some tasks: interfacing to system libraries that don&rsquo;t
+have prebuilt Guile interfaces, and for some tasks requiring high
+performance.
+</p>
+<p>The addition of the virtual machine in Guile 2.0, together with the
+compiler infrastructure, should go a long way to addressing the speed
+issues. But there is much optimization to be done. Interested
+contributors will find lots of delightful low-hanging fruit, from
+simple profile-driven optimization to hacking a just-in-time compiler
+from VM bytecode to native code.
+</p>
+<p>Still, even with an all-Guile application, sometimes you want to
+provide an opportunity for users to extend your program from a
+language with a syntax that is closer to C, or to Python. Another
+interesting idea to consider is compiling e.g. Python to Guile. It&rsquo;s
+not that far-fetched of an idea: see for example IronPython or JRuby.
+</p>
+<p>And then there&rsquo;s Emacs itself. Though there is a somewhat-working Emacs
+Lisp language frontend for Guile, it cannot yet execute all of Emacs
+Lisp. A serious integration of Guile with Emacs would replace the Elisp
+virtual machine with Guile, and provide the necessary C shims so that
+Guile could emulate Emacs&rsquo; C API. This would give lots of exciting
+things to Emacs: native threads, a real object system, more
+sophisticated types, cleaner syntax, and access to all of the Guile
+extensions.
+</p>
+<p>Finally, there is another axis of crystallization, the axis between
+different Scheme implementations. Guile does not yet support the
+latest Scheme standard, R6RS, and should do so. Like all standards,
+R6RS is imperfect, but supporting it will allow more code to run on
+Guile without modification, and will allow Guile hackers to produce
+code compatible with other schemes. Help in this regard would be much
+appreciated.
+</p>
+<hr>
+<div class="header">
+<p>
+Previous: <a href="A-Timeline-of-Selected-Guile-Releases.html#A-Timeline-of-Selected-Guile-Releases" accesskey="p" rel="prev">A Timeline of Selected Guile Releases</a>, Up: <a href="History.html#History" accesskey="u" rel="up">History</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

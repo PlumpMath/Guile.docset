@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Vector Accessors</title>
+
+<meta name="description" content="Guile Reference Manual: Vector Accessors">
+<meta name="keywords" content="Guile Reference Manual: Vector Accessors">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Vectors.html#Vectors" rel="up" title="Vectors">
+<link href="Vector-Accessing-from-C.html#Vector-Accessing-from-C" rel="next" title="Vector Accessing from C">
+<link href="Vector-Creation.html#Vector-Creation" rel="prev" title="Vector Creation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Vector-Accessors"></a>
+<div class="header">
+<p>
+Next: <a href="Vector-Accessing-from-C.html#Vector-Accessing-from-C" accesskey="n" rel="next">Vector Accessing from C</a>, Previous: <a href="Vector-Creation.html#Vector-Creation" accesskey="p" rel="prev">Vector Creation</a>, Up: <a href="Vectors.html#Vectors" accesskey="u" rel="up">Vectors</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Accessing-and-Modifying-Vector-Contents"></a>
+<h4 class="subsubsection">6.7.3.3 Accessing and Modifying Vector Contents</h4>
+
+<p><code>vector-length</code> and <code>vector-ref</code> return information about a
+given vector, respectively its size and the elements that are contained
+in the vector.
+</p>
+<a name="index-vector_002dlength-3"></a>
+<dl>
+<dt><a name="index-vector_002dlength"></a>Scheme Procedure: <strong>vector-length</strong> <em>vector</em></dt>
+<dt><a name="index-scm_005fvector_005flength"></a>C Function: <strong>scm_vector_length</strong> <em>(vector)</em></dt>
+<dd><p>Return the number of elements in <var>vector</var> as an exact integer.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fvector_005flength"></a>C Function: <em>size_t</em> <strong>scm_c_vector_length</strong> <em>(SCM vec)</em></dt>
+<dd><p>Return the number of elements in <var>vec</var> as a <code>size_t</code>.
+</p></dd></dl>
+
+<a name="index-vector_002dref-4"></a>
+<dl>
+<dt><a name="index-vector_002dref"></a>Scheme Procedure: <strong>vector-ref</strong> <em>vec k</em></dt>
+<dt><a name="index-scm_005fvector_005fref"></a>C Function: <strong>scm_vector_ref</strong> <em>(vec, k)</em></dt>
+<dd><p>Return the contents of position <var>k</var> of <var>vec</var>.
+<var>k</var> must be a valid index of <var>vec</var>.
+</p><div class="lisp">
+<pre class="lisp">(vector-ref #(1 1 2 3 5 8 13 21) 5) &rArr; 8
+(vector-ref #(1 1 2 3 5 8 13 21)
+    (let ((i (round (* 2 (acos -1)))))
+      (if (inexact? i)
+        (inexact-&gt;exact i)
+           i))) &rArr; 13
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fvector_005fref"></a>C Function: <em>SCM</em> <strong>scm_c_vector_ref</strong> <em>(SCM vec, size_t k)</em></dt>
+<dd><p>Return the contents of position <var>k</var> (a <code>size_t</code>) of
+<var>vec</var>.
+</p></dd></dl>
+
+<p>A vector created by one of the dynamic vector constructor procedures
+(see <a href="Vector-Creation.html#Vector-Creation">Vector Creation</a>) can be modified using the following
+procedures.
+</p>
+<p><em>NOTE:</em> According to R5RS, it is an error to use any of these
+procedures on a literally read vector, because such vectors should be
+considered as constants.  Currently, however, Guile does not detect this
+error.
+</p>
+<a name="index-vector_002dset_0021-3"></a>
+<dl>
+<dt><a name="index-vector_002dset_0021"></a>Scheme Procedure: <strong>vector-set!</strong> <em>vec k obj</em></dt>
+<dt><a name="index-scm_005fvector_005fset_005fx"></a>C Function: <strong>scm_vector_set_x</strong> <em>(vec, k, obj)</em></dt>
+<dd><p>Store <var>obj</var> in position <var>k</var> of <var>vec</var>.
+<var>k</var> must be a valid index of <var>vec</var>.
+The value returned by &lsquo;<samp>vector-set!</samp>&rsquo; is unspecified.
+</p><div class="lisp">
+<pre class="lisp">(let ((vec (vector 0 '(2 2 2 2) &quot;Anna&quot;)))
+  (vector-set! vec 1 '(&quot;Sue&quot; &quot;Sue&quot;))
+  vec) &rArr;  #(0 (&quot;Sue&quot; &quot;Sue&quot;) &quot;Anna&quot;)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fvector_005fset_005fx"></a>C Function: <em>void</em> <strong>scm_c_vector_set_x</strong> <em>(SCM vec, size_t k, SCM obj)</em></dt>
+<dd><p>Store <var>obj</var> in position <var>k</var> (a <code>size_t</code>) of <var>vec</var>.
+</p></dd></dl>
+
+<a name="index-vector_002dfill_0021-3"></a>
+<dl>
+<dt><a name="index-vector_002dfill_0021"></a>Scheme Procedure: <strong>vector-fill!</strong> <em>vec fill</em></dt>
+<dt><a name="index-scm_005fvector_005ffill_005fx"></a>C Function: <strong>scm_vector_fill_x</strong> <em>(vec, fill)</em></dt>
+<dd><p>Store <var>fill</var> in every position of <var>vec</var>.  The value
+returned by <code>vector-fill!</code> is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vector_002dcopy"></a>Scheme Procedure: <strong>vector-copy</strong> <em>vec</em></dt>
+<dt><a name="index-scm_005fvector_005fcopy"></a>C Function: <strong>scm_vector_copy</strong> <em>(vec)</em></dt>
+<dd><p>Return a copy of <var>vec</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vector_002dmove_002dleft_0021"></a>Scheme Procedure: <strong>vector-move-left!</strong> <em>vec1 start1 end1 vec2 start2</em></dt>
+<dt><a name="index-scm_005fvector_005fmove_005fleft_005fx"></a>C Function: <strong>scm_vector_move_left_x</strong> <em>(vec1, start1, end1, vec2, start2)</em></dt>
+<dd><p>Copy elements from <var>vec1</var>, positions <var>start1</var> to <var>end1</var>,
+to <var>vec2</var> starting at position <var>start2</var>.  <var>start1</var> and
+<var>start2</var> are inclusive indices; <var>end1</var> is exclusive.
+</p>
+<p><code>vector-move-left!</code> copies elements in leftmost order.
+Therefore, in the case where <var>vec1</var> and <var>vec2</var> refer to the
+same vector, <code>vector-move-left!</code> is usually appropriate when
+<var>start1</var> is greater than <var>start2</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vector_002dmove_002dright_0021"></a>Scheme Procedure: <strong>vector-move-right!</strong> <em>vec1 start1 end1 vec2 start2</em></dt>
+<dt><a name="index-scm_005fvector_005fmove_005fright_005fx"></a>C Function: <strong>scm_vector_move_right_x</strong> <em>(vec1, start1, end1, vec2, start2)</em></dt>
+<dd><p>Copy elements from <var>vec1</var>, positions <var>start1</var> to <var>end1</var>,
+to <var>vec2</var> starting at position <var>start2</var>.  <var>start1</var> and
+<var>start2</var> are inclusive indices; <var>end1</var> is exclusive.
+</p>
+<p><code>vector-move-right!</code> copies elements in rightmost order.
+Therefore, in the case where <var>vec1</var> and <var>vec2</var> refer to the
+same vector, <code>vector-move-right!</code> is usually appropriate when
+<var>start1</var> is less than <var>start2</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Vector-Accessing-from-C.html#Vector-Accessing-from-C" accesskey="n" rel="next">Vector Accessing from C</a>, Previous: <a href="Vector-Creation.html#Vector-Creation" accesskey="p" rel="prev">Vector Creation</a>, Up: <a href="Vectors.html#Vectors" accesskey="u" rel="up">Vectors</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

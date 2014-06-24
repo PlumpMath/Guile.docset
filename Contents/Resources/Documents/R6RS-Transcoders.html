@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS Transcoders</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS Transcoders">
+<meta name="keywords" content="Guile Reference Manual: R6RS Transcoders">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" rel="up" title="R6RS I/O Ports">
+<link href="R6RS-End_002dof_002dFile.html#R6RS-End_002dof_002dFile" rel="next" title="R6RS End-of-File">
+<link href="R6RS-Buffer-Modes.html#R6RS-Buffer-Modes" rel="prev" title="R6RS Buffer Modes">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-Transcoders"></a>
+<div class="header">
+<p>
+Next: <a href="R6RS-End_002dof_002dFile.html#R6RS-End_002dof_002dFile" accesskey="n" rel="next">R6RS End-of-File</a>, Previous: <a href="R6RS-Buffer-Modes.html#R6RS-Buffer-Modes" accesskey="p" rel="prev">R6RS Buffer Modes</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Transcoders"></a>
+<h4 class="subsubsection">6.14.10.4 Transcoders</h4>
+<a name="index-codec"></a>
+<a name="index-end_002dof_002dline-style"></a>
+<a name="index-transcoder"></a>
+<a name="index-binary-port"></a>
+<a name="index-textual-port"></a>
+
+<p>Several different Unicode encoding schemes describe standard ways to
+encode characters and strings as byte sequences and to decode those
+sequences. Within this document, a <em>codec</em> is an immutable Scheme
+object that represents a Unicode or similar encoding scheme.
+</p>
+<p>An <em>end-of-line style</em> is a symbol that, if it is not <code>none</code>,
+describes how a textual port transcodes representations of line endings.
+</p>
+<p>A <em>transcoder</em> is an immutable Scheme object that combines a codec
+with an end-of-line style and a method for handling decoding errors.
+Each transcoder represents some specific bidirectional (but not
+necessarily lossless), possibly stateful translation between byte
+sequences and Unicode characters and strings.  Every transcoder can
+operate in the input direction (bytes to characters) or in the output
+direction (characters to bytes).  A <var>transcoder</var> parameter name
+means that the corresponding argument must be a transcoder.
+</p>
+<p>A <em>binary port</em> is a port that supports binary I/O, does not have an
+associated transcoder and does not support textual I/O.  A <em>textual
+port</em> is a port that supports textual I/O, and does not support binary
+I/O.  A textual port may or may not have an associated transcoder.
+</p>
+<dl>
+<dt><a name="index-latin_002d1_002dcodec"></a>Scheme Procedure: <strong>latin-1-codec</strong></dt>
+<dt><a name="index-utf_002d8_002dcodec"></a>Scheme Procedure: <strong>utf-8-codec</strong></dt>
+<dt><a name="index-utf_002d16_002dcodec"></a>Scheme Procedure: <strong>utf-16-codec</strong></dt>
+<dd>
+<p>These are predefined codecs for the ISO 8859-1, UTF-8, and UTF-16
+encoding schemes.
+</p>
+<p>A call to any of these procedures returns a value that is equal in the
+sense of <code>eqv?</code> to the result of any other call to the same
+procedure.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-eol_002dstyle"></a>Scheme Syntax: <strong>eol-style</strong> <em><var>eol-style-symbol</var></em></dt>
+<dd>
+<p><var>eol-style-symbol</var> should be a symbol whose name is one of
+<code>lf</code>, <code>cr</code>, <code>crlf</code>, <code>nel</code>, <code>crnel</code>, <code>ls</code>,
+and <code>none</code>.
+</p>
+<p>The form evaluates to the corresponding symbol.  If the name of
+<var>eol-style-symbol</var> is not one of these symbols, the effect and
+result are implementation-dependent; in particular, the result may be an
+eol-style symbol acceptable as an <var>eol-style</var> argument to
+<code>make-transcoder</code>.  Otherwise, an exception is raised.
+</p>
+<p>All eol-style symbols except <code>none</code> describe a specific
+line-ending encoding:
+</p>
+<dl compact="compact">
+<dt><code>lf</code></dt>
+<dd><p>linefeed
+</p></dd>
+<dt><code>cr</code></dt>
+<dd><p>carriage return
+</p></dd>
+<dt><code>crlf</code></dt>
+<dd><p>carriage return, linefeed
+</p></dd>
+<dt><code>nel</code></dt>
+<dd><p>next line
+</p></dd>
+<dt><code>crnel</code></dt>
+<dd><p>carriage return, next line
+</p></dd>
+<dt><code>ls</code></dt>
+<dd><p>line separator
+</p></dd>
+</dl>
+
+<p>For a textual port with a transcoder, and whose transcoder has an
+eol-style symbol <code>none</code>, no conversion occurs.  For a textual input
+port, any eol-style symbol other than <code>none</code> means that all of the
+above line-ending encodings are recognized and are translated into a
+single linefeed.  For a textual output port, <code>none</code> and <code>lf</code>
+are equivalent.  Linefeed characters are encoded according to the
+specified eol-style symbol, and all other characters that participate in
+possible line endings are encoded as is.
+</p>
+<blockquote>
+<p><b>Note:</b> Only the name of <var>eol-style-symbol</var> is significant.
+</p></blockquote>
+</dd></dl>
+
+<dl>
+<dt><a name="index-native_002deol_002dstyle"></a>Scheme Procedure: <strong>native-eol-style</strong></dt>
+<dd><p>Returns the default end-of-line style of the underlying platform, e.g.,
+<code>lf</code> on Unix and <code>crlf</code> on Windows.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0026i_002fo_002ddecoding"></a>Condition Type: <strong>&amp;i/o-decoding</strong></dt>
+<dt><a name="index-make_002di_002fo_002ddecoding_002derror"></a>Scheme Procedure: <strong>make-i/o-decoding-error</strong> <em>port</em></dt>
+<dt><a name="index-i_002fo_002ddecoding_002derror_003f"></a>Scheme Procedure: <strong>i/o-decoding-error?</strong> <em>obj</em></dt>
+<dd>
+<p>This condition type could be defined by
+</p>
+<div class="lisp">
+<pre class="lisp">(define-condition-type &amp;i/o-decoding &amp;i/o-port
+  make-i/o-decoding-error i/o-decoding-error?)
+</pre></div>
+
+<p>An exception with this type is raised when one of the operations for
+textual input from a port encounters a sequence of bytes that cannot be
+translated into a character or string by the input direction of the
+port&rsquo;s transcoder.
+</p>
+<p>When such an exception is raised, the port&rsquo;s position is past the
+invalid encoding.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0026i_002fo_002dencoding"></a>Condition Type: <strong>&amp;i/o-encoding</strong></dt>
+<dt><a name="index-make_002di_002fo_002dencoding_002derror"></a>Scheme Procedure: <strong>make-i/o-encoding-error</strong> <em>port char</em></dt>
+<dt><a name="index-i_002fo_002dencoding_002derror_003f"></a>Scheme Procedure: <strong>i/o-encoding-error?</strong> <em>obj</em></dt>
+<dt><a name="index-i_002fo_002dencoding_002derror_002dchar"></a>Scheme Procedure: <strong>i/o-encoding-error-char</strong> <em>condition</em></dt>
+<dd>
+<p>This condition type could be defined by
+</p>
+<div class="lisp">
+<pre class="lisp">(define-condition-type &amp;i/o-encoding &amp;i/o-port
+  make-i/o-encoding-error i/o-encoding-error?
+  (char i/o-encoding-error-char))
+</pre></div>
+
+<p>An exception with this type is raised when one of the operations for
+textual output to a port encounters a character that cannot be
+translated into bytes by the output direction of the port&rsquo;s transcoder.
+<var>char</var> is the character that could not be encoded.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-error_002dhandling_002dmode"></a>Scheme Syntax: <strong>error-handling-mode</strong> <em><var>error-handling-mode-symbol</var></em></dt>
+<dd>
+<p><var>error-handling-mode-symbol</var> should be a symbol whose name is one of
+<code>ignore</code>, <code>raise</code>, and <code>replace</code>. The form evaluates to
+the corresponding symbol.  If <var>error-handling-mode-symbol</var> is not
+one of these identifiers, effect and result are
+implementation-dependent: The result may be an error-handling-mode
+symbol acceptable as a <var>handling-mode</var> argument to
+<code>make-transcoder</code>.  If it is not acceptable as a
+<var>handling-mode</var> argument to <code>make-transcoder</code>, an exception is
+raised.
+</p>
+<blockquote>
+<p><b>Note:</b> Only the name of <var>error-handling-mode-symbol</var> is significant.
+</p></blockquote>
+
+<p>The error-handling mode of a transcoder specifies the behavior
+of textual I/O operations in the presence of encoding or decoding
+errors.
+</p>
+<p>If a textual input operation encounters an invalid or incomplete
+character encoding, and the error-handling mode is <code>ignore</code>, an
+appropriate number of bytes of the invalid encoding are ignored and
+decoding continues with the following bytes.
+</p>
+<p>If the error-handling mode is <code>replace</code>, the replacement
+character U+FFFD is injected into the data stream, an appropriate
+number of bytes are ignored, and decoding
+continues with the following bytes.
+</p>
+<p>If the error-handling mode is <code>raise</code>, an exception with condition
+type <code>&amp;i/o-decoding</code> is raised.
+</p>
+<p>If a textual output operation encounters a character it cannot encode,
+and the error-handling mode is <code>ignore</code>, the character is ignored
+and encoding continues with the next character.  If the error-handling
+mode is <code>replace</code>, a codec-specific replacement character is
+emitted by the transcoder, and encoding continues with the next
+character.  The replacement character is U+FFFD for transcoders whose
+codec is one of the Unicode encodings, but is the <code>?</code>  character
+for the Latin-1 encoding.  If the error-handling mode is <code>raise</code>,
+an exception with condition type <code>&amp;i/o-encoding</code> is raised.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dtranscoder"></a>Scheme Procedure: <strong>make-transcoder</strong> <em>codec</em></dt>
+<dt><a name="index-make_002dtranscoder-1"></a>Scheme Procedure: <strong>make-transcoder</strong> <em>codec eol-style</em></dt>
+<dt><a name="index-make_002dtranscoder-2"></a>Scheme Procedure: <strong>make-transcoder</strong> <em>codec eol-style handling-mode</em></dt>
+<dd>
+<p><var>codec</var> must be a codec; <var>eol-style</var>, if present, an eol-style
+symbol; and <var>handling-mode</var>, if present, an error-handling-mode
+symbol.
+</p>
+<p><var>eol-style</var> may be omitted, in which case it defaults to the native
+end-of-line style of the underlying platform.  <var>handling-mode</var> may
+be omitted, in which case it defaults to <code>replace</code>.  The result is
+a transcoder with the behavior specified by its arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-native_002dtranscoder"></a>Scheme procedure: <strong>native-transcoder</strong></dt>
+<dd><p>Returns an implementation-dependent transcoder that represents a
+possibly locale-dependent &ldquo;native&rdquo; transcoding.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-transcoder_002dcodec"></a>Scheme Procedure: <strong>transcoder-codec</strong> <em>transcoder</em></dt>
+<dt><a name="index-transcoder_002deol_002dstyle"></a>Scheme Procedure: <strong>transcoder-eol-style</strong> <em>transcoder</em></dt>
+<dt><a name="index-transcoder_002derror_002dhandling_002dmode"></a>Scheme Procedure: <strong>transcoder-error-handling-mode</strong> <em>transcoder</em></dt>
+<dd>
+<p>These are accessors for transcoder objects; when applied to a
+transcoder returned by <code>make-transcoder</code>, they return the
+<var>codec</var>, <var>eol-style</var>, and <var>handling-mode</var> arguments,
+respectively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002d_003estring-1"></a>Scheme Procedure: <strong>bytevector-&gt;string</strong> <em>bytevector transcoder</em></dt>
+<dd>
+<p>Returns the string that results from transcoding the
+<var>bytevector</var> according to the input direction of the transcoder.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002d_003ebytevector-1"></a>Scheme Procedure: <strong>string-&gt;bytevector</strong> <em>string transcoder</em></dt>
+<dd>
+<p>Returns the bytevector that results from transcoding the
+<var>string</var> according to the output direction of the transcoder.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="R6RS-End_002dof_002dFile.html#R6RS-End_002dof_002dFile" accesskey="n" rel="next">R6RS End-of-File</a>, Previous: <a href="R6RS-Buffer-Modes.html#R6RS-Buffer-Modes" accesskey="p" rel="prev">R6RS Buffer Modes</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

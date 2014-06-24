@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Continuations</title>
+
+<meta name="description" content="Guile Reference Manual: Continuations">
+<meta name="keywords" content="Guile Reference Manual: Continuations">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Control-Mechanisms.html#Control-Mechanisms" rel="up" title="Control Mechanisms">
+<link href="Multiple-Values.html#Multiple-Values" rel="next" title="Multiple Values">
+<link href="Shift-and-Reset.html#Shift-and-Reset" rel="prev" title="Shift and Reset">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Continuations"></a>
+<div class="header">
+<p>
+Next: <a href="Multiple-Values.html#Multiple-Values" accesskey="n" rel="next">Multiple Values</a>, Previous: <a href="Prompts.html#Prompts" accesskey="p" rel="prev">Prompts</a>, Up: <a href="Control-Mechanisms.html#Control-Mechanisms" accesskey="u" rel="up">Control Mechanisms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Continuations-1"></a>
+<h4 class="subsection">6.13.6 Continuations</h4>
+<a name="index-continuations"></a>
+
+<p>A &ldquo;continuation&rdquo; is the code that will execute when a given function
+or expression returns.  For example, consider
+</p>
+<div class="example">
+<pre class="example">(define (foo)
+  (display &quot;hello\n&quot;)
+  (display (bar)) (newline)
+  (exit))
+</pre></div>
+
+<p>The continuation from the call to <code>bar</code> comprises a
+<code>display</code> of the value returned, a <code>newline</code> and an
+<code>exit</code>.  This can be expressed as a function of one argument.
+</p>
+<div class="example">
+<pre class="example">(lambda (r)
+  (display r) (newline)
+  (exit))
+</pre></div>
+
+<p>In Scheme, continuations are represented as special procedures just
+like this.  The special property is that when a continuation is called
+it abandons the current program location and jumps directly to that
+represented by the continuation.
+</p>
+<p>A continuation is like a dynamic label, capturing at run-time a point
+in program execution, including all the nested calls that have lead to
+it (or rather the code that will execute when those calls return).
+</p>
+<p>Continuations are created with the following functions.
+</p>
+<dl>
+<dt><a name="index-call_002dwith_002dcurrent_002dcontinuation"></a>Scheme Procedure: <strong>call-with-current-continuation</strong> <em>proc</em></dt>
+<dt><a name="index-call_002fcc"></a>Scheme Procedure: <strong>call/cc</strong> <em>proc</em></dt>
+<dd><a name="index-call_002dwith_002dcurrent_002dcontinuation-2"></a>
+<p>Capture the current continuation and call <code>(<var>proc</var>
+<var>cont</var>)</code> with it.  The return value is the value returned by
+<var>proc</var>, or when <code>(<var>cont</var> <var>value</var>)</code> is later invoked,
+the return is the <var>value</var> passed.
+</p>
+<p>Normally <var>cont</var> should be called with one argument, but when the
+location resumed is expecting multiple values (see <a href="Multiple-Values.html#Multiple-Values">Multiple Values</a>) then they should be passed as multiple arguments, for
+instance <code>(<var>cont</var> <var>x</var> <var>y</var> <var>z</var>)</code>.
+</p>
+<p><var>cont</var> may only be used from the same side of a continuation
+barrier as it was created (see <a href="Continuation-Barriers.html#Continuation-Barriers">Continuation Barriers</a>), and in a
+multi-threaded program only from the thread in which it was created.
+</p>
+<p>The call to <var>proc</var> is not part of the continuation captured, it runs
+only when the continuation is created.  Often a program will want to
+store <var>cont</var> somewhere for later use; this can be done in
+<var>proc</var>.
+</p>
+<p>The <code>call</code> in the name <code>call-with-current-continuation</code>
+refers to the way a call to <var>proc</var> gives the newly created
+continuation.  It&rsquo;s not related to the way a call is used later to
+invoke that continuation.
+</p>
+<p><code>call/cc</code> is an alias for <code>call-with-current-continuation</code>.
+This is in common use since the latter is rather long.
+</p></dd></dl>
+
+<br>
+<p>Here is a simple example,
+</p>
+<div class="example">
+<pre class="example">(define kont #f)
+(format #t &quot;the return is ~a\n&quot;
+        (call/cc (lambda (k)
+                   (set! kont k)
+                   1)))
+&rArr; the return is 1
+
+(kont 2)
+&rArr; the return is 2
+</pre></div>
+
+<p><code>call/cc</code> captures a continuation in which the value returned is
+going to be displayed by <code>format</code>.  The <code>lambda</code> stores this
+in <code>kont</code> and gives an initial return <code>1</code> which is
+displayed.  The later invocation of <code>kont</code> resumes the captured
+point, but this time returning <code>2</code>, which is displayed.
+</p>
+<p>When Guile is run interactively, a call to <code>format</code> like this has
+an implicit return back to the read-eval-print loop.  <code>call/cc</code>
+captures that like any other return, which is why interactively
+<code>kont</code> will come back to read more input.
+</p>
+<br>
+<p>C programmers may note that <code>call/cc</code> is like <code>setjmp</code> in
+the way it records at runtime a point in program execution.  A call to
+a continuation is like a <code>longjmp</code> in that it abandons the
+present location and goes to the recorded one.  Like <code>longjmp</code>,
+the value passed to the continuation is the value returned by
+<code>call/cc</code> on resuming there.  However <code>longjmp</code> can only go
+up the program stack, but the continuation mechanism can go anywhere.
+</p>
+<p>When a continuation is invoked, <code>call/cc</code> and subsequent code
+effectively &ldquo;returns&rdquo; a second time.  It can be confusing to imagine
+a function returning more times than it was called.  It may help
+instead to think of it being stealthily re-entered and then program
+flow going on as normal.
+</p>
+<p><code>dynamic-wind</code> (see <a href="Dynamic-Wind.html#Dynamic-Wind">Dynamic Wind</a>) can be used to ensure setup
+and cleanup code is run when a program locus is resumed or abandoned
+through the continuation mechanism.
+</p>
+<br>
+<p>Continuations are a powerful mechanism, and can be used to implement
+almost any sort of control structure, such as loops, coroutines, or
+exception handlers.
+</p>
+<p>However the implementation of continuations in Guile is not as
+efficient as one might hope, because Guile is designed to cooperate
+with programs written in other languages, such as C, which do not know
+about continuations.  Basically continuations are captured by a block
+copy of the stack, and resumed by copying back.
+</p>
+<p>For this reason, continuations captured by <code>call/cc</code> should be used only
+when there is no other simple way to achieve the desired result, or when the
+elegance of the continuation mechanism outweighs the need for performance.
+</p>
+<p>Escapes upwards from loops or nested functions are generally best
+handled with prompts (see <a href="Prompts.html#Prompts">Prompts</a>).  Coroutines can be
+efficiently implemented with cooperating threads (a thread holds a
+full program stack but doesn&rsquo;t copy it around the way continuations
+do).
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Multiple-Values.html#Multiple-Values" accesskey="n" rel="next">Multiple Values</a>, Previous: <a href="Prompts.html#Prompts" accesskey="p" rel="prev">Prompts</a>, Up: <a href="Control-Mechanisms.html#Control-Mechanisms" accesskey="u" rel="up">Control Mechanisms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

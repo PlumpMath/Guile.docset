@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Modules</title>
+
+<meta name="description" content="Guile Reference Manual: Modules">
+<meta name="keywords" content="Guile Reference Manual: Modules">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="API-Reference.html#API-Reference" rel="up" title="API Reference">
+<link href="General-Information-about-Modules.html#General-Information-about-Modules" rel="next" title="General Information about Modules">
+<link href="Guardians.html#Guardians" rel="prev" title="Guardians">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Modules"></a>
+<div class="header">
+<p>
+Next: <a href="Foreign-Function-Interface.html#Foreign-Function-Interface" accesskey="n" rel="next">Foreign Function Interface</a>, Previous: <a href="Memory-Management.html#Memory-Management" accesskey="p" rel="prev">Memory Management</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Modules-1"></a>
+<h3 class="section">6.19 Modules</h3>
+<a name="index-modules"></a>
+
+<p>When programs become large, naming conflicts can occur when a function
+or global variable defined in one file has the same name as a function
+or global variable in another file.  Even just a <em>similarity</em>
+between function names can cause hard-to-find bugs, since a programmer
+might type the wrong function name.
+</p>
+<p>The approach used to tackle this problem is called <em>information
+encapsulation</em>, which consists of packaging functional units into a
+given name space that is clearly separated from other name spaces.
+<a name="index-encapsulation"></a>
+<a name="index-information-encapsulation"></a>
+<a name="index-name-space"></a>
+</p>
+<p>The language features that allow this are usually called <em>the
+module system</em> because programs are broken up into modules that are
+compiled separately (or loaded separately in an interpreter).
+</p>
+<p>Older languages, like C, have limited support for name space
+manipulation and protection.  In C a variable or function is public by
+default, and can be made local to a module with the <code>static</code>
+keyword.  But you cannot reference public variables and functions from
+another module with different names.
+</p>
+<p>More advanced module systems have become a common feature in recently
+designed languages: ML, Python, Perl, and Modula 3 all allow the
+<em>renaming</em> of objects from a foreign module, so they will not
+clutter the global name space.
+<a name="index-name-space-_002d-private"></a>
+</p>
+<p>In addition, Guile offers variables as first-class objects.  They can
+be used for interacting with the module system.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="General-Information-about-Modules.html#General-Information-about-Modules" accesskey="1">General Information about Modules</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Guile module basics.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Using-Guile-Modules.html#Using-Guile-Modules" accesskey="2">Using Guile Modules</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How to use existing modules.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Creating-Guile-Modules.html#Creating-Guile-Modules" accesskey="3">Creating Guile Modules</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How to package your code into modules.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Modules-and-the-File-System.html#Modules-and-the-File-System" accesskey="4">Modules and the File System</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Installing modules in the file system.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Version-References.html#R6RS-Version-References" accesskey="5">R6RS Version References</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Using version numbers with modules.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Libraries.html#R6RS-Libraries" accesskey="6">R6RS Libraries</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The library and import forms.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Variables.html#Variables" accesskey="7">Variables</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">First-class variables.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Module-System-Reflection.html#Module-System-Reflection" accesskey="8">Module System Reflection</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">First-class modules.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Accessing-Modules-from-C.html#Accessing-Modules-from-C" accesskey="9">Accessing Modules from C</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How to work with modules with C code.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="provide-and-require.html#provide-and-require">provide and require</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The SLIB feature mechanism.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Environments.html#Environments">Environments</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">R5RS top-level environments.
+</td></tr>
+</table>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Foreign-Function-Interface.html#Foreign-Function-Interface" accesskey="n" rel="next">Foreign Function Interface</a>, Previous: <a href="Memory-Management.html#Memory-Management" accesskey="p" rel="prev">Memory Management</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

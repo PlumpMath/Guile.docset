@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Asyncs</title>
+
+<meta name="description" content="Guile Reference Manual: Asyncs">
+<meta name="keywords" content="Guile Reference Manual: Asyncs">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Scheduling.html#Scheduling" rel="up" title="Scheduling">
+<link href="System-asyncs.html#System-asyncs" rel="next" title="System asyncs">
+<link href="Arbiters.html#Arbiters" rel="prev" title="Arbiters">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Asyncs"></a>
+<div class="header">
+<p>
+Next: <a href="Threads.html#Threads" accesskey="n" rel="next">Threads</a>, Previous: <a href="Arbiters.html#Arbiters" accesskey="p" rel="prev">Arbiters</a>, Up: <a href="Scheduling.html#Scheduling" accesskey="u" rel="up">Scheduling</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Asyncs-1"></a>
+<h4 class="subsection">6.21.2 Asyncs</h4>
+
+<a name="index-asyncs"></a>
+<a name="index-user-asyncs"></a>
+<a name="index-system-asyncs"></a>
+
+<p>Asyncs are a means of deferring the execution of Scheme code until it is
+safe to do so.
+</p>
+<p>Guile provides two kinds of asyncs that share the basic concept but are
+otherwise quite different: system asyncs and user asyncs.  System asyncs
+are integrated into the core of Guile and are executed automatically
+when the system is in a state to allow the execution of Scheme code.
+For example, it is not possible to execute Scheme code in a POSIX signal
+handler, but such a signal handler can queue a system async to be
+executed in the near future, when it is safe to do so.
+</p>
+<p>System asyncs can also be queued for threads other than the current one.
+This way, you can cause threads to asynchronously execute arbitrary
+code.
+</p>
+<p>User asyncs offer a convenient means of queuing procedures for future
+execution and triggering this execution.  They will not be executed
+automatically.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="System-asyncs.html#System-asyncs" accesskey="1">System asyncs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="User-asyncs.html#User-asyncs" accesskey="2">User asyncs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+
+
+</body>
+</html>

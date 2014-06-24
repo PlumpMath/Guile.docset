@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Function Prologue Instructions</title>
+
+<meta name="description" content="Guile Reference Manual: Function Prologue Instructions">
+<meta name="keywords" content="Guile Reference Manual: Function Prologue Instructions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Instruction-Set.html#Instruction-Set" rel="up" title="Instruction Set">
+<link href="Trampoline-Instructions.html#Trampoline-Instructions" rel="next" title="Trampoline Instructions">
+<link href="Procedure-Call-and-Return-Instructions.html#Procedure-Call-and-Return-Instructions" rel="prev" title="Procedure Call and Return Instructions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Function-Prologue-Instructions"></a>
+<div class="header">
+<p>
+Next: <a href="Trampoline-Instructions.html#Trampoline-Instructions" accesskey="n" rel="next">Trampoline Instructions</a>, Previous: <a href="Procedure-Call-and-Return-Instructions.html#Procedure-Call-and-Return-Instructions" accesskey="p" rel="prev">Procedure Call and Return Instructions</a>, Up: <a href="Instruction-Set.html#Instruction-Set" accesskey="u" rel="up">Instruction Set</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Function-Prologue-Instructions-1"></a>
+<h4 class="subsubsection">9.3.6.4 Function Prologue Instructions</h4>
+
+<p>A function call in Guile is very cheap: the VM simply hands control to
+the procedure. The procedure itself is responsible for asserting that it
+has been passed an appropriate number of arguments. This strategy allows
+arbitrarily complex argument parsing idioms to be developed, without
+harming the common case.
+</p>
+<p>For example, only calls to keyword-argument procedures &ldquo;pay&rdquo; for the
+cost of parsing keyword arguments. (At the time of this writing, calling
+procedures with keyword arguments is typically two to four times as
+costly as calling procedures with a fixed set of arguments.)
+</p>
+<dl>
+<dt><a name="index-assert_002dnargs_002dee"></a>Instruction: <strong>assert-nargs-ee</strong> <em>n</em></dt>
+<dt><a name="index-assert_002dnargs_002dge"></a>Instruction: <strong>assert-nargs-ge</strong> <em>n</em></dt>
+<dd><p>Assert that the current procedure has been passed exactly <var>n</var>
+arguments, for the <code>-ee</code> case, or <var>n</var> or more arguments, for
+the <code>-ge</code> case. <var>n</var> is encoded over two bytes.
+</p>
+<p>The number of arguments is determined by subtracting the frame pointer
+from the stack pointer (<code>sp - (fp -1)</code>). See <a href="Stack-Layout.html#Stack-Layout">Stack Layout</a>, for
+more details on stack frames.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-br_002dif_002dnargs_002dne"></a>Instruction: <strong>br-if-nargs-ne</strong> <em>n offset</em></dt>
+<dt><a name="index-br_002dif_002dnargs_002dgt"></a>Instruction: <strong>br-if-nargs-gt</strong> <em>n offset</em></dt>
+<dt><a name="index-br_002dif_002dnargs_002dlt"></a>Instruction: <strong>br-if-nargs-lt</strong> <em>n offset</em></dt>
+<dd><p>Jump to <var>offset</var> if the number of arguments is not equal to, greater
+than, or less than <var>n</var>. <var>n</var> is encoded over two bytes, and
+<var>offset</var> has the normal three-byte encoding.
+</p>
+<p>These instructions are used to implement multiple arities, as in
+<code>case-lambda</code>. See <a href="Case_002dlambda.html#Case_002dlambda">Case-lambda</a>, for more information.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bind_002doptionals"></a>Instruction: <strong>bind-optionals</strong> <em>n</em></dt>
+<dd><p>If the procedure has been called with fewer than <var>n</var> arguments, fill
+in the remaining arguments with an unbound value (<code>SCM_UNDEFINED</code>).
+<var>n</var> is encoded over two bytes.
+</p>
+<p>The optionals can be later initialized conditionally via the
+<code>local-bound?</code> instruction.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-push_002drest"></a>Instruction: <strong>push-rest</strong> <em>n</em></dt>
+<dd><p>Pop off excess arguments (more than <var>n</var>), collecting them into a
+list, and push that list. Used to bind a rest argument, if the procedure
+has no keyword arguments. Procedures with keyword arguments use
+<code>bind-rest</code> instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bind_002drest"></a>Instruction: <strong>bind-rest</strong> <em>n idx</em></dt>
+<dd><p>Pop off excess arguments (more than <var>n</var>), collecting them into a
+list. The list is then assigned to the <var>idx</var>th local variable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bind_002doptionals_002fshuffle"></a>Instruction: <strong>bind-optionals/shuffle</strong> <em>nreq nreq-and-opt ntotal</em></dt>
+<dt><a name="index-bind_002doptionals_002fshuffle_002dor_002dbr"></a>Instruction: <strong>bind-optionals/shuffle-or-br</strong> <em>nreq nreq-and-opt ntotal offset</em></dt>
+<dd><p>Shuffle keyword arguments to the top of the stack, filling in the holes
+with <code>SCM_UNDEFINED</code>. Each argument is encoded over two bytes.
+</p>
+<p>This instruction is used by procedures with keyword arguments.
+<var>nreq</var> is the number of required arguments to the procedure, and
+<var>nreq-and-opt</var> is the total number of positional arguments (required
+plus optional). <code>bind-optionals/shuffle</code> will scan the stack from
+the <var>nreq</var>th argument up to the <var>nreq-and-opt</var>th, and start
+shuffling when it sees the first keyword argument or runs out of
+positional arguments.
+</p>
+<p><code>bind-optionals/shuffle-or-br</code> does the same, except that it checks
+if there are too many positional arguments before shuffling.  If this is
+the case, it jumps to <var>offset</var>, encoded using the normal three-byte
+encoding.
+</p>
+<p>Shuffling simply moves the keyword arguments past the total number of
+arguments, <var>ntotal</var>, which includes keyword and rest arguments. The
+free slots created by the shuffle are filled in with
+<code>SCM_UNDEFINED</code>, so they may be conditionally initialized later in
+the function&rsquo;s prologue.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bind_002dkwargs"></a>Instruction: <strong>bind-kwargs</strong> <em>idx ntotal flags</em></dt>
+<dd><p>Parse keyword arguments, assigning their values to the corresponding
+local variables. The keyword arguments should already have been shuffled
+above the <var>ntotal</var>th stack slot by <code>bind-optionals/shuffle</code>.
+</p>
+<p>The parsing is driven by a keyword arguments association list, looked up
+from the <var>idx</var>th element of the procedures object array. The alist
+is a list of pairs of the form <code>(<var>kw</var> . <var>index</var>)</code>, mapping
+keyword arguments to their local variable indices.
+</p>
+<p>There are two bitflags that affect the parser, <code>allow-other-keys?</code>
+(<code>0x1</code>) and <code>rest?</code> (<code>0x2</code>). Unless
+<code>allow-other-keys?</code> is set, the parser will signal an error if an
+unknown key is found. If <code>rest?</code> is set, errors parsing the
+keyword arguments will be ignored, as a later <code>bind-rest</code>
+instruction will collect all of the tail arguments, including the
+keywords, into a list. Otherwise if the keyword arguments are invalid,
+an error is signalled.
+</p>
+<p><var>idx</var> and <var>ntotal</var> are encoded over two bytes each, and
+<var>flags</var> is encoded over one byte.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-reserve_002dlocals"></a>Instruction: <strong>reserve-locals</strong> <em>n</em></dt>
+<dd><p>Resets the stack pointer to have space for <var>n</var> local variables,
+including the arguments. If this operation increments the stack pointer,
+as in a push, the new slots are filled with <code>SCM_UNBOUND</code>. If this
+operation decrements the stack pointer, any excess values are dropped.
+</p>
+<p><code>reserve-locals</code> is typically used after argument parsing to
+reserve space for local variables.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-assert_002dnargs_002dee_002flocals"></a>Instruction: <strong>assert-nargs-ee/locals</strong> <em>n</em></dt>
+<dt><a name="index-assert_002dnargs_002dge_002flocals"></a>Instruction: <strong>assert-nargs-ge/locals</strong> <em>n</em></dt>
+<dd><p>A combination of <code>assert-nargs-ee</code> and <code>reserve-locals</code>. The
+number of arguments is encoded in the lower three bits of <var>n</var>, a
+one-byte value. The number of additional local variables is take from
+the upper 5 bits of <var>n</var>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Trampoline-Instructions.html#Trampoline-Instructions" accesskey="n" rel="next">Trampoline Instructions</a>, Previous: <a href="Procedure-Call-and-Return-Instructions.html#Procedure-Call-and-Return-Instructions" accesskey="p" rel="prev">Procedure Call and Return Instructions</a>, Up: <a href="Instruction-Set.html#Instruction-Set" accesskey="u" rel="up">Instruction Set</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

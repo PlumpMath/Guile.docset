@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-35</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-35">
+<meta name="keywords" content="Guile Reference Manual: SRFI-35">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d37.html#SRFI_002d37" rel="next" title="SRFI-37">
+<link href="SRFI_002d34.html#SRFI_002d34" rel="prev" title="SRFI-34">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d35"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d37.html#SRFI_002d37" accesskey="n" rel="next">SRFI-37</a>, Previous: <a href="SRFI_002d34.html#SRFI_002d34" accesskey="p" rel="prev">SRFI-34</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d35-_002d-Conditions"></a>
+<h4 class="subsection">7.5.23 SRFI-35 - Conditions</h4>
+
+<a name="index-SRFI_002d35"></a>
+<a name="index-conditions"></a>
+<a name="index-exceptions"></a>
+
+<p><a href="http://srfi.schemers.org/srfi-35/srfi-35.html">SRFI-35</a> implements
+<em>conditions</em>, a data structure akin to records designed to convey
+information about exceptional conditions between parts of a program.  It
+is normally used in conjunction with SRFI-34&rsquo;s <code>raise</code>:
+</p>
+<div class="lisp">
+<pre class="lisp">(raise (condition (&amp;message
+                    (message &quot;An error occurred&quot;))))
+</pre></div>
+
+<p>Users can define <em>condition types</em> containing arbitrary information.
+Condition types may inherit from one another.  This allows the part of
+the program that handles (or &ldquo;catches&rdquo;) conditions to get accurate
+information about the exceptional condition that arose.
+</p>
+<p>SRFI-35 conditions are made available using:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (srfi srfi-35))
+</pre></div>
+
+<p>The procedures available to manipulate condition types are the
+following:
+</p>
+<dl>
+<dt><a name="index-make_002dcondition_002dtype"></a>Scheme Procedure: <strong>make-condition-type</strong> <em>id parent field-names</em></dt>
+<dd><p>Return a new condition type named <var>id</var>, inheriting from
+<var>parent</var>, and with the fields whose names are listed in
+<var>field-names</var>.  <var>field-names</var> must be a list of symbols and must
+not contain names already used by <var>parent</var> or one of its supertypes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-condition_002dtype_003f"></a>Scheme Procedure: <strong>condition-type?</strong> <em>obj</em></dt>
+<dd><p>Return true if <var>obj</var> is a condition type.
+</p></dd></dl>
+
+<p>Conditions can be created and accessed with the following procedures:
+</p>
+<dl>
+<dt><a name="index-make_002dcondition"></a>Scheme Procedure: <strong>make-condition</strong> <em>type . field+value</em></dt>
+<dd><p>Return a new condition of type <var>type</var> with fields initialized as
+specified by <var>field+value</var>, a sequence of field names (symbols) and
+values as in the following example:
+</p>
+<div class="lisp">
+<pre class="lisp">(let ((&amp;ct (make-condition-type 'foo &amp;condition '(a b c))))
+  (make-condition &amp;ct 'a 1 'b 2 'c 3))
+</pre></div>
+
+<p>Note that all fields of <var>type</var> and its supertypes must be specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dcompound_002dcondition"></a>Scheme Procedure: <strong>make-compound-condition</strong> <em>condition1 condition2 &hellip;</em></dt>
+<dd><p>Return a new compound condition composed of <var>condition1</var>
+<var>condition2</var> <small class="enddots">...</small>.  The returned condition has the type of
+each condition of condition1 condition2 &hellip; (per
+<code>condition-has-type?</code>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-condition_002dhas_002dtype_003f"></a>Scheme Procedure: <strong>condition-has-type?</strong> <em>c type</em></dt>
+<dd><p>Return true if condition <var>c</var> has type <var>type</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-condition_002dref"></a>Scheme Procedure: <strong>condition-ref</strong> <em>c field-name</em></dt>
+<dd><p>Return the value of the field named <var>field-name</var> from condition <var>c</var>.
+</p>
+<p>If <var>c</var> is a compound condition and several underlying condition
+types contain a field named <var>field-name</var>, then the value of the
+first such field is returned, using the order in which conditions were
+passed to <code>make-compound-condition</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-extract_002dcondition"></a>Scheme Procedure: <strong>extract-condition</strong> <em>c type</em></dt>
+<dd><p>Return a condition of condition type <var>type</var> with the field values
+specified by <var>c</var>.
+</p>
+<p>If <var>c</var> is a compound condition, extract the field values from the
+subcondition belonging to <var>type</var> that appeared first in the call to
+<code>make-compound-condition</code> that created the condition.
+</p></dd></dl>
+
+<p>Convenience macros are also available to create condition types and
+conditions.
+</p>
+<dl>
+<dt><a name="index-define_002dcondition_002dtype"></a>library syntax: <strong>define-condition-type</strong> <em>type supertype predicate field-spec...</em></dt>
+<dd><p>Define a new condition type named <var>type</var> that inherits from
+<var>supertype</var>.  In addition, bind <var>predicate</var> to a type predicate
+that returns true when passed a condition of type <var>type</var> or any of
+its subtypes.  <var>field-spec</var> must have the form <code>(field
+accessor)</code> where <var>field</var> is the name of field of <var>type</var> and
+<var>accessor</var> is the name of a procedure to access field <var>field</var> in
+conditions of type <var>type</var>.
+</p>
+<p>The example below defines condition type <code>&amp;foo</code>, inheriting from
+<code>&amp;condition</code> with fields <code>a</code>, <code>b</code> and <code>c</code>:
+</p>
+<div class="lisp">
+<pre class="lisp">(define-condition-type &amp;foo &amp;condition
+  foo-condition?
+  (a  foo-a)
+  (b  foo-b)
+  (c  foo-c))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-condition"></a>library syntax: <strong>condition</strong> <em>type-field-binding1 type-field-binding2 &hellip;</em></dt>
+<dd><p>Return a new condition or compound condition, initialized according to
+<var>type-field-binding1</var> <var>type-field-binding2</var> <small class="enddots">...</small>.  Each
+<var>type-field-binding</var> must have the form <code>(type
+field-specs...)</code>, where <var>type</var> is the name of a variable bound to a
+condition type; each <var>field-spec</var> must have the form
+<code>(field-name value)</code> where <var>field-name</var> is a symbol denoting
+the field being initialized to <var>value</var>.  As for
+<code>make-condition</code>, all fields must be specified.
+</p>
+<p>The following example returns a simple condition:
+</p>
+<div class="lisp">
+<pre class="lisp">(condition (&amp;message (message &quot;An error occurred&quot;)))
+</pre></div>
+
+<p>The one below returns a compound condition:
+</p>
+<div class="lisp">
+<pre class="lisp">(condition (&amp;message (message &quot;An error occurred&quot;))
+           (&amp;serious))
+</pre></div>
+</dd></dl>
+
+<p>Finally, SRFI-35 defines a several standard condition types.
+</p>
+<dl>
+<dt><a name="index-_0026condition-1"></a>Variable: <strong>&amp;condition</strong></dt>
+<dd><p>This condition type is the root of all condition types.  It has no
+fields.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0026message-1"></a>Variable: <strong>&amp;message</strong></dt>
+<dd><p>A condition type that carries a message describing the nature of the
+condition to humans.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-message_002dcondition_003f"></a>Scheme Procedure: <strong>message-condition?</strong> <em>c</em></dt>
+<dd><p>Return true if <var>c</var> is of type <code>&amp;message</code> or one of its
+subtypes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-condition_002dmessage"></a>Scheme Procedure: <strong>condition-message</strong> <em>c</em></dt>
+<dd><p>Return the message associated with message condition <var>c</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0026serious-1"></a>Variable: <strong>&amp;serious</strong></dt>
+<dd><p>This type describes conditions serious enough that they cannot safely be
+ignored.  It has no fields.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-serious_002dcondition_003f"></a>Scheme Procedure: <strong>serious-condition?</strong> <em>c</em></dt>
+<dd><p>Return true if <var>c</var> is of type <code>&amp;serious</code> or one of its
+subtypes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0026error-1"></a>Variable: <strong>&amp;error</strong></dt>
+<dd><p>This condition describes errors, typically caused by something that has
+gone wrong in the interaction of the program with the external world or
+the user.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-error_003f"></a>Scheme Procedure: <strong>error?</strong> <em>c</em></dt>
+<dd><p>Return true if <var>c</var> is of type <code>&amp;error</code> or one of its subtypes.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d37.html#SRFI_002d37" accesskey="n" rel="next">SRFI-37</a>, Previous: <a href="SRFI_002d34.html#SRFI_002d34" accesskey="p" rel="prev">SRFI-34</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

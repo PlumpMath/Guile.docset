@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Environment Variables</title>
+
+<meta name="description" content="Guile Reference Manual: Environment Variables">
+<meta name="keywords" content="Guile Reference Manual: Environment Variables">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Invoking-Guile.html#Invoking-Guile" rel="up" title="Invoking Guile">
+<link href="Guile-Scripting.html#Guile-Scripting" rel="next" title="Guile Scripting">
+<link href="Command_002dline-Options.html#Command_002dline-Options" rel="prev" title="Command-line Options">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Environment-Variables"></a>
+<div class="header">
+<p>
+Previous: <a href="Command_002dline-Options.html#Command_002dline-Options" accesskey="p" rel="prev">Command-line Options</a>, Up: <a href="Invoking-Guile.html#Invoking-Guile" accesskey="u" rel="up">Invoking Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Environment-Variables-1"></a>
+<h4 class="subsection">4.2.2 Environment Variables</h4>
+<a name="index-environment-variables"></a>
+<a name="index-shell"></a>
+<a name="index-initialization"></a>
+<p>The <em>environment</em> is a feature of the operating system; it consists
+of a collection of variables with names and values.  Each variable is
+called an <em>environment variable</em> (or, sometimes, a &ldquo;shell
+variable&rdquo;); environment variable names are case-sensitive, and it is
+conventional to use upper-case letters only.  The values are all text
+strings, even those that are written as numerals.  (Note that here we
+are referring to names and values that are defined in the operating
+system shell from which Guile is invoked.  This is not the same as a
+Scheme environment that is defined within a running instance of Guile.
+For a description of Scheme environments, see <a href="About-Environments.html#About-Environments">About Environments</a>.)
+</p>   
+<p>How to set environment variables before starting Guile depends on the
+operating system and, especially, the shell that you are using.  For
+example, here is how to tell Guile to provide detailed warning messages
+about deprecated features by setting <code>GUILE_WARN_DEPRECATED</code> using
+Bash:
+</p>
+<div class="example">
+<pre class="example">$ export GUILE_WARN_DEPRECATED=&quot;detailed&quot;
+$ guile
+</pre></div>
+
+<p>Or, detailed warnings can be turned on for a single invocation using:
+</p>
+<div class="example">
+<pre class="example">$ env GUILE_WARN_DEPRECATED=&quot;detailed&quot; guile
+</pre></div>
+
+<p>If you wish to retrieve or change the value of the shell environment
+variables that affect the run-time behavior of Guile from within a
+running instance of Guile, see <a href="Runtime-Environment.html#Runtime-Environment">Runtime Environment</a>.
+</p>
+<p>Here are the environment variables that affect the run-time behavior of
+Guile:
+</p>
+<dl compact="compact">
+<dt><code>GUILE_AUTO_COMPILE</code></dt>
+<dd><a name="index-GUILE_005fAUTO_005fCOMPILE"></a>
+<p>This is a flag that can be used to tell Guile whether or not to compile
+Scheme source files automatically.  Starting with Guile 2.0, Scheme
+source files will be compiled automatically, by default.
+</p>
+<p>If a compiled (<samp>.go</samp>) file corresponding to a <samp>.scm</samp> file is
+not found or is not newer than the <samp>.scm</samp> file, the <samp>.scm</samp>
+file will be compiled on the fly, and the resulting <samp>.go</samp> file
+stored away.  An advisory note will be printed on the console.
+</p>
+<p>Compiled files will be stored in the directory
+<samp>$XDG_CACHE_HOME/guile/ccache</samp>, where <code>XDG_CACHE_HOME</code>
+defaults to the directory <samp>$HOME/.cache</samp>.  This directory will be
+created if it does not already exist.
+</p>
+<p>Note that this mechanism depends on the timestamp of the <samp>.go</samp> file
+being newer than that of the <samp>.scm</samp> file; if the <samp>.scm</samp> or
+<samp>.go</samp> files are moved after installation, care should be taken to
+preserve their original timestamps.
+</p>
+<p>Set <code>GUILE_AUTO_COMPILE</code> to zero (0), to prevent Scheme files from
+being compiled automatically.  Set this variable to &ldquo;fresh&rdquo; to tell
+Guile to compile Scheme files whether they are newer than the compiled
+files or not.
+</p>
+<p>See <a href="Compilation.html#Compilation">Compilation</a>.
+</p>
+</dd>
+<dt><code>GUILE_HISTORY</code></dt>
+<dd><a name="index-GUILE_005fHISTORY-1"></a>
+<p>This variable names the file that holds the Guile REPL command history.
+You can specify a different history file by setting this environment
+variable.  By default, the history file is <samp>$HOME/.guile_history</samp>.
+</p>
+</dd>
+<dt><code>GUILE_INSTALL_LOCALE</code></dt>
+<dd><a name="index-GUILE_005fINSTALL_005fLOCALE"></a>
+<p>This is a flag that can be used to tell Guile whether or not to install
+the current locale at startup, via a call to <code>(setlocale LC_ALL
+&quot;&quot;)</code>.  See <a href="Locales.html#Locales">Locales</a>, for more information on locales.
+</p>
+<p>You may explicitly indicate that you do not want to install
+the locale by setting <code>GUILE_INSTALL_LOCALE</code> to <code>0</code>, or
+explicitly enable it by setting the variable to <code>1</code>.
+</p>
+<p>Usually, installing the current locale is the right thing to do.  It
+allows Guile to correctly parse and print strings with non-ASCII
+characters.  However, for compatibility with previous Guile 2.0
+releases, this option is off by default.  The next stable release series
+of Guile (the 2.2 series) will install locales by default.
+</p>
+</dd>
+<dt><code>GUILE_STACK_SIZE</code></dt>
+<dd><a name="index-GUILE_005fSTACK_005fSIZE"></a>
+<p>Guile currently has a limited stack size for Scheme computations.
+Attempting to call too many nested functions will signal an error.  This
+is good to detect infinite recursion, but sometimes the limit is reached
+for normal computations.  This environment variable, if set to a
+positive integer, specifies the number of Scheme value slots to allocate
+for the stack.
+</p>
+<p>In the future we will implement stacks that can grow and shrink, but for
+now this hack will have to do.
+</p>
+</dd>
+<dt><code>GUILE_LOAD_COMPILED_PATH</code></dt>
+<dd><a name="index-GUILE_005fLOAD_005fCOMPILED_005fPATH"></a>
+<p>This variable may be used to augment the path that is searched for
+compiled Scheme files (<samp>.go</samp> files) when loading.  Its value should
+be a colon-separated list of directories.  If it contains the special
+path component <code>...</code> (ellipsis), then the default path is put in
+place of the ellipsis, otherwise the default path is placed at the end.
+The result is stored in <code>%load-compiled-path</code> (see <a href="Load-Paths.html#Load-Paths">Load Paths</a>).
+</p>
+<p>Here is an example using the Bash shell that adds the current directory,
+<samp>.</samp>, and the relative directory <samp>../my-library</samp> to
+<code>%load-compiled-path</code>:
+</p>
+<div class="example">
+<pre class="example">$ export GUILE_LOAD_COMPILED_PATH=&quot;.:../my-library&quot;
+$ guile -c '(display %load-compiled-path) (newline)'
+(. ../my-library /usr/local/lib/guile/2.0/ccache)
+</pre></div>
+
+</dd>
+<dt><code>GUILE_LOAD_PATH</code></dt>
+<dd><a name="index-GUILE_005fLOAD_005fPATH"></a>
+<p>This variable may be used to augment the path that is searched for
+Scheme files when loading.  Its value should be a colon-separated list
+of directories.  If it contains the special path component <code>...</code>
+(ellipsis), then the default path is put in place of the ellipsis,
+otherwise the default path is placed at the end.  The result is stored
+in <code>%load-path</code> (see <a href="Load-Paths.html#Load-Paths">Load Paths</a>).
+</p>
+<p>Here is an example using the Bash shell that prepends the current
+directory to <code>%load-path</code>, and adds the relative directory
+<samp>../srfi</samp> to the end:
+</p>
+<div class="example">
+<pre class="example">$ env GUILE_LOAD_PATH=&quot;.:...:../srfi&quot; \
+guile -c '(display %load-path) (newline)'
+(. /usr/local/share/guile/2.0 \
+/usr/local/share/guile/site/2.0 \
+/usr/local/share/guile/site \
+/usr/local/share/guile \
+../srfi)
+</pre></div>
+
+<p>(Note: The line breaks, above, are for documentation purposes only, and
+not required in the actual example.)
+</p>
+</dd>
+<dt><code>GUILE_WARN_DEPRECATED</code></dt>
+<dd><a name="index-GUILE_005fWARN_005fDEPRECATED"></a>
+<p>As Guile evolves, some features will be eliminated or replaced by newer
+features.  To help users migrate their code as this evolution occurs,
+Guile will issue warning messages about code that uses features that
+have been marked for eventual elimination.  <code>GUILE_WARN_DEPRECATED</code>
+can be set to &ldquo;no&rdquo; to tell Guile not to display these warning
+messages, or set to &ldquo;detailed&rdquo; to tell Guile to display more lengthy
+messages describing the warning.  See <a href="Deprecation.html#Deprecation">Deprecation</a>.
+</p>
+</dd>
+<dt><code>HOME</code></dt>
+<dd><a name="index-HOME"></a>
+<p>Guile uses the environment variable <code>HOME</code>, the name of your home
+directory, to locate various files, such as <samp>.guile</samp> or
+<samp>.guile_history</samp>.
+</p>
+</dd>
+</dl>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Command_002dline-Options.html#Command_002dline-Options" accesskey="p" rel="prev">Command-line Options</a>, Up: <a href="Invoking-Guile.html#Invoking-Guile" accesskey="u" rel="up">Invoking Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

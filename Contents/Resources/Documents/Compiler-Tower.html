@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Compiler Tower</title>
+
+<meta name="description" content="Guile Reference Manual: Compiler Tower">
+<meta name="keywords" content="Guile Reference Manual: Compiler Tower">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" rel="up" title="Compiling to the Virtual Machine">
+<link href="The-Scheme-Compiler.html#The-Scheme-Compiler" rel="next" title="The Scheme Compiler">
+<link href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" rel="prev" title="Compiling to the Virtual Machine">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Compiler-Tower"></a>
+<div class="header">
+<p>
+Next: <a href="The-Scheme-Compiler.html#The-Scheme-Compiler" accesskey="n" rel="next">The Scheme Compiler</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Compiler-Tower-1"></a>
+<h4 class="subsection">9.4.1 Compiler Tower</h4>
+
+<p>Guile&rsquo;s compiler is quite simple, actually &ndash; its <em>compilers</em>, to
+put it more accurately. Guile defines a tower of languages, starting
+at Scheme and progressively simplifying down to languages that
+resemble the VM instruction set (see <a href="Instruction-Set.html#Instruction-Set">Instruction Set</a>).
+</p>
+<p>Each language knows how to compile to the next, so each step is simple
+and understandable. Furthermore, this set of languages is not
+hardcoded into Guile, so it is possible for the user to add new
+high-level languages, new passes, or even different compilation
+targets.
+</p>
+<p>Languages are registered in the module, <code>(system base language)</code>:
+</p>
+<div class="example">
+<pre class="example">(use-modules (system base language))
+</pre></div>
+
+<p>They are registered with the <code>define-language</code> form.
+</p>
+<dl>
+<dt><a name="index-define_002dlanguage"></a>Scheme Syntax: <strong>define-language</strong> <em>[#:name] [#:title] [#:reader] [#:printer]                        [#:parser=#f] [#:compilers='()]                        [#:decompilers='()] [#:evaluator=#f]                        [#:joiner=#f] [#:for-humans?=#t]                        [#:make-default-environment=make-fresh-user-module]</em></dt>
+<dd><p>Define a language.
+</p>
+<p>This syntax defines a <code>#&lt;language&gt;</code> object, bound to <var>name</var>
+in the current environment. In addition, the language will be added to
+the global language set. For example, this is the language definition
+for Scheme:
+</p>
+<div class="example">
+<pre class="example">(define-language scheme
+  #:title	&quot;Scheme&quot;
+  #:reader      (lambda (port env) ...)
+  #:compilers   `((tree-il . ,compile-tree-il))
+  #:decompilers `((tree-il . ,decompile-tree-il))
+  #:evaluator	(lambda (x module) (primitive-eval x))
+  #:printer	write
+  #:make-default-environment (lambda () ...))
+</pre></div>
+</dd></dl>
+
+<p>The interesting thing about having languages defined this way is that
+they present a uniform interface to the read-eval-print loop. This
+allows the user to change the current language of the REPL:
+</p>
+<div class="example">
+<pre class="example">scheme@(guile-user)&gt; ,language tree-il
+Happy hacking with Tree Intermediate Language!  To switch back, type `,L scheme'.
+tree-il@(guile-user)&gt; ,L scheme
+Happy hacking with Scheme!  To switch back, type `,L tree-il'.
+scheme@(guile-user)&gt; 
+</pre></div>
+
+<p>Languages can be looked up by name, as they were above.
+</p>
+<dl>
+<dt><a name="index-lookup_002dlanguage"></a>Scheme Procedure: <strong>lookup-language</strong> <em>name</em></dt>
+<dd><p>Looks up a language named <var>name</var>, autoloading it if necessary.
+</p>
+<p>Languages are autoloaded by looking for a variable named <var>name</var> in
+a module named <code>(language <var>name</var> spec)</code>.
+</p>
+<p>The language object will be returned, or <code>#f</code> if there does not
+exist a language with that name.
+</p></dd></dl>
+
+<p>Defining languages this way allows us to programmatically determine
+the necessary steps for compiling code from one language to another.
+</p>
+<dl>
+<dt><a name="index-lookup_002dcompilation_002dorder"></a>Scheme Procedure: <strong>lookup-compilation-order</strong> <em>from to</em></dt>
+<dd><p>Recursively traverses the set of languages to which <var>from</var> can
+compile, depth-first, and return the first path that can transform
+<var>from</var> to <var>to</var>. Returns <code>#f</code> if no path is found.
+</p>
+<p>This function memoizes its results in a cache that is invalidated by
+subsequent calls to <code>define-language</code>, so it should be quite
+fast.
+</p></dd></dl>
+
+<p>There is a notion of a &ldquo;current language&rdquo;, which is maintained in the
+<code>current-language</code> parameter, defined in the core <code>(guile)</code>
+module. This language is normally Scheme, and may be rebound by the
+user. The run-time compilation interfaces
+(see <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile">Read/Load/Eval/Compile</a>) also allow you to choose other source
+and target languages.
+</p>
+<p>The normal tower of languages when compiling Scheme goes like this:
+</p>
+<ul>
+<li> Scheme
+</li><li> Tree Intermediate Language (Tree-IL)
+</li><li> Guile Lowlevel Intermediate Language (GLIL)
+</li><li> Assembly
+</li><li> Bytecode
+</li><li> Objcode
+</li></ul>
+
+<p>Object code may be serialized to disk directly, though it has a cookie
+and version prepended to the front. But when compiling Scheme at run
+time, you want a Scheme value: for example, a compiled procedure. For
+this reason, so as not to break the abstraction, Guile defines a fake
+language at the bottom of the tower:
+</p>
+<ul>
+<li> Value
+</li></ul>
+
+<p>Compiling to <code>value</code> loads the object code into a procedure, and
+wakes the sleeping giant.
+</p>
+<p>Perhaps this strangeness can be explained by example:
+<code>compile-file</code> defaults to compiling to object code, because it
+produces object code that has to live in the barren world outside the
+Guile runtime; but <code>compile</code> defaults to compiling to
+<code>value</code>, as its product re-enters the Guile world.
+</p>
+<p>Indeed, the process of compilation can circulate through these
+different worlds indefinitely, as shown by the following quine:
+</p>
+<div class="example">
+<pre class="example">((lambda (x) ((compile x) x)) '(lambda (x) ((compile x) x)))
+</pre></div>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="The-Scheme-Compiler.html#The-Scheme-Compiler" accesskey="n" rel="next">The Scheme Compiler</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Network Databases</title>
+
+<meta name="description" content="Guile Reference Manual: Network Databases">
+<meta name="keywords" content="Guile Reference Manual: Network Databases">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Networking.html#Networking" rel="up" title="Networking">
+<link href="Network-Socket-Address.html#Network-Socket-Address" rel="next" title="Network Socket Address">
+<link href="Network-Address-Conversion.html#Network-Address-Conversion" rel="prev" title="Network Address Conversion">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Network-Databases"></a>
+<div class="header">
+<p>
+Next: <a href="Network-Socket-Address.html#Network-Socket-Address" accesskey="n" rel="next">Network Socket Address</a>, Previous: <a href="Network-Address-Conversion.html#Network-Address-Conversion" accesskey="p" rel="prev">Network Address Conversion</a>, Up: <a href="Networking.html#Networking" accesskey="u" rel="up">Networking</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Network-Databases-1"></a>
+<h4 class="subsubsection">7.2.11.2 Network Databases</h4>
+<a name="index-network-database"></a>
+
+<p>This section describes procedures which query various network databases.
+Care should be taken when using the database routines since they are not
+reentrant.
+</p>
+<a name="getaddrinfo"></a>
+<h4 class="subsubheading"><code>getaddrinfo</code></h4>
+
+<a name="index-addrinfo-object-type"></a>
+<a name="index-host-name-lookup"></a>
+<a name="index-service-name-lookup"></a>
+
+<p>The <code>getaddrinfo</code> procedure maps host and service names to socket addresses
+and associated information in a protocol-independent way.
+</p>
+<dl>
+<dt><a name="index-getaddrinfo"></a>Scheme Procedure: <strong>getaddrinfo</strong> <em>name service [hint_flags [hint_family [hint_socktype [hint_protocol]]]]</em></dt>
+<dt><a name="index-scm_005fgetaddrinfo"></a>C Function: <strong>scm_getaddrinfo</strong> <em>(name, service, hint_flags, hint_family, hint_socktype, hint_protocol)</em></dt>
+<dd><p>Return a list of <code>addrinfo</code> structures containing
+a socket address and associated information for host <var>name</var>
+and/or <var>service</var> to be used in creating a socket with
+which to address the specified service.
+</p>
+<div class="example">
+<pre class="example">(let* ((ai (car (getaddrinfo &quot;www.gnu.org&quot; &quot;http&quot;)))
+       (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
+                   (addrinfo:protocol ai))))
+  (connect s (addrinfo:addr ai))
+  s)
+</pre></div>
+
+<p>When <var>service</var> is omitted or is <code>#f</code>, return
+network-level addresses for <var>name</var>.  When <var>name</var>
+is <code>#f</code> <var>service</var> must be provided and service
+locations local to the caller are returned.
+</p>
+<p>Additional hints can be provided.  When specified,
+<var>hint_flags</var> should be a bitwise-or of zero or more
+constants among the following:
+</p>
+<dl compact="compact">
+<dt><code>AI_PASSIVE</code></dt>
+<dd><p>Socket address is intended for <code>bind</code>.
+</p>
+</dd>
+<dt><code>AI_CANONNAME</code></dt>
+<dd><p>Request for canonical host name, available via
+<code>addrinfo:canonname</code>.  This makes sense mainly when
+DNS lookups are involved.
+</p>
+</dd>
+<dt><code>AI_NUMERICHOST</code></dt>
+<dd><p>Specifies that <var>name</var> is a numeric host address string
+(e.g., <code>&quot;127.0.0.1&quot;</code>), meaning that name resolution
+will not be used.
+</p>
+</dd>
+<dt><code>AI_NUMERICSERV</code></dt>
+<dd><p>Likewise, specifies that <var>service</var> is a numeric port
+string (e.g., <code>&quot;80&quot;</code>).
+</p>
+</dd>
+<dt><code>AI_ADDRCONFIG</code></dt>
+<dd><p>Return only addresses configured on the local system  It is
+highly recommended to provide this flag when the returned
+socket addresses are to be used to make connections;
+otherwise, some of the returned addresses could be unreachable
+or use a protocol that is not supported.
+</p>
+</dd>
+<dt><code>AI_V4MAPPED</code></dt>
+<dd><p>When looking up IPv6 addresses, return mapped IPv4 addresses if
+there is no IPv6 address available at all.
+</p>
+</dd>
+<dt><code>AI_ALL</code></dt>
+<dd><p>If this flag is set along with <code>AI_V4MAPPED</code> when looking up IPv6
+addresses, return all IPv6 addresses as well as all IPv4 addresses, the latter
+mapped to IPv6 format.
+</p></dd>
+</dl>
+
+<p>When given, <var>hint_family</var> should specify the requested
+address family, e.g., <code>AF_INET6</code>.  Similarly,
+<var>hint_socktype</var> should specify the requested socket type
+(e.g., <code>SOCK_DGRAM</code>), and <var>hint_protocol</var> should
+specify the requested protocol (its value is interpreted
+as in calls to <code>socket</code>).
+</p>
+<p>On error, an exception with key <code>getaddrinfo-error</code> is
+thrown, with an error code (an integer) as its argument:
+</p>
+<div class="example">
+<pre class="example">(catch 'getaddrinfo-error
+  (lambda ()
+    (getaddrinfo &quot;www.gnu.org&quot; &quot;gopher&quot;))
+  (lambda (key errcode)
+    (cond ((= errcode EAI_SERVICE)
+	   (display &quot;doesn't know about Gopher!\n&quot;))
+	  ((= errcode EAI_NONAME)
+	   (display &quot;www.gnu.org not found\\n&quot;))
+	  (else
+	   (format #t &quot;something wrong: ~a\n&quot;
+		   (gai-strerror errcode))))))
+</pre></div>
+
+<p>Error codes are:
+</p>
+<dl compact="compact">
+<dt><code>EAI_AGAIN</code></dt>
+<dd><p>The name or service could not be resolved at this time. Future
+attempts may succeed.
+</p>
+</dd>
+<dt><code>EAI_BADFLAGS</code></dt>
+<dd><p><var>hint_flags</var> contains an invalid value.
+</p>
+</dd>
+<dt><code>EAI_FAIL</code></dt>
+<dd><p>A non-recoverable error occurred when attempting to
+resolve the name.
+</p>
+</dd>
+<dt><code>EAI_FAMILY</code></dt>
+<dd><p><var>hint_family</var> was not recognized.
+</p>
+</dd>
+<dt><code>EAI_NONAME</code></dt>
+<dd><p>Either <var>name</var> does not resolve for the supplied parameters,
+or neither <var>name</var> nor <var>service</var> were supplied.
+</p>
+</dd>
+<dt><code>EAI_NODATA</code></dt>
+<dd><p>This non-POSIX error code can be returned on some systems (GNU
+and Darwin, at least), for example when <var>name</var> is known
+but requests that were made turned out no data.  Error handling
+code should be prepared to handle it when it is defined.
+</p>
+</dd>
+<dt><code>EAI_SERVICE</code></dt>
+<dd><p><var>service</var> was not recognized for the specified socket type.
+</p>
+</dd>
+<dt><code>EAI_SOCKTYPE</code></dt>
+<dd><p><var>hint_socktype</var> was not recognized.
+</p>
+</dd>
+<dt><code>EAI_SYSTEM</code></dt>
+<dd><p>A system error occurred.  In C, the error code can be found in
+<code>errno</code>; this value is not accessible from Scheme, but in
+practice it provides little information about the actual error
+cause.
+</p></dd>
+</dl>
+
+<p>Users are encouraged to read the
+<a href="http://www.opengroup.org/onlinepubs/9699919799/functions/getaddrinfo.html">&quot;POSIX specification</a> for more details.
+</p></dd></dl>
+
+<p>The following procedures take an <code>addrinfo</code> object as returned by
+<code>getaddrinfo</code>:
+</p>
+<dl>
+<dt><a name="index-addrinfo_003aflags"></a>Scheme Procedure: <strong>addrinfo:flags</strong> <em>ai</em></dt>
+<dd><p>Return flags for <var>ai</var> as a bitwise or of <code>AI_</code> values (see above).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-addrinfo_003afam"></a>Scheme Procedure: <strong>addrinfo:fam</strong> <em>ai</em></dt>
+<dd><p>Return the address family of <var>ai</var> (a <code>AF_</code> value).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-addrinfo_003asocktype"></a>Scheme Procedure: <strong>addrinfo:socktype</strong> <em>ai</em></dt>
+<dd><p>Return the socket type for <var>ai</var> (a <code>SOCK_</code> value).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-addrinfo_003aprotocol"></a>Scheme Procedure: <strong>addrinfo:protocol</strong> <em>ai</em></dt>
+<dd><p>Return the protocol of <var>ai</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-addrinfo_003aaddr"></a>Scheme Procedure: <strong>addrinfo:addr</strong> <em>ai</em></dt>
+<dd><p>Return the socket address associated with <var>ai</var> as a <code>sockaddr</code>
+object (see <a href="Network-Socket-Address.html#Network-Socket-Address">Network Socket Address</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-addrinfo_003acanonname"></a>Scheme Procedure: <strong>addrinfo:canonname</strong> <em>ai</em></dt>
+<dd><p>Return a string for the canonical name associated with <var>ai</var> if
+the <code>AI_CANONNAME</code> flag was supplied.
+</p></dd></dl>
+
+<a name="The-Host-Database"></a>
+<h4 class="subsubheading">The Host Database</h4>
+<a name="index-_002fetc_002fhosts"></a>
+<a name="index-network-database-1"></a>
+
+<p>A <em>host object</em> is a structure that represents what is known about a
+network host, and is the usual way of representing a system&rsquo;s network
+identity inside software.
+</p>
+<p>The following functions accept a host object and return a selected
+component:
+</p>
+<dl>
+<dt><a name="index-hostent_003aname"></a>Scheme Procedure: <strong>hostent:name</strong> <em>host</em></dt>
+<dd><p>The &ldquo;official&rdquo; hostname for <var>host</var>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-hostent_003aaliases"></a>Scheme Procedure: <strong>hostent:aliases</strong> <em>host</em></dt>
+<dd><p>A list of aliases for <var>host</var>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-hostent_003aaddrtype"></a>Scheme Procedure: <strong>hostent:addrtype</strong> <em>host</em></dt>
+<dd><p>The host address type, one of the <code>AF</code> constants, such as
+<code>AF_INET</code> or <code>AF_INET6</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-hostent_003alength"></a>Scheme Procedure: <strong>hostent:length</strong> <em>host</em></dt>
+<dd><p>The length of each address for <var>host</var>, in bytes.
+</p></dd></dl>
+<dl>
+<dt><a name="index-hostent_003aaddr_002dlist"></a>Scheme Procedure: <strong>hostent:addr-list</strong> <em>host</em></dt>
+<dd><p>The list of network addresses associated with <var>host</var>.  For
+<code>AF_INET</code> these are integer IPv4 address (see <a href="Network-Address-Conversion.html#Network-Address-Conversion">Network Address Conversion</a>).
+</p></dd></dl>
+
+<p>The following procedures can be used to search the host database.  However,
+<code>getaddrinfo</code> should be preferred over them since it&rsquo;s more generic and
+thread-safe.
+</p>
+<dl>
+<dt><a name="index-gethost"></a>Scheme Procedure: <strong>gethost</strong> <em>[host]</em></dt>
+<dt><a name="index-gethostbyname"></a>Scheme Procedure: <strong>gethostbyname</strong> <em>hostname</em></dt>
+<dt><a name="index-gethostbyaddr"></a>Scheme Procedure: <strong>gethostbyaddr</strong> <em>address</em></dt>
+<dt><a name="index-scm_005fgethost"></a>C Function: <strong>scm_gethost</strong> <em>(host)</em></dt>
+<dd><p>Look up a host by name or address, returning a host object.  The
+<code>gethost</code> procedure will accept either a string name or an integer
+address; if given no arguments, it behaves like <code>gethostent</code> (see
+below).  If a name or address is supplied but the address can not be
+found, an error will be thrown to one of the keys:
+<code>host-not-found</code>, <code>try-again</code>, <code>no-recovery</code> or
+<code>no-data</code>, corresponding to the equivalent <code>h_error</code> values.
+Unusual conditions may result in errors thrown to the
+<code>system-error</code> or <code>misc_error</code> keys.
+</p>
+<div class="lisp">
+<pre class="lisp">(gethost &quot;www.gnu.org&quot;)
+&rArr; #(&quot;www.gnu.org&quot; () 2 4 (3353880842))
+
+(gethostbyname &quot;www.emacs.org&quot;)
+&rArr; #(&quot;emacs.org&quot; (&quot;www.emacs.org&quot;) 2 4 (1073448978))
+</pre></div>
+</dd></dl>
+
+<p>The following procedures may be used to step through the host
+database from beginning to end.
+</p>
+<dl>
+<dt><a name="index-sethostent"></a>Scheme Procedure: <strong>sethostent</strong> <em>[stayopen]</em></dt>
+<dd><p>Initialize an internal stream from which host objects may be read.  This
+procedure must be called before any calls to <code>gethostent</code>, and may
+also be called afterward to reset the host entry stream.  If
+<var>stayopen</var> is supplied and is not <code>#f</code>, the database is not
+closed by subsequent <code>gethostbyname</code> or <code>gethostbyaddr</code> calls,
+possibly giving an efficiency gain.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gethostent"></a>Scheme Procedure: <strong>gethostent</strong></dt>
+<dd><p>Return the next host object from the host database, or <code>#f</code> if
+there are no more hosts to be found (or an error has been encountered).
+This procedure may not be used before <code>sethostent</code> has been called.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-endhostent"></a>Scheme Procedure: <strong>endhostent</strong></dt>
+<dd><p>Close the stream used by <code>gethostent</code>.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sethost"></a>Scheme Procedure: <strong>sethost</strong> <em>[stayopen]</em></dt>
+<dt><a name="index-scm_005fsethost"></a>C Function: <strong>scm_sethost</strong> <em>(stayopen)</em></dt>
+<dd><p>If <var>stayopen</var> is omitted, this is equivalent to <code>endhostent</code>.
+Otherwise it is equivalent to <code>sethostent stayopen</code>.
+</p></dd></dl>
+
+<a name="The-Network-Database"></a>
+<h4 class="subsubheading">The Network Database</h4>
+<a name="index-network-database-2"></a>
+
+<p>The following functions accept an object representing a network
+and return a selected component:
+</p>
+<dl>
+<dt><a name="index-netent_003aname"></a>Scheme Procedure: <strong>netent:name</strong> <em>net</em></dt>
+<dd><p>The &ldquo;official&rdquo; network name.
+</p></dd></dl>
+<dl>
+<dt><a name="index-netent_003aaliases"></a>Scheme Procedure: <strong>netent:aliases</strong> <em>net</em></dt>
+<dd><p>A list of aliases for the network.
+</p></dd></dl>
+<dl>
+<dt><a name="index-netent_003aaddrtype"></a>Scheme Procedure: <strong>netent:addrtype</strong> <em>net</em></dt>
+<dd><p>The type of the network number.  Currently, this returns only
+<code>AF_INET</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-netent_003anet"></a>Scheme Procedure: <strong>netent:net</strong> <em>net</em></dt>
+<dd><p>The network number.
+</p></dd></dl>
+
+<p>The following procedures are used to search the network database:
+</p>
+<dl>
+<dt><a name="index-getnet"></a>Scheme Procedure: <strong>getnet</strong> <em>[net]</em></dt>
+<dt><a name="index-getnetbyname"></a>Scheme Procedure: <strong>getnetbyname</strong> <em>net-name</em></dt>
+<dt><a name="index-getnetbyaddr"></a>Scheme Procedure: <strong>getnetbyaddr</strong> <em>net-number</em></dt>
+<dt><a name="index-scm_005fgetnet"></a>C Function: <strong>scm_getnet</strong> <em>(net)</em></dt>
+<dd><p>Look up a network by name or net number in the network database.  The
+<var>net-name</var> argument must be a string, and the <var>net-number</var>
+argument must be an integer.  <code>getnet</code> will accept either type of
+argument, behaving like <code>getnetent</code> (see below) if no arguments are
+given.
+</p></dd></dl>
+
+<p>The following procedures may be used to step through the network
+database from beginning to end.
+</p>
+<dl>
+<dt><a name="index-setnetent"></a>Scheme Procedure: <strong>setnetent</strong> <em>[stayopen]</em></dt>
+<dd><p>Initialize an internal stream from which network objects may be read.  This
+procedure must be called before any calls to <code>getnetent</code>, and may
+also be called afterward to reset the net entry stream.  If
+<var>stayopen</var> is supplied and is not <code>#f</code>, the database is not
+closed by subsequent <code>getnetbyname</code> or <code>getnetbyaddr</code> calls,
+possibly giving an efficiency gain.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getnetent"></a>Scheme Procedure: <strong>getnetent</strong></dt>
+<dd><p>Return the next entry from the network database.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-endnetent"></a>Scheme Procedure: <strong>endnetent</strong></dt>
+<dd><p>Close the stream used by <code>getnetent</code>.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setnet"></a>Scheme Procedure: <strong>setnet</strong> <em>[stayopen]</em></dt>
+<dt><a name="index-scm_005fsetnet"></a>C Function: <strong>scm_setnet</strong> <em>(stayopen)</em></dt>
+<dd><p>If <var>stayopen</var> is omitted, this is equivalent to <code>endnetent</code>.
+Otherwise it is equivalent to <code>setnetent stayopen</code>.
+</p></dd></dl>
+
+<a name="The-Protocol-Database"></a>
+<h4 class="subsubheading">The Protocol Database</h4>
+<a name="index-_002fetc_002fprotocols"></a>
+<a name="index-protocols"></a>
+<a name="index-network-protocols"></a>
+
+<p>The following functions accept an object representing a protocol
+and return a selected component:
+</p>
+<dl>
+<dt><a name="index-protoent_003aname"></a>Scheme Procedure: <strong>protoent:name</strong> <em>protocol</em></dt>
+<dd><p>The &ldquo;official&rdquo; protocol name.
+</p></dd></dl>
+<dl>
+<dt><a name="index-protoent_003aaliases"></a>Scheme Procedure: <strong>protoent:aliases</strong> <em>protocol</em></dt>
+<dd><p>A list of aliases for the protocol.
+</p></dd></dl>
+<dl>
+<dt><a name="index-protoent_003aproto"></a>Scheme Procedure: <strong>protoent:proto</strong> <em>protocol</em></dt>
+<dd><p>The protocol number.
+</p></dd></dl>
+
+<p>The following procedures are used to search the protocol database:
+</p>
+<dl>
+<dt><a name="index-getproto"></a>Scheme Procedure: <strong>getproto</strong> <em>[protocol]</em></dt>
+<dt><a name="index-getprotobyname"></a>Scheme Procedure: <strong>getprotobyname</strong> <em>name</em></dt>
+<dt><a name="index-getprotobynumber"></a>Scheme Procedure: <strong>getprotobynumber</strong> <em>number</em></dt>
+<dt><a name="index-scm_005fgetproto"></a>C Function: <strong>scm_getproto</strong> <em>(protocol)</em></dt>
+<dd><p>Look up a network protocol by name or by number.  <code>getprotobyname</code>
+takes a string argument, and <code>getprotobynumber</code> takes an integer
+argument.  <code>getproto</code> will accept either type, behaving like
+<code>getprotoent</code> (see below) if no arguments are supplied.
+</p></dd></dl>
+
+<p>The following procedures may be used to step through the protocol
+database from beginning to end.
+</p>
+<dl>
+<dt><a name="index-setprotoent"></a>Scheme Procedure: <strong>setprotoent</strong> <em>[stayopen]</em></dt>
+<dd><p>Initialize an internal stream from which protocol objects may be read.  This
+procedure must be called before any calls to <code>getprotoent</code>, and may
+also be called afterward to reset the protocol entry stream.  If
+<var>stayopen</var> is supplied and is not <code>#f</code>, the database is not
+closed by subsequent <code>getprotobyname</code> or <code>getprotobynumber</code> calls,
+possibly giving an efficiency gain.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getprotoent"></a>Scheme Procedure: <strong>getprotoent</strong></dt>
+<dd><p>Return the next entry from the protocol database.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-endprotoent"></a>Scheme Procedure: <strong>endprotoent</strong></dt>
+<dd><p>Close the stream used by <code>getprotoent</code>.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setproto"></a>Scheme Procedure: <strong>setproto</strong> <em>[stayopen]</em></dt>
+<dt><a name="index-scm_005fsetproto"></a>C Function: <strong>scm_setproto</strong> <em>(stayopen)</em></dt>
+<dd><p>If <var>stayopen</var> is omitted, this is equivalent to <code>endprotoent</code>.
+Otherwise it is equivalent to <code>setprotoent stayopen</code>.
+</p></dd></dl>
+
+<a name="The-Service-Database"></a>
+<h4 class="subsubheading">The Service Database</h4>
+<a name="index-_002fetc_002fservices"></a>
+<a name="index-services"></a>
+<a name="index-network-services"></a>
+
+<p>The following functions accept an object representing a service
+and return a selected component:
+</p>
+<dl>
+<dt><a name="index-servent_003aname"></a>Scheme Procedure: <strong>servent:name</strong> <em>serv</em></dt>
+<dd><p>The &ldquo;official&rdquo; name of the network service.
+</p></dd></dl>
+<dl>
+<dt><a name="index-servent_003aaliases"></a>Scheme Procedure: <strong>servent:aliases</strong> <em>serv</em></dt>
+<dd><p>A list of aliases for the network service.
+</p></dd></dl>
+<dl>
+<dt><a name="index-servent_003aport"></a>Scheme Procedure: <strong>servent:port</strong> <em>serv</em></dt>
+<dd><p>The Internet port used by the service.
+</p></dd></dl>
+<dl>
+<dt><a name="index-servent_003aproto"></a>Scheme Procedure: <strong>servent:proto</strong> <em>serv</em></dt>
+<dd><p>The protocol used by the service.  A service may be listed many times
+in the database under different protocol names.
+</p></dd></dl>
+
+<p>The following procedures are used to search the service database:
+</p>
+<dl>
+<dt><a name="index-getserv"></a>Scheme Procedure: <strong>getserv</strong> <em>[name [protocol]]</em></dt>
+<dt><a name="index-getservbyname"></a>Scheme Procedure: <strong>getservbyname</strong> <em>name protocol</em></dt>
+<dt><a name="index-getservbyport"></a>Scheme Procedure: <strong>getservbyport</strong> <em>port protocol</em></dt>
+<dt><a name="index-scm_005fgetserv"></a>C Function: <strong>scm_getserv</strong> <em>(name, protocol)</em></dt>
+<dd><p>Look up a network service by name or by service number, and return a
+network service object.  The <var>protocol</var> argument specifies the name
+of the desired protocol; if the protocol found in the network service
+database does not match this name, a system error is signalled.
+</p>
+<p>The <code>getserv</code> procedure will take either a service name or number
+as its first argument; if given no arguments, it behaves like
+<code>getservent</code> (see below).
+</p>
+<div class="lisp">
+<pre class="lisp">(getserv &quot;imap&quot; &quot;tcp&quot;)
+&rArr; #(&quot;imap2&quot; (&quot;imap&quot;) 143 &quot;tcp&quot;)
+
+(getservbyport 88 &quot;udp&quot;)
+&rArr; #(&quot;kerberos&quot; (&quot;kerberos5&quot; &quot;krb5&quot;) 88 &quot;udp&quot;)
+</pre></div>
+</dd></dl>
+
+<p>The following procedures may be used to step through the service
+database from beginning to end.
+</p>
+<dl>
+<dt><a name="index-setservent"></a>Scheme Procedure: <strong>setservent</strong> <em>[stayopen]</em></dt>
+<dd><p>Initialize an internal stream from which service objects may be read.  This
+procedure must be called before any calls to <code>getservent</code>, and may
+also be called afterward to reset the service entry stream.  If
+<var>stayopen</var> is supplied and is not <code>#f</code>, the database is not
+closed by subsequent <code>getservbyname</code> or <code>getservbyport</code> calls,
+possibly giving an efficiency gain.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getservent"></a>Scheme Procedure: <strong>getservent</strong></dt>
+<dd><p>Return the next entry from the services database.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-endservent"></a>Scheme Procedure: <strong>endservent</strong></dt>
+<dd><p>Close the stream used by <code>getservent</code>.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setserv"></a>Scheme Procedure: <strong>setserv</strong> <em>[stayopen]</em></dt>
+<dt><a name="index-scm_005fsetserv"></a>C Function: <strong>scm_setserv</strong> <em>(stayopen)</em></dt>
+<dd><p>If <var>stayopen</var> is omitted, this is equivalent to <code>endservent</code>.
+Otherwise it is equivalent to <code>setservent stayopen</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Network-Socket-Address.html#Network-Socket-Address" accesskey="n" rel="next">Network Socket Address</a>, Previous: <a href="Network-Address-Conversion.html#Network-Address-Conversion" accesskey="p" rel="prev">Network Address Conversion</a>, Up: <a href="Networking.html#Networking" accesskey="u" rel="up">Networking</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

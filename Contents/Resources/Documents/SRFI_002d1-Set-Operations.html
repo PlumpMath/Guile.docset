@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-1 Set Operations</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-1 Set Operations">
+<meta name="keywords" content="Guile Reference Manual: SRFI-1 Set Operations">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d1.html#SRFI_002d1" rel="up" title="SRFI-1">
+<link href="SRFI_002d2.html#SRFI_002d2" rel="next" title="SRFI-2">
+<link href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists" rel="prev" title="SRFI-1 Association Lists">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d1-Set-Operations"></a>
+<div class="header">
+<p>
+Previous: <a href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists" accesskey="p" rel="prev">SRFI-1 Association Lists</a>, Up: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="u" rel="up">SRFI-1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Set-Operations-on-Lists"></a>
+<h4 class="subsubsection">7.5.3.10 Set Operations on Lists</h4>
+<a name="index-list-set-operation"></a>
+
+<p>Lists can be used to represent sets of objects.  The procedures in
+this section operate on such lists as sets.
+</p>
+<p>Note that lists are not an efficient way to implement large sets.  The
+procedures here typically take time <em><var>m</var>x<var>n</var></em> when
+operating on <var>m</var> and <var>n</var> element lists.  Other data structures
+like trees, bitsets (see <a href="Bit-Vectors.html#Bit-Vectors">Bit Vectors</a>) or hash tables (see <a href="Hash-Tables.html#Hash-Tables">Hash Tables</a>) are faster.
+</p>
+<p>All these procedures take an equality predicate as the first argument.
+This predicate is used for testing the objects in the list sets for
+sameness.  This predicate must be consistent with <code>eq?</code>
+(see <a href="Equality.html#Equality">Equality</a>) in the sense that if two list elements are
+<code>eq?</code> then they must also be equal under the predicate.  This
+simply means a given object must be equal to itself.
+</p>
+<dl>
+<dt><a name="index-lset_003c_003d"></a>Scheme Procedure: <strong>lset&lt;=</strong> <em>= list &hellip;</em></dt>
+<dd><p>Return <code>#t</code> if each list is a subset of the one following it.
+I.e., <var>list1</var> is a subset of <var>list2</var>, <var>list2</var> is a subset of
+<var>list3</var>, etc., for as many lists as given.  If only one list or no
+lists are given, the return value is <code>#t</code>.
+</p>
+<p>A list <var>x</var> is a subset of <var>y</var> if each element of <var>x</var> is
+equal to some element in <var>y</var>.  Elements are compared using the
+given <var>=</var> procedure, called as <code>(<var>=</var> xelem yelem)</code>.
+</p>
+<div class="example">
+<pre class="example">(lset&lt;= eq?)                      &rArr; #t
+(lset&lt;= eqv? '(1 2 3) '(1))       &rArr; #f
+(lset&lt;= eqv? '(1 3 2) '(4 3 1 2)) &rArr; #t
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-lset_003d"></a>Scheme Procedure: <strong>lset=</strong> <em>= list &hellip;</em></dt>
+<dd><p>Return <code>#t</code> if all argument lists are set-equal.  <var>list1</var> is
+compared to <var>list2</var>, <var>list2</var> to <var>list3</var>, etc., for as many
+lists as given.  If only one list or no lists are given, the return
+value is <code>#t</code>.
+</p>
+<p>Two lists <var>x</var> and <var>y</var> are set-equal if each element of <var>x</var>
+is equal to some element of <var>y</var> and conversely each element of
+<var>y</var> is equal to some element of <var>x</var>.  The order of the
+elements in the lists doesn&rsquo;t matter.  Element equality is determined
+with the given <var>=</var> procedure, called as <code>(<var>=</var> xelem
+yelem)</code>, but exactly which calls are made is unspecified.
+</p>
+<div class="example">
+<pre class="example">(lset= eq?)                      &rArr; #t
+(lset= eqv? '(1 2 3) '(3 2 1))   &rArr; #t
+(lset= string-ci=? '(&quot;a&quot; &quot;A&quot; &quot;b&quot;) '(&quot;B&quot; &quot;b&quot; &quot;a&quot;)) &rArr; #t
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-lset_002dadjoin"></a>Scheme Procedure: <strong>lset-adjoin</strong> <em>= list elem &hellip;</em></dt>
+<dd><p>Add to <var>list</var> any of the given <var>elem</var>s not already in the list.
+<var>elem</var>s are <code>cons</code>ed onto the start of <var>list</var> (so the
+return value shares a common tail with <var>list</var>), but the order that
+the <var>elem</var>s are added is unspecified.
+</p>
+<p>The given <var>=</var> procedure is used for comparing elements, called as
+<code>(<var>=</var> listelem elem)</code>, i.e., the second argument is one of
+the given <var>elem</var> parameters.
+</p>
+<div class="example">
+<pre class="example">(lset-adjoin eqv? '(1 2 3) 4 1 5) &rArr; (5 4 1 2 3)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-lset_002dunion"></a>Scheme Procedure: <strong>lset-union</strong> <em>= list &hellip;</em></dt>
+<dt><a name="index-lset_002dunion_0021"></a>Scheme Procedure: <strong>lset-union!</strong> <em>= list &hellip;</em></dt>
+<dd><p>Return the union of the argument list sets.  The result is built by
+taking the union of <var>list1</var> and <var>list2</var>, then the union of
+that with <var>list3</var>, etc., for as many lists as given.  For one list
+argument that list itself is the result, for no list arguments the
+result is the empty list.
+</p>
+<p>The union of two lists <var>x</var> and <var>y</var> is formed as follows.  If
+<var>x</var> is empty then the result is <var>y</var>.  Otherwise start with
+<var>x</var> as the result and consider each <var>y</var> element (from first to
+last).  A <var>y</var> element not equal to something already in the result
+is <code>cons</code>ed onto the result.
+</p>
+<p>The given <var>=</var> procedure is used for comparing elements, called as
+<code>(<var>=</var> relem yelem)</code>.  The first argument is from the result
+accumulated so far, and the second is from the list being union-ed in.
+But exactly which calls are made is otherwise unspecified.
+</p>
+<p>Notice that duplicate elements in <var>list1</var> (or the first non-empty
+list) are preserved, but that repeated elements in subsequent lists
+are only added once.
+</p>
+<div class="example">
+<pre class="example">(lset-union eqv?)                          &rArr; ()
+(lset-union eqv? '(1 2 3))                 &rArr; (1 2 3)
+(lset-union eqv? '(1 2 1 3) '(2 4 5) '(5)) &rArr; (5 4 1 2 1 3)
+</pre></div>
+
+<p><code>lset-union</code> doesn&rsquo;t change the given lists but the result may
+share a tail with the first non-empty list.  <code>lset-union!</code> can
+modify all of the given lists to form the result.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lset_002dintersection"></a>Scheme Procedure: <strong>lset-intersection</strong> <em>= list1 list2 &hellip;</em></dt>
+<dt><a name="index-lset_002dintersection_0021"></a>Scheme Procedure: <strong>lset-intersection!</strong> <em>= list1 list2 &hellip;</em></dt>
+<dd><p>Return the intersection of <var>list1</var> with the other argument lists,
+meaning those elements of <var>list1</var> which are also in all of
+<var>list2</var> etc.  For one list argument, just that list is returned.
+</p>
+<p>The test for an element of <var>list1</var> to be in the return is simply
+that it&rsquo;s equal to some element in each of <var>list2</var> etc.  Notice
+this means an element appearing twice in <var>list1</var> but only once in
+each of <var>list2</var> etc will go into the return twice.  The return has
+its elements in the same order as they were in <var>list1</var>.
+</p>
+<p>The given <var>=</var> procedure is used for comparing elements, called as
+<code>(<var>=</var> elem1 elemN)</code>.  The first argument is from <var>list1</var>
+and the second is from one of the subsequent lists.  But exactly which
+calls are made and in what order is unspecified.
+</p>
+<div class="example">
+<pre class="example">(lset-intersection eqv? '(x y))                        &rArr; (x y)
+(lset-intersection eqv? '(1 2 3) '(4 3 2))             &rArr; (2 3)
+(lset-intersection eqv? '(1 1 2 2) '(1 2) '(2 1) '(2)) &rArr; (2 2)
+</pre></div>
+
+<p>The return from <code>lset-intersection</code> may share a tail with
+<var>list1</var>.  <code>lset-intersection!</code> may modify <var>list1</var> to form
+its result.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lset_002ddifference"></a>Scheme Procedure: <strong>lset-difference</strong> <em>= list1 list2 &hellip;</em></dt>
+<dt><a name="index-lset_002ddifference_0021"></a>Scheme Procedure: <strong>lset-difference!</strong> <em>= list1 list2 &hellip;</em></dt>
+<dd><p>Return <var>list1</var> with any elements in <var>list2</var>, <var>list3</var> etc
+removed (ie. subtracted).  For one list argument, just that list is
+returned.
+</p>
+<p>The given <var>=</var> procedure is used for comparing elements, called as
+<code>(<var>=</var> elem1 elemN)</code>.  The first argument is from <var>list1</var>
+and the second from one of the subsequent lists.  But exactly which
+calls are made and in what order is unspecified.
+</p>
+<div class="example">
+<pre class="example">(lset-difference eqv? '(x y))             &rArr; (x y)
+(lset-difference eqv? '(1 2 3) '(3 1))    &rArr; (2)
+(lset-difference eqv? '(1 2 3) '(3) '(2)) &rArr; (1)
+</pre></div>
+
+<p>The return from <code>lset-difference</code> may share a tail with
+<var>list1</var>.  <code>lset-difference!</code> may modify <var>list1</var> to form
+its result.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lset_002ddiff_002bintersection"></a>Scheme Procedure: <strong>lset-diff+intersection</strong> <em>= list1 list2 &hellip;</em></dt>
+<dt><a name="index-lset_002ddiff_002bintersection_0021"></a>Scheme Procedure: <strong>lset-diff+intersection!</strong> <em>= list1 list2 &hellip;</em></dt>
+<dd><p>Return two values (see <a href="Multiple-Values.html#Multiple-Values">Multiple Values</a>), the difference and
+intersection of the argument lists as per <code>lset-difference</code> and
+<code>lset-intersection</code> above.
+</p>
+<p>For two list arguments this partitions <var>list1</var> into those elements
+of <var>list1</var> which are in <var>list2</var> and not in <var>list2</var>.  (But
+for more than two arguments there can be elements of <var>list1</var> which
+are neither part of the difference nor the intersection.)
+</p>
+<p>One of the return values from <code>lset-diff+intersection</code> may share
+a tail with <var>list1</var>.  <code>lset-diff+intersection!</code> may modify
+<var>list1</var> to form its results.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lset_002dxor"></a>Scheme Procedure: <strong>lset-xor</strong> <em>= list &hellip;</em></dt>
+<dt><a name="index-lset_002dxor_0021"></a>Scheme Procedure: <strong>lset-xor!</strong> <em>= list &hellip;</em></dt>
+<dd><p>Return an XOR of the argument lists.  For two lists this means those
+elements which are in exactly one of the lists.  For more than two
+lists it means those elements which appear in an odd number of the
+lists.
+</p>
+<p>To be precise, the XOR of two lists <var>x</var> and <var>y</var> is formed by
+taking those elements of <var>x</var> not equal to any element of <var>y</var>,
+plus those elements of <var>y</var> not equal to any element of <var>x</var>.
+Equality is determined with the given <var>=</var> procedure, called as
+<code>(<var>=</var> e1 e2)</code>.  One argument is from <var>x</var> and the other
+from <var>y</var>, but which way around is unspecified.  Exactly which
+calls are made is also unspecified, as is the order of the elements in
+the result.
+</p>
+<div class="example">
+<pre class="example">(lset-xor eqv? '(x y))             &rArr; (x y)
+(lset-xor eqv? '(1 2 3) '(4 3 2))  &rArr; (4 1)
+</pre></div>
+
+<p>The return from <code>lset-xor</code> may share a tail with one of the list
+arguments.  <code>lset-xor!</code> may modify <var>list1</var> to form its
+result.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists" accesskey="p" rel="prev">SRFI-1 Association Lists</a>, Up: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="u" rel="up">SRFI-1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

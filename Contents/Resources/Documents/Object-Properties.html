@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Object Properties</title>
+
+<meta name="description" content="Guile Reference Manual: Object Properties">
+<meta name="keywords" content="Guile Reference Manual: Object Properties">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Utility-Functions.html#Utility-Functions" rel="up" title="Utility Functions">
+<link href="Sorting.html#Sorting" rel="next" title="Sorting">
+<link href="Equality.html#Equality" rel="prev" title="Equality">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Object-Properties"></a>
+<div class="header">
+<p>
+Next: <a href="Sorting.html#Sorting" accesskey="n" rel="next">Sorting</a>, Previous: <a href="Equality.html#Equality" accesskey="p" rel="prev">Equality</a>, Up: <a href="Utility-Functions.html#Utility-Functions" accesskey="u" rel="up">Utility Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Object-Properties-1"></a>
+<h4 class="subsection">6.11.2 Object Properties</h4>
+
+<p>It&rsquo;s often useful to associate a piece of additional information with a
+Scheme object even though that object does not have a dedicated slot
+available in which the additional information could be stored.  Object
+properties allow you to do just that.
+</p>
+<p>Guile&rsquo;s representation of an object property is a procedure-with-setter
+(see <a href="Procedures-with-Setters.html#Procedures-with-Setters">Procedures with Setters</a>) that can be used with the generalized
+form of <code>set!</code> (REFFIXME) to set and retrieve that property for any
+Scheme object.  So, setting a property looks like this:
+</p>
+<div class="lisp">
+<pre class="lisp">(set! (my-property obj1) value-for-obj1)
+(set! (my-property obj2) value-for-obj2)
+</pre></div>
+
+<p>And retrieving values of the same property looks like this:
+</p>
+<div class="lisp">
+<pre class="lisp">(my-property obj1)
+&rArr;
+value-for-obj1
+
+(my-property obj2)
+&rArr;
+value-for-obj2
+</pre></div>
+
+<p>To create an object property in the first place, use the
+<code>make-object-property</code> procedure:
+</p>
+<div class="lisp">
+<pre class="lisp">(define my-property (make-object-property))
+</pre></div>
+
+<dl>
+<dt><a name="index-make_002dobject_002dproperty"></a>Scheme Procedure: <strong>make-object-property</strong></dt>
+<dd><p>Create and return an object property.  An object property is a
+procedure-with-setter that can be called in two ways.  <code>(set!
+(<var>property</var> <var>obj</var>) <var>val</var>)</code> sets <var>obj</var>&rsquo;s <var>property</var>
+to <var>val</var>.  <code>(<var>property</var> <var>obj</var>)</code> returns the current
+setting of <var>obj</var>&rsquo;s <var>property</var>.
+</p></dd></dl>
+
+<p>A single object property created by <code>make-object-property</code> can
+associate distinct property values with all Scheme values that are
+distinguishable by <code>eq?</code> (including, for example, integers).
+</p>
+<p>Internally, object properties are implemented using a weak key hash
+table.  This means that, as long as a Scheme value with property values
+is protected from garbage collection, its property values are also
+protected.  When the Scheme value is collected, its entry in the
+property table is removed and so the (ex-) property values are no longer
+protected by the table.
+</p>
+<p>Guile also implements a more traditional Lispy interface to properties,
+in which each object has an list of key-value pairs associated with it.
+Properties in that list are keyed by symbols.  This is a legacy
+interface; you should use weak hash tables or object properties instead.
+</p>
+<dl>
+<dt><a name="index-object_002dproperties"></a>Scheme Procedure: <strong>object-properties</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fobject_005fproperties"></a>C Function: <strong>scm_object_properties</strong> <em>(obj)</em></dt>
+<dd><p>Return <var>obj</var>&rsquo;s property list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dobject_002dproperties_0021"></a>Scheme Procedure: <strong>set-object-properties!</strong> <em>obj alist</em></dt>
+<dt><a name="index-scm_005fset_005fobject_005fproperties_005fx"></a>C Function: <strong>scm_set_object_properties_x</strong> <em>(obj, alist)</em></dt>
+<dd><p>Set <var>obj</var>&rsquo;s property list to <var>alist</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-object_002dproperty"></a>Scheme Procedure: <strong>object-property</strong> <em>obj key</em></dt>
+<dt><a name="index-scm_005fobject_005fproperty"></a>C Function: <strong>scm_object_property</strong> <em>(obj, key)</em></dt>
+<dd><p>Return the property of <var>obj</var> with name <var>key</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dobject_002dproperty_0021"></a>Scheme Procedure: <strong>set-object-property!</strong> <em>obj key value</em></dt>
+<dt><a name="index-scm_005fset_005fobject_005fproperty_005fx"></a>C Function: <strong>scm_set_object_property_x</strong> <em>(obj, key, value)</em></dt>
+<dd><p>In <var>obj</var>&rsquo;s property list, set the property named <var>key</var>
+to <var>value</var>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Sorting.html#Sorting" accesskey="n" rel="next">Sorting</a>, Previous: <a href="Equality.html#Equality" accesskey="p" rel="prev">Equality</a>, Up: <a href="Utility-Functions.html#Utility-Functions" accesskey="u" rel="up">Utility Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

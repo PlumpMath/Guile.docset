@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Garbage Collection</title>
+
+<meta name="description" content="Guile Reference Manual: Garbage Collection">
+<meta name="keywords" content="Guile Reference Manual: Garbage Collection">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="General-Libguile-Concepts.html#General-Libguile-Concepts" rel="up" title="General Libguile Concepts">
+<link href="Control-Flow.html#Control-Flow" rel="next" title="Control Flow">
+<link href="Dynamic-Types.html#Dynamic-Types" rel="prev" title="Dynamic Types">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Garbage-Collection"></a>
+<div class="header">
+<p>
+Next: <a href="Control-Flow.html#Control-Flow" accesskey="n" rel="next">Control Flow</a>, Previous: <a href="Dynamic-Types.html#Dynamic-Types" accesskey="p" rel="prev">Dynamic Types</a>, Up: <a href="General-Libguile-Concepts.html#General-Libguile-Concepts" accesskey="u" rel="up">General Libguile Concepts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Garbage-Collection-1"></a>
+<h4 class="subsection">5.4.2 Garbage Collection</h4>
+
+<p>As explained above, the <code>SCM</code> type can represent all Scheme values.
+Some values fit entirely into a <code>SCM</code> value (such as small
+integers), but other values require additional storage in the heap (such
+as strings and vectors).  This additional storage is managed
+automatically by Guile.  You don&rsquo;t need to explicitly deallocate it
+when a <code>SCM</code> value is no longer used.
+</p>
+<p>Two things must be guaranteed so that Guile is able to manage the
+storage automatically: it must know about all blocks of memory that have
+ever been allocated for Scheme values, and it must know about all Scheme
+values that are still being used.  Given this knowledge, Guile can
+periodically free all blocks that have been allocated but are not used
+by any active Scheme values.  This activity is called <em>garbage
+collection</em>.
+</p>
+<p>It is easy for Guile to remember all blocks of memory that it has
+allocated for use by Scheme values, but you need to help it with finding
+all Scheme values that are in use by C code.
+</p>
+<p>You do this when writing a SMOB mark function, for example
+(see <a href="Garbage-Collecting-Smobs.html#Garbage-Collecting-Smobs">Garbage Collecting Smobs</a>).  By calling this function, the
+garbage collector learns about all references that your SMOB has to
+other <code>SCM</code> values.
+</p>
+<p>Other references to <code>SCM</code> objects, such as global variables of type
+<code>SCM</code> or other random data structures in the heap that contain
+fields of type <code>SCM</code>, can be made visible to the garbage collector
+by calling the functions <code>scm_gc_protect</code> or
+<code>scm_permanent_object</code>.  You normally use these functions for long
+lived objects such as a hash table that is stored in a global variable.
+For temporary references in local variables or function arguments, using
+these functions would be too expensive.
+</p>
+<p>These references are handled differently: Local variables (and function
+arguments) of type <code>SCM</code> are automatically visible to the garbage
+collector.  This works because the collector scans the stack for
+potential references to <code>SCM</code> objects and considers all referenced
+objects to be alive.  The scanning considers each and every word of the
+stack, regardless of what it is actually used for, and then decides
+whether it could possibly be a reference to a <code>SCM</code> object.  Thus,
+the scanning is guaranteed to find all actual references, but it might
+also find words that only accidentally look like references.  These
+&lsquo;false positives&rsquo; might keep <code>SCM</code> objects alive that would
+otherwise be considered dead.  While this might waste memory, keeping an
+object around longer than it strictly needs to is harmless.  This is why
+this technique is called &ldquo;conservative garbage collection&rdquo;.  In
+practice, the wasted memory seems to be no problem.
+</p>
+<p>The stack of every thread is scanned in this way and the registers of
+the CPU and all other memory locations where local variables or function
+parameters might show up are included in this scan as well.
+</p>
+<p>The consequence of the conservative scanning is that you can just
+declare local variables and function parameters of type <code>SCM</code> and
+be sure that the garbage collector will not free the corresponding
+objects.
+</p>
+<p>However, a local variable or function parameter is only protected as
+long as it is really on the stack (or in some register).  As an
+optimization, the C compiler might reuse its location for some other
+value and the <code>SCM</code> object would no longer be protected.  Normally,
+this leads to exactly the right behavior: the compiler will only
+overwrite a reference when it is no longer needed and thus the object
+becomes unprotected precisely when the reference disappears, just as
+wanted.
+</p>
+<p>There are situations, however, where a <code>SCM</code> object needs to be
+around longer than its reference from a local variable or function
+parameter.  This happens, for example, when you retrieve some pointer
+from a smob and work with that pointer directly.  The reference to the
+<code>SCM</code> smob object might be dead after the pointer has been
+retrieved, but the pointer itself (and the memory pointed to) is still
+in use and thus the smob object must be protected.  The compiler does
+not know about this connection and might overwrite the <code>SCM</code>
+reference too early.
+</p>
+<p>To get around this problem, you can use <code>scm_remember_upto_here_1</code>
+and its cousins.  It will keep the compiler from overwriting the
+reference.  For a typical example of its use, see <a href="Remembering-During-Operations.html#Remembering-During-Operations">Remembering During Operations</a>.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Control-Flow.html#Control-Flow" accesskey="n" rel="next">Control Flow</a>, Previous: <a href="Dynamic-Types.html#Dynamic-Types" accesskey="p" rel="prev">Dynamic Types</a>, Up: <a href="General-Libguile-Concepts.html#General-Libguile-Concepts" accesskey="u" rel="up">General Libguile Concepts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

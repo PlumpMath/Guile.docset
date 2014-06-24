@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: GLIL</title>
+
+<meta name="description" content="Guile Reference Manual: GLIL">
+<meta name="keywords" content="Guile Reference Manual: GLIL">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" rel="up" title="Compiling to the Virtual Machine">
+<link href="Assembly.html#Assembly" rel="next" title="Assembly">
+<link href="Tree_002dIL.html#Tree_002dIL" rel="prev" title="Tree-IL">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="GLIL"></a>
+<div class="header">
+<p>
+Next: <a href="Assembly.html#Assembly" accesskey="n" rel="next">Assembly</a>, Previous: <a href="Tree_002dIL.html#Tree_002dIL" accesskey="p" rel="prev">Tree-IL</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="GLIL-1"></a>
+<h4 class="subsection">9.4.4 GLIL</h4>
+
+<p>Guile Lowlevel Intermediate Language (GLIL) is a structured intermediate
+language whose expressions more closely approximate Guile&rsquo;s VM
+instruction set. Its expression types are defined in <code>(language
+glil)</code>.
+</p>
+<dl>
+<dt><a name="index-_003cglil_002dprogram_003e"></a>Scheme Variable: <strong>&lt;glil-program&gt;</strong> <em>meta . body</em></dt>
+<dd><p>A unit of code that at run-time will correspond to a compiled
+procedure. <var>meta</var> should be an alist of properties, as in
+Tree-IL&rsquo;s <code>&lt;lambda&gt;</code>. <var>body</var> is an ordered list of GLIL
+expressions.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dstd_002dprelude_003e"></a>Scheme Variable: <strong>&lt;glil-std-prelude&gt;</strong> <em>nreq nlocs else-label</em></dt>
+<dd><p>A prologue for a function with no optional, keyword, or rest
+arguments. <var>nreq</var> is the number of required arguments. <var>nlocs</var>
+the total number of local variables, including the arguments. If the
+procedure was not given exactly <var>nreq</var> arguments, control will
+jump to <var>else-label</var>, if given, or otherwise signal an error.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dopt_002dprelude_003e"></a>Scheme Variable: <strong>&lt;glil-opt-prelude&gt;</strong> <em>nreq nopt rest nlocs else-label</em></dt>
+<dd><p>A prologue for a function with optional or rest arguments. Like
+<code>&lt;glil-std-prelude&gt;</code>, with the addition that <var>nopt</var> is the
+number of optional arguments (possibly zero) and <var>rest</var> is an
+index of a local variable at which to bind a rest argument, or
+<code>#f</code> if there is no rest argument.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dkw_002dprelude_003e"></a>Scheme Variable: <strong>&lt;glil-kw-prelude&gt;</strong> <em>nreq nopt rest kw allow-other-keys? nlocs else-label</em></dt>
+<dd><p>A prologue for a function with keyword arguments. Like
+<code>&lt;glil-opt-prelude&gt;</code>, with the addition that <var>kw</var> is a list
+of keyword arguments, and <var>allow-other-keys?</var> is a flag indicating
+whether to allow unknown keys. See <a href="Function-Prologue-Instructions.html#Function-Prologue-Instructions"><code>bind-kwargs</code></a>, for details on the format of <var>kw</var>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dbind_003e"></a>Scheme Variable: <strong>&lt;glil-bind&gt;</strong> <em>. vars</em></dt>
+<dd><p>An advisory expression that notes a liveness extent for a set of
+variables. <var>vars</var> is a list of <code>(<var>name</var> <var>type</var>
+<var>index</var>)</code>, where <var>type</var> should be either <code>argument</code>,
+<code>local</code>, or <code>external</code>.
+</p>
+<p><code>&lt;glil-bind&gt;</code> expressions end up being serialized as part of a
+program&rsquo;s metadata and do not form part of a program&rsquo;s code path.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dmv_002dbind_003e"></a>Scheme Variable: <strong>&lt;glil-mv-bind&gt;</strong> <em>vars rest</em></dt>
+<dd><p>A multiple-value binding of the values on the stack to <var>vars</var>.  If
+<var>rest</var> is true, the last element of <var>vars</var> will be treated as a
+rest argument.
+</p>
+<p>In addition to pushing a binding annotation on the stack, like
+<code>&lt;glil-bind&gt;</code>, an expression is emitted at compilation time to
+make sure that there are enough values available to bind. See the
+notes on <code>truncate-values</code> in <a href="Procedure-Call-and-Return-Instructions.html#Procedure-Call-and-Return-Instructions">Procedure Call and Return Instructions</a>, for more information.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dunbind_003e"></a>Scheme Variable: <strong>&lt;glil-unbind&gt;</strong></dt>
+<dd><p>Closes the liveness extent of the most recently encountered
+<code>&lt;glil-bind&gt;</code> or <code>&lt;glil-mv-bind&gt;</code> expression. As GLIL
+expressions are compiled, a parallel stack of live bindings is
+maintained; this expression pops off the top element from that stack.
+</p>
+<p>Bindings are written into the program&rsquo;s metadata so that debuggers and
+other tools can determine the set of live local variables at a given
+offset within a VM program.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dsource_003e"></a>Scheme Variable: <strong>&lt;glil-source&gt;</strong> <em>loc</em></dt>
+<dd><p>Records source information for the preceding expression. <var>loc</var>
+should be an association list of containing <code>line</code> <code>column</code>,
+and <code>filename</code> keys, e.g. as returned by
+<code>source-properties</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dvoid_003e"></a>Scheme Variable: <strong>&lt;glil-void&gt;</strong></dt>
+<dd><p>Pushes &ldquo;the unspecified value&rdquo; on the stack.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dconst_003e"></a>Scheme Variable: <strong>&lt;glil-const&gt;</strong> <em>obj</em></dt>
+<dd><p>Pushes a constant value onto the stack. <var>obj</var> must be a number,
+string, symbol, keyword, boolean, character, uniform array, the empty
+list, or a pair or vector of constants.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dlexical_003e"></a>Scheme Variable: <strong>&lt;glil-lexical&gt;</strong> <em>local? boxed? op index</em></dt>
+<dd><p>Accesses a lexically bound variable. If the variable is not
+<var>local?</var> it is free. All variables may have <code>ref</code>,
+<code>set</code>, and <code>bound?</code> as their <var>op</var>. Boxed variables may
+also have the <var>op</var>s <code>box</code>, <code>empty-box</code>, and <code>fix</code>,
+which correspond in semantics to the VM instructions <code>box</code>,
+<code>empty-box</code>, and <code>fix-closure</code>. See <a href="Stack-Layout.html#Stack-Layout">Stack Layout</a>, for
+more information.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dtoplevel_003e"></a>Scheme Variable: <strong>&lt;glil-toplevel&gt;</strong> <em>op name</em></dt>
+<dd><p>Accesses a toplevel variable. <var>op</var> may be <code>ref</code>, <code>set</code>,
+or <code>define</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dmodule_003e"></a>Scheme Variable: <strong>&lt;glil-module&gt;</strong> <em>op mod name public?</em></dt>
+<dd><p>Accesses a variable within a specific module. See Tree-IL&rsquo;s
+<code>&lt;module-ref&gt;</code>, for more information.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dlabel_003e"></a>Scheme Variable: <strong>&lt;glil-label&gt;</strong> <em>label</em></dt>
+<dd><p>Creates a new label. <var>label</var> can be any Scheme value, and should
+be unique.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dbranch_003e"></a>Scheme Variable: <strong>&lt;glil-branch&gt;</strong> <em>inst label</em></dt>
+<dd><p>Branch to a label. <var>label</var> should be a <code>&lt;ghil-label&gt;</code>.
+<code>inst</code> is a branching instruction: <code>br-if</code>, <code>br</code>, etc.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dcall_003e"></a>Scheme Variable: <strong>&lt;glil-call&gt;</strong> <em>inst nargs</em></dt>
+<dd><p>This expression is probably misnamed, as it does not correspond to
+function calls. <code>&lt;glil-call&gt;</code> invokes the VM instruction named
+<var>inst</var>, noting that it is called with <var>nargs</var> stack arguments.
+The arguments should be pushed on the stack already. What happens to
+the stack afterwards depends on the instruction.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dmv_002dcall_003e"></a>Scheme Variable: <strong>&lt;glil-mv-call&gt;</strong> <em>nargs ra</em></dt>
+<dd><p>Performs a multiple-value call. <var>ra</var> is a <code>&lt;glil-label&gt;</code>
+corresponding to the multiple-value return address for the call. See
+the notes on <code>mv-call</code> in <a href="Procedure-Call-and-Return-Instructions.html#Procedure-Call-and-Return-Instructions">Procedure Call and Return Instructions</a>, for more information.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cglil_002dprompt_003e"></a>Scheme Variable: <strong>&lt;glil-prompt&gt;</strong> <em>label escape-only?</em></dt>
+<dd><p>Push a dynamic prompt into the stack, with a handler at <var>label</var>.
+<var>escape-only?</var> is a flag that is propagated to the prompt,
+allowing an abort to avoid capturing a continuation in some cases.
+See <a href="Prompts.html#Prompts">Prompts</a>, for more information.
+</p></dd></dl>
+
+<p>Users may enter in GLIL at the REPL as well, though there is a bit
+more bookkeeping to do:
+</p>
+<div class="example">
+<pre class="example">scheme@(guile-user)&gt; ,language glil
+Happy hacking with Guile Lowlevel Intermediate Language (GLIL)!
+To switch back, type `,L scheme'.
+glil@(guile-user)&gt; (program () (std-prelude 0 0 #f)
+                       (const 3) (call return 1))
+&rArr; 3
+</pre></div>
+
+<p>Just as in all of Guile&rsquo;s compilers, an environment is passed to the
+GLIL-to-object code compiler, and one is returned as well, along with
+the object code.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Assembly.html#Assembly" accesskey="n" rel="next">Assembly</a>, Previous: <a href="Tree_002dIL.html#Tree_002dIL" accesskey="p" rel="prev">Tree-IL</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

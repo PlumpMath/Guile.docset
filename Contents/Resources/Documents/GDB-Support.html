@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: GDB Support</title>
+
+<meta name="description" content="Guile Reference Manual: GDB Support">
+<meta name="keywords" content="Guile Reference Manual: GDB Support">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Debugging.html#Debugging" rel="up" title="Debugging">
+<link href="Code-Coverage.html#Code-Coverage" rel="next" title="Code Coverage">
+<link href="High_002dLevel-Traps.html#High_002dLevel-Traps" rel="prev" title="High-Level Traps">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="GDB-Support"></a>
+<div class="header">
+<p>
+Previous: <a href="Traps.html#Traps" accesskey="p" rel="prev">Traps</a>, Up: <a href="Debugging.html#Debugging" accesskey="u" rel="up">Debugging</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="GDB-Support-1"></a>
+<h4 class="subsection">6.25.5 GDB Support</h4>
+
+<a name="index-GDB-support"></a>
+
+<p>Sometimes, you may find it necessary to debug Guile applications at the
+C level.  Doing so can be tedious, in particular because the debugger is
+oblivious to Guile&rsquo;s <code>SCM</code> type, and thus unable to display
+<code>SCM</code> values in any meaningful way:
+</p>
+<div class="example">
+<pre class="example">(gdb) frame
+#0  scm_display (obj=0xf04310, port=0x6f9f30) at print.c:1437
+</pre></div>
+
+<p>To address that, Guile comes with an extension of the GNU Debugger (GDB)
+that contains a &ldquo;pretty-printer&rdquo; for <code>SCM</code> values.  With this GDB
+extension, the C frame in the example above shows up like this:
+</p>
+<div class="example">
+<pre class="example">(gdb) frame
+#0  scm_display (obj=(&quot;hello&quot; GDB!), port=#&lt;port file 6f9f30&gt;) at print.c:1437
+</pre></div>
+
+<p>Here GDB was able to decode the list pointed to by <var>obj</var>, and to
+print it using Scheme&rsquo;s read syntax.
+</p>
+<p>That extension is a <code>.scm</code> file installed alongside the
+<samp>libguile</samp> shared library.  When GDB 7.8 or later is installed and
+compiled with support for extensions written in Guile, the extension is
+automatically loaded when debugging a program linked against
+<samp>libguile</samp> (see <a href="http://sourceware.org/gdb/current/onlinedocs/gdb/Auto_002dloading.html#Auto_002dloading">Auto-loading</a> in <cite>Debugging with GDB</cite>).  Note
+that the directory where <samp>libguile</samp> is installed must be among
+GDB&rsquo;s auto-loading &ldquo;safe directories&rdquo; (see <a href="http://sourceware.org/gdb/current/onlinedocs/gdb/Auto_002dloading-safe-path.html#Auto_002dloading-safe-path">Auto-loading safe
+path</a> in <cite>Debugging with GDB</cite>).
+</p>
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Garbage Collection Functions</title>
+
+<meta name="description" content="Guile Reference Manual: Garbage Collection Functions">
+<meta name="keywords" content="Guile Reference Manual: Garbage Collection Functions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Memory-Management.html#Memory-Management" rel="up" title="Memory Management">
+<link href="Memory-Blocks.html#Memory-Blocks" rel="next" title="Memory Blocks">
+<link href="Memory-Management.html#Memory-Management" rel="prev" title="Memory Management">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Garbage-Collection-Functions"></a>
+<div class="header">
+<p>
+Next: <a href="Memory-Blocks.html#Memory-Blocks" accesskey="n" rel="next">Memory Blocks</a>, Up: <a href="Memory-Management.html#Memory-Management" accesskey="u" rel="up">Memory Management</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Function-related-to-Garbage-Collection"></a>
+<h4 class="subsection">6.18.1 Function related to Garbage Collection</h4>
+
+<dl>
+<dt><a name="index-gc-1"></a>Scheme Procedure: <strong>gc</strong></dt>
+<dt><a name="index-scm_005fgc"></a>C Function: <strong>scm_gc</strong> <em>()</em></dt>
+<dd><p>Scans all of SCM objects and reclaims for further use those that are
+no longer accessible.  You normally don&rsquo;t need to call this function
+explicitly.  It is called automatically when appropriate.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fgc_005fprotect_005fobject"></a>C Function: <em>SCM</em> <strong>scm_gc_protect_object</strong> <em>(SCM <var>obj</var>)</em></dt>
+<dd><p>Protects <var>obj</var> from being freed by the garbage collector, when it
+otherwise might be.  When you are done with the object, call
+<code>scm_gc_unprotect_object</code> on the object. Calls to
+<code>scm_gc_protect</code>/<code>scm_gc_unprotect_object</code> can be nested, and
+the object remains protected until it has been unprotected as many times
+as it was protected. It is an error to unprotect an object more times
+than it has been protected. Returns the SCM object it was passed.
+</p>
+<p>Note that storing <var>obj</var> in a C global variable has the same
+effect<a name="DOCF15" href="#FOOT15"><sup>15</sup></a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fgc_005funprotect_005fobject"></a>C Function: <em>SCM</em> <strong>scm_gc_unprotect_object</strong> <em>(SCM <var>obj</var>)</em></dt>
+<dd>
+<p>Unprotects an object from the garbage collector which was protected by
+<code>scm_gc_unprotect_object</code>. Returns the SCM object it was passed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fpermanent_005fobject"></a>C Function: <em>SCM</em> <strong>scm_permanent_object</strong> <em>(SCM <var>obj</var>)</em></dt>
+<dd>
+<p>Similar to <code>scm_gc_protect_object</code> in that it causes the
+collector to always mark the object, except that it should not be
+nested (only call <code>scm_permanent_object</code> on an object once), and
+it has no corresponding unpermanent function. Once an object is
+declared permanent, it will never be freed. Returns the SCM object it
+was passed.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-scm_005fremember_005fupto_005fhere_005f1"></a>C Macro: <em>void</em> <strong>scm_remember_upto_here_1</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-scm_005fremember_005fupto_005fhere_005f2"></a>C Macro: <em>void</em> <strong>scm_remember_upto_here_2</strong> <em>(SCM obj1, SCM obj2)</em></dt>
+<dd><p>Create a reference to the given object or objects, so they&rsquo;re certain
+to be present on the stack or in a register and hence will not be
+freed by the garbage collector before this point.
+</p>
+<p>Note that these functions can only be applied to ordinary C local
+variables (ie. &ldquo;automatics&rdquo;).  Objects held in global or static
+variables or some malloced block or the like cannot be protected with
+this mechanism.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gc_002dstats"></a>Scheme Procedure: <strong>gc-stats</strong></dt>
+<dt><a name="index-scm_005fgc_005fstats"></a>C Function: <strong>scm_gc_stats</strong> <em>()</em></dt>
+<dd><p>Return an association list of statistics about Guile&rsquo;s current
+use of storage.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gc_002dlive_002dobject_002dstats"></a>Scheme Procedure: <strong>gc-live-object-stats</strong></dt>
+<dt><a name="index-scm_005fgc_005flive_005fobject_005fstats"></a>C Function: <strong>scm_gc_live_object_stats</strong> <em>()</em></dt>
+<dd><p>Return an alist of statistics of the current live objects. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fgc_005fmark"></a>Function: <em>void</em> <strong>scm_gc_mark</strong> <em>(SCM <var>x</var>)</em></dt>
+<dd><p>Mark the object <var>x</var>, and recurse on any objects <var>x</var> refers to.
+If <var>x</var>&rsquo;s mark bit is already set, return immediately.  This function
+must only be called during the mark-phase of garbage collection,
+typically from a smob <em>mark</em> function.
+</p></dd></dl>
+
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT15" href="#DOCF15">(15)</a></h3>
+<p>In Guile up to version 1.8, C global variables were not
+scanned by the garbage collector; hence, <code>scm_gc_protect_object</code>
+was the only way in C to prevent a Scheme object from being freed.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Memory-Blocks.html#Memory-Blocks" accesskey="n" rel="next">Memory Blocks</a>, Up: <a href="Memory-Management.html#Memory-Management" accesskey="u" rel="up">Memory Management</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

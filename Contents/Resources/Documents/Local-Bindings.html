@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Local Bindings</title>
+
+<meta name="description" content="Guile Reference Manual: Local Bindings">
+<meta name="keywords" content="Guile Reference Manual: Local Bindings">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Binding-Constructs.html#Binding-Constructs" rel="up" title="Binding Constructs">
+<link href="Internal-Definitions.html#Internal-Definitions" rel="next" title="Internal Definitions">
+<link href="Top-Level.html#Top-Level" rel="prev" title="Top Level">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Local-Bindings"></a>
+<div class="header">
+<p>
+Next: <a href="Internal-Definitions.html#Internal-Definitions" accesskey="n" rel="next">Internal Definitions</a>, Previous: <a href="Top-Level.html#Top-Level" accesskey="p" rel="prev">Top Level</a>, Up: <a href="Binding-Constructs.html#Binding-Constructs" accesskey="u" rel="up">Binding Constructs</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Local-Variable-Bindings"></a>
+<h4 class="subsection">6.12.2 Local Variable Bindings</h4>
+
+<a name="index-local-bindings"></a>
+<a name="index-local-variables"></a>
+
+<p>As opposed to definitions at the top level, which creates bindings that
+are visible to all code in a module, it is also possible to define
+variables which are only visible in a well-defined part of the program.
+Normally, this part of a program will be a procedure or a subexpression
+of a procedure.
+</p>
+<p>With the constructs for local binding (<code>let</code>, <code>let*</code>,
+<code>letrec</code>, and <code>letrec*</code>), the Scheme language has a block
+structure like most other programming languages since the days of
+<small>ALGOL 60</small>.  Readers familiar to languages like C or Java should
+already be used to this concept, but the family of <code>let</code>
+expressions has a few properties which are well worth knowing.
+</p>
+<p>The most basic local binding construct is <code>let</code>.
+</p>
+<dl>
+<dt><a name="index-let"></a>syntax: <strong>let</strong> <em>bindings body</em></dt>
+<dd><p><var>bindings</var> has the form
+</p>
+<div class="lisp">
+<pre class="lisp">((<var>variable1</var> <var>init1</var>) &hellip;)
+</pre></div>
+
+<p>that is zero or more two-element lists of a variable and an arbitrary
+expression each.  All <var>variable</var> names must be distinct.
+</p>
+<p>A <code>let</code> expression is evaluated as follows.
+</p>
+<ul>
+<li> All <var>init</var> expressions are evaluated.
+
+</li><li> New storage is allocated for the <var>variables</var>.
+
+</li><li> The values of the <var>init</var> expressions are stored into the variables.
+
+</li><li> The expressions in <var>body</var> are evaluated in order, and the value of
+the last expression is returned as the value of the <code>let</code>
+expression.
+</li></ul>
+
+<p>The <var>init</var> expressions are not allowed to refer to any of the
+<var>variables</var>.
+</p></dd></dl>
+
+<p>The other binding constructs are variations on the same theme: making new
+values, binding them to variables, and executing a body in that new,
+extended lexical context.
+</p>
+<dl>
+<dt><a name="index-let_002a"></a>syntax: <strong>let*</strong> <em>bindings body</em></dt>
+<dd><p>Similar to <code>let</code>, but the variable bindings are performed
+sequentially, that means that all <var>init</var> expression are allowed to
+use the variables defined on their left in the binding list.
+</p>
+<p>A <code>let*</code> expression can always be expressed with nested <code>let</code>
+expressions.
+</p>
+<div class="lisp">
+<pre class="lisp">(let* ((a 1) (b a))
+   b)
+&equiv;
+(let ((a 1))
+  (let ((b a))
+    b))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-letrec"></a>syntax: <strong>letrec</strong> <em>bindings body</em></dt>
+<dd><p>Similar to <code>let</code>, but it is possible to refer to the <var>variable</var>
+from lambda expression created in any of the <var>inits</var>.  That is,
+procedures created in the <var>init</var> expression can recursively refer to
+the defined variables.
+</p>
+<div class="lisp">
+<pre class="lisp">(letrec ((even? (lambda (n)
+                  (if (zero? n)
+                      #t
+                      (odd? (- n 1)))))
+         (odd? (lambda (n)
+                  (if (zero? n)
+                      #f
+                      (even? (- n 1))))))
+  (even? 88))
+&rArr;
+#t
+</pre></div>
+
+<p>Note that while the <var>init</var> expressions may refer to the new
+variables, they may not access their values.  For example, making the
+<code>even?</code> function above creates a closure (see <a href="About-Closure.html#About-Closure">About Closure</a>)
+referencing the <code>odd?</code> variable.  But <code>odd?</code> can&rsquo;t be called
+until after execution has entered the body.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-letrec_002a"></a>syntax: <strong>letrec*</strong> <em>bindings body</em></dt>
+<dd><p>Similar to <code>letrec</code>, except the <var>init</var> expressions are bound to
+their variables in order.
+</p>
+<p><code>letrec*</code> thus relaxes the letrec restriction, in that later
+<var>init</var> expressions may refer to the values of previously bound
+variables.
+</p>
+<div class="lisp">
+<pre class="lisp">(letrec ((a 42)
+         (b (+ a 10)))  ;; Illegal access
+  (* a b))
+;; The behavior of the expression above is unspecified
+
+(letrec* ((a 42)
+          (b (+ a 10)))
+  (* a b))
+&rArr; 2184
+</pre></div>
+</dd></dl>
+
+<p>There is also an alternative form of the <code>let</code> form, which is used
+for expressing iteration.  Because of the use as a looping construct,
+this form (the <em>named let</em>) is documented in the section about
+iteration (see <a href="while-do.html#while-do">Iteration</a>)
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Internal-Definitions.html#Internal-Definitions" accesskey="n" rel="next">Internal Definitions</a>, Previous: <a href="Top-Level.html#Top-Level" accesskey="p" rel="prev">Top Level</a>, Up: <a href="Binding-Constructs.html#Binding-Constructs" accesskey="u" rel="up">Binding Constructs</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

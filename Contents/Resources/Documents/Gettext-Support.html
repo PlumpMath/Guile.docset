@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Gettext Support</title>
+
+<meta name="description" content="Guile Reference Manual: Gettext Support">
+<meta name="keywords" content="Guile Reference Manual: Gettext Support">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Internationalization.html#Internationalization" rel="up" title="Internationalization">
+<link href="Debugging.html#Debugging" rel="next" title="Debugging">
+<link href="Accessing-Locale-Information.html#Accessing-Locale-Information" rel="prev" title="Accessing Locale Information">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Gettext-Support"></a>
+<div class="header">
+<p>
+Previous: <a href="Accessing-Locale-Information.html#Accessing-Locale-Information" accesskey="p" rel="prev">Accessing Locale Information</a>, Up: <a href="Internationalization.html#Internationalization" accesskey="u" rel="up">Internationalization</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Gettext-Support-1"></a>
+<h4 class="subsection">6.24.6 Gettext Support</h4>
+
+<p>Guile provides an interface to GNU <code>gettext</code> for translating
+message strings (see <a href="http://www.gnu.org/software/gettext/manual/html_node/Introduction.html#Introduction">Introduction</a> in <cite>GNU <code>gettext</code>
+utilities</cite>).
+</p>
+<p>Messages are collected in domains, so different libraries and programs
+maintain different message catalogues.  The <var>domain</var> parameter in
+the functions below is a string (it becomes part of the message
+catalog filename).
+</p>
+<p>When <code>gettext</code> is not available, or if Guile was configured
+&lsquo;<samp>--without-nls</samp>&rsquo;, dummy functions doing no translation are
+provided.  When <code>gettext</code> support is available in Guile, the
+<code>i18n</code> feature is provided (see <a href="Feature-Tracking.html#Feature-Tracking">Feature Tracking</a>).
+</p>
+<dl>
+<dt><a name="index-gettext"></a>Scheme Procedure: <strong>gettext</strong> <em>msg [domain [category]]</em></dt>
+<dt><a name="index-scm_005fgettext"></a>C Function: <strong>scm_gettext</strong> <em>(msg, domain, category)</em></dt>
+<dd><p>Return the translation of <var>msg</var> in <var>domain</var>.  <var>domain</var> is
+optional and defaults to the domain set through <code>textdomain</code>
+below.  <var>category</var> is optional and defaults to <code>LC_MESSAGES</code>
+(see <a href="Locales.html#Locales">Locales</a>).
+</p>
+<p>Normal usage is for <var>msg</var> to be a literal string.
+<code>xgettext</code> can extract those from the source to form a message
+catalogue ready for translators (see <a href="http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html#xgettext-Invocation">Invoking
+the <code>xgettext</code> Program</a> in <cite>GNU <code>gettext</code>
+utilities</cite>).
+</p>
+<div class="example">
+<pre class="example">(display (gettext &quot;You are in a maze of twisty passages.&quot;))
+</pre></div>
+
+<p><code>_</code> is a commonly used shorthand, an application can make that an
+alias for <code>gettext</code>.  Or a library can make a definition that
+uses its specific <var>domain</var> (so an application can change the
+default without affecting the library).
+</p>
+<div class="example">
+<pre class="example">(define (_ msg) (gettext msg &quot;mylibrary&quot;))
+(display (_ &quot;File not found.&quot;))
+</pre></div>
+
+<p><code>_</code> is also a good place to perhaps strip disambiguating extra
+text from the message string, as for instance in <a href="http://www.gnu.org/software/gettext/manual/html_node/GUI-program-problems.html#GUI-program-problems">How to use <code>gettext</code> in GUI programs</a> in <cite>GNU
+<code>gettext</code> utilities</cite>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-ngettext"></a>Scheme Procedure: <strong>ngettext</strong> <em>msg msgplural n [domain [category]]</em></dt>
+<dt><a name="index-scm_005fngettext"></a>C Function: <strong>scm_ngettext</strong> <em>(msg, msgplural, n, domain, category)</em></dt>
+<dd><p>Return the translation of <var>msg</var>/<var>msgplural</var> in <var>domain</var>,
+with a plural form chosen appropriately for the number <var>n</var>.
+<var>domain</var> is optional and defaults to the domain set through
+<code>textdomain</code> below.  <var>category</var> is optional and defaults to
+<code>LC_MESSAGES</code> (see <a href="Locales.html#Locales">Locales</a>).
+</p>
+<p><var>msg</var> is the singular form, and <var>msgplural</var> the plural.  When
+no translation is available, <var>msg</var> is used if <em><var>n</var> = 1</em>,
+or <var>msgplural</var> otherwise.  When translated, the message catalogue
+can have a different rule, and can have more than two possible forms.
+</p>
+<p>As per <code>gettext</code> above, normal usage is for <var>msg</var> and
+<var>msgplural</var> to be literal strings, since <code>xgettext</code> can
+extract them from the source to build a message catalogue.  For
+example,
+</p>
+<div class="example">
+<pre class="example">(define (done n)
+  (format #t (ngettext &quot;~a file processed\n&quot;
+                       &quot;~a files processed\n&quot; n)
+             n))
+
+(done 1) -| 1 file processed
+(done 3) -| 3 files processed
+</pre></div>
+
+<p>It&rsquo;s important to use <code>ngettext</code> rather than plain <code>gettext</code>
+for plurals, since the rules for singular and plural forms in English
+are not the same in other languages.  Only <code>ngettext</code> will allow
+translators to give correct forms (see <a href="http://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html#Plural-forms">Additional
+functions for plural forms</a> in <cite>GNU <code>gettext</code> utilities</cite>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-textdomain"></a>Scheme Procedure: <strong>textdomain</strong> <em>[domain]</em></dt>
+<dt><a name="index-scm_005ftextdomain"></a>C Function: <strong>scm_textdomain</strong> <em>(domain)</em></dt>
+<dd><p>Get or set the default gettext domain.  When called with no parameter
+the current domain is returned.  When called with a parameter,
+<var>domain</var> is set as the current domain, and that new value
+returned.  For example,
+</p>
+<div class="example">
+<pre class="example">(textdomain &quot;myprog&quot;)
+&rArr; &quot;myprog&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-bindtextdomain"></a>Scheme Procedure: <strong>bindtextdomain</strong> <em>domain [directory]</em></dt>
+<dt><a name="index-scm_005fbindtextdomain"></a>C Function: <strong>scm_bindtextdomain</strong> <em>(domain, directory)</em></dt>
+<dd><p>Get or set the directory under which to find message files for
+<var>domain</var>.  When called without a <var>directory</var> the current
+setting is returned.  When called with a <var>directory</var>,
+<var>directory</var> is set for <var>domain</var> and that new setting returned.
+For example,
+</p>
+<div class="example">
+<pre class="example">(bindtextdomain &quot;myprog&quot; &quot;/my/tree/share/locale&quot;)
+&rArr; &quot;/my/tree/share/locale&quot;
+</pre></div>
+
+<p>When using Autoconf/Automake, an application should arrange for the
+configured <code>localedir</code> to get into the program (by substituting,
+or by generating a config file) and set that for its domain.  This
+ensures the catalogue can be found even when installed in a
+non-standard location.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bind_002dtextdomain_002dcodeset"></a>Scheme Procedure: <strong>bind-textdomain-codeset</strong> <em>domain [encoding]</em></dt>
+<dt><a name="index-scm_005fbind_005ftextdomain_005fcodeset"></a>C Function: <strong>scm_bind_textdomain_codeset</strong> <em>(domain, encoding)</em></dt>
+<dd><p>Get or set the text encoding to be used by <code>gettext</code> for messages
+from <var>domain</var>.  <var>encoding</var> is a string, the name of a coding
+system, for instance <code>&quot;8859_1&quot;</code>.  (On a Unix/POSIX system the
+<code>iconv</code> program can list all available encodings.)
+</p>
+<p>When called without an <var>encoding</var> the current setting is returned,
+or <code>#f</code> if none yet set.  When called with an <var>encoding</var>, it
+is set for <var>domain</var> and that new setting returned.  For example,
+</p>
+<div class="example">
+<pre class="example">(bind-textdomain-codeset &quot;myprog&quot;)
+&rArr; #f
+(bind-textdomain-codeset &quot;myprog&quot; &quot;latin-9&quot;)
+&rArr; &quot;latin-9&quot;
+</pre></div>
+
+<p>The encoding requested can be different from the translated data file,
+messages will be recoded as necessary.  But note that when there is no
+translation, <code>gettext</code> returns its <var>msg</var> unchanged, ie.
+without any recoding.  For that reason source message strings are best
+as plain ASCII.
+</p>
+<p>Currently Guile has no understanding of multi-byte characters, and
+string functions won&rsquo;t recognise character boundaries in multi-byte
+strings.  An application will at least be able to pass such strings
+through to some output though.  Perhaps this will change in the
+future.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Accessing-Locale-Information.html#Accessing-Locale-Information" accesskey="p" rel="prev">Accessing Locale Information</a>, Up: <a href="Internationalization.html#Internationalization" accesskey="u" rel="up">Internationalization</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

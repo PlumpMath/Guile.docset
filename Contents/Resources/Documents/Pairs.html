@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Pairs</title>
+
+<meta name="description" content="Guile Reference Manual: Pairs">
+<meta name="keywords" content="Guile Reference Manual: Pairs">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compound-Data-Types.html#Compound-Data-Types" rel="up" title="Compound Data Types">
+<link href="Lists.html#Lists" rel="next" title="Lists">
+<link href="Compound-Data-Types.html#Compound-Data-Types" rel="prev" title="Compound Data Types">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Pairs"></a>
+<div class="header">
+<p>
+Next: <a href="Lists.html#Lists" accesskey="n" rel="next">Lists</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Pairs-1"></a>
+<h4 class="subsection">6.7.1 Pairs</h4>
+<a name="index-Pairs"></a>
+
+<p>Pairs are used to combine two Scheme objects into one compound object.
+Hence the name: A pair stores a pair of objects.
+</p>
+<p>The data type <em>pair</em> is extremely important in Scheme, just like in
+any other Lisp dialect.  The reason is that pairs are not only used to
+make two values available as one object, but that pairs are used for
+constructing lists of values.  Because lists are so important in Scheme,
+they are described in a section of their own (see <a href="Lists.html#Lists">Lists</a>).
+</p>
+<p>Pairs can literally get entered in source code or at the REPL, in the
+so-called <em>dotted list</em> syntax.  This syntax consists of an opening
+parentheses, the first element of the pair, a dot, the second element
+and a closing parentheses.  The following example shows how a pair
+consisting of the two numbers 1 and 2, and a pair containing the symbols
+<code>foo</code> and <code>bar</code> can be entered.  It is very important to write
+the whitespace before and after the dot, because otherwise the Scheme
+parser would not be able to figure out where to split the tokens.
+</p>
+<div class="lisp">
+<pre class="lisp">(1 . 2)
+(foo . bar)
+</pre></div>
+
+<p>But beware, if you want to try out these examples, you have to
+<em>quote</em> the expressions.  More information about quotation is
+available in the section <a href="Expression-Syntax.html#Expression-Syntax">Expression Syntax</a>.  The correct way
+to try these examples is as follows.
+</p>
+<div class="lisp">
+<pre class="lisp">'(1 . 2)
+&rArr;
+(1 . 2)
+'(foo . bar)
+&rArr;
+(foo . bar)
+</pre></div>
+
+<p>A new pair is made by calling the procedure <code>cons</code> with two
+arguments.  Then the argument values are stored into a newly allocated
+pair, and the pair is returned.  The name <code>cons</code> stands for
+&quot;construct&quot;.  Use the procedure <code>pair?</code> to test whether a
+given Scheme object is a pair or not.
+</p>
+<a name="index-cons-3"></a>
+<dl>
+<dt><a name="index-cons"></a>Scheme Procedure: <strong>cons</strong> <em>x y</em></dt>
+<dt><a name="index-scm_005fcons"></a>C Function: <strong>scm_cons</strong> <em>(x, y)</em></dt>
+<dd><p>Return a newly allocated pair whose car is <var>x</var> and whose
+cdr is <var>y</var>.  The pair is guaranteed to be different (in the
+sense of <code>eq?</code>) from every previously existing object.
+</p></dd></dl>
+
+<a name="index-pair_003f-3"></a>
+<dl>
+<dt><a name="index-pair_003f"></a>Scheme Procedure: <strong>pair?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fpair_005fp"></a>C Function: <strong>scm_pair_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is a pair; otherwise return
+<code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005fpair"></a>C Function: <em>int</em> <strong>scm_is_pair</strong> <em>(SCM x)</em></dt>
+<dd><p>Return 1 when <var>x</var> is a pair; otherwise return 0.
+</p></dd></dl>
+
+<p>The two parts of a pair are traditionally called <em>car</em> and
+<em>cdr</em>.  They can be retrieved with procedures of the same name
+(<code>car</code> and <code>cdr</code>), and can be modified with the procedures
+<code>set-car!</code> and <code>set-cdr!</code>.
+</p>
+<p>Since a very common operation in Scheme programs is to access the car of
+a car of a pair, or the car of the cdr of a pair, etc., the procedures
+called <code>caar</code>, <code>cadr</code> and so on are also predefined.  However,
+using these procedures is often detrimental to readability, and
+error-prone.  Thus, accessing the contents of a list is usually better
+achieved using pattern matching techniques (see <a href="Pattern-Matching.html#Pattern-Matching">Pattern Matching</a>).
+</p>
+<a name="index-car-3"></a>
+<a name="index-cdr-3"></a>
+<dl>
+<dt><a name="index-car"></a>Scheme Procedure: <strong>car</strong> <em>pair</em></dt>
+<dt><a name="index-cdr"></a>Scheme Procedure: <strong>cdr</strong> <em>pair</em></dt>
+<dt><a name="index-scm_005fcar"></a>C Function: <strong>scm_car</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdr"></a>C Function: <strong>scm_cdr</strong> <em>(pair)</em></dt>
+<dd><p>Return the car or the cdr of <var>pair</var>, respectively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fCAR"></a>C Macro: <em>SCM</em> <strong>SCM_CAR</strong> <em>(SCM pair)</em></dt>
+<dt><a name="index-SCM_005fCDR"></a>C Macro: <em>SCM</em> <strong>SCM_CDR</strong> <em>(SCM pair)</em></dt>
+<dd><p>These two macros are the fastest way to access the car or cdr of a
+pair; they can be thought of as compiling into a single memory
+reference.
+</p>
+<p>These macros do no checking at all.  The argument <var>pair</var> must be a
+valid pair.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-cddr"></a>Scheme Procedure: <strong>cddr</strong> <em>pair</em></dt>
+<dt><a name="index-cdar"></a>Scheme Procedure: <strong>cdar</strong> <em>pair</em></dt>
+<dt><a name="index-cadr"></a>Scheme Procedure: <strong>cadr</strong> <em>pair</em></dt>
+<dt><a name="index-caar"></a>Scheme Procedure: <strong>caar</strong> <em>pair</em></dt>
+<dt><a name="index-cdddr"></a>Scheme Procedure: <strong>cdddr</strong> <em>pair</em></dt>
+<dt><a name="index-cddar"></a>Scheme Procedure: <strong>cddar</strong> <em>pair</em></dt>
+<dt><a name="index-cdadr"></a>Scheme Procedure: <strong>cdadr</strong> <em>pair</em></dt>
+<dt><a name="index-cdaar"></a>Scheme Procedure: <strong>cdaar</strong> <em>pair</em></dt>
+<dt><a name="index-caddr"></a>Scheme Procedure: <strong>caddr</strong> <em>pair</em></dt>
+<dt><a name="index-cadar"></a>Scheme Procedure: <strong>cadar</strong> <em>pair</em></dt>
+<dt><a name="index-caadr"></a>Scheme Procedure: <strong>caadr</strong> <em>pair</em></dt>
+<dt><a name="index-caaar"></a>Scheme Procedure: <strong>caaar</strong> <em>pair</em></dt>
+<dt><a name="index-cddddr"></a>Scheme Procedure: <strong>cddddr</strong> <em>pair</em></dt>
+<dt><a name="index-cdddar"></a>Scheme Procedure: <strong>cdddar</strong> <em>pair</em></dt>
+<dt><a name="index-cddadr"></a>Scheme Procedure: <strong>cddadr</strong> <em>pair</em></dt>
+<dt><a name="index-cddaar"></a>Scheme Procedure: <strong>cddaar</strong> <em>pair</em></dt>
+<dt><a name="index-cdaddr"></a>Scheme Procedure: <strong>cdaddr</strong> <em>pair</em></dt>
+<dt><a name="index-cdadar"></a>Scheme Procedure: <strong>cdadar</strong> <em>pair</em></dt>
+<dt><a name="index-cdaadr"></a>Scheme Procedure: <strong>cdaadr</strong> <em>pair</em></dt>
+<dt><a name="index-cdaaar"></a>Scheme Procedure: <strong>cdaaar</strong> <em>pair</em></dt>
+<dt><a name="index-cadddr"></a>Scheme Procedure: <strong>cadddr</strong> <em>pair</em></dt>
+<dt><a name="index-caddar"></a>Scheme Procedure: <strong>caddar</strong> <em>pair</em></dt>
+<dt><a name="index-cadadr"></a>Scheme Procedure: <strong>cadadr</strong> <em>pair</em></dt>
+<dt><a name="index-cadaar"></a>Scheme Procedure: <strong>cadaar</strong> <em>pair</em></dt>
+<dt><a name="index-caaddr"></a>Scheme Procedure: <strong>caaddr</strong> <em>pair</em></dt>
+<dt><a name="index-caadar"></a>Scheme Procedure: <strong>caadar</strong> <em>pair</em></dt>
+<dt><a name="index-caaadr"></a>Scheme Procedure: <strong>caaadr</strong> <em>pair</em></dt>
+<dt><a name="index-caaaar"></a>Scheme Procedure: <strong>caaaar</strong> <em>pair</em></dt>
+<dt><a name="index-scm_005fcddr"></a>C Function: <strong>scm_cddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdar"></a>C Function: <strong>scm_cdar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcadr"></a>C Function: <strong>scm_cadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaar"></a>C Function: <strong>scm_caar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdddr"></a>C Function: <strong>scm_cdddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcddar"></a>C Function: <strong>scm_cddar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdadr"></a>C Function: <strong>scm_cdadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdaar"></a>C Function: <strong>scm_cdaar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaddr"></a>C Function: <strong>scm_caddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcadar"></a>C Function: <strong>scm_cadar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaadr"></a>C Function: <strong>scm_caadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaaar"></a>C Function: <strong>scm_caaar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcddddr"></a>C Function: <strong>scm_cddddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdddar"></a>C Function: <strong>scm_cdddar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcddadr"></a>C Function: <strong>scm_cddadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcddaar"></a>C Function: <strong>scm_cddaar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdaddr"></a>C Function: <strong>scm_cdaddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdadar"></a>C Function: <strong>scm_cdadar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdaadr"></a>C Function: <strong>scm_cdaadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcdaaar"></a>C Function: <strong>scm_cdaaar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcadddr"></a>C Function: <strong>scm_cadddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaddar"></a>C Function: <strong>scm_caddar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcadadr"></a>C Function: <strong>scm_cadadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcadaar"></a>C Function: <strong>scm_cadaar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaaddr"></a>C Function: <strong>scm_caaddr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaadar"></a>C Function: <strong>scm_caadar</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaaadr"></a>C Function: <strong>scm_caaadr</strong> <em>(pair)</em></dt>
+<dt><a name="index-scm_005fcaaaar"></a>C Function: <strong>scm_caaaar</strong> <em>(pair)</em></dt>
+<dd><p>These procedures are compositions of <code>car</code> and <code>cdr</code>, where
+for example <code>caddr</code> could be defined by
+</p>
+<div class="lisp">
+<pre class="lisp">(define caddr (lambda (x) (car (cdr (cdr x)))))
+</pre></div>
+
+<p><code>cadr</code>, <code>caddr</code> and <code>cadddr</code> pick out the second, third
+or fourth elements of a list, respectively.  SRFI-1 provides the same
+under the names <code>second</code>, <code>third</code> and <code>fourth</code>
+(see <a href="SRFI_002d1-Selectors.html#SRFI_002d1-Selectors">SRFI-1 Selectors</a>).
+</p></dd></dl>
+
+<a name="index-set_002dcar_0021-2"></a>
+<dl>
+<dt><a name="index-set_002dcar_0021"></a>Scheme Procedure: <strong>set-car!</strong> <em>pair value</em></dt>
+<dt><a name="index-scm_005fset_005fcar_005fx"></a>C Function: <strong>scm_set_car_x</strong> <em>(pair, value)</em></dt>
+<dd><p>Stores <var>value</var> in the car field of <var>pair</var>.  The value returned
+by <code>set-car!</code> is unspecified.
+</p></dd></dl>
+
+<a name="index-set_002dcdr_0021-2"></a>
+<dl>
+<dt><a name="index-set_002dcdr_0021"></a>Scheme Procedure: <strong>set-cdr!</strong> <em>pair value</em></dt>
+<dt><a name="index-scm_005fset_005fcdr_005fx"></a>C Function: <strong>scm_set_cdr_x</strong> <em>(pair, value)</em></dt>
+<dd><p>Stores <var>value</var> in the cdr field of <var>pair</var>.  The value returned
+by <code>set-cdr!</code> is unspecified.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Lists.html#Lists" accesskey="n" rel="next">Lists</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

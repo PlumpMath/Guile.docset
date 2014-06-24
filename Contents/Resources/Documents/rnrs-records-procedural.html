@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs records procedural</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs records procedural">
+<meta name="keywords" content="Guile Reference Manual: rnrs records procedural">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-records-inspection.html#rnrs-records-inspection" rel="next" title="rnrs records inspection">
+<link href="rnrs-records-syntactic.html#rnrs-records-syntactic" rel="prev" title="rnrs records syntactic">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-records-procedural"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-records-inspection.html#rnrs-records-inspection" accesskey="n" rel="next">rnrs records inspection</a>, Previous: <a href="rnrs-records-syntactic.html#rnrs-records-syntactic" accesskey="p" rel="prev">rnrs records syntactic</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-records-procedural-1"></a>
+<h4 class="subsubsection">7.6.2.10 rnrs records procedural</h4>
+
+<p>The <code>(rnrs records procedural (6))</code> library exports the procedural
+API for working with R6RS records.
+</p>
+<dl>
+<dt><a name="index-make_002drecord_002dtype_002ddescriptor"></a>Scheme Procedure: <strong>make-record-type-descriptor</strong> <em>name parent uid sealed? opaque? fields</em></dt>
+<dd><p>Returns a new record-type descriptor with the specified characteristics:
+<var>name</var> must be a symbol giving the name of the new record type; 
+<var>parent</var> must be either <code>#f</code> or a non-sealed record-type 
+descriptor for the returned record type to extend; <var>uid</var> must be
+either <code>#f</code>, indicating that the record type is generative, or 
+a symbol giving the type&rsquo;s nongenerative uid; <var>sealed?</var> and  
+<var>opaque?</var> must be boolean values that specify the sealedness and
+opaqueness of the record type; <var>fields</var> must be a vector of zero or
+more field specifiers of the form <code>(mutable name)</code> or
+<code>(immutable name)</code>, where name is a symbol giving a name for the
+field.
+</p>
+<p>If <var>uid</var> is not <code>#f</code>, it must be a symbol
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-record_002dtype_002ddescriptor_003f"></a>Scheme Procedure: <strong>record-type-descriptor?</strong> <em>obj</em></dt>
+<dd><p>Returns <code>#t</code> if <var>obj</var> is a record-type descriptor, <code>#f</code>
+otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002drecord_002dconstructor_002ddescriptor"></a>Scheme Procedure: <strong>make-record-constructor-descriptor</strong> <em>rtd parent-constructor-descriptor protocol</em></dt>
+<dd><p>Returns a new record constructor descriptor that can be used to produce
+constructors for the record type specified by the record-type descriptor
+<var>rtd</var> and whose delegation and binding behavior are specified by the
+protocol procedure <var>protocol</var>.
+</p>
+<p><var>parent-constructor-descriptor</var> specifies a record constructor 
+descriptor for the parent type of <var>rtd</var>, if one exists.  If 
+<var>rtd</var> represents a base type, then 
+<var>parent-constructor-descriptor</var> must be <code>#f</code>.  If <var>rtd</var>
+is an extension of another type, <var>parent-constructor-descriptor</var> may
+still be <code>#f</code>, but protocol must also be <code>#f</code> in this case.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-record_002dconstructor-1"></a>Scheme Procedure: <strong>record-constructor</strong> <em>rcd</em></dt>
+<dd><p>Returns a record constructor procedure by invoking the protocol
+defined by the record-constructor descriptor <var>rcd</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-record_002dpredicate-1"></a>Scheme Procedure: <strong>record-predicate</strong> <em>rtd</em></dt>
+<dd><p>Returns the record predicate procedure for the record-type descriptor
+<var>rtd</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-record_002daccessor-1"></a>Scheme Procedure: <strong>record-accessor</strong> <em>rtd k</em></dt>
+<dd><p>Returns the record field accessor procedure for the <var>k</var>th field of
+the record-type descriptor <var>rtd</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-record_002dmutator"></a>Scheme Procedure: <strong>record-mutator</strong> <em>rtd k</em></dt>
+<dd><p>Returns the record field mutator procedure for the <var>k</var>th field of
+the record-type descriptor <var>rtd</var>.  An <code>&amp;assertion</code> condition
+will be raised if this field is not mutable.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-records-inspection.html#rnrs-records-inspection" accesskey="n" rel="next">rnrs records inspection</a>, Previous: <a href="rnrs-records-syntactic.html#rnrs-records-syntactic" accesskey="p" rel="prev">rnrs records syntactic</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

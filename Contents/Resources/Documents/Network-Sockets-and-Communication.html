@@ -1,0 +1,450 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Network Sockets and Communication</title>
+
+<meta name="description" content="Guile Reference Manual: Network Sockets and Communication">
+<meta name="keywords" content="Guile Reference Manual: Network Sockets and Communication">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Networking.html#Networking" rel="up" title="Networking">
+<link href="Internet-Socket-Examples.html#Internet-Socket-Examples" rel="next" title="Internet Socket Examples">
+<link href="Network-Socket-Address.html#Network-Socket-Address" rel="prev" title="Network Socket Address">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Network-Sockets-and-Communication"></a>
+<div class="header">
+<p>
+Next: <a href="Internet-Socket-Examples.html#Internet-Socket-Examples" accesskey="n" rel="next">Internet Socket Examples</a>, Previous: <a href="Network-Socket-Address.html#Network-Socket-Address" accesskey="p" rel="prev">Network Socket Address</a>, Up: <a href="Networking.html#Networking" accesskey="u" rel="up">Networking</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Network-Sockets-and-Communication-1"></a>
+<h4 class="subsubsection">7.2.11.4 Network Sockets and Communication</h4>
+<a name="index-socket"></a>
+<a name="index-network-socket"></a>
+
+<p>Socket ports can be created using <code>socket</code> and <code>socketpair</code>.
+The ports are initially unbuffered, to make reading and writing to the
+same port more reliable.  A buffer can be added to the port using
+<code>setvbuf</code>; see <a href="Ports-and-File-Descriptors.html#Ports-and-File-Descriptors">Ports and File Descriptors</a>.
+</p>
+<p>Most systems have limits on how many files and sockets can be open, so
+it&rsquo;s strongly recommended that socket ports be closed explicitly when
+no longer required (see <a href="Ports.html#Ports">Ports</a>).
+</p>
+<p>Some of the underlying C functions take values in network byte order,
+but the convention in Guile is that at the Scheme level everything is
+ordinary host byte order and conversions are made automatically where
+necessary.
+</p>
+<dl>
+<dt><a name="index-socket-1"></a>Scheme Procedure: <strong>socket</strong> <em>family style proto</em></dt>
+<dt><a name="index-scm_005fsocket"></a>C Function: <strong>scm_socket</strong> <em>(family, style, proto)</em></dt>
+<dd><p>Return a new socket port of the type specified by <var>family</var>,
+<var>style</var> and <var>proto</var>.  All three parameters are integers.  The
+possible values for <var>family</var> are as follows, where supported by
+the system,
+</p>
+<dl>
+<dt><a name="index-PF_005fUNIX"></a>Variable: <strong>PF_UNIX</strong></dt>
+<dt><a name="index-PF_005fINET"></a>Variable: <strong>PF_INET</strong></dt>
+<dt><a name="index-PF_005fINET6"></a>Variable: <strong>PF_INET6</strong></dt>
+</dl>
+
+<p>The possible values for <var>style</var> are as follows, again where
+supported by the system,
+</p>
+<dl>
+<dt><a name="index-SOCK_005fSTREAM"></a>Variable: <strong>SOCK_STREAM</strong></dt>
+<dt><a name="index-SOCK_005fDGRAM"></a>Variable: <strong>SOCK_DGRAM</strong></dt>
+<dt><a name="index-SOCK_005fRAW"></a>Variable: <strong>SOCK_RAW</strong></dt>
+<dt><a name="index-SOCK_005fRDM"></a>Variable: <strong>SOCK_RDM</strong></dt>
+<dt><a name="index-SOCK_005fSEQPACKET"></a>Variable: <strong>SOCK_SEQPACKET</strong></dt>
+</dl>
+
+<p><var>proto</var> can be obtained from a protocol name using
+<code>getprotobyname</code> (see <a href="Network-Databases.html#Network-Databases">Network Databases</a>).  A value of zero
+means the default protocol, which is usually right.
+</p>
+<p>A socket cannot by used for communication until it has been connected
+somewhere, usually with either <code>connect</code> or <code>accept</code> below.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-socketpair"></a>Scheme Procedure: <strong>socketpair</strong> <em>family style proto</em></dt>
+<dt><a name="index-scm_005fsocketpair"></a>C Function: <strong>scm_socketpair</strong> <em>(family, style, proto)</em></dt>
+<dd><p>Return a pair, the <code>car</code> and <code>cdr</code> of which are two unnamed
+socket ports connected to each other.  The connection is full-duplex,
+so data can be transferred in either direction between the two.
+</p>
+<p><var>family</var>, <var>style</var> and <var>proto</var> are as per <code>socket</code>
+above.  But many systems only support socket pairs in the
+<code>PF_UNIX</code> family.  Zero is likely to be the only meaningful value
+for <var>proto</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getsockopt"></a>Scheme Procedure: <strong>getsockopt</strong> <em>sock level optname</em></dt>
+<dt><a name="index-setsockopt"></a>Scheme Procedure: <strong>setsockopt</strong> <em>sock level optname value</em></dt>
+<dt><a name="index-scm_005fgetsockopt"></a>C Function: <strong>scm_getsockopt</strong> <em>(sock, level, optname)</em></dt>
+<dt><a name="index-scm_005fsetsockopt"></a>C Function: <strong>scm_setsockopt</strong> <em>(sock, level, optname, value)</em></dt>
+<dd><p>Get or set an option on socket port <var>sock</var>.  <code>getsockopt</code>
+returns the current value.  <code>setsockopt</code> sets a value and the
+return is unspecified.
+</p>
+<p><var>level</var> is an integer specifying a protocol layer, either
+<code>SOL_SOCKET</code> for socket level options, or a protocol number from
+the <code>IPPROTO</code> constants or <code>getprotoent</code> (see <a href="Network-Databases.html#Network-Databases">Network Databases</a>).
+</p>
+<dl>
+<dt><a name="index-SOL_005fSOCKET"></a>Variable: <strong>SOL_SOCKET</strong></dt>
+<dt><a name="index-IPPROTO_005fIP"></a>Variable: <strong>IPPROTO_IP</strong></dt>
+<dt><a name="index-IPPROTO_005fTCP"></a>Variable: <strong>IPPROTO_TCP</strong></dt>
+<dt><a name="index-IPPROTO_005fUDP"></a>Variable: <strong>IPPROTO_UDP</strong></dt>
+</dl>
+
+<p><var>optname</var> is an integer specifying an option within the protocol
+layer.
+</p>
+<p>For <code>SOL_SOCKET</code> level the following <var>optname</var>s are defined
+(when provided by the system).  For their meaning see
+<a href="http://www.gnu.org/software/libc/manual/html_node/Socket_002dLevel-Options.html#Socket_002dLevel-Options">Socket-Level Options</a> in <cite>The GNU C Library Reference
+Manual</cite>, or <code>man 7 socket</code>.
+</p>
+<dl>
+<dt><a name="index-SO_005fDEBUG"></a>Variable: <strong>SO_DEBUG</strong></dt>
+<dt><a name="index-SO_005fREUSEADDR"></a>Variable: <strong>SO_REUSEADDR</strong></dt>
+<dt><a name="index-SO_005fSTYLE"></a>Variable: <strong>SO_STYLE</strong></dt>
+<dt><a name="index-SO_005fTYPE"></a>Variable: <strong>SO_TYPE</strong></dt>
+<dt><a name="index-SO_005fERROR"></a>Variable: <strong>SO_ERROR</strong></dt>
+<dt><a name="index-SO_005fDONTROUTE"></a>Variable: <strong>SO_DONTROUTE</strong></dt>
+<dt><a name="index-SO_005fBROADCAST"></a>Variable: <strong>SO_BROADCAST</strong></dt>
+<dt><a name="index-SO_005fSNDBUF"></a>Variable: <strong>SO_SNDBUF</strong></dt>
+<dt><a name="index-SO_005fRCVBUF"></a>Variable: <strong>SO_RCVBUF</strong></dt>
+<dt><a name="index-SO_005fKEEPALIVE"></a>Variable: <strong>SO_KEEPALIVE</strong></dt>
+<dt><a name="index-SO_005fOOBINLINE"></a>Variable: <strong>SO_OOBINLINE</strong></dt>
+<dt><a name="index-SO_005fNO_005fCHECK"></a>Variable: <strong>SO_NO_CHECK</strong></dt>
+<dt><a name="index-SO_005fPRIORITY"></a>Variable: <strong>SO_PRIORITY</strong></dt>
+<dt><a name="index-SO_005fREUSEPORT"></a>Variable: <strong>SO_REUSEPORT</strong></dt>
+<dd><p>The <var>value</var> taken or returned is an integer.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SO_005fLINGER"></a>Variable: <strong>SO_LINGER</strong></dt>
+<dd><p>The <var>value</var> taken or returned is a pair of integers
+<code>(<var>ENABLE</var> . <var>TIMEOUT</var>)</code>.  On old systems without timeout
+support (ie. without <code>struct linger</code>), only <var>ENABLE</var> has an
+effect but the value in Guile is always a pair.
+</p></dd></dl>
+
+<p>For IP level (<code>IPPROTO_IP</code>) the following <var>optname</var>s are
+defined (when provided by the system).  See <code>man ip</code> for what
+they mean.
+</p>
+<dl>
+<dt><a name="index-IP_005fMULTICAST_005fIF"></a>Variable: <strong>IP_MULTICAST_IF</strong></dt>
+<dd><p>This sets the source interface used by multicast traffic.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-IP_005fMULTICAST_005fTTL"></a>Variable: <strong>IP_MULTICAST_TTL</strong></dt>
+<dd><p>This sets the default TTL for multicast traffic. This defaults
+to 1 and should be increased to allow traffic to pass beyond the
+local network.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-IP_005fADD_005fMEMBERSHIP"></a>Variable: <strong>IP_ADD_MEMBERSHIP</strong></dt>
+<dt><a name="index-IP_005fDROP_005fMEMBERSHIP"></a>Variable: <strong>IP_DROP_MEMBERSHIP</strong></dt>
+<dd><p>These can be used only with <code>setsockopt</code>, not <code>getsockopt</code>.
+<var>value</var> is a pair <code>(<var>MULTIADDR</var> . <var>INTERFACEADDR</var>)</code>
+of integer IPv4 addresses (see <a href="Network-Address-Conversion.html#Network-Address-Conversion">Network Address Conversion</a>).
+<var>MULTIADDR</var> is a multicast address to be added to or dropped from
+the interface <var>INTERFACEADDR</var>.  <var>INTERFACEADDR</var> can be
+<code>INADDR_ANY</code> to have the system select the interface.
+<var>INTERFACEADDR</var> can also be an interface index number, on systems
+supporting that.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-shutdown"></a>Scheme Procedure: <strong>shutdown</strong> <em>sock how</em></dt>
+<dt><a name="index-scm_005fshutdown"></a>C Function: <strong>scm_shutdown</strong> <em>(sock, how)</em></dt>
+<dd><p>Sockets can be closed simply by using <code>close-port</code>.  The
+<code>shutdown</code> procedure allows reception or transmission on a
+connection to be shut down individually, according to the parameter
+<var>how</var>:
+</p>
+<dl compact="compact">
+<dt>0</dt>
+<dd><p>Stop receiving data for this socket.  If further data arrives, reject it.
+</p></dd>
+<dt>1</dt>
+<dd><p>Stop trying to transmit data from this socket.  Discard any
+data waiting to be sent.  Stop looking for acknowledgement of
+data already sent; don&rsquo;t retransmit it if it is lost.
+</p></dd>
+<dt>2</dt>
+<dd><p>Stop both reception and transmission.
+</p></dd>
+</dl>
+
+<p>The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-connect"></a>Scheme Procedure: <strong>connect</strong> <em>sock sockaddr</em></dt>
+<dt><a name="index-connect-1"></a>Scheme Procedure: <strong>connect</strong> <em>sock AF_INET ipv4addr port</em></dt>
+<dt><a name="index-connect-2"></a>Scheme Procedure: <strong>connect</strong> <em>sock AF_INET6 ipv6addr port [flowinfo [scopeid]]</em></dt>
+<dt><a name="index-connect-3"></a>Scheme Procedure: <strong>connect</strong> <em>sock AF_UNIX path</em></dt>
+<dt><a name="index-scm_005fconnect"></a>C Function: <strong>scm_connect</strong> <em>(sock, fam, address, args)</em></dt>
+<dd><p>Initiate a connection on socket port <var>sock</var> to a given address.
+The destination is either a socket address object, or arguments the
+same as <code>make-socket-address</code> would take to make such an object
+(see <a href="Network-Socket-Address.html#Network-Socket-Address">Network Socket Address</a>).  The return value is unspecified.
+</p>
+<div class="example">
+<pre class="example">(connect sock AF_INET INADDR_LOOPBACK 23)
+(connect sock (make-socket-address AF_INET INADDR_LOOPBACK 23))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-bind"></a>Scheme Procedure: <strong>bind</strong> <em>sock sockaddr</em></dt>
+<dt><a name="index-bind-1"></a>Scheme Procedure: <strong>bind</strong> <em>sock AF_INET ipv4addr port</em></dt>
+<dt><a name="index-bind-2"></a>Scheme Procedure: <strong>bind</strong> <em>sock AF_INET6 ipv6addr port [flowinfo [scopeid]]</em></dt>
+<dt><a name="index-bind-3"></a>Scheme Procedure: <strong>bind</strong> <em>sock AF_UNIX path</em></dt>
+<dt><a name="index-scm_005fbind"></a>C Function: <strong>scm_bind</strong> <em>(sock, fam, address, args)</em></dt>
+<dd><p>Bind socket port <var>sock</var> to the given address.  The address is
+either a socket address object, or arguments the same as
+<code>make-socket-address</code> would take to make such an object
+(see <a href="Network-Socket-Address.html#Network-Socket-Address">Network Socket Address</a>).  The return value is unspecified.
+</p>
+<p>Generally a socket is only explicitly bound to a particular address
+when making a server, i.e. to listen on a particular port.  For an
+outgoing connection the system will assign a local address
+automatically, if not already bound.
+</p>
+<div class="example">
+<pre class="example">(bind sock AF_INET INADDR_ANY 12345)
+(bind sock (make-socket-address AF_INET INADDR_ANY 12345))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-listen"></a>Scheme Procedure: <strong>listen</strong> <em>sock backlog</em></dt>
+<dt><a name="index-scm_005flisten"></a>C Function: <strong>scm_listen</strong> <em>(sock, backlog)</em></dt>
+<dd><p>Enable <var>sock</var> to accept connection
+requests.  <var>backlog</var> is an integer specifying
+the maximum length of the queue for pending connections.
+If the queue fills, new clients will fail to connect until
+the server calls <code>accept</code> to accept a connection from
+the queue.
+</p>
+<p>The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-accept"></a>Scheme Procedure: <strong>accept</strong> <em>sock</em></dt>
+<dt><a name="index-scm_005faccept"></a>C Function: <strong>scm_accept</strong> <em>(sock)</em></dt>
+<dd><p>Accept a connection from socket port <var>sock</var> which has been enabled
+for listening with <code>listen</code> above.  If there are no incoming
+connections in the queue, wait until one is available (unless
+<code>O_NONBLOCK</code> has been set on the socket, see <a href="Ports-and-File-Descriptors.html#Ports-and-File-Descriptors"><code>fcntl</code></a>).
+</p>
+<p>The return value is a pair.  The <code>car</code> is a new socket port,
+connected and ready to communicate.  The <code>cdr</code> is a socket
+address object (see <a href="Network-Socket-Address.html#Network-Socket-Address">Network Socket Address</a>) which is where the
+remote connection is from (like <code>getpeername</code> below).
+</p>
+<p>All communication takes place using the new socket returned.  The
+given <var>sock</var> remains bound and listening, and <code>accept</code> may be
+called on it again to get another incoming connection when desired.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getsockname"></a>Scheme Procedure: <strong>getsockname</strong> <em>sock</em></dt>
+<dt><a name="index-scm_005fgetsockname"></a>C Function: <strong>scm_getsockname</strong> <em>(sock)</em></dt>
+<dd><p>Return a socket address object which is the where <var>sock</var> is bound
+locally.  <var>sock</var> may have obtained its local address from
+<code>bind</code> (above), or if a <code>connect</code> is done with an otherwise
+unbound socket (which is usual) then the system will have assigned an
+address.
+</p>
+<p>Note that on many systems the address of a socket in the
+<code>AF_UNIX</code> namespace cannot be read.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getpeername"></a>Scheme Procedure: <strong>getpeername</strong> <em>sock</em></dt>
+<dt><a name="index-scm_005fgetpeername"></a>C Function: <strong>scm_getpeername</strong> <em>(sock)</em></dt>
+<dd><p>Return a socket address object which is where <var>sock</var> is connected
+to, i.e. the remote endpoint.
+</p>
+<p>Note that on many systems the address of a socket in the
+<code>AF_UNIX</code> namespace cannot be read.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-recv_0021"></a>Scheme Procedure: <strong>recv!</strong> <em>sock buf [flags]</em></dt>
+<dt><a name="index-scm_005frecv"></a>C Function: <strong>scm_recv</strong> <em>(sock, buf, flags)</em></dt>
+<dd><p>Receive data from a socket port.
+<var>sock</var> must already
+be bound to the address from which data is to be received.
+<var>buf</var> is a bytevector into which
+the data will be written.  The size of <var>buf</var> limits
+the amount of
+data which can be received: in the case of packet
+protocols, if a packet larger than this limit is encountered
+then some data
+will be irrevocably lost.
+</p>
+<a name="index-MSG_005fOOB"></a>
+<a name="index-MSG_005fPEEK"></a>
+<a name="index-MSG_005fDONTROUTE"></a>
+<p>The optional <var>flags</var> argument is a value or bitwise OR of
+<code>MSG_OOB</code>, <code>MSG_PEEK</code>, <code>MSG_DONTROUTE</code> etc.
+</p>
+<p>The value returned is the number of bytes read from the
+socket.
+</p>
+<p>Note that the data is read directly from the socket file
+descriptor:
+any unread buffered port data is ignored.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-send"></a>Scheme Procedure: <strong>send</strong> <em>sock message [flags]</em></dt>
+<dt><a name="index-scm_005fsend"></a>C Function: <strong>scm_send</strong> <em>(sock, message, flags)</em></dt>
+<dd><a name="index-MSG_005fOOB-1"></a>
+<a name="index-MSG_005fPEEK-1"></a>
+<a name="index-MSG_005fDONTROUTE-1"></a>
+<p>Transmit bytevector <var>message</var> on socket port <var>sock</var>.
+<var>sock</var> must already be bound to a destination address.  The value
+returned is the number of bytes transmitted&mdash;it&rsquo;s possible for this
+to be less than the length of <var>message</var> if the socket is set to be
+non-blocking.  The optional <var>flags</var> argument is a value or bitwise
+OR of <code>MSG_OOB</code>, <code>MSG_PEEK</code>, <code>MSG_DONTROUTE</code> etc.
+</p>
+<p>Note that the data is written directly to the socket
+file descriptor:
+any unflushed buffered port data is ignored.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-recvfrom_0021"></a>Scheme Procedure: <strong>recvfrom!</strong> <em>sock buf [flags [start [end]]]</em></dt>
+<dt><a name="index-scm_005frecvfrom"></a>C Function: <strong>scm_recvfrom</strong> <em>(sock, buf, flags, start, end)</em></dt>
+<dd><p>Receive data from socket port <var>sock</var>, returning the originating
+address as well as the data.  This function is usually for datagram
+sockets, but can be used on stream-oriented sockets too.
+</p>
+<p>The data received is stored in bytevector <var>buf</var>, using
+either the whole bytevector or just the region between the optional
+<var>start</var> and <var>end</var> positions.  The size of <var>buf</var>
+limits the amount of data that can be received.  For datagram
+protocols if a packet larger than this is received then excess
+bytes are irrevocably lost.
+</p>
+<p>The return value is a pair.  The <code>car</code> is the number of bytes
+read.  The <code>cdr</code> is a socket address object (see <a href="Network-Socket-Address.html#Network-Socket-Address">Network Socket Address</a>) which is where the data came from, or <code>#f</code> if
+the origin is unknown.
+</p>
+<a name="index-MSG_005fOOB-2"></a>
+<a name="index-MSG_005fPEEK-2"></a>
+<a name="index-MSG_005fDONTROUTE-2"></a>
+<p>The optional <var>flags</var> argument is a or bitwise-OR (<code>logior</code>)
+of <code>MSG_OOB</code>, <code>MSG_PEEK</code>, <code>MSG_DONTROUTE</code> etc.
+</p>
+<p>Data is read directly from the socket file descriptor, any buffered
+port data is ignored.
+</p>
+<p>On a GNU/Linux system <code>recvfrom!</code> is not multi-threading, all
+threads stop while a <code>recvfrom!</code> call is in progress.  An
+application may need to use <code>select</code>, <code>O_NONBLOCK</code> or
+<code>MSG_DONTWAIT</code> to avoid this.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sendto"></a>Scheme Procedure: <strong>sendto</strong> <em>sock message sockaddr [flags]</em></dt>
+<dt><a name="index-sendto-1"></a>Scheme Procedure: <strong>sendto</strong> <em>sock message AF_INET ipv4addr port [flags]</em></dt>
+<dt><a name="index-sendto-2"></a>Scheme Procedure: <strong>sendto</strong> <em>sock message AF_INET6 ipv6addr port [flowinfo [scopeid [flags]]]</em></dt>
+<dt><a name="index-sendto-3"></a>Scheme Procedure: <strong>sendto</strong> <em>sock message AF_UNIX path [flags]</em></dt>
+<dt><a name="index-scm_005fsendto"></a>C Function: <strong>scm_sendto</strong> <em>(sock, message, fam, address, args_and_flags)</em></dt>
+<dd><p>Transmit bytevector <var>message</var> as a datagram socket port
+<var>sock</var>.  The destination is specified either as a socket address
+object, or as arguments the same as would be taken by
+<code>make-socket-address</code> to create such an object (see <a href="Network-Socket-Address.html#Network-Socket-Address">Network Socket Address</a>).
+</p>
+<p>The destination address may be followed by an optional <var>flags</var>
+argument which is a <code>logior</code> (see <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>) of
+<code>MSG_OOB</code>, <code>MSG_PEEK</code>, <code>MSG_DONTROUTE</code> etc.
+</p>
+<p>The value returned is the number of bytes transmitted &ndash;
+it&rsquo;s possible for
+this to be less than the length of <var>message</var> if the
+socket is
+set to be non-blocking.
+Note that the data is written directly to the socket
+file descriptor:
+any unflushed buffered port data is ignored.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Internet-Socket-Examples.html#Internet-Socket-Examples" accesskey="n" rel="next">Internet Socket Examples</a>, Previous: <a href="Network-Socket-Address.html#Network-Socket-Address" accesskey="p" rel="prev">Network Socket Address</a>, Up: <a href="Networking.html#Networking" accesskey="u" rel="up">Networking</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs arithmetic bitwise</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs arithmetic bitwise">
+<meta name="keywords" content="Guile Reference Manual: rnrs arithmetic bitwise">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase" rel="next" title="rnrs syntax-case">
+<link href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums" rel="prev" title="rnrs arithmetic flonums">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-arithmetic-bitwise"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase" accesskey="n" rel="next">rnrs syntax-case</a>, Previous: <a href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums" accesskey="p" rel="prev">rnrs arithmetic flonums</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-arithmetic-bitwise-1"></a>
+<h4 class="subsubsection">7.6.2.21 rnrs arithmetic bitwise</h4>
+
+<p>The <code>(rnrs arithmetic bitwise (6))</code> library provides procedures for
+performing bitwise arithmetic operations on the two&rsquo;s complement
+representations of fixnums.  
+</p>
+<p>This library and the procedures it exports share functionality with 
+SRFI-60, which provides support for bitwise manipulation of integers 
+(see <a href="SRFI_002d60.html#SRFI_002d60">SRFI-60</a>).
+</p>
+<dl>
+<dt><a name="index-bitwise_002dnot-1"></a>Scheme Procedure: <strong>bitwise-not</strong> <em>ei</em></dt>
+<dt><a name="index-bitwise_002dand-1"></a>Scheme Procedure: <strong>bitwise-and</strong> <em>ei1 ...</em></dt>
+<dt><a name="index-bitwise_002dior-1"></a>Scheme Procedure: <strong>bitwise-ior</strong> <em>ei1 ...</em></dt>
+<dt><a name="index-bitwise_002dxor-1"></a>Scheme Procedure: <strong>bitwise-xor</strong> <em>ei1 ...</em></dt>
+<dd><p>These procedures are identical to the <code>lognot</code>, <code>logand</code>,
+<code>logior</code>, and <code>logxor</code> procedures provided by Guile&rsquo;s core
+library.  See <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dif-1"></a>Scheme Procedure: <strong>bitwise-if</strong> <em>ei1 ei2 ei3</em></dt>
+<dd><p>Returns the bitwise &ldquo;if&rdquo; of its arguments.  The bit at position
+<code>i</code> in the return value will be the <code>i</code>th bit from <var>ei2</var>
+if the <code>i</code>th bit of <var>ei1</var> is 1, the <code>i</code>th bit from 
+<var>ei3</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dbit_002dcount"></a>Scheme Procedure: <strong>bitwise-bit-count</strong> <em>ei</em></dt>
+<dd><p>Returns the number of 1 bits in the two&rsquo;s complement representation of
+<var>ei</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dlength"></a>Scheme Procedure: <strong>bitwise-length</strong> <em>ei</em></dt>
+<dd><p>Returns the number of bits necessary to represent <var>ei</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dfirst_002dbit_002dset"></a>Scheme Procedure: <strong>bitwise-first-bit-set</strong> <em>ei</em></dt>
+<dd><p>Returns the index of the least significant 1 bit in the two&rsquo;s complement
+representation of <var>ei</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dbit_002dset_003f"></a>Scheme Procedure: <strong>bitwise-bit-set?</strong> <em>ei1 ei2</em></dt>
+<dd><p>Returns <code>#t</code> if the <var>ei2</var>th bit in the two&rsquo;s complement
+representation of <var>ei1</var> is 1, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dcopy_002dbit"></a>Scheme Procedure: <strong>bitwise-copy-bit</strong> <em>ei1 ei2 ei3</em></dt>
+<dd><p>Returns the result of setting the <var>ei2</var>th bit of <var>ei1</var> to the
+<var>ei2</var>th bit of <var>ei3</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dbit_002dfield"></a>Scheme Procedure: <strong>bitwise-bit-field</strong> <em>ei1 ei2 ei3</em></dt>
+<dd><p>Returns the integer representation of the contiguous sequence of bits in
+<var>ei1</var> that starts at position <var>ei2</var> (inclusive) and ends at
+position <var>ei3</var> (exclusive).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dcopy_002dbit_002dfield"></a>Scheme Procedure: <strong>bitwise-copy-bit-field</strong> <em>ei1 ei2 ei3 ei4</em></dt>
+<dd><p>Returns the result of replacing the bit field in <var>ei1</var> with start
+and end positions <var>ei2</var> and <var>ei3</var> with the corresponding bit
+field from <var>ei4</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002darithmetic_002dshift"></a>Scheme Procedure: <strong>bitwise-arithmetic-shift</strong> <em>ei1 ei2</em></dt>
+<dt><a name="index-bitwise_002darithmetic_002dshift_002dleft"></a>Scheme Procedure: <strong>bitwise-arithmetic-shift-left</strong> <em>ei1 ei2</em></dt>
+<dt><a name="index-bitwise_002darithmetic_002dshift_002dright"></a>Scheme Procedure: <strong>bitwise-arithmetic-shift-right</strong> <em>ei1 ei2</em></dt>
+<dd><p>Returns the result of shifting the bits of <var>ei1</var> right or left by
+the <var>ei2</var> positions.  <code>bitwise-arithmetic-shift</code> is identical
+to <code>bitwise-arithmetic-shift-left</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002drotate_002dbit_002dfield"></a>Scheme Procedure: <strong>bitwise-rotate-bit-field</strong> <em>ei1 ei2 ei3 ei4</em></dt>
+<dd><p>Returns the result of cyclically permuting the bit field in <var>ei1</var>
+with start and end positions <var>ei2</var> and <var>ei3</var> by <var>ei4</var> bits
+in the direction of more significant bits.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dreverse_002dbit_002dfield"></a>Scheme Procedure: <strong>bitwise-reverse-bit-field</strong> <em>ei1 ei2 ei3</em></dt>
+<dd><p>Returns the result of reversing the order of the bits of <var>ei1</var>
+between position <var>ei2</var> (inclusive) and position <var>ei3</var>
+(exclusive).
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase" accesskey="n" rel="next">rnrs syntax-case</a>, Previous: <a href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums" accesskey="p" rel="prev">rnrs arithmetic flonums</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

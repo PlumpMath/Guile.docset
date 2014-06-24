@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs exceptions</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs exceptions">
+<meta name="keywords" content="Guile Reference Manual: rnrs exceptions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-conditions.html#rnrs-conditions" rel="next" title="rnrs conditions">
+<link href="rnrs-records-inspection.html#rnrs-records-inspection" rel="prev" title="rnrs records inspection">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-exceptions"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-conditions.html#rnrs-conditions" accesskey="n" rel="next">rnrs conditions</a>, Previous: <a href="rnrs-records-inspection.html#rnrs-records-inspection" accesskey="p" rel="prev">rnrs records inspection</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-exceptions-1"></a>
+<h4 class="subsubsection">7.6.2.12 rnrs exceptions</h4>
+
+<p>The <code>(rnrs exceptions (6))</code> library provides functionality related
+to signaling and handling exceptional situations.  This functionality is
+similar to the exception handling systems provided by Guile&rsquo;s core 
+library See <a href="Exceptions.html#Exceptions">Exceptions</a>, and by the SRFI-18 and SRFI-34 
+modules&mdash;See <a href="SRFI_002d18-Exceptions.html#SRFI_002d18-Exceptions">SRFI-18 Exceptions</a>, and <a href="SRFI_002d34.html#SRFI_002d34">SRFI-34</a>, 
+respectively&mdash;but there are some key differences in concepts and 
+behavior.
+</p>
+<p>A raised exception may be <em>continuable</em> or <em>non-continuable</em>.
+When an exception is raised non-continuably, another exception, with the
+condition type <code>&amp;non-continuable</code>, will be raised when the
+exception handler returns locally.  Raising an exception continuably
+captures the current continuation and invokes it after a local return
+from the exception handler.
+</p>
+<p>Like SRFI-18 and SRFI-34, R6RS exceptions are implemented on top of
+Guile&rsquo;s native <code>throw</code> and <code>catch</code> forms, and use custom
+&ldquo;throw keys&rdquo; to identify their exception types.  As a consequence,
+Guile&rsquo;s <code>catch</code> form can handle exceptions thrown by these APIs,
+but the reverse is not true: Handlers registered by the
+<code>with-exception-handler</code> procedure described below will only be
+called on exceptions thrown by the corresponding <code>raise</code> procedure.
+</p>
+<dl>
+<dt><a name="index-with_002dexception_002dhandler-1"></a>Scheme Procedure: <strong>with-exception-handler</strong> <em>handler thunk</em></dt>
+<dd><p>Installs <var>handler</var>, which must be a procedure taking one argument,
+as the current exception handler during the invocation of <var>thunk</var>, a
+procedure taking zero arguments.  The handler in place at the time
+<code>with-exception-handler</code> is called is made current again once 
+either <var>thunk</var> returns or <var>handler</var> is invoked after an 
+exception is thrown from within <var>thunk</var>.
+</p>
+<p>This procedure is similar to the <code>with-throw-handler</code> procedure
+provided by Guile&rsquo;s code library; (see <a href="Throw-Handlers.html#Throw-Handlers">Throw Handlers</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-guard"></a>Scheme Syntax: <strong>guard</strong> <em>(variable clause1 clause2 ...) body</em></dt>
+<dd><p>Evaluates the expression given by <var>body</var>, first creating an ad hoc 
+exception handler that binds a raised exception to <var>variable</var> and
+then evaluates the specified <var>clause</var>s as if they were part of a 
+<code>cond</code> expression, with the value of the first matching clause 
+becoming the value of the <code>guard</code> expression 
+(see <a href="Conditionals.html#Conditionals">Conditionals</a>).  If none of the clause&rsquo;s test expressions 
+evaluates to <code>#t</code>, the exception is re-raised, with the exception
+handler that was current before the evaluation of the <code>guard</code> form.
+</p>
+<p>For example, the expression
+</p>
+<div class="lisp">
+<pre class="lisp">(guard (ex ((eq? ex 'foo) 'bar) ((eq? ex 'bar) 'baz)) 
+  (raise 'bar))
+</pre></div>
+
+<p>evaluates to <code>baz</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-raise-2"></a>Scheme Procedure: <strong>raise</strong> <em>obj</em></dt>
+<dd><p>Raises a non-continuable exception by invoking the currently-installed
+exception handler on <var>obj</var>.  If the handler returns, a
+<code>&amp;non-continuable</code> exception will be raised in the dynamic context
+in which the handler was installed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-raise_002dcontinuable"></a>Scheme Procedure: <strong>raise-continuable</strong> <em>obj</em></dt>
+<dd><p>Raises a continuable exception by invoking currently-installed exception
+handler on <var>obj</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-conditions.html#rnrs-conditions" accesskey="n" rel="next">rnrs conditions</a>, Previous: <a href="rnrs-records-inspection.html#rnrs-records-inspection" accesskey="p" rel="prev">rnrs records inspection</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

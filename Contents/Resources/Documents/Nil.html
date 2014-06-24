@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Nil</title>
+
+<meta name="description" content="Guile Reference Manual: Nil">
+<meta name="keywords" content="Guile Reference Manual: Nil">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Emacs-Lisp.html#Emacs-Lisp" rel="up" title="Emacs Lisp">
+<link href="Dynamic-Binding.html#Dynamic-Binding" rel="next" title="Dynamic Binding">
+<link href="Emacs-Lisp.html#Emacs-Lisp" rel="prev" title="Emacs Lisp">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Nil"></a>
+<div class="header">
+<p>
+Next: <a href="Dynamic-Binding.html#Dynamic-Binding" accesskey="n" rel="next">Dynamic Binding</a>, Up: <a href="Emacs-Lisp.html#Emacs-Lisp" accesskey="u" rel="up">Emacs Lisp</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Nil-1"></a>
+<h4 class="subsubsection">6.23.2.1 Nil</h4>
+
+<p><code>nil</code> in ELisp is an amalgam of Scheme&rsquo;s <code>#f</code> and <code>'()</code>.
+It is false, and it is the end-of-list; thus it is a boolean, and a list
+as well.
+</p>
+<p>Guile has chosen to support <code>nil</code> as a separate value, distinct
+from <code>#f</code> and <code>'()</code>. This allows existing Scheme and Elisp
+code to maintain their current semantics. <code>nil</code>, which in Elisp
+would just be written and read as <code>nil</code>, in Scheme has the external
+representation <code>#nil</code>.
+</p>
+<p>This decision to have <code>nil</code> as a low-level distinct value
+facilitates interoperability between the two languages. Guile has chosen
+to have Scheme deal with <code>nil</code> as follows:
+</p>
+<div class="example">
+<pre class="example">(boolean? #nil) &rArr; #t
+(not #nil) &rArr; #t
+(null? #nil) &rArr; #t
+</pre></div>
+
+<p>And in C, one has:
+</p>
+<div class="example">
+<pre class="example">scm_is_bool (SCM_ELISP_NIL) &rArr; 1
+scm_is_false (SCM_ELISP_NIL) &rArr; 1
+scm_is_null (SCM_ELISP_NIL) &rArr; 1
+</pre></div>
+
+<p>In this way, a version of <code>fold</code> written in Scheme can correctly
+fold a function written in Elisp (or in fact any other language) over a
+nil-terminated list, as Elisp makes. The converse holds as well; a
+version of <code>fold</code> written in Elisp can fold over a
+<code>'()</code>-terminated list, as made by Scheme.
+</p>
+<p>On a low level, the bit representations for <code>#f</code>, <code>#t</code>,
+<code>nil</code>, and <code>'()</code> are made in such a way that they differ by
+only one bit, and so a test for, for example, <code>#f</code>-or-<code>nil</code>
+may be made very efficiently. See <code>libguile/boolean.h</code>, for more
+information.
+</p>
+<a name="Equality-2"></a>
+<h4 class="subsubsection">6.23.2.2 Equality</h4>
+
+<p>Since Scheme&rsquo;s <code>equal?</code> must be transitive, and <code>'()</code>
+is not <code>equal?</code> to <code>#f</code>, to Scheme <code>nil</code> is not
+<code>equal?</code> to <code>#f</code> or <code>'()</code>.
+</p>
+<div class="example">
+<pre class="example">(eq? #f '()) &rArr; #f
+(eq? #nil '()) &rArr; #f
+(eq? #nil #f) &rArr; #f
+(eqv? #f '()) &rArr; #f
+(eqv? #nil '()) &rArr; #f
+(eqv? #nil #f) &rArr; #f
+(equal? #f '()) &rArr; #f
+(equal? #nil '()) &rArr; #f
+(equal? #nil #f) &rArr; #f
+</pre></div>
+
+<p>However, in Elisp, <code>'()</code>, <code>#f</code>, and <code>nil</code> are all
+<code>equal</code> (though not <code>eq</code>).
+</p>
+<div class="example">
+<pre class="example">(defvar f (make-scheme-false))
+(defvar eol (make-scheme-null))
+(eq f eol) &rArr; nil
+(eq nil eol) &rArr; nil
+(eq nil f) &rArr; nil
+(equal f eol) &rArr; t
+(equal nil eol) &rArr; t
+(equal nil f) &rArr; t
+</pre></div>
+
+<p>These choices facilitate interoperability between Elisp and Scheme code,
+but they are not perfect. Some code that is correct standard Scheme is
+not correct in the presence of a second false and null value. For
+example:
+</p>
+<div class="example">
+<pre class="example">(define (truthiness x)
+  (if (eq? x #f)
+      #f
+      #t))
+</pre></div>
+
+<p>This code seems to be meant to test a value for truth, but now that
+there are two false values, <code>#f</code> and <code>nil</code>, it is no longer
+correct.
+</p>
+<p>Similarly, there is the loop:
+</p>
+<div class="example">
+<pre class="example">(define (my-length l)
+  (let lp ((l l) (len 0))
+    (if (eq? l '())
+        len
+        (lp (cdr l) (1+ len)))))
+</pre></div>
+
+<p>Here, <code>my-length</code> will raise an error if <var>l</var> is a
+<code>nil</code>-terminated list.
+</p>
+<p>Both of these examples are correct standard Scheme, but, depending on
+what they really want to do, they are not correct Guile Scheme.
+Correctly written, they would test the <em>properties</em> of falsehood or
+nullity, not the individual members of that set. That is to say, they
+should use <code>not</code> or <code>null?</code> to test for falsehood or nullity,
+not <code>eq?</code> or <code>memv</code> or the like.
+</p>
+<p>Fortunately, using <code>not</code> and <code>null?</code> is in good style, so all
+well-written standard Scheme programs are correct, in Guile Scheme.
+</p>
+<p>Here are correct versions of the above examples:
+</p>
+<div class="example">
+<pre class="example">(define (truthiness* x)
+  (if (not x)
+      #f
+      #t))
+;; or: (define (t* x) (not (not x)))
+;; or: (define (t** x) x)
+
+(define (my-length* l)
+  (let lp ((l l) (len 0))
+    (if (null? l)
+        len
+        (lp (cdr l) (1+ len)))))
+</pre></div>
+
+<p>This problem has a mirror-image case in Elisp:
+</p>
+<div class="example">
+<pre class="example">(deffn my-falsep (x)
+  (if (eq x nil)
+      t
+      nil))
+</pre></div>
+
+<p>Guile can warn when compiling code that has equality comparisons with
+<code>#f</code>, <code>'()</code>, or <code>nil</code>. See <a href="Compilation.html#Compilation">Compilation</a>, for details.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Dynamic-Binding.html#Dynamic-Binding" accesskey="n" rel="next">Dynamic Binding</a>, Up: <a href="Emacs-Lisp.html#Emacs-Lisp" accesskey="u" rel="up">Emacs Lisp</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Reals and Rationals</title>
+
+<meta name="description" content="Guile Reference Manual: Reals and Rationals">
+<meta name="keywords" content="Guile Reference Manual: Reals and Rationals">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Numbers.html#Numbers" rel="up" title="Numbers">
+<link href="Complex-Numbers.html#Complex-Numbers" rel="next" title="Complex Numbers">
+<link href="Integers.html#Integers" rel="prev" title="Integers">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Reals-and-Rationals"></a>
+<div class="header">
+<p>
+Next: <a href="Complex-Numbers.html#Complex-Numbers" accesskey="n" rel="next">Complex Numbers</a>, Previous: <a href="Integers.html#Integers" accesskey="p" rel="prev">Integers</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Real-and-Rational-Numbers"></a>
+<h4 class="subsubsection">6.6.2.3 Real and Rational Numbers</h4>
+<a name="index-Real-numbers"></a>
+<a name="index-Rational-numbers"></a>
+
+<a name="index-real_003f-2"></a>
+<a name="index-rational_003f-2"></a>
+
+<p>Mathematically, the real numbers are the set of numbers that describe
+all possible points along a continuous, infinite, one-dimensional line.
+The rational numbers are the set of all numbers that can be written as
+fractions <var>p</var>/<var>q</var>, where <var>p</var> and <var>q</var> are integers.
+All rational numbers are also real, but there are real numbers that
+are not rational, for example <em>the square root of 2</em>, and
+<em>pi</em>.
+</p>
+<p>Guile can represent both exact and inexact rational numbers, but it
+cannot represent precise finite irrational numbers.  Exact rationals are
+represented by storing the numerator and denominator as two exact
+integers.  Inexact rationals are stored as floating point numbers using
+the C type <code>double</code>.
+</p>
+<p>Exact rationals are written as a fraction of integers.  There must be
+no whitespace around the slash:
+</p>
+<div class="lisp">
+<pre class="lisp">1/2
+-22/7
+</pre></div>
+
+<p>Even though the actual encoding of inexact rationals is in binary, it
+may be helpful to think of it as a decimal number with a limited
+number of significant figures and a decimal point somewhere, since
+this corresponds to the standard notation for non-whole numbers.  For
+example:
+</p>
+<div class="lisp">
+<pre class="lisp">0.34
+-0.00000142857931198
+-5648394822220000000000.0
+4.0
+</pre></div>
+
+<p>The limited precision of Guile&rsquo;s encoding means that any finite &ldquo;real&rdquo;
+number in Guile can be written in a rational form, by multiplying and
+then dividing by sufficient powers of 10 (or in fact, 2).  For example,
+&lsquo;<samp>-0.00000142857931198</samp>&rsquo; is the same as -142857931198 divided
+by 100000000000000000.  In Guile&rsquo;s current incarnation, therefore, the
+<code>rational?</code> and <code>real?</code> predicates are equivalent for finite
+numbers.
+</p>
+
+<p>Dividing by an exact zero leads to a error message, as one might expect.
+However, dividing by an inexact zero does not produce an error.
+Instead, the result of the division is either plus or minus infinity,
+depending on the sign of the divided number and the sign of the zero
+divisor (some platforms support signed zeroes &lsquo;<samp>-0.0</samp>&rsquo; and
+&lsquo;<samp>+0.0</samp>&rsquo;; &lsquo;<samp>0.0</samp>&rsquo; is the same as &lsquo;<samp>+0.0</samp>&rsquo;).
+</p>
+<p>Dividing zero by an inexact zero yields a <acronym>NaN</acronym> (&lsquo;not a number&rsquo;)
+value, although they are actually considered numbers by Scheme.
+Attempts to compare a <acronym>NaN</acronym> value with any number (including
+itself) using <code>=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> or <code>&gt;=</code>
+always returns <code>#f</code>.  Although a <acronym>NaN</acronym> value is not
+<code>=</code> to itself, it is both <code>eqv?</code> and <code>equal?</code> to itself
+and other <acronym>NaN</acronym> values.  However, the preferred way to test for
+them is by using <code>nan?</code>.
+</p>
+<p>The real <acronym>NaN</acronym> values and infinities are written &lsquo;<samp>+nan.0</samp>&rsquo;,
+&lsquo;<samp>+inf.0</samp>&rsquo; and &lsquo;<samp>-inf.0</samp>&rsquo;.  This syntax is also recognized by
+<code>read</code> as an extension to the usual Scheme syntax.  These special
+values are considered by Scheme to be inexact real numbers but not
+rational.  Note that non-real complex numbers may also contain
+infinities or <acronym>NaN</acronym> values in their real or imaginary parts.  To
+test a real number to see if it is infinite, a <acronym>NaN</acronym> value, or
+neither, use <code>inf?</code>, <code>nan?</code>, or <code>finite?</code>, respectively.
+Every real number in Scheme belongs to precisely one of those three
+classes.
+</p>
+<p>On platforms that follow <acronym>IEEE</acronym> 754 for their floating point
+arithmetic, the &lsquo;<samp>+inf.0</samp>&rsquo;, &lsquo;<samp>-inf.0</samp>&rsquo;, and &lsquo;<samp>+nan.0</samp>&rsquo; values
+are implemented using the corresponding <acronym>IEEE</acronym> 754 values.
+They behave in arithmetic operations like <acronym>IEEE</acronym> 754 describes
+it, i.e., <code>(= +nan.0 +nan.0)</code> &rArr; <code>#f</code>.
+</p>
+<dl>
+<dt><a name="index-real_003f"></a>Scheme Procedure: <strong>real?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005freal_005fp"></a>C Function: <strong>scm_real_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a real number, else <code>#f</code>.  Note
+that the sets of integer and rational values form subsets of the set
+of real numbers, so the predicate will also be fulfilled if <var>obj</var>
+is an integer number or a rational number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-rational_003f"></a>Scheme Procedure: <strong>rational?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005frational_005fp"></a>C Function: <strong>scm_rational_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is a rational number, <code>#f</code> otherwise.
+Note that the set of integer values forms a subset of the set of
+rational numbers, i.e. the predicate will also be fulfilled if
+<var>x</var> is an integer number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-rationalize"></a>Scheme Procedure: <strong>rationalize</strong> <em>x eps</em></dt>
+<dt><a name="index-scm_005frationalize"></a>C Function: <strong>scm_rationalize</strong> <em>(x, eps)</em></dt>
+<dd><p>Returns the <em>simplest</em> rational number differing
+from <var>x</var> by no more than <var>eps</var>.  
+</p>
+<p>As required by <acronym>R5RS</acronym>, <code>rationalize</code> only returns an
+exact result when both its arguments are exact.  Thus, you might need
+to use <code>inexact-&gt;exact</code> on the arguments.
+</p>
+<div class="lisp">
+<pre class="lisp">(rationalize (inexact-&gt;exact 1.2) 1/100)
+&rArr; 6/5
+</pre></div>
+
+</dd></dl>
+
+<dl>
+<dt><a name="index-inf_003f"></a>Scheme Procedure: <strong>inf?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005finf_005fp"></a>C Function: <strong>scm_inf_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if the real number <var>x</var> is &lsquo;<samp>+inf.0</samp>&rsquo; or
+&lsquo;<samp>-inf.0</samp>&rsquo;.  Otherwise return <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-nan_003f"></a>Scheme Procedure: <strong>nan?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fnan_005fp"></a>C Function: <strong>scm_nan_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if the real number <var>x</var> is &lsquo;<samp>+nan.0</samp>&rsquo;, or
+<code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-finite_003f"></a>Scheme Procedure: <strong>finite?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005ffinite_005fp"></a>C Function: <strong>scm_finite_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if the real number <var>x</var> is neither infinite nor a
+NaN, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-nan"></a>Scheme Procedure: <strong>nan</strong></dt>
+<dt><a name="index-scm_005fnan"></a>C Function: <strong>scm_nan</strong> <em>()</em></dt>
+<dd><p>Return &lsquo;<samp>+nan.0</samp>&rsquo;, a <acronym>NaN</acronym> value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-inf"></a>Scheme Procedure: <strong>inf</strong></dt>
+<dt><a name="index-scm_005finf"></a>C Function: <strong>scm_inf</strong> <em>()</em></dt>
+<dd><p>Return &lsquo;<samp>+inf.0</samp>&rsquo;, positive infinity.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-numerator"></a>Scheme Procedure: <strong>numerator</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fnumerator"></a>C Function: <strong>scm_numerator</strong> <em>(x)</em></dt>
+<dd><p>Return the numerator of the rational number <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-denominator"></a>Scheme Procedure: <strong>denominator</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fdenominator"></a>C Function: <strong>scm_denominator</strong> <em>(x)</em></dt>
+<dd><p>Return the denominator of the rational number <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005freal"></a>C Function: <em>int</em> <strong>scm_is_real</strong> <em>(SCM val)</em></dt>
+<dt><a name="index-scm_005fis_005frational"></a>C Function: <em>int</em> <strong>scm_is_rational</strong> <em>(SCM val)</em></dt>
+<dd><p>Equivalent to <code>scm_is_true (scm_real_p (val))</code> and
+<code>scm_is_true (scm_rational_p (val))</code>, respectively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fto_005fdouble"></a>C Function: <em>double</em> <strong>scm_to_double</strong> <em>(SCM val)</em></dt>
+<dd><p>Returns the number closest to <var>val</var> that is representable as a
+<code>double</code>.  Returns infinity for a <var>val</var> that is too large in
+magnitude.  The argument <var>val</var> must be a real number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005ffrom_005fdouble"></a>C Function: <em>SCM</em> <strong>scm_from_double</strong> <em>(double val)</em></dt>
+<dd><p>Return the <code>SCM</code> value that represents <var>val</var>.  The returned
+value is inexact according to the predicate <code>inexact?</code>, but it
+will be exactly equal to <var>val</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Complex-Numbers.html#Complex-Numbers" accesskey="n" rel="next">Complex Numbers</a>, Previous: <a href="Integers.html#Integers" accesskey="p" rel="prev">Integers</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

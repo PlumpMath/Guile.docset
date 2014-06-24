@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS Binary Input</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS Binary Input">
+<meta name="keywords" content="Guile Reference Manual: R6RS Binary Input">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" rel="up" title="R6RS I/O Ports">
+<link href="R6RS-Textual-Input.html#R6RS-Textual-Input" rel="next" title="R6RS Textual Input">
+<link href="R6RS-Input-Ports.html#R6RS-Input-Ports" rel="prev" title="R6RS Input Ports">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-Binary-Input"></a>
+<div class="header">
+<p>
+Next: <a href="R6RS-Textual-Input.html#R6RS-Textual-Input" accesskey="n" rel="next">R6RS Textual Input</a>, Previous: <a href="R6RS-Input-Ports.html#R6RS-Input-Ports" accesskey="p" rel="prev">R6RS Input Ports</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Binary-Input"></a>
+<h4 class="subsubsection">6.14.10.8 Binary Input</h4>
+
+<a name="index-binary-input"></a>
+
+<p>R6RS binary input ports can be created with the procedures described
+below.
+</p>
+<dl>
+<dt><a name="index-open_002dbytevector_002dinput_002dport"></a>Scheme Procedure: <strong>open-bytevector-input-port</strong> <em>bv [transcoder]</em></dt>
+<dt><a name="index-scm_005fopen_005fbytevector_005finput_005fport"></a>C Function: <strong>scm_open_bytevector_input_port</strong> <em>(bv, transcoder)</em></dt>
+<dd><p>Return an input port whose contents are drawn from bytevector <var>bv</var>
+(see <a href="Bytevectors.html#Bytevectors">Bytevectors</a>).
+</p>
+<p>The <var>transcoder</var> argument is currently not supported.
+</p></dd></dl>
+
+<a name="index-custom-binary-input-ports"></a>
+
+<dl>
+<dt><a name="index-make_002dcustom_002dbinary_002dinput_002dport"></a>Scheme Procedure: <strong>make-custom-binary-input-port</strong> <em>id read! get-position set-position! close</em></dt>
+<dt><a name="index-scm_005fmake_005fcustom_005fbinary_005finput_005fport"></a>C Function: <strong>scm_make_custom_binary_input_port</strong> <em>(id, read!, get-position, set-position!, close)</em></dt>
+<dd><p>Return a new custom binary input port<a name="DOCF14" href="#FOOT14"><sup>14</sup></a> named <var>id</var> (a
+string) whose input is drained by invoking <var>read!</var> and passing it a
+bytevector, an index where bytes should be written, and the number of
+bytes to read.  The <code>read!</code>  procedure must return an integer
+indicating the number of bytes read, or <code>0</code> to indicate the
+end-of-file.
+</p>
+<p>Optionally, if <var>get-position</var> is not <code>#f</code>, it must be a thunk
+that will be called when <code>port-position</code> is invoked on the custom
+binary port and should return an integer indicating the position within
+the underlying data stream; if <var>get-position</var> was not supplied, the
+returned port does not support <code>port-position</code>.
+</p>
+<p>Likewise, if <var>set-position!</var> is not <code>#f</code>, it should be a
+one-argument procedure.  When <code>set-port-position!</code> is invoked on the
+custom binary input port, <var>set-position!</var> is passed an integer
+indicating the position of the next byte is to read.
+</p>
+<p>Finally, if <var>close</var> is not <code>#f</code>, it must be a thunk.  It is
+invoked when the custom binary input port is closed.
+</p>
+<p>The returned port is fully buffered by default, but its buffering mode
+can be changed using <code>setvbuf</code> (see <a href="Ports-and-File-Descriptors.html#Ports-and-File-Descriptors"><code>setvbuf</code></a>).
+</p>
+<p>Using a custom binary input port, the <code>open-bytevector-input-port</code>
+procedure could be implemented as follows:
+</p>
+<div class="lisp">
+<pre class="lisp">(define (open-bytevector-input-port source)
+  (define position 0)
+  (define length (bytevector-length source))
+
+  (define (read! bv start count)
+    (let ((count (min count (- length position))))
+      (bytevector-copy! source position
+                        bv start count)
+      (set! position (+ position count))
+      count))
+
+  (define (get-position) position)
+
+  (define (set-position! new-position)
+    (set! position new-position))
+
+  (make-custom-binary-input-port &quot;the port&quot; read!
+                                  get-position
+                                  set-position!))
+
+(read (open-bytevector-input-port (string-&gt;utf8 &quot;hello&quot;)))
+&rArr; hello
+</pre></div>
+</dd></dl>
+
+<a name="index-binary-input-1"></a>
+<p>Binary input is achieved using the procedures below:
+</p>
+<dl>
+<dt><a name="index-get_002du8"></a>Scheme Procedure: <strong>get-u8</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fget_005fu8"></a>C Function: <strong>scm_get_u8</strong> <em>(port)</em></dt>
+<dd><p>Return an octet read from <var>port</var>, a binary input port, blocking as
+necessary, or the end-of-file object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lookahead_002du8"></a>Scheme Procedure: <strong>lookahead-u8</strong> <em>port</em></dt>
+<dt><a name="index-scm_005flookahead_005fu8"></a>C Function: <strong>scm_lookahead_u8</strong> <em>(port)</em></dt>
+<dd><p>Like <code>get-u8</code> but does not update <var>port</var>&rsquo;s position to point
+past the octet.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002dbytevector_002dn"></a>Scheme Procedure: <strong>get-bytevector-n</strong> <em>port count</em></dt>
+<dt><a name="index-scm_005fget_005fbytevector_005fn"></a>C Function: <strong>scm_get_bytevector_n</strong> <em>(port, count)</em></dt>
+<dd><p>Read <var>count</var> octets from <var>port</var>, blocking as necessary and
+return a bytevector containing the octets read.  If fewer bytes are
+available, a bytevector smaller than <var>count</var> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002dbytevector_002dn_0021"></a>Scheme Procedure: <strong>get-bytevector-n!</strong> <em>port bv start count</em></dt>
+<dt><a name="index-scm_005fget_005fbytevector_005fn_005fx"></a>C Function: <strong>scm_get_bytevector_n_x</strong> <em>(port, bv, start, count)</em></dt>
+<dd><p>Read <var>count</var> bytes from <var>port</var> and store them in <var>bv</var>
+starting at index <var>start</var>.  Return either the number of bytes
+actually read or the end-of-file object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002dbytevector_002dsome"></a>Scheme Procedure: <strong>get-bytevector-some</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fget_005fbytevector_005fsome"></a>C Function: <strong>scm_get_bytevector_some</strong> <em>(port)</em></dt>
+<dd><p>Read from <var>port</var>, blocking as necessary, until bytes are available
+or an end-of-file is reached.  Return either the end-of-file object or a
+new bytevector containing some of the available bytes (at least one),
+and update the port position to point just past these bytes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002dbytevector_002dall"></a>Scheme Procedure: <strong>get-bytevector-all</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fget_005fbytevector_005fall"></a>C Function: <strong>scm_get_bytevector_all</strong> <em>(port)</em></dt>
+<dd><p>Read from <var>port</var>, blocking as necessary, until the end-of-file is
+reached.  Return either a new bytevector containing the data read or the
+end-of-file object (if no data were available).
+</p></dd></dl>
+
+<p>The <code>(ice-9 binary-ports)</code> module provides the following procedure
+as an extension to <code>(rnrs io ports)</code>:
+</p>
+<dl>
+<dt><a name="index-unget_002dbytevector"></a>Scheme Procedure: <strong>unget-bytevector</strong> <em>port bv [start [count]]</em></dt>
+<dt><a name="index-scm_005funget_005fbytevector"></a>C Function: <strong>scm_unget_bytevector</strong> <em>(port, bv, start, count)</em></dt>
+<dd><p>Place the contents of <var>bv</var> in <var>port</var>, optionally starting at
+index <var>start</var> and limiting to <var>count</var> octets, so that its bytes
+will be read from left-to-right as the next bytes from <var>port</var> during
+subsequent read operations.  If called multiple times, the unread bytes
+will be read again in last-in first-out order.
+</p></dd></dl>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT14" href="#DOCF14">(14)</a></h3>
+<p>This is similar in spirit
+to Guile&rsquo;s <em>soft ports</em> (see <a href="Soft-Ports.html#Soft-Ports">Soft Ports</a>).</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="R6RS-Textual-Input.html#R6RS-Textual-Input" accesskey="n" rel="next">R6RS Textual Input</a>, Previous: <a href="R6RS-Input-Ports.html#R6RS-Input-Ports" accesskey="p" rel="prev">R6RS Input Ports</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

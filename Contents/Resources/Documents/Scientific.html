@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Scientific</title>
+
+<meta name="description" content="Guile Reference Manual: Scientific">
+<meta name="keywords" content="Guile Reference Manual: Scientific">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Numbers.html#Numbers" rel="up" title="Numbers">
+<link href="Bitwise-Operations.html#Bitwise-Operations" rel="next" title="Bitwise Operations">
+<link href="Arithmetic.html#Arithmetic" rel="prev" title="Arithmetic">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Scientific"></a>
+<div class="header">
+<p>
+Next: <a href="Bitwise-Operations.html#Bitwise-Operations" accesskey="n" rel="next">Bitwise Operations</a>, Previous: <a href="Arithmetic.html#Arithmetic" accesskey="p" rel="prev">Arithmetic</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Scientific-Functions"></a>
+<h4 class="subsubsection">6.6.2.12 Scientific Functions</h4>
+
+<p>The following procedures accept any kind of number as arguments,
+including complex numbers.
+</p>
+<a name="index-sqrt-2"></a>
+<dl>
+<dt><a name="index-sqrt"></a>Scheme Procedure: <strong>sqrt</strong> <em>z</em></dt>
+<dd><p>Return the square root of <var>z</var>.  Of the two possible roots
+(positive and negative), the one with a positive real part is
+returned, or if that&rsquo;s zero then a positive imaginary part.  Thus,
+</p>
+<div class="example">
+<pre class="example">(sqrt 9.0)       &rArr; 3.0
+(sqrt -9.0)      &rArr; 0.0+3.0i
+(sqrt 1.0+1.0i)  &rArr; 1.09868411346781+0.455089860562227i
+(sqrt -1.0-1.0i) &rArr; 0.455089860562227-1.09868411346781i
+</pre></div>
+</dd></dl>
+
+<a name="index-expt-2"></a>
+<dl>
+<dt><a name="index-expt"></a>Scheme Procedure: <strong>expt</strong> <em>z1 z2</em></dt>
+<dd><p>Return <var>z1</var> raised to the power of <var>z2</var>.
+</p></dd></dl>
+
+<a name="index-sin-2"></a>
+<dl>
+<dt><a name="index-sin"></a>Scheme Procedure: <strong>sin</strong> <em>z</em></dt>
+<dd><p>Return the sine of <var>z</var>.
+</p></dd></dl>
+
+<a name="index-cos-2"></a>
+<dl>
+<dt><a name="index-cos"></a>Scheme Procedure: <strong>cos</strong> <em>z</em></dt>
+<dd><p>Return the cosine of <var>z</var>.
+</p></dd></dl>
+
+<a name="index-tan-2"></a>
+<dl>
+<dt><a name="index-tan"></a>Scheme Procedure: <strong>tan</strong> <em>z</em></dt>
+<dd><p>Return the tangent of <var>z</var>.
+</p></dd></dl>
+
+<a name="index-asin-2"></a>
+<dl>
+<dt><a name="index-asin"></a>Scheme Procedure: <strong>asin</strong> <em>z</em></dt>
+<dd><p>Return the arcsine of <var>z</var>.
+</p></dd></dl>
+
+<a name="index-acos-2"></a>
+<dl>
+<dt><a name="index-acos"></a>Scheme Procedure: <strong>acos</strong> <em>z</em></dt>
+<dd><p>Return the arccosine of <var>z</var>.
+</p></dd></dl>
+
+<a name="index-atan-3"></a>
+<dl>
+<dt><a name="index-atan"></a>Scheme Procedure: <strong>atan</strong> <em>z</em></dt>
+<dt><a name="index-atan-1"></a>Scheme Procedure: <strong>atan</strong> <em>y x</em></dt>
+<dd><p>Return the arctangent of <var>z</var>, or of <em><var>y</var>/<var>x</var></em>.
+</p></dd></dl>
+
+<a name="index-exp-2"></a>
+<dl>
+<dt><a name="index-exp"></a>Scheme Procedure: <strong>exp</strong> <em>z</em></dt>
+<dd><p>Return e to the power of <var>z</var>, where e is the base of natural
+logarithms (2.71828&hellip;).
+</p></dd></dl>
+
+<a name="index-log-2"></a>
+<dl>
+<dt><a name="index-log"></a>Scheme Procedure: <strong>log</strong> <em>z</em></dt>
+<dd><p>Return the natural logarithm of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-log10"></a>Scheme Procedure: <strong>log10</strong> <em>z</em></dt>
+<dd><p>Return the base 10 logarithm of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sinh"></a>Scheme Procedure: <strong>sinh</strong> <em>z</em></dt>
+<dd><p>Return the hyperbolic sine of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-cosh"></a>Scheme Procedure: <strong>cosh</strong> <em>z</em></dt>
+<dd><p>Return the hyperbolic cosine of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-tanh"></a>Scheme Procedure: <strong>tanh</strong> <em>z</em></dt>
+<dd><p>Return the hyperbolic tangent of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-asinh"></a>Scheme Procedure: <strong>asinh</strong> <em>z</em></dt>
+<dd><p>Return the hyperbolic arcsine of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-acosh"></a>Scheme Procedure: <strong>acosh</strong> <em>z</em></dt>
+<dd><p>Return the hyperbolic arccosine of <var>z</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-atanh"></a>Scheme Procedure: <strong>atanh</strong> <em>z</em></dt>
+<dd><p>Return the hyperbolic arctangent of <var>z</var>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Bitwise-Operations.html#Bitwise-Operations" accesskey="n" rel="next">Bitwise Operations</a>, Previous: <a href="Arithmetic.html#Arithmetic" accesskey="p" rel="prev">Arithmetic</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

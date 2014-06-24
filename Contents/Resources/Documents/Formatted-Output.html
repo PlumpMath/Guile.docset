@@ -1,0 +1,1029 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Formatted Output</title>
+
+<meta name="description" content="Guile Reference Manual: Formatted Output">
+<meta name="keywords" content="Guile Reference Manual: Formatted Output">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="File-Tree-Walk.html#File-Tree-Walk" rel="next" title="File Tree Walk">
+<link href="Pretty-Printing.html#Pretty-Printing" rel="prev" title="Pretty Printing">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Formatted-Output"></a>
+<div class="header">
+<p>
+Next: <a href="File-Tree-Walk.html#File-Tree-Walk" accesskey="n" rel="next">File Tree Walk</a>, Previous: <a href="Pretty-Printing.html#Pretty-Printing" accesskey="p" rel="prev">Pretty Printing</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Formatted-Output-1"></a>
+<h3 class="section">7.10 Formatted Output</h3>
+<a name="index-formatted-output"></a>
+
+
+<p>The <code>format</code> function is a powerful way to print numbers, strings
+and other objects together with literal text under the control of a
+format string.  This function is available from
+</p>
+<div class="example">
+<pre class="example">(use-modules (ice-9 format))
+</pre></div>
+
+<p>A format string is generally more compact and easier than using just
+the standard procedures like <code>display</code>, <code>write</code> and
+<code>newline</code>.  Parameters in the output string allow various output
+styles, and parameters can be taken from the arguments for runtime
+flexibility.
+</p>
+<p><code>format</code> is similar to the Common Lisp procedure of the same
+name, but it&rsquo;s not identical and doesn&rsquo;t have quite all the features
+found in Common Lisp.
+</p>
+<p>C programmers will note the similarity between <code>format</code> and
+<code>printf</code>, though escape sequences are marked with <code>~</code>
+instead of <code>%</code>, and are more powerful.
+</p>
+<br>
+<dl>
+<dt><a name="index-format"></a>Scheme Procedure: <strong>format</strong> <em>dest fmt arg &hellip;</em></dt>
+<dd><p>Write output specified by the <var>fmt</var> string to <var>dest</var>.
+<var>dest</var> can be an output port, <code>#t</code> for
+<code>current-output-port</code> (see <a href="Default-Ports.html#Default-Ports">Default Ports</a>), or <code>#f</code> to
+return the output as a string.
+</p>
+<p><var>fmt</var> can contain literal text to be output, and <code>~</code>
+escapes.  Each escape has the form
+</p>
+<div class="example">
+<pre class="example">~ [param [, param&hellip;] [:] [@] code
+</pre></div>
+
+<p><code>code</code> is a character determining the escape sequence.  The
+<code>:</code> and <code>@</code> characters are optional modifiers, one or
+both of which change the way various codes operate.  Optional
+parameters are accepted by some codes too.  Parameters have the
+following forms,
+</p>
+<dl compact="compact">
+<dt><code>[+/-]number</code></dt>
+<dd><p>An integer, with optional <code>+</code> or <code>-</code>.
+</p></dd>
+<dt><code>'</code>  (apostrophe)</dt>
+<dd><p>The following character in the format string, for instance <code>'z</code>
+for <code>z</code>.
+</p></dd>
+<dt><code>v</code></dt>
+<dd><p>The next function argument as the parameter.  <code>v</code> stands for
+&ldquo;variable&rdquo;, a parameter can be calculated at runtime and included in
+the arguments.  Upper case <code>V</code> can be used too.
+</p></dd>
+<dt><code>#</code></dt>
+<dd><p>The number of arguments remaining.  (See <code>~*</code> below for some
+usages.)
+</p></dd>
+</dl>
+
+<p>Parameters are separated by commas (<code>,</code>).  A parameter can be
+left empty to keep its default value when supplying later parameters.
+</p>
+<br>
+<p>The following escapes are available.  The code letters are not
+case-sensitive, upper and lower case are the same.
+</p>
+<dl compact="compact">
+<dt><code>~a</code></dt>
+<dt><code>~s</code></dt>
+<dd><p>Object output.  Parameters: <var>minwidth</var>, <var>padinc</var>,
+<var>minpad</var>, <var>padchar</var>.
+</p>
+<p><code>~a</code> outputs an argument like <code>display</code>, <code>~s</code>
+outputs an argument like <code>write</code> (see <a href="Writing.html#Writing">Writing</a>).  
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~a&quot; &quot;foo&quot;) -| foo
+(format #t &quot;~s&quot; &quot;foo&quot;) -| &quot;foo&quot;
+</pre></div>
+
+<p><code>~:a</code> and <code>~:s</code> put objects that don&rsquo;t have an external
+representation in quotes like a string.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~:a&quot; car) -| &quot;#&lt;primitive-procedure car&gt;&quot;
+</pre></div>
+
+<p>If the output is less than <var>minwidth</var> characters (default 0), it&rsquo;s
+padded on the right with <var>padchar</var> (default space).  <code>~@a</code>
+and <code>~@s</code> put the padding on the left instead.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~5a&quot; 'abc)       &rArr; &quot;abc  &quot;
+(format #f &quot;~5,,,'-@a&quot; 'abc) &rArr; &quot;--abc&quot;
+</pre></div>
+
+<p><var>minpad</var> is a minimum for the padding then plus a multiple of
+<var>padinc</var>.  Ie. the padding is <em><var>minpad</var> + <var>N</var> *
+<var>padinc</var></em>, where <var>n</var> is the smallest integer making the total
+object plus padding greater than or equal to <var>minwidth</var>.  The
+default <var>minpad</var> is 0 and the default <var>padinc</var> is 1 (imposing
+no minimum or multiple).
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~5,1,4a&quot; 'abc) &rArr; &quot;abc    &quot;
+</pre></div>
+
+</dd>
+<dt><code>~c</code></dt>
+<dd><p>Character.  Parameter: <var>charnum</var>.
+</p>
+<p>Output a character.  The default is to simply output, as per
+<code>write-char</code> (see <a href="Writing.html#Writing">Writing</a>).  <code>~@c</code> prints in
+<code>write</code> style.  <code>~:c</code> prints control characters (ASCII 0
+to 31) in <code>^X</code> form.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~c&quot; #\z)        -| z
+(format #t &quot;~@c&quot; #\z)       -| #\z
+(format #t &quot;~:c&quot; #\newline) -| ^J
+</pre></div>
+
+<p>If the <var>charnum</var> parameter is given then an argument is not taken
+but instead the character is <code>(integer-&gt;char <var>charnum</var>)</code>
+(see <a href="Characters.html#Characters">Characters</a>).  This can be used for instance to output
+characters given by their ASCII code.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~65c&quot;)  -| A
+</pre></div>
+
+</dd>
+<dt><code>~d</code></dt>
+<dt><code>~x</code></dt>
+<dt><code>~o</code></dt>
+<dt><code>~b</code></dt>
+<dd><p>Integer.  Parameters: <var>minwidth</var>, <var>padchar</var>, <var>commachar</var>,
+<var>commawidth</var>.
+</p>
+<p>Output an integer argument as a decimal, hexadecimal, octal or binary
+integer (respectively), in a locale-independent way.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~d&quot; 123) -| 123
+</pre></div>
+
+<p><code>~@d</code> etc shows a <code>+</code> sign is shown on positive
+numbers.
+</p>
+
+<div class="example">
+<pre class="example">(format #t &quot;~@b&quot; 12) -| +1100
+</pre></div>
+
+<p>If the output is less than the <var>minwidth</var> parameter (default no
+minimum), it&rsquo;s padded on the left with the <var>padchar</var> parameter
+(default space).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~5,'*d&quot; 12)   -| ***12
+(format #t &quot;~5,'0d&quot; 12)   -| 00012
+(format #t &quot;~3d&quot;    1234) -| 1234
+</pre></div>
+
+<p><code>~:d</code> adds commas (or the <var>commachar</var> parameter) every
+three digits (or the <var>commawidth</var> parameter many).  However, when
+your intent is to write numbers in a way that follows typographical
+conventions, using <code>~h</code> is recommended.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~:d&quot; 1234567)         -| 1,234,567
+(format #t &quot;~10,'*,'/,2:d&quot; 12345) -| ***1/23/45
+</pre></div>
+
+<p>Hexadecimal <code>~x</code> output is in lower case, but the <code>~(</code>
+and <code>~)</code> case conversion directives described below can be used
+to get upper case.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~x&quot;       65261) -| feed
+(format #t &quot;~:@(~x~)&quot; 65261) -| FEED
+</pre></div>
+
+</dd>
+<dt><code>~r</code></dt>
+<dd><p>Integer in words, roman numerals, or a specified radix.  Parameters:
+<var>radix</var>, <var>minwidth</var>, <var>padchar</var>, <var>commachar</var>,
+<var>commawidth</var>.
+</p>
+<p>With no parameters output is in words as a cardinal like &ldquo;ten&rdquo;, or
+<code>~:r</code> prints an ordinal like &ldquo;tenth&rdquo;.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~r&quot; 9)  -| nine        ;; cardinal
+(format #t &quot;~r&quot; -9) -| minus nine  ;; cardinal
+(format #t &quot;~:r&quot; 9) -| ninth       ;; ordinal
+</pre></div>
+
+<p>And also with no parameters, <code>~@r</code> gives roman numerals and
+<code>~:@r</code> gives old roman numerals.  In old roman numerals
+there&rsquo;s no &ldquo;subtraction&rdquo;, so 9 is <code>VIIII</code> instead of
+<code>IX</code>.  In both cases only positive numbers can be output.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~@r&quot; 89)  -| LXXXIX     ;; roman
+(format #t &quot;~:@r&quot; 89) -| LXXXVIIII  ;; old roman
+</pre></div>
+
+<p>When a parameter is given it means numeric output in the specified
+<var>radix</var>.  The modifiers and parameters following the radix are the
+same as described for <code>~d</code> etc above.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~3r&quot; 27)   &rArr; &quot;1000&quot;    ;; base 3
+(format #f &quot;~3,5r&quot; 26) &rArr; &quot;  222&quot;   ;; base 3 width 5
+</pre></div>
+
+</dd>
+<dt><code>~f</code></dt>
+<dd><p>Fixed-point float.  Parameters: <var>width</var>, <var>decimals</var>,
+<var>scale</var>, <var>overflowchar</var>, <var>padchar</var>.
+</p>
+<p>Output a number or number string in fixed-point format, ie. with a
+decimal point.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~f&quot; 5)      -| 5.0
+(format #t &quot;~f&quot; &quot;123&quot;)  -| 123.0
+(format #t &quot;~f&quot; &quot;1e-1&quot;) -| 0.1
+</pre></div>
+
+<p><code>~@f</code> prints a <code>+</code> sign on positive numbers (including
+zero).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~@f&quot; 0) -| +0.0
+</pre></div>
+
+<p>If the output is less than <var>width</var> characters it&rsquo;s padded on the
+left with <var>padchar</var> (space by default).  If the output equals or
+exceeds <var>width</var> then there&rsquo;s no padding.  The default for
+<var>width</var> is no padding.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~6f&quot; -1.5)      &rArr; &quot;  -1.5&quot;
+(format #f &quot;~6,,,,'*f&quot; 23)  &rArr; &quot;**23.0&quot;
+(format #f &quot;~6f&quot; 1234567.0) &rArr; &quot;1234567.0&quot;
+</pre></div>
+
+<p><var>decimals</var> is how many digits to print after the decimal point,
+with the value rounded or padded with zeros as necessary.  (The
+default is to output as many decimals as required.)
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~1,2f&quot; 3.125) -| 3.13
+(format #t &quot;~1,2f&quot; 1.5)   -| 1.50
+</pre></div>
+
+<p><var>scale</var> is a power of 10 applied to the value, moving the decimal
+point that many places.  A positive <var>scale</var> increases the value
+shown, a negative decreases it.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~,,2f&quot; 1234)  -| 123400.0
+(format #t &quot;~,,-2f&quot; 1234) -| 12.34
+</pre></div>
+
+<p>If <var>overflowchar</var> and <var>width</var> are both given and if the output
+would exceed <var>width</var>, then that many <var>overflowchar</var>s are
+printed instead of the value.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~6,,,'xf&quot; 12345) -| 12345.
+(format #t &quot;~5,,,'xf&quot; 12345) -| xxxxx
+</pre></div>
+
+</dd>
+<dt><code>~h</code></dt>
+<dd><p>Localized number<a name="DOCF25" href="#FOOT25"><sup>25</sup></a>.  Parameters: <var>width</var>,
+<var>decimals</var>, <var>padchar</var>.
+</p>
+<p>Like <code>~f</code>, output an exact or floating point number, but do so
+according to the current locale, or according to the given locale object
+when the <code>:</code> modifier is used (see <a href="Number-Input-and-Output.html#Number-Input-and-Output"><code>number-&gt;locale-string</code></a>).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~h&quot; 12345.5678)  ; with &quot;C&quot; as the current locale
+-| 12345.5678
+
+(format #t &quot;~14,,'*:h&quot; 12345.5678
+        (make-locale LC_ALL &quot;en_US&quot;))
+-| ***12,345.5678
+
+(format #t &quot;~,2:h&quot; 12345.5678
+        (make-locale LC_NUMERIC &quot;fr_FR&quot;))
+-| 12 345,56
+</pre></div>
+
+</dd>
+<dt><code>~e</code></dt>
+<dd><p>Exponential float.  Parameters: <var>width</var>, <var>mantdigits</var>,
+<var>expdigits</var>, <var>intdigits</var>, <var>overflowchar</var>, <var>padchar</var>,
+<var>expchar</var>.
+</p>
+<p>Output a number or number string in exponential notation.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~e&quot; 5000.25) -| 5.00025E+3
+(format #t &quot;~e&quot; &quot;123.4&quot;) -| 1.234E+2
+(format #t &quot;~e&quot; &quot;1e4&quot;)   -| 1.0E+4
+</pre></div>
+
+<p><code>~@e</code> prints a <code>+</code> sign on positive numbers (including
+zero).  (This is for the mantissa, a <code>+</code> or <code>-</code> sign is
+always shown on the exponent.)
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~@e&quot; 5000.0) -| +5.0E+3
+</pre></div>
+
+<p>If the output is less than <var>width</var> characters it&rsquo;s padded on the
+left with <var>padchar</var> (space by default).  The default for
+<var>width</var> is to output with no padding.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~10e&quot; 1234.0)     &rArr; &quot;  1.234E+3&quot;
+(format #f &quot;~10,,,,,'*e&quot; 0.5) &rArr; &quot;****5.0E-1&quot;
+</pre></div>
+
+
+<p><var>mantdigits</var> is the number of digits shown in the mantissa after
+the decimal point.  The value is rounded or trailing zeros are added
+as necessary.  The default <var>mantdigits</var> is to show as much as
+needed by the value.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~,3e&quot; 11111.0) &rArr; &quot;1.111E+4&quot;
+(format #f &quot;~,8e&quot; 123.0)   &rArr; &quot;1.23000000E+2&quot;
+</pre></div>
+
+<p><var>expdigits</var> is the minimum number of digits shown for the
+exponent, with leading zeros added if necessary.  The default for
+<var>expdigits</var> is to show only as many digits as required.  At least
+1 digit is always shown.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~,,1e&quot; 1.0e99) &rArr; &quot;1.0E+99&quot;
+(format #f &quot;~,,6e&quot; 1.0e99) &rArr; &quot;1.0E+000099&quot;
+</pre></div>
+
+<p><var>intdigits</var> (default 1) is the number of digits to show before the
+decimal point in the mantissa.  <var>intdigits</var> can be zero, in which
+case the integer part is a single <code>0</code>, or it can be negative,
+in which case leading zeros are shown after the decimal point.
+</p>
+
+<div class="example">
+<pre class="example">(format #t &quot;~,,,3e&quot; 12345.0)  -| 123.45E+2
+(format #t &quot;~,,,0e&quot; 12345.0)  -| 0.12345E+5
+(format #t &quot;~,,,-3e&quot; 12345.0) -| 0.00012345E+8
+</pre></div>
+
+
+<p>If <var>overflowchar</var> is given then <var>width</var> is a hard limit.  If
+the output would exceed <var>width</var> then instead that many
+<var>overflowchar</var>s are printed.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~6,,,,'xe&quot; 100.0) &rArr; &quot;1.0E+2&quot;
+(format #f &quot;~3,,,,'xe&quot; 100.0) &rArr; &quot;xxx&quot;
+</pre></div>
+
+<p><var>expchar</var> is the exponent marker character (default <code>E</code>).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~,,,,,,'ee&quot; 100.0) -| 1.0e+2
+</pre></div>
+
+</dd>
+<dt><code>~g</code></dt>
+<dd><p>General float.  Parameters: <var>width</var>, <var>mantdigits</var>,
+<var>expdigits</var>, <var>intdigits</var>, <var>overflowchar</var>, <var>padchar</var>,
+<var>expchar</var>.
+</p>
+<p>Output a number or number string in either exponential format the same
+as <code>~e</code>, or fixed-point format like <code>~f</code> but aligned
+where the mantissa would have been and followed by padding where the
+exponent would have been.
+</p>
+
+<p>Fixed-point is used when the absolute value is 0.1 or more and it
+takes no more space than the mantissa in exponential format, ie.
+basically up to <var>mantdigits</var> digits.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~12,4,2g&quot; 999.0)    &rArr; &quot;   999.0    &quot;
+(format #f &quot;~12,4,2g&quot; &quot;100000&quot;) &rArr; &quot;  1.0000E+05&quot;
+</pre></div>
+
+<p>The parameters are interpreted as per <code>~e</code> above.  When
+fixed-point is used, the <var>decimals</var> parameter to <code>~f</code> is
+established from <var>mantdigits</var>, so as to give a total
+<em><var>mantdigits</var>+1</em> figures.
+</p>
+</dd>
+<dt><code>~$</code></dt>
+<dd><p>Monetary style fixed-point float.  Parameters: <var>decimals</var>,
+<var>intdigits</var>, <var>width</var>, <var>padchar</var>.
+</p>
+
+<p>Output a number or number string in fixed-point format, ie. with a
+decimal point.  <var>decimals</var> is the number of decimal places to
+show, default 2.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~$&quot; 5)       -| 5.00
+(format #t &quot;~4$&quot; &quot;2.25&quot;) -| 2.2500
+(format #t &quot;~4$&quot; &quot;1e-2&quot;) -| 0.0100
+</pre></div>
+
+<p><code>~@$</code> prints a <code>+</code> sign on positive numbers (including
+zero).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~@$&quot; 0) -| +0.00
+</pre></div>
+
+<p><var>intdigits</var> is a minimum number of digits to show in the integer
+part of the value (default 1).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~,3$&quot; 9.5)   -| 009.50
+(format #t &quot;~,0$&quot; 0.125) -| .13
+</pre></div>
+
+<p>If the output is less than <var>width</var> characters (default 0), it&rsquo;s
+padded on the left with <var>padchar</var> (default space).  <code>~:$</code>
+puts the padding after the sign.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~,,8$&quot; -1.5)   &rArr; &quot;   -1.50&quot;
+(format #f &quot;~,,8:$&quot; -1.5)  &rArr; &quot;-   1.50&quot;
+(format #f &quot;~,,8,'.:@$&quot; 3) &rArr; &quot;+...3.00&quot;
+</pre></div>
+
+<p>Note that floating point for dollar amounts is generally not a good
+idea, because a cent <em>0.01</em> cannot be represented exactly in the
+binary floating point Guile uses, which leads to slowly accumulating
+rounding errors.  Keeping values as cents (or fractions of a cent) in
+integers then printing with the scale option in <code>~f</code> may be a
+better approach.
+</p>
+
+</dd>
+<dt><code>~i</code></dt>
+<dd><p>Complex fixed-point float.  Parameters: <var>width</var>, <var>decimals</var>,
+<var>scale</var>, <var>overflowchar</var>, <var>padchar</var>.
+</p>
+
+<p>Output the argument as a complex number, with both real and imaginary
+part shown (even if one or both are zero).
+</p>
+<p>The parameters and modifiers are the same as for fixed-point
+<code>~f</code> described above.  The real and imaginary parts are both
+output with the same given parameters and modifiers, except that for
+the imaginary part the <code>@</code> modifier is always enabled, so as
+to print a <code>+</code> sign between the real and imaginary parts.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~i&quot; 1)  -| 1.0+0.0i
+</pre></div>
+
+</dd>
+<dt><code>~p</code></dt>
+<dd><p>Plural.  No parameters.
+</p>
+<p>Output nothing if the argument is 1, or &lsquo;<samp>s</samp>&rsquo; for any other
+value.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;enter name~p&quot; 1) -| enter name
+(format #t &quot;enter name~p&quot; 2) -| enter names
+</pre></div>
+
+<p><code>~@p</code> prints &lsquo;<samp>y</samp>&rsquo; for 1 or &lsquo;<samp>ies</samp>&rsquo; otherwise.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;pupp~@p&quot; 1) -| puppy
+(format #t &quot;pupp~@p&quot; 2) -| puppies
+</pre></div>
+
+<p><code>~:p</code> re-uses the preceding argument instead of taking a new
+one, which can be convenient when printing some sort of count.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~d cat~:p&quot; 9)   -| 9 cats
+(format #t &quot;~d pupp~:@p&quot; 5) -| 5 puppies
+</pre></div>
+
+<p><code>~p</code> is designed for English plurals and there&rsquo;s no attempt to
+support other languages.  <code>~[</code> conditionals (below) may be able
+to help.  When using <code>gettext</code> to translate messages
+<code>ngettext</code> is probably best though
+(see <a href="Internationalization.html#Internationalization">Internationalization</a>).
+</p>
+</dd>
+<dt><code>~y</code></dt>
+<dd><p>Structured printing.  Parameters: <var>width</var>.
+</p>
+<p><code>~y</code> outputs an argument using <code>pretty-print</code>
+(see <a href="Pretty-Printing.html#Pretty-Printing">Pretty Printing</a>). The result will be formatted to fit within
+<var>width</var> columns (79 by default), consuming multiple lines if
+necessary.
+</p>
+<p><code>~@y</code> outputs an argument using <code>truncated-print</code>
+(see <a href="Pretty-Printing.html#Pretty-Printing">Pretty Printing</a>). The resulting code will be formatted to fit
+within <var>width</var> columns (79 by default), on a single line. The
+output will be truncated if necessary.
+</p>
+<p><code>~:@y</code> is like <code>~@y</code>, except the <var>width</var> parameter
+is interpreted to be the maximum column to which to output. That is to
+say, if you are at column 10, and <code>~60:@y</code> is seen, the datum
+will be truncated to 50 columns.
+</p>
+</dd>
+<dt><code>~?</code></dt>
+<dt><code>~k</code></dt>
+<dd><p>Sub-format.  No parameters.
+</p>
+<p>Take a format string argument and a second argument which is a list of
+arguments for that string, and output the result.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~?&quot; &quot;~d ~d&quot; '(1 2))    -| 1 2
+</pre></div>
+
+<p><code>~@?</code> takes arguments for the sub-format directly rather than
+in a list.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~@? ~s&quot; &quot;~d ~d&quot; 1 2 &quot;foo&quot;) -| 1 2 &quot;foo&quot;
+</pre></div>
+
+<p><code>~?</code> and <code>~k</code> are the same, <code>~k</code> is provided for
+T-Scheme compatibility.
+</p>
+</dd>
+<dt><code>~*</code></dt>
+<dd><p>Argument jumping.  Parameter: <var>N</var>.
+</p>
+<p>Move forward <var>N</var> arguments (default 1) in the argument list.
+<code>~:*</code> moves backwards.  (<var>N</var> cannot be negative.)
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~d ~2*~d&quot; 1 2 3 4) &rArr; &quot;1 4&quot;
+(format #f &quot;~d ~:*~d&quot; 6)       &rArr; &quot;6 6&quot;
+</pre></div>
+
+<p><code>~@*</code> moves to argument number <var>N</var>.  The first argument is
+number 0 (and that&rsquo;s the default for <var>N</var>).
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~d~d again ~@*~d~d&quot; 1 2) &rArr; &quot;12 again 12&quot;
+(format #f &quot;~d~d~d ~1@*~d~d&quot; 1 2 3)  &rArr; &quot;123 23&quot;
+</pre></div>
+
+<p>A <code>#</code> move to the end followed by a <code>:</code> modifier move
+back can be used for an absolute position relative to the end of the
+argument list, a reverse of what the <code>@</code> modifier does.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~#*~2:*~a&quot; 'a 'b 'c 'd)   -| c
+</pre></div>
+
+<p>At the end of the format string the current argument position doesn&rsquo;t
+matter, any further arguments are ignored.
+</p>
+</dd>
+<dt><code>~t</code></dt>
+<dd><p>Advance to a column position.  Parameters: <var>colnum</var>, <var>colinc</var>,
+<var>padchar</var>.
+</p>
+<p>Output <var>padchar</var> (space by default) to move to the given
+<var>colnum</var> column.  The start of the line is column 0, the default
+for <var>colnum</var> is 1.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~tX&quot;)  &rArr; &quot; X&quot;
+(format #f &quot;~3tX&quot;) &rArr; &quot;   X&quot;
+</pre></div>
+
+<p>If the current column is already past <var>colnum</var>, then the move is
+to there plus a multiple of <var>colinc</var>, ie. column
+<em><var>colnum</var> + <var>N</var> * <var>colinc</var></em> for the smallest <var>N</var>
+which makes that value greater than or equal to the current column.
+The default <var>colinc</var> is 1 (which means no further move).
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;abcd~2,5,'.tx&quot;) &rArr; &quot;abcd...x&quot;
+</pre></div>
+
+<p><code>~@t</code> takes <var>colnum</var> as an offset from the current column.
+<var>colnum</var> many pad characters are output, then further padding to
+make the current column a multiple of <var>colinc</var>, if it isn&rsquo;t
+already so.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;a~3,5'*@tx&quot;) &rArr; &quot;a****x&quot;
+</pre></div>
+
+<p><code>~t</code> is implemented using <code>port-column</code> (see <a href="Reading.html#Reading">Reading</a>),
+so it works even there has been other output before <code>format</code>.
+</p>
+</dd>
+<dt><code>~~</code></dt>
+<dd><p>Tilde character.  Parameter: <var>n</var>.
+</p>
+<p>Output a tilde character <code>~</code>, or <var>n</var> many if a parameter is
+given.  Normally <code>~</code> introduces an escape sequence, <code>~~</code>
+is the way to output a literal tilde.
+</p>
+</dd>
+<dt><code>~%</code></dt>
+<dd><p>Newline.  Parameter: <var>n</var>.
+</p>
+<p>Output a newline character, or <var>n</var> many if a parameter is given.
+A newline (or a few newlines) can of course be output just by
+including them in the format string.
+</p>
+</dd>
+<dt><code>~&amp;</code></dt>
+<dd><p>Start a new line.  Parameter: <var>n</var>.
+</p>
+<p>Output a newline if not already at the start of a line.  With a
+parameter, output that many newlines, but with the first only if not
+already at the start of a line.  So for instance 3 would be a newline
+if not already at the start of a line, and 2 further newlines.
+</p>
+</dd>
+<dt><code>~_</code></dt>
+<dd><p>Space character.  Parameter: <var>n</var>.
+</p>
+
+<p>Output a space character, or <var>n</var> many if a parameter is given.
+</p>
+<p>With a variable parameter this is one way to insert runtime calculated
+padding (<code>~t</code> or the various field widths can do similar
+things).
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~v_foo&quot; 4) &rArr; &quot;    foo&quot;
+</pre></div>
+
+</dd>
+<dt><code>~/</code></dt>
+<dd><p>Tab character.  Parameter: <var>n</var>.
+</p>
+<p>Output a tab character, or <var>n</var> many if a parameter is given.
+</p>
+</dd>
+<dt><code>~|</code></dt>
+<dd><p>Formfeed character.  Parameter: <var>n</var>.
+</p>
+<p>Output a formfeed character, or <var>n</var> many if a parameter is given.
+</p>
+</dd>
+<dt><code>~!</code></dt>
+<dd><p>Force output.  No parameters.
+</p>
+<p>At the end of output, call <code>force-output</code> to flush any buffers on
+the destination (see <a href="Writing.html#Writing">Writing</a>).  <code>~!</code> can occur anywhere in
+the format string, but the force is done at the end of output.
+</p>
+<p>When output is to a string (destination <code>#f</code>), <code>~!</code> does
+nothing.
+</p>
+</dd>
+<dt><code>~newline</code>  (ie. newline character)</dt>
+<dd><p>Continuation line.  No parameters.
+</p>
+<p>Skip this newline and any following whitespace in the format string,
+ie. don&rsquo;t send it to the output.  This can be used to break up a
+long format string for readability, but not print the extra
+whitespace.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;abc~
+            ~d def~
+            ~d&quot; 1 2) &rArr; &quot;abc1 def2&quot;
+</pre></div>
+
+<p><code>~:newline</code> skips the newline but leaves any further whitespace
+to be printed normally.
+</p>
+<p><code>~@newline</code> prints the newline then skips following
+whitespace.
+</p>
+</dd>
+<dt><code>~(</code> <code>~)</code></dt>
+<dd><p>Case conversion.  No parameters.
+</p>
+<p>Between <code>~(</code> and <code>~)</code> the case of all output is changed.
+The modifiers on <code>~(</code> control the conversion.
+</p>
+<ul class="no-bullet">
+<li><!-- /@w --> <code>~(</code> &mdash; lower case.
+</li><li><!-- /@w --> <code>~:@(</code> &mdash; upper case.
+</li></ul>
+
+<p>For example,
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~(Hello~)&quot;)   -| hello
+(format #t &quot;~:@(Hello~)&quot;) -| HELLO
+</pre></div>
+
+<p>In the future it&rsquo;s intended the modifiers <code>:</code> and <code>@</code>
+alone will capitalize the first letters of words, as per Common Lisp
+<code>format</code>, but the current implementation of this is flawed and
+not recommended for use.
+</p>
+<p>Case conversions do not nest, currently.  This might change in the
+future, but if it does then it will be to Common Lisp style where the
+outermost conversion has priority, overriding inner ones (making those
+fairly pointless).
+</p>
+</dd>
+<dt><code>~{</code> <code>~}</code></dt>
+<dd><p>Iteration.  Parameter: <var>maxreps</var> (for <code>~{</code>).
+</p>
+<p>The format between <code>~{</code> and <code>~}</code> is iterated.  The
+modifiers to <code>~{</code> determine how arguments are taken.  The
+default is a list argument with each iteration successively consuming
+elements from it.  This is a convenient way to output a whole list.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~{~d~}&quot;     '(1 2 3))       -| 123
+(format #t &quot;~{~s=~d ~}&quot; '(&quot;x&quot; 1 &quot;y&quot; 2)) -| &quot;x&quot;=1 &quot;y&quot;=2
+</pre></div>
+
+<p><code>~:{</code> takes a single argument which is a list of lists, each
+of those contained lists gives the arguments for the iterated format.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~:{~dx~d ~}&quot; '((1 2) (3 4) (5 6)))
+-| 1x2 3x4 5x6
+</pre></div>
+
+<p><code>~@{</code> takes arguments directly, with each iteration
+successively consuming arguments.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~@{~d~}&quot;     1 2 3)       -| 123
+(format #t &quot;~@{~s=~d ~}&quot; &quot;x&quot; 1 &quot;y&quot; 2) -| &quot;x&quot;=1 &quot;y&quot;=2
+</pre></div>
+
+<p><code>~:@{</code> takes list arguments, one argument for each iteration,
+using that list for the format.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~:@{~dx~d ~}&quot; '(1 2) '(3 4) '(5 6))
+-| 1x2 3x4 5x6
+</pre></div>
+
+<p>Iterating stops when there are no more arguments or when the
+<var>maxreps</var> parameter to <code>~{</code> is reached (default no
+maximum).
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~2{~d~}&quot; '(1 2 3 4)) -| 12
+</pre></div>
+
+<p>If the format between <code>~{</code> and <code>~}</code> is empty, then a
+format string argument is taken (before iteration argument(s)) and
+used instead.  This allows a sub-format (like <code>~?</code> above) to be
+iterated.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~{~}&quot; &quot;~d&quot; '(1 2 3)) -| 123
+</pre></div>
+
+
+<p>Iterations can be nested, an inner iteration operates in the same way
+as described, but of course on the arguments the outer iteration
+provides it.  This can be used to work into nested list structures.
+For example in the following the inner <code>~{~d~}x</code> is applied
+to <code>(1 2)</code> then <code>(3 4 5)</code> etc.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~{~{~d~}x~}&quot; '((1 2) (3 4 5))) -| 12x345x
+</pre></div>
+
+<p>See also <code>~^</code> below for escaping from iteration.
+</p>
+</dd>
+<dt><code>~[</code> <code>~;</code> <code>~]</code></dt>
+<dd><p>Conditional.  Parameter: <var>selector</var>.
+</p>
+<p>A conditional block is delimited by <code>~[</code> and <code>~]</code>, and
+<code>~;</code> separates clauses within the block.  <code>~[</code> takes an
+integer argument and that number clause is used.  The first clause is
+number 0.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~[peach~;banana~;mango~]&quot; 1)  &rArr; &quot;banana&quot;
+</pre></div>
+
+<p>The <var>selector</var> parameter can be used for the clause number,
+instead of taking an argument.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~2[peach~;banana~;mango~]&quot;) &rArr; &quot;mango&quot;
+</pre></div>
+
+<p>If the clause number is out of range then nothing is output.  Or the
+last clause can be <code>~:;</code> to use that for a number out of range.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~[banana~;mango~]&quot;         99) &rArr; &quot;&quot;
+(format #f &quot;~[banana~;mango~:;fruit~]&quot; 99) &rArr; &quot;fruit&quot;
+</pre></div>
+
+<p><code>~:[</code> treats the argument as a flag, and expects two clauses.
+The first is used if the argument is <code>#f</code> or the second
+otherwise.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~:[false~;not false~]&quot; #f)   &rArr; &quot;false&quot;
+(format #f &quot;~:[false~;not false~]&quot; 'abc) &rArr; &quot;not false&quot;
+
+(let ((n 3))
+  (format #t &quot;~d gnu~:[s are~; is~] here&quot; n (= 1 n)))
+-| 3 gnus are here
+</pre></div>
+
+<p><code>~@[</code> also treats the argument as a flag, and expects one
+clause.  If the argument is <code>#f</code> then no output is produced and
+the argument is consumed, otherwise the clause is used and the
+argument is not consumed, it&rsquo;s left for the clause.  This can be used
+for instance to suppress output if <code>#f</code> means something not
+available.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~@[temperature=~d~]&quot; 27) &rArr; &quot;temperature=27&quot;
+(format #f &quot;~@[temperature=~d~]&quot; #f) &rArr; &quot;&quot;
+</pre></div>
+
+</dd>
+<dt><code>~^</code></dt>
+<dd><p>Escape.  Parameters: <var>val1</var>, <var>val2</var>, <var>val3</var>.
+</p>
+<p>Stop formatting if there are no more arguments.  This can be used for
+instance to have a format string adapt to a variable number of
+arguments.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~d~^ ~d&quot; 1)   -| 1
+(format #t &quot;~d~^ ~d&quot; 1 2) -| 1 2
+</pre></div>
+
+<p>Within a <code>~{</code> <code>~}</code> iteration, <code>~^</code> stops the
+current iteration step if there are no more arguments to that step,
+but continuing with possible further steps and the rest of the format.
+This can be used for instance to avoid a separator on the last
+iteration, or to adapt to variable length argument lists.
+</p>
+<div class="example">
+<pre class="example">(format #f &quot;~{~d~^/~} go&quot;    '(1 2 3))     &rArr; &quot;1/2/3 go&quot;
+(format #f &quot;~:{ ~d~^~d~} go&quot; '((1) (2 3))) &rArr; &quot; 1 23 go&quot;
+</pre></div>
+
+
+
+
+<p>Within a <code>~?</code> sub-format, <code>~^</code> operates just on that
+sub-format.  If it terminates the sub-format then the originating
+format will still continue.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~? items&quot; &quot;~d~^ ~d&quot; '(1))   -| 1 items
+(format #t &quot;~? items&quot; &quot;~d~^ ~d&quot; '(1 2)) -| 1 2 items
+</pre></div>
+
+<p>The parameters to <code>~^</code> (which are numbers) change the condition
+used to terminate.  For a single parameter, termination is when that
+value is zero (notice this makes plain <code>~^</code> equivalent to
+<code>~#^</code>).  For two parameters, termination is when those two are
+equal.  For three parameters, termination is when <em><var>val1</var>
+&lt;= <var>val2</var></em> and <em><var>val2</var> &lt;= <var>val3</var></em>.
+</p>
+
+</dd>
+<dt><code>~q</code></dt>
+<dd><p>Inquiry message.  Insert a copyright message into the output.
+</p>
+<p><code>~:q</code> inserts the format implementation version.
+</p></dd>
+</dl>
+
+<br>
+<p>It&rsquo;s an error if there are not enough arguments for the escapes in the
+format string, but any excess arguments are ignored.
+</p>
+<p>Iterations <code>~{</code> <code>~}</code> and conditionals <code>~[</code>
+<code>~;</code> <code>~]</code> can be nested, but must be properly nested,
+meaning the inner form must be entirely within the outer form.  So
+it&rsquo;s not possible, for instance, to try to conditionalize the endpoint
+of an iteration.
+</p>
+<div class="example">
+<pre class="example">(format #t &quot;~{ ~[ ... ~] ~}&quot; ...)       ;; good
+(format #t &quot;~{ ~[ ... ~} ... ~]&quot; ...)   ;; bad
+</pre></div>
+
+<p>The same applies to case conversions <code>~(</code> <code>~)</code>, they
+must properly nest with respect to iterations and conditionals (though
+currently a case conversion cannot nest within another case
+conversion).
+</p>
+<p>When a sub-format (<code>~?</code>) is used, that sub-format string must
+be self-contained.  It cannot for instance give a <code>~{</code> to
+begin an iteration form and have the <code>~}</code> up in the
+originating format, or similar.
+</p></dd></dl>
+
+<br>
+<p>Guile contains a <code>format</code> procedure even when the module
+<code>(ice-9 format)</code> is not loaded.  The default <code>format</code> is
+<code>simple-format</code> (see <a href="Writing.html#Writing">Writing</a>), it doesn&rsquo;t support all escape
+sequences documented in this section, and will signal an error if you
+try to use one of them.  The reason for two versions is that the full
+<code>format</code> is fairly large and requires some time to load.
+<code>simple-format</code> is often adequate too.
+</p>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT25" href="#DOCF25">(25)</a></h3>
+<p>The <code>~h</code> format specifier first
+appeared in Guile version 2.0.6.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="File-Tree-Walk.html#File-Tree-Walk" accesskey="n" rel="next">File Tree Walk</a>, Previous: <a href="Pretty-Printing.html#Pretty-Printing" accesskey="p" rel="prev">Pretty Printing</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

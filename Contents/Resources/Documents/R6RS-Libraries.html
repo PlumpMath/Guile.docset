@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS Libraries</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS Libraries">
+<meta name="keywords" content="Guile Reference Manual: R6RS Libraries">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Modules.html#Modules" rel="up" title="Modules">
+<link href="Variables.html#Variables" rel="next" title="Variables">
+<link href="R6RS-Version-References.html#R6RS-Version-References" rel="prev" title="R6RS Version References">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-Libraries"></a>
+<div class="header">
+<p>
+Next: <a href="Variables.html#Variables" accesskey="n" rel="next">Variables</a>, Previous: <a href="R6RS-Version-References.html#R6RS-Version-References" accesskey="p" rel="prev">R6RS Version References</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="R6RS-Libraries-1"></a>
+<h4 class="subsection">6.19.6 R6RS Libraries</h4>
+
+<p>In addition to the API described in the previous sections, you also
+have the option to create modules using the portable <code>library</code> form
+described in R6RS (see <a href="../r6rs/Library-form.html#Library-form">R6RS Library Form</a> in <cite>The
+Revised^6 Report on the Algorithmic Language Scheme</cite>), and to import 
+libraries created in this format by other programmers.  Guile&rsquo;s R6RS 
+library implementation takes advantage of the flexibility built into the
+module system by expanding the R6RS library form into a corresponding 
+Guile <code>define-module</code> form that specifies equivalent import and 
+export requirements and includes the same body expressions.  The library
+expression:
+</p>
+<div class="lisp">
+<pre class="lisp">  (library (mylib (1 2))
+    (import (otherlib (3)))
+    (export mybinding))
+</pre></div>
+
+<p>is equivalent to the module definition:
+</p>
+<div class="lisp">
+<pre class="lisp">  (define-module (mylib)
+    #:version (1 2)
+    #:use-module ((otherlib) #:version (3))
+    #:export (mybinding))
+</pre></div>
+
+<p>Central to the mechanics of R6RS libraries is the concept of import
+and export <em>levels</em>, which control the visibility of bindings at
+various phases of a library&rsquo;s lifecycle &mdash; macros necessary to 
+expand forms in the library&rsquo;s body need to be available at expand 
+time; variables used in the body of a procedure exported by the
+library must be available at runtime.  R6RS specifies the optional
+<code>for</code> sub-form of an <em>import set</em> specification (see below)
+as a mechanism by which a library author can indicate that a
+particular library import should take place at a particular phase 
+with respect to the lifecycle of the importing library.  
+</p>
+<p>Guile&rsquo;s library implementation uses a technique called 
+<em>implicit phasing</em> (first described by Abdulaziz Ghuloum and R. 
+Kent Dybvig), which allows the expander and compiler to automatically 
+determine the necessary visibility of a binding imported from another 
+library.  As such, the <code>for</code> sub-form described below is ignored by
+Guile (but may be required by Schemes in which phasing is explicit).
+</p>
+<dl>
+<dt><a name="index-library"></a>Scheme Syntax: <strong>library</strong> <em>name (export export-spec ...) (import import-spec ...) body ...</em></dt>
+<dd><p>Defines a new library with the specified name, exports, and imports,
+and evaluates the specified body expressions in this library&rsquo;s 
+environment.
+</p>
+<p>The library <var>name</var> is a non-empty list of identifiers, optionally
+ending with a version specification of the form described above
+(see <a href="Creating-Guile-Modules.html#Creating-Guile-Modules">Creating Guile Modules</a>).
+</p>
+<p>Each <var>export-spec</var> is the name of a variable defined or imported
+by the library, or must take the form 
+<code>(rename (internal-name external-name) ...)</code>, where the 
+identifier <var>internal-name</var> names a variable defined or imported 
+by the library and <var>external-name</var> is the name by which the
+variable is seen by importing libraries.
+</p>
+<p>Each <var>import-spec</var> must be either an <em>import set</em> (see below)
+or must be of the form <code>(for import-set import-level ...)</code>, 
+where each <var>import-level</var> is one of:
+</p>
+<div class="lisp">
+<pre class="lisp">  run
+  expand
+  (meta <var>level</var>)
+</pre></div>
+
+<p>where <var>level</var> is an integer.  Note that since Guile does not
+require explicit phase specification, any <var>import-set</var>s found 
+inside of <code>for</code> sub-forms will be &ldquo;unwrapped&rdquo; during 
+expansion and processed as if they had been specified directly.
+</p>
+<p>Import sets in turn take one of the following forms:
+</p>
+<div class="lisp">
+<pre class="lisp">  <var>library-reference</var>
+  (library <var>library-reference</var>)
+  (only <var>import-set</var> <var>identifier</var> ...)
+  (except <var>import-set</var> <var>identifier</var> ...)
+  (prefix <var>import-set</var> <var>identifier</var>)
+  (rename <var>import-set</var> (<var>internal-identifier</var> <var>external-identifier</var>) ...)
+</pre></div>
+
+<p>where <var>library-reference</var> is a non-empty list of identifiers
+ending with an optional version reference (see <a href="R6RS-Version-References.html#R6RS-Version-References">R6RS Version References</a>), and the other sub-forms have the following semantics,
+defined recursively on nested <var>import-set</var>s:
+</p>
+<ul>
+<li> The <code>library</code> sub-form is used to specify libraries for import
+whose names begin with the identifier &ldquo;library.&rdquo;
+
+</li><li> The <code>only</code> sub-form imports only the specified <var>identifier</var>s
+from the given <var>import-set</var>.
+
+</li><li> The <code>except</code> sub-form imports all of the bindings exported by 
+<var>import-set</var> except for those that appear in the specified list
+of <var>identifier</var>s.
+
+</li><li> The <code>prefix</code> sub-form imports all of the bindings exported
+by <var>import-set</var>, first prefixing them with the specified
+<var>identifier</var>.
+
+</li><li> The <code>rename</code> sub-form imports all of the identifiers exported
+by <var>import-set</var>.  The binding for each <var>internal-identifier</var>
+among these identifiers is made visible to the importing library as
+the corresponding <var>external-identifier</var>; all other bindings are
+imported using the names provided by <var>import-set</var>.
+
+</li></ul>
+
+<p>Note that because Guile translates R6RS libraries into module 
+definitions, an import specification may be used to declare a
+dependency on a native Guile module &mdash; although doing so may make 
+your libraries less portable to other Schemes.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-import-1"></a>Scheme Syntax: <strong>import</strong> <em>import-spec ...</em></dt>
+<dd><p>Import into the current environment the libraries specified by the
+given import specifications, where each <var>import-spec</var> takes the
+same form as in the <code>library</code> form described above.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Variables.html#Variables" accesskey="n" rel="next">Variables</a>, Previous: <a href="R6RS-Version-References.html#R6RS-Version-References" accesskey="p" rel="prev">R6RS Version References</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

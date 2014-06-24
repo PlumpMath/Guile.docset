@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Immediate objects</title>
+
+<meta name="description" content="Guile Reference Manual: Immediate objects">
+<meta name="keywords" content="Guile Reference Manual: Immediate objects">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" rel="up" title="The SCM Type in Guile">
+<link href="Non_002dimmediate-objects.html#Non_002dimmediate-objects" rel="next" title="Non-immediate objects">
+<link href="Relationship-between-SCM-and-scm_005ft_005fbits.html#Relationship-between-SCM-and-scm_005ft_005fbits" rel="prev" title="Relationship between SCM and scm_t_bits">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Immediate-objects"></a>
+<div class="header">
+<p>
+Next: <a href="Non_002dimmediate-objects.html#Non_002dimmediate-objects" accesskey="n" rel="next">Non-immediate objects</a>, Previous: <a href="Relationship-between-SCM-and-scm_005ft_005fbits.html#Relationship-between-SCM-and-scm_005ft_005fbits" accesskey="p" rel="prev">Relationship between SCM and scm_t_bits</a>, Up: <a href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" accesskey="u" rel="up">The SCM Type in Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Immediate-objects-1"></a>
+<h4 class="subsubsection">9.2.5.2 Immediate objects</h4>
+
+<p>A Scheme object may either be an immediate, i.e. carrying all necessary
+information by itself, or it may contain a reference to a <em>cell</em>
+with additional information on the heap.  Although in general it should
+be irrelevant for user code whether an object is an immediate or not,
+within Guile&rsquo;s own code the distinction is sometimes of importance.
+Thus, the following low level macro is provided:
+</p>
+<dl>
+<dt><a name="index-SCM_005fIMP"></a>Macro: <em>int</em> <strong>SCM_IMP</strong> <em>(SCM <var>x</var>)</em></dt>
+<dd><p>A Scheme object is an immediate if it fulfills the <code>SCM_IMP</code>
+predicate, otherwise it holds an encoded reference to a heap cell.  The
+result of the predicate is delivered as a C style boolean value.  User
+code and code that extends Guile should normally not be required to use
+this macro.
+</p></dd></dl>
+
+<p>Summary:
+</p><ul>
+<li> Given a Scheme object <var>x</var> of unknown type, check first
+with <code>SCM_IMP (<var>x</var>)</code> if it is an immediate object.
+</li><li> If so, all of the type and value information can be determined from the
+<code>scm_t_bits</code> value that is delivered by <code>SCM_UNPACK
+(<var>x</var>)</code>.
+</li></ul>
+
+<p>There are a number of special values in Scheme, most of them documented
+elsewhere in this manual. It&rsquo;s not quite the right place to put them,
+but for now, here&rsquo;s a list of the C names given to some of these values:
+</p>
+<dl>
+<dt><a name="index-SCM_005fEOL"></a>Macro: <em>SCM</em> <strong>SCM_EOL</strong></dt>
+<dd><p>The Scheme empty list object, or &ldquo;End Of List&rdquo; object, usually written
+in Scheme as <code>'()</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fEOF_005fVAL"></a>Macro: <em>SCM</em> <strong>SCM_EOF_VAL</strong></dt>
+<dd><p>The Scheme end-of-file value.  It has no standard written
+representation, for obvious reasons.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fUNSPECIFIED"></a>Macro: <em>SCM</em> <strong>SCM_UNSPECIFIED</strong></dt>
+<dd><p>The value returned by some (but not all) expressions that the Scheme
+standard says return an &ldquo;unspecified&rdquo; value.
+</p>
+<p>This is sort of a weirdly literal way to take things, but the standard
+read-eval-print loop prints nothing when the expression returns this
+value, so it&rsquo;s not a bad idea to return this when you can&rsquo;t think of
+anything else helpful.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fUNDEFINED"></a>Macro: <em>SCM</em> <strong>SCM_UNDEFINED</strong></dt>
+<dd><p>The &ldquo;undefined&rdquo; value.  Its most important property is that is not
+equal to any valid Scheme value.  This is put to various internal uses
+by C code interacting with Guile.
+</p>
+<p>For example, when you write a C function that is callable from Scheme
+and which takes optional arguments, the interpreter passes
+<code>SCM_UNDEFINED</code> for any arguments you did not receive.
+</p>
+<p>We also use this to mark unbound variables.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fUNBNDP"></a>Macro: <em>int</em> <strong>SCM_UNBNDP</strong> <em>(SCM <var>x</var>)</em></dt>
+<dd><p>Return true if <var>x</var> is <code>SCM_UNDEFINED</code>.  Note that this is not a
+check to see if <var>x</var> is <code>SCM_UNBOUND</code>.  History will not be kind
+to us.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Non_002dimmediate-objects.html#Non_002dimmediate-objects" accesskey="n" rel="next">Non-immediate objects</a>, Previous: <a href="Relationship-between-SCM-and-scm_005ft_005fbits.html#Relationship-between-SCM-and-scm_005ft_005fbits" accesskey="p" rel="prev">Relationship between SCM and scm_t_bits</a>, Up: <a href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" accesskey="u" rel="up">The SCM Type in Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

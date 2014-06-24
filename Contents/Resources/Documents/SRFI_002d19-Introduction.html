@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-19 Introduction</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-19 Introduction">
+<meta name="keywords" content="Guile Reference Manual: SRFI-19 Introduction">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d19.html#SRFI_002d19" rel="up" title="SRFI-19">
+<link href="SRFI_002d19-Time.html#SRFI_002d19-Time" rel="next" title="SRFI-19 Time">
+<link href="SRFI_002d19.html#SRFI_002d19" rel="prev" title="SRFI-19">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d19-Introduction"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d19-Time.html#SRFI_002d19-Time" accesskey="n" rel="next">SRFI-19 Time</a>, Up: <a href="SRFI_002d19.html#SRFI_002d19" accesskey="u" rel="up">SRFI-19</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d19-Introduction-1"></a>
+<h4 class="subsubsection">7.5.16.1 SRFI-19 Introduction</h4>
+
+<a name="index-universal-time"></a>
+<a name="index-atomic-time"></a>
+<a name="index-UTC"></a>
+<a name="index-TAI"></a>
+<p>This module implements time and date representations and calculations,
+in various time systems, including universal time (UTC) and atomic
+time (TAI).
+</p>
+<p>For those not familiar with these time systems, TAI is based on a
+fixed length second derived from oscillations of certain atoms.  UTC
+differs from TAI by an integral number of seconds, which is increased
+or decreased at announced times to keep UTC aligned to a mean solar
+day (the orbit and rotation of the earth are not quite constant).
+</p>
+<a name="index-leap-second"></a>
+<p>So far, only increases in the TAI
+&lt;-&gt;
+UTC difference have been needed.  Such an increase is a &ldquo;leap
+second&rdquo;, an extra second of TAI introduced at the end of a UTC day.
+When working entirely within UTC this is never seen, every day simply
+has 86400 seconds.  But when converting from TAI to a UTC date, an
+extra 23:59:60 is present, where normally a day would end at 23:59:59.
+Effectively the UTC second from 23:59:59 to 00:00:00 has taken two TAI
+seconds.
+</p>
+<a name="index-system-clock"></a>
+<p>In the current implementation, the system clock is assumed to be UTC,
+and a table of leap seconds in the code converts to TAI.  See comments
+in <samp>srfi-19.scm</samp> for how to update this table.
+</p>
+<a name="index-julian-day"></a>
+<a name="index-modified-julian-day"></a>
+<p>Also, for those not familiar with the terminology, a <em>Julian Day</em>
+is a real number which is a count of days and fraction of a day, in
+UTC, starting from -4713-01-01T12:00:00Z, ie. midday Monday 1 Jan
+4713 B.C.  A <em>Modified Julian Day</em> is the same, but starting from
+1858-11-17T00:00:00Z, ie. midnight 17 November 1858 UTC.  That time
+is julian day 2400000.5.
+</p>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d19-Time.html#SRFI_002d19-Time" accesskey="n" rel="next">SRFI-19 Time</a>, Up: <a href="SRFI_002d19.html#SRFI_002d19" accesskey="u" rel="up">SRFI-19</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-10</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-10">
+<meta name="keywords" content="Guile Reference Manual: SRFI-10">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d11.html#SRFI_002d11" rel="next" title="SRFI-11">
+<link href="SRFI_002d9.html#SRFI_002d9" rel="prev" title="SRFI-9">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d10"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d11.html#SRFI_002d11" accesskey="n" rel="next">SRFI-11</a>, Previous: <a href="SRFI_002d9.html#SRFI_002d9" accesskey="p" rel="prev">SRFI-9</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d10-_002d-Hash_002dComma-Reader-Extension"></a>
+<h4 class="subsection">7.5.9 SRFI-10 - Hash-Comma Reader Extension</h4>
+<a name="index-SRFI_002d10"></a>
+
+<a name="index-hash_002dcomma"></a>
+<a name="index-_0023_002c_0028_0029"></a>
+<p>This SRFI implements a reader extension <code>#,()</code> called hash-comma.
+It allows the reader to give new kinds of objects, for use both in
+data and as constants or literals in source code.  This feature is
+available with
+</p>
+<div class="example">
+<pre class="example">(use-modules (srfi srfi-10))
+</pre></div>
+
+<p>The new read syntax is of the form
+</p>
+<div class="example">
+<pre class="example">#,(<var>tag</var> <var>arg</var>&hellip;)
+</pre></div>
+
+<p>where <var>tag</var> is a symbol and the <var>arg</var>s are objects taken as
+parameters.  <var>tag</var>s are registered with the following procedure.
+</p>
+<dl>
+<dt><a name="index-define_002dreader_002dctor"></a>Scheme Procedure: <strong>define-reader-ctor</strong> <em>tag proc</em></dt>
+<dd><p>Register <var>proc</var> as the constructor for a hash-comma read syntax
+starting with symbol <var>tag</var>, i.e. <code>#,(<var>tag</var> arg&hellip;)</code>.
+<var>proc</var> is called with the given arguments <code>(<var>proc</var>
+arg&hellip;)</code> and the object it returns is the result of the read.
+</p></dd></dl>
+
+<p>For example, a syntax giving a list of <var>N</var> copies of an object.
+</p>
+<div class="example">
+<pre class="example">(define-reader-ctor 'repeat
+  (lambda (obj reps)
+    (make-list reps obj)))
+
+(display '#,(repeat 99 3))
+-| (99 99 99)
+</pre></div>
+
+<p>Notice the quote <code>'</code> when the <code>#,( )</code> is used.  The
+<code>repeat</code> handler returns a list and the program must quote to use
+it literally, the same as any other list.  Ie.
+</p>
+<div class="example">
+<pre class="example">(display '#,(repeat 99 3))
+&rArr;
+(display '(99 99 99))
+</pre></div>
+
+<p>When a handler returns an object which is self-evaluating, like a
+number or a string, then there&rsquo;s no need for quoting, just as there&rsquo;s
+no need when giving those directly as literals.  For example an
+addition,
+</p>
+<div class="example">
+<pre class="example">(define-reader-ctor 'sum
+  (lambda (x y)
+    (+ x y)))
+(display #,(sum 123 456)) -| 579
+</pre></div>
+
+<p>A typical use for <code>#,()</code> is to get a read syntax for objects
+which don&rsquo;t otherwise have one.  For example, the following allows a
+hash table to be given literally, with tags and values, ready for fast
+lookup.
+</p>
+<div class="example">
+<pre class="example">(define-reader-ctor 'hash
+  (lambda elems
+    (let ((table (make-hash-table)))
+      (for-each (lambda (elem)
+                  (apply hash-set! table elem))
+                elems)
+      table)))
+
+(define (animal-&gt;family animal)
+  (hash-ref '#,(hash (&quot;tiger&quot; &quot;cat&quot;)
+                     (&quot;lion&quot;  &quot;cat&quot;)
+                     (&quot;wolf&quot;  &quot;dog&quot;))
+            animal))
+
+(animal-&gt;family &quot;lion&quot;) &rArr; &quot;cat&quot;
+</pre></div>
+
+<p>Or for example the following is a syntax for a compiled regular
+expression (see <a href="Regular-Expressions.html#Regular-Expressions">Regular Expressions</a>).
+</p>
+<div class="example">
+<pre class="example">(use-modules (ice-9 regex))
+
+(define-reader-ctor 'regexp make-regexp)
+
+(define (extract-angs str)
+  (let ((match (regexp-exec '#,(regexp &quot;&lt;([A-Z0-9]+)&gt;&quot;) str)))
+    (and match
+         (match:substring match 1))))
+
+(extract-angs &quot;foo &lt;BAR&gt; quux&quot;) &rArr; &quot;BAR&quot;
+</pre></div>
+
+<br>
+<p><code>#,()</code> is somewhat similar to <code>define-macro</code>
+(see <a href="Macros.html#Macros">Macros</a>) in that handler code is run to produce a result, but
+<code>#,()</code> operates at the read stage, so it can appear in data for
+<code>read</code> (see <a href="Scheme-Read.html#Scheme-Read">Scheme Read</a>), not just in code to be executed.
+</p>
+<p>Because <code>#,()</code> is handled at read-time it has no direct access
+to variables etc.  A symbol in the arguments is just a symbol, not a
+variable reference.  The arguments are essentially constants, though
+the handler procedure can use them in any complicated way it might
+want.
+</p>
+<p>Once <code>(srfi srfi-10)</code> has loaded, <code>#,()</code> is available
+globally, there&rsquo;s no need to use <code>(srfi srfi-10)</code> in later
+modules.  Similarly the tags registered are global and can be used
+anywhere once registered.
+</p>
+<p>There&rsquo;s no attempt to record what previous <code>#,()</code> forms have
+been seen, if two identical forms occur then two calls are made to the
+handler procedure.  The handler might like to maintain a cache or
+similar to avoid making copies of large objects, depending on expected
+usage.
+</p>
+<p>In code the best uses of <code>#,()</code> are generally when there&rsquo;s a
+lot of objects of a particular kind as literals or constants.  If
+there&rsquo;s just a few then some local variables and initializers are
+fine, but that becomes tedious and error prone when there&rsquo;s a lot, and
+the anonymous and compact syntax of <code>#,()</code> is much better.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d11.html#SRFI_002d11" accesskey="n" rel="next">SRFI-11</a>, Previous: <a href="SRFI_002d9.html#SRFI_002d9" accesskey="p" rel="prev">SRFI-9</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

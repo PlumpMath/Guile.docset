@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Garbage Collecting Smobs</title>
+
+<meta name="description" content="Guile Reference Manual: Garbage Collecting Smobs">
+<meta name="keywords" content="Guile Reference Manual: Garbage Collecting Smobs">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" rel="up" title="Defining New Types (Smobs)">
+<link href="Remembering-During-Operations.html#Remembering-During-Operations" rel="next" title="Remembering During Operations">
+<link href="Type-checking.html#Type-checking" rel="prev" title="Type checking">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Garbage-Collecting-Smobs"></a>
+<div class="header">
+<p>
+Next: <a href="Remembering-During-Operations.html#Remembering-During-Operations" accesskey="n" rel="next">Remembering During Operations</a>, Previous: <a href="Type-checking.html#Type-checking" accesskey="p" rel="prev">Type checking</a>, Up: <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" accesskey="u" rel="up">Defining New Types (Smobs)</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Garbage-Collecting-Smobs-1"></a>
+<h4 class="subsection">5.5.4 Garbage Collecting Smobs</h4>
+
+<p>Once a smob has been released to the tender mercies of the Scheme
+system, it must be prepared to survive garbage collection.  In the
+example above, all the memory associated with the smob is managed by the
+garbage collector because we used the <code>scm_gc_</code> allocation
+functions.  Thus, no special care must be taken: the garbage collector
+automatically scans them and reclaims any unused memory.
+</p>
+<p>However, when data associated with a smob is managed in some other
+way&mdash;e.g., <code>malloc</code>&rsquo;d memory or file descriptors&mdash;it is possible
+to specify a <em>free</em> function to release those resources when the
+smob is reclaimed, and a <em>mark</em> function to mark Scheme objects
+otherwise invisible to the garbage collector.
+</p>
+<p>As described in more detail elsewhere (see <a href="Conservative-GC.html#Conservative-GC">Conservative GC</a>), every
+object in the Scheme system has a <em>mark bit</em>, which the garbage
+collector uses to tell live objects from dead ones.  When collection
+starts, every object&rsquo;s mark bit is clear.  The collector traces pointers
+through the heap, starting from objects known to be live, and sets the
+mark bit on each object it encounters.  When it can find no more
+unmarked objects, the collector walks all objects, live and dead, frees
+those whose mark bits are still clear, and clears the mark bit on the
+others.
+</p>
+<p>The two main portions of the collection are called the <em>mark phase</em>,
+during which the collector marks live objects, and the <em>sweep
+phase</em>, during which the collector frees all unmarked objects.
+</p>
+<p>The mark bit of a smob lives in a special memory region.  When the
+collector encounters a smob, it sets the smob&rsquo;s mark bit, and uses the
+smob&rsquo;s type tag to find the appropriate <em>mark</em> function for that
+smob.  It then calls this <em>mark</em> function, passing it the smob as
+its only argument.
+</p>
+<p>The <em>mark</em> function is responsible for marking any other Scheme
+objects the smob refers to.  If it does not do so, the objects&rsquo; mark
+bits will still be clear when the collector begins to sweep, and the
+collector will free them.  If this occurs, it will probably break, or at
+least confuse, any code operating on the smob; the smob&rsquo;s <code>SCM</code>
+values will have become dangling references.
+</p>
+<p>To mark an arbitrary Scheme object, the <em>mark</em> function calls
+<code>scm_gc_mark</code>.
+</p>
+<p>Thus, here is how we might write <code>mark_image</code>&mdash;again this is not
+needed in our example since we used the <code>scm_gc_</code> allocation
+routines, so this is just for the sake of illustration:
+</p>
+<div class="example">
+<pre class="example">SCM
+mark_image (SCM image_smob)
+{
+  /* Mark the image's name and update function.  */
+  struct image *image = (struct image *) SCM_SMOB_DATA (image_smob);
+
+  scm_gc_mark (image-&gt;name);
+  scm_gc_mark (image-&gt;update_func);
+
+  return SCM_BOOL_F;
+}
+</pre></div>
+
+<p>Note that, even though the image&rsquo;s <code>update_func</code> could be an
+arbitrarily complex structure (representing a procedure and any values
+enclosed in its environment), <code>scm_gc_mark</code> will recurse as
+necessary to mark all its components.  Because <code>scm_gc_mark</code> sets
+an object&rsquo;s mark bit before it recurses, it is not confused by
+circular structures.
+</p>
+<p>As an optimization, the collector will mark whatever value is returned
+by the <em>mark</em> function; this helps limit depth of recursion during
+the mark phase.  Thus, the code above should really be written as:
+</p><div class="example">
+<pre class="example">SCM
+mark_image (SCM image_smob)
+{
+  /* Mark the image's name and update function.  */
+  struct image *image = (struct image *) SCM_SMOB_DATA (image_smob);
+
+  scm_gc_mark (image-&gt;name);
+  return image-&gt;update_func;
+}
+</pre></div>
+
+
+<p>Finally, when the collector encounters an unmarked smob during the sweep
+phase, it uses the smob&rsquo;s tag to find the appropriate <em>free</em>
+function for the smob.  It then calls that function, passing it the smob
+as its only argument.
+</p>
+<p>The <em>free</em> function must release any resources used by the smob.
+However, it must not free objects managed by the collector; the
+collector will take care of them.  For historical reasons, the return
+type of the <em>free</em> function should be <code>size_t</code>, an unsigned
+integral type; the <em>free</em> function should always return zero.
+</p>
+<p>Here is how we might write the <code>free_image</code> function for the image
+smob type&mdash;again for the sake of illustration, since our example does
+not need it thanks to the use of the <code>scm_gc_</code> allocation routines:
+</p><div class="example">
+<pre class="example">size_t
+free_image (SCM image_smob)
+{
+  struct image *image = (struct image *) SCM_SMOB_DATA (image_smob);
+
+  scm_gc_free (image-&gt;pixels,
+               image-&gt;width * image-&gt;height,
+               &quot;image pixels&quot;);
+  scm_gc_free (image, sizeof (struct image), &quot;image&quot;);
+
+  return 0;
+}
+</pre></div>
+
+<p>During the sweep phase, the garbage collector will clear the mark bits
+on all live objects.  The code which implements a smob need not do this
+itself.
+</p>
+<p>There is no way for smob code to be notified when collection is
+complete.
+</p>
+<p>It is usually a good idea to minimize the amount of processing done
+during garbage collection; keep the <em>mark</em> and <em>free</em>
+functions very simple.  Since collections occur at unpredictable times,
+it is easy for any unusual activity to interfere with normal code.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Remembering-During-Operations.html#Remembering-During-Operations" accesskey="n" rel="next">Remembering During Operations</a>, Previous: <a href="Type-checking.html#Type-checking" accesskey="p" rel="prev">Type checking</a>, Up: <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" accesskey="u" rel="up">Defining New Types (Smobs)</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

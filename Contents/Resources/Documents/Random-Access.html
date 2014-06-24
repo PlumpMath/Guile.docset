@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Random Access</title>
+
+<meta name="description" content="Guile Reference Manual: Random Access">
+<meta name="keywords" content="Guile Reference Manual: Random Access">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Line_002fDelimited.html#Line_002fDelimited" rel="next" title="Line/Delimited">
+<link href="Closing.html#Closing" rel="prev" title="Closing">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Random-Access"></a>
+<div class="header">
+<p>
+Next: <a href="Line_002fDelimited.html#Line_002fDelimited" accesskey="n" rel="next">Line/Delimited</a>, Previous: <a href="Closing.html#Closing" accesskey="p" rel="prev">Closing</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Random-Access-1"></a>
+<h4 class="subsection">6.14.5 Random Access</h4>
+<a name="index-Random-access_002c-ports"></a>
+<a name="index-Port_002c-random-access"></a>
+
+<dl>
+<dt><a name="index-seek"></a>Scheme Procedure: <strong>seek</strong> <em>fd_port offset whence</em></dt>
+<dt><a name="index-scm_005fseek"></a>C Function: <strong>scm_seek</strong> <em>(fd_port, offset, whence)</em></dt>
+<dd><p>Sets the current position of <var>fd_port</var> to the integer
+<var>offset</var>, which is interpreted according to the value of
+<var>whence</var>.
+</p>
+<p>One of the following variables should be supplied for
+<var>whence</var>:
+</p><dl>
+<dt><a name="index-SEEK_005fSET"></a>Variable: <strong>SEEK_SET</strong></dt>
+<dd><p>Seek from the beginning of the file.
+</p></dd></dl>
+<dl>
+<dt><a name="index-SEEK_005fCUR"></a>Variable: <strong>SEEK_CUR</strong></dt>
+<dd><p>Seek from the current position.
+</p></dd></dl>
+<dl>
+<dt><a name="index-SEEK_005fEND"></a>Variable: <strong>SEEK_END</strong></dt>
+<dd><p>Seek from the end of the file.
+</p></dd></dl>
+<p>If <var>fd_port</var> is a file descriptor, the underlying system
+call is <code>lseek</code>.  <var>port</var> may be a string port.
+</p>
+<p>The value returned is the new position in the file.  This means
+that the current position of a port can be obtained using:
+</p><div class="lisp">
+<pre class="lisp">(seek port 0 SEEK_CUR)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-ftell"></a>Scheme Procedure: <strong>ftell</strong> <em>fd_port</em></dt>
+<dt><a name="index-scm_005fftell"></a>C Function: <strong>scm_ftell</strong> <em>(fd_port)</em></dt>
+<dd><p>Return an integer representing the current position of
+<var>fd_port</var>, measured from the beginning.  Equivalent to:
+</p>
+<div class="lisp">
+<pre class="lisp">(seek port 0 SEEK_CUR)
+</pre></div>
+</dd></dl>
+
+<a name="index-truncate-1"></a>
+<a name="index-ftruncate"></a>
+<dl>
+<dt><a name="index-truncate_002dfile"></a>Scheme Procedure: <strong>truncate-file</strong> <em>file [length]</em></dt>
+<dt><a name="index-scm_005ftruncate_005ffile"></a>C Function: <strong>scm_truncate_file</strong> <em>(file, length)</em></dt>
+<dd><p>Truncate <var>file</var> to <var>length</var> bytes.  <var>file</var> can be a
+filename string, a port object, or an integer file descriptor.  The
+return value is unspecified.
+</p>
+<p>For a port or file descriptor <var>length</var> can be omitted, in which
+case the file is truncated at the current position (per <code>ftell</code>
+above).
+</p>
+<p>On most systems a file can be extended by giving a length greater than
+the current size, but this is not mandatory in the POSIX standard.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Line_002fDelimited.html#Line_002fDelimited" accesskey="n" rel="next">Line/Delimited</a>, Previous: <a href="Closing.html#Closing" accesskey="p" rel="prev">Closing</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Accessing Cell Entries</title>
+
+<meta name="description" content="Guile Reference Manual: Accessing Cell Entries">
+<meta name="keywords" content="Guile Reference Manual: Accessing Cell Entries">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" rel="up" title="The SCM Type in Guile">
+<link href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" rel="next" title="A Virtual Machine for Guile">
+<link href="Heap-Cell-Type-Information.html#Heap-Cell-Type-Information" rel="prev" title="Heap Cell Type Information">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Accessing-Cell-Entries"></a>
+<div class="header">
+<p>
+Previous: <a href="Heap-Cell-Type-Information.html#Heap-Cell-Type-Information" accesskey="p" rel="prev">Heap Cell Type Information</a>, Up: <a href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" accesskey="u" rel="up">The SCM Type in Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Accessing-Cell-Entries-1"></a>
+<h4 class="subsubsection">9.2.5.6 Accessing Cell Entries</h4>
+
+<p>For a non-immediate Scheme object <var>x</var>, the object type can be
+determined by reading the cell type entry using the <code>SCM_CELL_TYPE</code>
+macro.  For each different type of cell it is known which cell entries
+hold Scheme objects and which cell entries hold raw C data.  To access
+the different cell entries appropriately, the following macros are
+provided.
+</p>
+<dl>
+<dt><a name="index-SCM_005fCELL_005fWORD"></a>Macro: <em>scm_t_bits</em> <strong>SCM_CELL_WORD</strong> <em>(SCM <var>x</var>, unsigned int <var>n</var>)</em></dt>
+<dd><p>Deliver the cell entry <var>n</var> of the heap cell referenced by the
+non-immediate Scheme object <var>x</var> as raw data.  It is illegal, to
+access cell entries that hold Scheme objects by using these macros.  For
+convenience, the following macros are also provided.
+</p><ul>
+<li> SCM_CELL_WORD_0 (<var>x</var>) &rArr; SCM_CELL_WORD (<var>x</var>, 0)
+</li><li> SCM_CELL_WORD_1 (<var>x</var>) &rArr; SCM_CELL_WORD (<var>x</var>, 1)
+</li><li> &hellip;
+</li><li> SCM_CELL_WORD_<var>n</var> (<var>x</var>) &rArr; SCM_CELL_WORD (<var>x</var>, <var>n</var>)
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fCELL_005fOBJECT"></a>Macro: <em>SCM</em> <strong>SCM_CELL_OBJECT</strong> <em>(SCM <var>x</var>, unsigned int <var>n</var>)</em></dt>
+<dd><p>Deliver the cell entry <var>n</var> of the heap cell referenced by the
+non-immediate Scheme object <var>x</var> as a Scheme object.  It is illegal,
+to access cell entries that do not hold Scheme objects by using these
+macros.  For convenience, the following macros are also provided.
+</p><ul>
+<li> SCM_CELL_OBJECT_0 (<var>x</var>) &rArr; SCM_CELL_OBJECT (<var>x</var>, 0)
+</li><li> SCM_CELL_OBJECT_1 (<var>x</var>) &rArr; SCM_CELL_OBJECT (<var>x</var>, 1)
+</li><li> &hellip;
+</li><li> SCM_CELL_OBJECT_<var>n</var> (<var>x</var>) &rArr; SCM_CELL_OBJECT (<var>x</var>,
+<var>n</var>)
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSET_005fCELL_005fWORD"></a>Macro: <em>void</em> <strong>SCM_SET_CELL_WORD</strong> <em>(SCM <var>x</var>, unsigned int <var>n</var>, scm_t_bits <var>w</var>)</em></dt>
+<dd><p>Write the raw C value <var>w</var> into entry number <var>n</var> of the heap cell
+referenced by the non-immediate Scheme value <var>x</var>.  Values that are
+written into cells this way may only be read from the cells using the
+<code>SCM_CELL_WORD</code> macros or, in case cell entry 0 is written, using
+the <code>SCM_CELL_TYPE</code> macro.  For the special case of cell entry 0 it
+has to be made sure that <var>w</var> contains a cell type information which
+does not describe a Scheme object.  For convenience, the following
+macros are also provided.
+</p><ul>
+<li> SCM_SET_CELL_WORD_0 (<var>x</var>, <var>w</var>) &rArr; SCM_SET_CELL_WORD
+(<var>x</var>, 0, <var>w</var>)
+</li><li> SCM_SET_CELL_WORD_1 (<var>x</var>, <var>w</var>) &rArr; SCM_SET_CELL_WORD
+(<var>x</var>, 1, <var>w</var>)
+</li><li> &hellip;
+</li><li> SCM_SET_CELL_WORD_<var>n</var> (<var>x</var>, <var>w</var>) &rArr; SCM_SET_CELL_WORD
+(<var>x</var>, <var>n</var>, <var>w</var>)
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSET_005fCELL_005fOBJECT"></a>Macro: <em>void</em> <strong>SCM_SET_CELL_OBJECT</strong> <em>(SCM <var>x</var>, unsigned int <var>n</var>, SCM <var>o</var>)</em></dt>
+<dd><p>Write the Scheme object <var>o</var> into entry number <var>n</var> of the heap
+cell referenced by the non-immediate Scheme value <var>x</var>.  Values that
+are written into cells this way may only be read from the cells using
+the <code>SCM_CELL_OBJECT</code> macros or, in case cell entry 0 is written,
+using the <code>SCM_CELL_TYPE</code> macro.  For the special case of cell
+entry 0 the writing of a Scheme object into this cell is only allowed
+if the cell forms a Scheme pair.  For convenience, the following macros
+are also provided.
+</p><ul>
+<li> SCM_SET_CELL_OBJECT_0 (<var>x</var>, <var>o</var>) &rArr; SCM_SET_CELL_OBJECT
+(<var>x</var>, 0, <var>o</var>)
+</li><li> SCM_SET_CELL_OBJECT_1 (<var>x</var>, <var>o</var>) &rArr; SCM_SET_CELL_OBJECT
+(<var>x</var>, 1, <var>o</var>)
+</li><li> &hellip;
+</li><li> SCM_SET_CELL_OBJECT_<var>n</var> (<var>x</var>, <var>o</var>) &rArr;
+SCM_SET_CELL_OBJECT (<var>x</var>, <var>n</var>, <var>o</var>)
+</li></ul>
+</dd></dl>
+
+<p>Summary:
+</p><ul>
+<li> For a non-immediate Scheme object <var>x</var> of unknown type, get the type
+information by using <code>SCM_CELL_TYPE (<var>x</var>)</code>.
+</li><li> As soon as the cell type information is available, only use the
+appropriate access methods to read and write data to the different cell
+entries.
+</li></ul>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Heap-Cell-Type-Information.html#Heap-Cell-Type-Information" accesskey="p" rel="prev">Heap Cell Type Information</a>, Up: <a href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" accesskey="u" rel="up">The SCM Type in Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

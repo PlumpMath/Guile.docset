@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Keyword Procedures</title>
+
+<meta name="description" content="Guile Reference Manual: Keyword Procedures">
+<meta name="keywords" content="Guile Reference Manual: Keyword Procedures">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Keywords.html#Keywords" rel="up" title="Keywords">
+<link href="Other-Types.html#Other-Types" rel="next" title="Other Types">
+<link href="Keyword-Read-Syntax.html#Keyword-Read-Syntax" rel="prev" title="Keyword Read Syntax">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Keyword-Procedures"></a>
+<div class="header">
+<p>
+Previous: <a href="Keyword-Read-Syntax.html#Keyword-Read-Syntax" accesskey="p" rel="prev">Keyword Read Syntax</a>, Up: <a href="Keywords.html#Keywords" accesskey="u" rel="up">Keywords</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Keyword-Procedures-1"></a>
+<h4 class="subsubsection">6.6.8.4 Keyword Procedures</h4>
+
+<dl>
+<dt><a name="index-keyword_003f"></a>Scheme Procedure: <strong>keyword?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fkeyword_005fp"></a>C Function: <strong>scm_keyword_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if the argument <var>obj</var> is a keyword, else
+<code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-keyword_002d_003esymbol"></a>Scheme Procedure: <strong>keyword-&gt;symbol</strong> <em>keyword</em></dt>
+<dt><a name="index-scm_005fkeyword_005fto_005fsymbol"></a>C Function: <strong>scm_keyword_to_symbol</strong> <em>(keyword)</em></dt>
+<dd><p>Return the symbol with the same name as <var>keyword</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_002d_003ekeyword"></a>Scheme Procedure: <strong>symbol-&gt;keyword</strong> <em>symbol</em></dt>
+<dt><a name="index-scm_005fsymbol_005fto_005fkeyword"></a>C Function: <strong>scm_symbol_to_keyword</strong> <em>(symbol)</em></dt>
+<dd><p>Return the keyword with the same name as <var>symbol</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005fkeyword"></a>C Function: <em>int</em> <strong>scm_is_keyword</strong> <em>(SCM obj)</em></dt>
+<dd><p>Equivalent to <code>scm_is_true (scm_keyword_p (<var>obj</var>))</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005ffrom_005flocale_005fkeyword"></a>C Function: <em>SCM</em> <strong>scm_from_locale_keyword</strong> <em>(const char *name)</em></dt>
+<dt><a name="index-scm_005ffrom_005flocale_005fkeywordn"></a>C Function: <em>SCM</em> <strong>scm_from_locale_keywordn</strong> <em>(const char *name, size_t len)</em></dt>
+<dd><p>Equivalent to <code>scm_symbol_to_keyword (scm_from_locale_symbol
+(<var>name</var>))</code> and <code>scm_symbol_to_keyword (scm_from_locale_symboln
+(<var>name</var>, <var>len</var>))</code>, respectively.
+</p>
+<p>Note that these functions should <em>not</em> be used when <var>name</var> is a
+C string constant, because there is no guarantee that the current locale
+will match that of the execution character set, used for string and
+character constants.  Most modern C compilers use UTF-8 by default, so
+in such cases we recommend <code>scm_from_utf8_keyword</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005ffrom_005flatin1_005fkeyword"></a>C Function: <em>SCM</em> <strong>scm_from_latin1_keyword</strong> <em>(const char *name)</em></dt>
+<dt><a name="index-scm_005ffrom_005futf8_005fkeyword"></a>C Function: <em>SCM</em> <strong>scm_from_utf8_keyword</strong> <em>(const char *name)</em></dt>
+<dd><p>Equivalent to <code>scm_symbol_to_keyword (scm_from_latin1_symbol
+(<var>name</var>))</code> and <code>scm_symbol_to_keyword (scm_from_utf8_symbol
+(<var>name</var>))</code>, respectively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fbind_005fkeyword_005farguments"></a>C Function: <em>void</em> <strong>scm_c_bind_keyword_arguments</strong> <em>(const char *subr,                              SCM rest, scm_t_keyword_arguments_flags flags,                              SCM keyword1, SCM *argp1,                              &hellip;,                              SCM keywordN, SCM *argpN,                              <code>SCM_UNDEFINED</code>)</em></dt>
+<dd>
+<p>Extract the specified keyword arguments from <var>rest</var>, which is not
+modified.  If the keyword argument <var>keyword1</var> is present in
+<var>rest</var> with an associated value, that value is stored in the
+variable pointed to by <var>argp1</var>, otherwise the variable is left
+unchanged.  Similarly for the other keywords and argument pointers up to
+<var>keywordN</var> and <var>argpN</var>.  The argument list to
+<code>scm_c_bind_keyword_arguments</code> must be terminated by
+<code>SCM_UNDEFINED</code>.
+</p>
+<p>Note that since the variables pointed to by <var>argp1</var> through
+<var>argpN</var> are left unchanged if the associated keyword argument is not
+present, they should be initialized to their default values before
+calling <code>scm_c_bind_keyword_arguments</code>.  Alternatively, you can
+initialize them to <code>SCM_UNDEFINED</code> before the call, and then use
+<code>SCM_UNBNDP</code> after the call to see which ones were provided.
+</p>
+<p>If an unrecognized keyword argument is present in <var>rest</var> and
+<var>flags</var> does not contain <code>SCM_ALLOW_OTHER_KEYS</code>, or if
+non-keyword arguments are present and <var>flags</var> does not contain
+<code>SCM_ALLOW_NON_KEYWORD_ARGUMENTS</code>, an exception is raised.
+<var>subr</var> should be the name of the procedure receiving the keyword
+arguments, for purposes of error reporting.
+</p>
+<p>For example:
+</p>
+<div class="example">
+<pre class="example">SCM k_delimiter;
+SCM k_grammar;
+SCM sym_infix;
+
+SCM my_string_join (SCM strings, SCM rest)
+{
+  SCM delimiter = SCM_UNDEFINED;
+  SCM grammar   = sym_infix;
+
+  scm_c_bind_keyword_arguments (&quot;my-string-join&quot;, rest, 0,
+                                k_delimiter, &amp;delimiter,
+                                k_grammar, &amp;grammar,
+                                SCM_UNDEFINED);
+
+  if (SCM_UNBNDP (delimiter))
+    delimiter = scm_from_utf8_string (&quot; &quot;);
+
+  return scm_string_join (strings, delimiter, grammar);
+}
+
+void my_init ()
+{
+  k_delimiter = scm_from_utf8_keyword (&quot;delimiter&quot;);
+  k_grammar   = scm_from_utf8_keyword (&quot;grammar&quot;);
+  sym_infix   = scm_from_utf8_symbol  (&quot;infix&quot;);
+  scm_c_define_gsubr (&quot;my-string-join&quot;, 1, 0, 1, my_string_join);
+}
+</pre></div>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Keyword-Read-Syntax.html#Keyword-Read-Syntax" accesskey="p" rel="prev">Keyword Read Syntax</a>, Up: <a href="Keywords.html#Keywords" accesskey="u" rel="up">Keywords</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

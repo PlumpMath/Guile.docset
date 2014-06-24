@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Instance Creation</title>
+
+<meta name="description" content="Guile Reference Manual: Instance Creation">
+<meta name="keywords" content="Guile Reference Manual: Instance Creation">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GOOPS.html#GOOPS" rel="up" title="GOOPS">
+<link href="Slot-Options.html#Slot-Options" rel="next" title="Slot Options">
+<link href="Class-Definition.html#Class-Definition" rel="prev" title="Class Definition">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Instance-Creation"></a>
+<div class="header">
+<p>
+Next: <a href="Slot-Options.html#Slot-Options" accesskey="n" rel="next">Slot Options</a>, Previous: <a href="Class-Definition.html#Class-Definition" accesskey="p" rel="prev">Class Definition</a>, Up: <a href="GOOPS.html#GOOPS" accesskey="u" rel="up">GOOPS</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Instance-Creation-and-Slot-Access"></a>
+<h3 class="section">8.3 Instance Creation and Slot Access</h3>
+
+<p>An instance (or object) of a defined class can be created with
+<code>make</code>.  <code>make</code> takes one mandatory parameter, which is the
+class of the instance to create, and a list of optional arguments that
+will be used to initialize the slots of the new instance.  For instance
+the following form
+</p>
+<a name="index-make"></a>
+<a name="index-instance"></a>
+<div class="lisp">
+<pre class="lisp">(define c (make &lt;my-complex&gt;))
+</pre></div>
+
+<p>creates a new <code>&lt;my-complex&gt;</code> object and binds it to the Scheme
+variable <code>c</code>.
+</p>
+<dl>
+<dt><a name="index-make-1"></a>generic: <strong>make</strong></dt>
+<dt><a name="index-make-2"></a>method: <strong>make</strong> <em>(class &lt;class&gt;) initarg &hellip;</em></dt>
+<dd><p>Create and return a new instance of class <var>class</var>, initialized using
+<var>initarg</var> <small class="enddots">...</small>.
+</p>
+<p>In theory, <var>initarg</var> &hellip; can have any structure that is
+understood by whatever methods get applied when the <code>initialize</code>
+generic function is applied to the newly allocated instance.
+</p>
+<p>In practice, specialized <code>initialize</code> methods would normally call
+<code>(next-method)</code>, and so eventually the standard GOOPS
+<code>initialize</code> methods are applied.  These methods expect
+<var>initargs</var> to be a list with an even number of elements, where
+even-numbered elements (counting from zero) are keywords and
+odd-numbered elements are the corresponding values.
+</p>
+<p>GOOPS processes initialization argument keywords automatically for slots
+whose definition includes the <code>#:init-keyword</code> option (see <a href="Slot-Options.html#Slot-Options">init-keyword</a>).  Other keyword value pairs can only be
+processed by an <code>initialize</code> method that is specialized for the new
+instance&rsquo;s class.  Any unprocessed keyword value pairs are ignored.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dinstance"></a>generic: <strong>make-instance</strong></dt>
+<dt><a name="index-make_002dinstance-1"></a>method: <strong>make-instance</strong> <em>(class &lt;class&gt;) initarg &hellip;</em></dt>
+<dd><p><code>make-instance</code> is an alias for <code>make</code>.
+</p></dd></dl>
+
+<p>The slots of the new complex number can be accessed using
+<code>slot-ref</code> and <code>slot-set!</code>.  <code>slot-set!</code>  sets the value
+of an object slot and <code>slot-ref</code> retrieves it.
+</p>
+<a name="index-slot_002dset_0021"></a>
+<a name="index-slot_002dref"></a>
+<div class="lisp">
+<pre class="lisp">(slot-set! c 'r 10)
+(slot-set! c 'i 3)
+(slot-ref c 'r) &rArr; 10
+(slot-ref c 'i) &rArr; 3
+</pre></div>
+
+<p>The <code>(oop goops describe)</code> module provides a <code>describe</code>
+function that is useful for seeing all the slots of an object; it prints
+the slots and their values to standard output.
+</p>
+<div class="lisp">
+<pre class="lisp">(describe c)
+-|
+#&lt;&lt;my-complex&gt; 401d8638&gt; is an instance of class &lt;my-complex&gt;
+Slots are: 
+     r = 10
+     i = 3
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Slot-Options.html#Slot-Options" accesskey="n" rel="next">Slot Options</a>, Previous: <a href="Class-Definition.html#Class-Definition" accesskey="p" rel="prev">Class Definition</a>, Up: <a href="GOOPS.html#GOOPS" accesskey="u" rel="up">GOOPS</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

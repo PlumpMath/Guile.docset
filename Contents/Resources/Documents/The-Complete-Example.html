@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: The Complete Example</title>
+
+<meta name="description" content="Guile Reference Manual: The Complete Example">
+<meta name="keywords" content="Guile Reference Manual: The Complete Example">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" rel="up" title="Defining New Types (Smobs)">
+<link href="Function-Snarfing.html#Function-Snarfing" rel="next" title="Function Snarfing">
+<link href="Double-Smobs.html#Double-Smobs" rel="prev" title="Double Smobs">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="The-Complete-Example"></a>
+<div class="header">
+<p>
+Previous: <a href="Double-Smobs.html#Double-Smobs" accesskey="p" rel="prev">Double Smobs</a>, Up: <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" accesskey="u" rel="up">Defining New Types (Smobs)</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="The-Complete-Example-1"></a>
+<h4 class="subsection">5.5.7 The Complete Example</h4>
+
+<p>Here is the complete text of the implementation of the image datatype,
+as presented in the sections above.  We also provide a definition for
+the smob&rsquo;s <em>print</em> function, and make some objects and functions
+static, to clarify exactly what the surrounding code is using.
+</p>
+<p>As mentioned above, you can find this code in the Guile distribution, in
+<samp>doc/example-smob</samp>.  That directory includes a makefile and a
+suitable <code>main</code> function, so you can build a complete interactive
+Guile shell, extended with the datatypes described here.)
+</p>
+<div class="example">
+<pre class="example">/* file &quot;image-type.c&quot; */
+
+#include &lt;stdlib.h&gt;
+#include &lt;libguile.h&gt;
+
+static scm_t_bits image_tag;
+
+struct image {
+  int width, height;
+  char *pixels;
+
+  /* The name of this image */
+  SCM name;
+
+  /* A function to call when this image is
+     modified, e.g., to update the screen,
+     or SCM_BOOL_F if no action necessary */
+  SCM update_func;
+};
+
+static SCM
+make_image (SCM name, SCM s_width, SCM s_height)
+{
+  SCM smob;
+  struct image *image;
+  int width = scm_to_int (s_width);
+  int height = scm_to_int (s_height);
+
+  /* Step 1: Allocate the memory block.
+   */
+  image = (struct image *)
+     scm_gc_malloc (sizeof (struct image), &quot;image&quot;);
+
+  /* Step 2: Initialize it with straight code.
+   */
+  image-&gt;width = width;
+  image-&gt;height = height;
+  image-&gt;pixels = NULL;
+  image-&gt;name = SCM_BOOL_F;
+  image-&gt;update_func = SCM_BOOL_F;
+
+  /* Step 3: Create the smob.
+   */
+  smob = scm_new_smob (image_tag, image);
+
+  /* Step 4: Finish the initialization.
+   */
+  image-&gt;name = name;
+  image-&gt;pixels =
+     scm_gc_malloc (width * height, &quot;image pixels&quot;);
+
+  return smob;
+}
+
+SCM
+clear_image (SCM image_smob)
+{
+  int area;
+  struct image *image;
+
+  scm_assert_smob_type (image_tag, image_smob);
+
+  image = (struct image *) SCM_SMOB_DATA (image_smob);
+  area = image-&gt;width * image-&gt;height;
+  memset (image-&gt;pixels, 0, area);
+
+  /* Invoke the image's update function.
+   */
+  if (scm_is_true (image-&gt;update_func))
+    scm_call_0 (image-&gt;update_func);
+
+  scm_remember_upto_here_1 (image_smob);
+
+  return SCM_UNSPECIFIED;
+}
+
+static SCM
+mark_image (SCM image_smob)
+{
+  /* Mark the image's name and update function.  */
+  struct image *image = (struct image *) SCM_SMOB_DATA (image_smob);
+
+  scm_gc_mark (image-&gt;name);
+  return image-&gt;update_func;
+}
+
+static size_t
+free_image (SCM image_smob)
+{
+  struct image *image = (struct image *) SCM_SMOB_DATA (image_smob);
+
+  scm_gc_free (image-&gt;pixels,
+               image-&gt;width * image-&gt;height,
+               &quot;image pixels&quot;);
+  scm_gc_free (image, sizeof (struct image), &quot;image&quot;);
+
+  return 0;
+}
+
+static int
+print_image (SCM image_smob, SCM port, scm_print_state *pstate)
+{
+  struct image *image = (struct image *) SCM_SMOB_DATA (image_smob);
+
+  scm_puts (&quot;#&lt;image &quot;, port);
+  scm_display (image-&gt;name, port);
+  scm_puts (&quot;&gt;&quot;, port);
+
+  /* non-zero means success */
+  return 1;
+}
+
+void
+init_image_type (void)
+{
+  image_tag = scm_make_smob_type (&quot;image&quot;, sizeof (struct image));
+  scm_set_smob_mark (image_tag, mark_image);
+  scm_set_smob_free (image_tag, free_image);
+  scm_set_smob_print (image_tag, print_image);
+
+  scm_c_define_gsubr (&quot;clear-image&quot;, 1, 0, 0, clear_image);
+  scm_c_define_gsubr (&quot;make-image&quot;, 3, 0, 0, make_image);
+}
+</pre></div>
+
+<p>Here is a sample build and interaction with the code from the
+<samp>example-smob</samp> directory, on the author&rsquo;s machine:
+</p>
+<div class="example">
+<pre class="example">zwingli:example-smob$ make CC=gcc
+gcc `pkg-config --cflags guile-2.0` -c image-type.c -o image-type.o
+gcc `pkg-config --cflags guile-2.0` -c myguile.c -o myguile.o
+gcc image-type.o myguile.o `pkg-config --libs guile-2.0` -o myguile
+zwingli:example-smob$ ./myguile
+guile&gt; make-image
+#&lt;primitive-procedure make-image&gt;
+guile&gt; (define i (make-image &quot;Whistler's Mother&quot; 100 100))
+guile&gt; i
+#&lt;image Whistler's Mother&gt;
+guile&gt; (clear-image i)
+guile&gt; (clear-image 4)
+ERROR: In procedure clear-image in expression (clear-image 4):
+ERROR: Wrong type (expecting image): 4
+ABORT: (wrong-type-arg)
+ 
+Type &quot;(backtrace)&quot; to get more information.
+guile&gt; 
+</pre></div>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Double-Smobs.html#Double-Smobs" accesskey="p" rel="prev">Double Smobs</a>, Up: <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" accesskey="u" rel="up">Defining New Types (Smobs)</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

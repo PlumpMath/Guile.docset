@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Class Precedence List</title>
+
+<meta name="description" content="Guile Reference Manual: Class Precedence List">
+<meta name="keywords" content="Guile Reference Manual: Class Precedence List">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Inheritance.html#Inheritance" rel="up" title="Inheritance">
+<link href="Sorting-Methods.html#Sorting-Methods" rel="next" title="Sorting Methods">
+<link href="Inheritance.html#Inheritance" rel="prev" title="Inheritance">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Class-Precedence-List"></a>
+<div class="header">
+<p>
+Next: <a href="Sorting-Methods.html#Sorting-Methods" accesskey="n" rel="next">Sorting Methods</a>, Up: <a href="Inheritance.html#Inheritance" accesskey="u" rel="up">Inheritance</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Class-Precedence-List-1"></a>
+<h4 class="subsection">8.7.1 Class Precedence List</h4>
+
+<p>What happens when a class inherits from two or more superclasses that
+have a slot with the same name but incompatible definitions &mdash; for
+example, different init values or slot allocations?  We need a rule for
+deciding which slot definition the derived class ends up with, and this
+rule is provided by the class&rsquo;s <em>Class Precedence
+List</em>.<a name="DOCF32" href="#FOOT32"><sup>32</sup></a>
+</p>
+<p>Another problem arises when invoking a generic function, and there is
+more than one method that could apply to the call arguments.  Here we
+need a way of ordering the applicable methods, so that Guile knows which
+method to use first, which to use next if that method calls
+<code>next-method</code>, and so on.  One of the ingredients for this ordering
+is determining, for each given call argument, which of the specializing
+classes, from each applicable method&rsquo;s definition, is the most specific
+for that argument; and here again the class precedence list helps.
+</p>
+<p>If inheritance was restricted such that each class could only have one
+superclass &mdash; which is known as <em>single</em> inheritance &mdash; class
+ordering would be easy.  The rule would be simply that a subclass is
+considered more specific than its superclass.
+</p>
+<p>With multiple inheritance, ordering is less obvious, and we have to
+impose an arbitrary rule to determine precedence. Suppose we have
+</p>
+<div class="lisp">
+<pre class="lisp">(define-class X ()
+   (x #:init-value 1))
+
+(define-class Y ()
+   (x #:init-value 2))
+
+(define-class Z (X Y)
+   (&hellip;))
+</pre></div>
+
+<p>Clearly the <code>Z</code> class is more specific than <code>X</code> or <code>Y</code>,
+for instances of <code>Z</code>.  But which is more specific out of <code>X</code>
+and <code>Y</code> &mdash; and hence, for the definitions above, which
+<code>#:init-value</code> will take effect when creating an instance of
+<code>Z</code>?  The rule in GOOPS is that the superclasses listed earlier
+are more specific than those listed later.  Hence <code>X</code> is more
+specific than <code>Y</code>, and the <code>#:init-value</code> for slot <code>x</code> in
+instances of <code>Z</code> will be 1.
+</p>
+<p>Hence there is a linear ordering for a class and all its
+superclasses, from most specific to least specific, and this ordering is
+called the Class Precedence List of the class.
+</p>
+<p>In fact the rules above are not quite enough to always determine a
+unique order, but they give an idea of how things work.  For example,
+for the <code>F</code> class shown in <a href="Inheritance.html#fig_003ahier">Figure 8.2</a>, the class precedence
+list is
+</p>
+<div class="example">
+<pre class="example">(f d e a c b &lt;object&gt; &lt;top&gt;)
+</pre></div>
+
+<p>In cases where there is any ambiguity (like this one), it is a bad idea
+for programmers to rely on exactly what the order is.  If the order for
+some superclasses is important, it can be expressed directly in the
+class definition.
+</p>
+<p>The precedence list of a class can be obtained by calling
+<code>class-precedence-list</code>.  This function returns a ordered list
+whose first element is the most specific class.  For instance:
+</p>
+<div class="lisp">
+<pre class="lisp">(class-precedence-list B) &rArr; (#&lt;&lt;class&gt; B 401b97c8&gt; 
+                                     #&lt;&lt;class&gt; &lt;object&gt; 401e4a10&gt; 
+                                     #&lt;&lt;class&gt; &lt;top&gt; 4026a9d8&gt;)
+</pre></div>
+
+<p>Or for a more immediately readable result:
+</p>
+<div class="lisp">
+<pre class="lisp">(map class-name (class-precedence-list B)) &rArr; (B &lt;object&gt; &lt;top&gt;) 
+</pre></div>
+
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT32" href="#DOCF32">(32)</a></h3>
+<p>This section is an adaptation of material from Jeff
+Dalton&rsquo;s (J.Dalton@ed.ac.uk) <cite>Brief introduction to CLOS</cite></p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Sorting-Methods.html#Sorting-Methods" accesskey="n" rel="next">Sorting Methods</a>, Up: <a href="Inheritance.html#Inheritance" accesskey="u" rel="up">Inheritance</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

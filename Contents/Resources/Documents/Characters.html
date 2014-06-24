@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Characters</title>
+
+<meta name="description" content="Guile Reference Manual: Characters">
+<meta name="keywords" content="Guile Reference Manual: Characters">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Simple-Data-Types.html#Simple-Data-Types" rel="up" title="Simple Data Types">
+<link href="Character-Sets.html#Character-Sets" rel="next" title="Character Sets">
+<link href="Random.html#Random" rel="prev" title="Random">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Characters"></a>
+<div class="header">
+<p>
+Next: <a href="Character-Sets.html#Character-Sets" accesskey="n" rel="next">Character Sets</a>, Previous: <a href="Numbers.html#Numbers" accesskey="p" rel="prev">Numbers</a>, Up: <a href="Simple-Data-Types.html#Simple-Data-Types" accesskey="u" rel="up">Simple Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Characters-1"></a>
+<h4 class="subsection">6.6.3 Characters</h4>
+<a name="index-Characters"></a>
+
+<p>In Scheme, there is a data type to describe a single character.  
+</p>
+<p>Defining what exactly a character <em>is</em> can be more complicated
+than it seems.  Guile follows the advice of R6RS and uses The Unicode
+Standard to help define what a character is.  So, for Guile, a
+character is anything in the Unicode Character Database.
+</p>
+<a name="index-code-point"></a>
+<a name="index-Unicode-code-point"></a>
+
+<p>The Unicode Character Database is basically a table of characters
+indexed using integers called &rsquo;code points&rsquo;.  Valid code points are in
+the ranges 0 to <code>#xD7FF</code> inclusive or <code>#xE000</code> to
+<code>#x10FFFF</code> inclusive, which is about 1.1 million code points.
+</p>
+<a name="index-designated-code-point"></a>
+<a name="index-code-point_002c-designated"></a>
+
+<p>Any code point that has been assigned to a character or that has
+otherwise been given a meaning by Unicode is called a &rsquo;designated code
+point&rsquo;.  Most of the designated code points, about 200,000 of them,
+indicate characters, accents or other combining marks that modify
+other characters, symbols, whitespace, and control characters.  Some
+are not characters but indicators that suggest how to format or
+display neighboring characters.
+</p>
+<a name="index-reserved-code-point"></a>
+<a name="index-code-point_002c-reserved"></a>
+
+<p>If a code point is not a designated code point &ndash; if it has not been
+assigned to a character by The Unicode Standard &ndash; it is a &rsquo;reserved
+code point&rsquo;, meaning that they are reserved for future use.  Most of
+the code points, about 800,000, are &rsquo;reserved code points&rsquo;.
+</p>
+<p>By convention, a Unicode code point is written as
+&ldquo;U+XXXX&rdquo; where &ldquo;XXXX&rdquo; is a hexadecimal number.  Please note that
+this convenient notation is not valid code.  Guile does not interpret
+&ldquo;U+XXXX&rdquo; as a character.
+</p>
+<p>In Scheme, a character literal is written as <code>#\<var>name</var></code> where
+<var>name</var> is the name of the character that you want.  Printable
+characters have their usual single character name; for example,
+<code>#\a</code> is a lower case <code>a</code>.  
+</p>
+<p>Some of the code points are &rsquo;combining characters&rsquo; that are not meant
+to be printed by themselves but are instead meant to modify the
+appearance of the previous character.  For combining characters, an
+alternate form of the character literal is <code>#\</code> followed by
+U+25CC (a small, dotted circle), followed by the combining character.
+This allows the combining character to be drawn on the circle, not on
+the backslash of <code>#\</code>.
+</p>
+<p>Many of the non-printing characters, such as whitespace characters and
+control characters, also have names.
+</p>
+<p>The most commonly used non-printing characters have long character
+names, described in the table below.
+</p>
+<table>
+<tr><td>Character Name</td><td>Codepoint</td></tr>
+<tr><td><code>#\nul</code></td><td>U+0000</td></tr>
+<tr><td><code>#\alarm</code></td><td>u+0007</td></tr>
+<tr><td><code>#\backspace</code></td><td>U+0008</td></tr>
+<tr><td><code>#\tab</code></td><td>U+0009</td></tr>
+<tr><td><code>#\linefeed</code></td><td>U+000A</td></tr>
+<tr><td><code>#\newline</code></td><td>U+000A</td></tr>
+<tr><td><code>#\vtab</code></td><td>U+000B</td></tr>
+<tr><td><code>#\page</code></td><td>U+000C</td></tr>
+<tr><td><code>#\return</code></td><td>U+000D</td></tr>
+<tr><td><code>#\esc</code></td><td>U+001B</td></tr>
+<tr><td><code>#\space</code></td><td>U+0020</td></tr>
+<tr><td><code>#\delete</code></td><td>U+007F</td></tr>
+</table>
+
+<p>There are also short names for all of the &ldquo;C0 control characters&rdquo;
+(those with code points below 32).  The following table lists the short
+name for each character.
+</p>
+<table>
+<tr><td width="25%">0 = <code>#\nul</code></td><td width="25%">1 = <code>#\soh</code></td><td width="25%">2 = <code>#\stx</code></td><td width="25%">3 = <code>#\etx</code></td></tr>
+<tr><td width="25%">4 = <code>#\eot</code></td><td width="25%">5 = <code>#\enq</code></td><td width="25%">6 = <code>#\ack</code></td><td width="25%">7 = <code>#\bel</code></td></tr>
+<tr><td width="25%">8 = <code>#\bs</code></td><td width="25%">9 = <code>#\ht</code></td><td width="25%">10 = <code>#\lf</code></td><td width="25%">11 = <code>#\vt</code></td></tr>
+<tr><td width="25%">12 = <code>#\ff</code></td><td width="25%">13 = <code>#\cr</code></td><td width="25%">14 = <code>#\so</code></td><td width="25%">15 = <code>#\si</code></td></tr>
+<tr><td width="25%">16 = <code>#\dle</code></td><td width="25%">17 = <code>#\dc1</code></td><td width="25%">18 = <code>#\dc2</code></td><td width="25%">19 = <code>#\dc3</code></td></tr>
+<tr><td width="25%">20 = <code>#\dc4</code></td><td width="25%">21 = <code>#\nak</code></td><td width="25%">22 = <code>#\syn</code></td><td width="25%">23 = <code>#\etb</code></td></tr>
+<tr><td width="25%">24 = <code>#\can</code></td><td width="25%">25 = <code>#\em</code></td><td width="25%">26 = <code>#\sub</code></td><td width="25%">27 = <code>#\esc</code></td></tr>
+<tr><td width="25%">28 = <code>#\fs</code></td><td width="25%">29 = <code>#\gs</code></td><td width="25%">30 = <code>#\rs</code></td><td width="25%">31 = <code>#\us</code></td></tr>
+<tr><td width="25%">32 = <code>#\sp</code></td></tr>
+</table>
+
+<p>The short name for the &ldquo;delete&rdquo; character (code point U+007F) is
+<code>#\del</code>.
+</p>
+<p>The R7RS name for the &ldquo;escape&rdquo; character (code point U+001B) is
+<code>#\escape</code>.
+</p>
+<p>There are also a few alternative names left over for compatibility with
+previous versions of Guile.
+</p>
+<table>
+<tr><td>Alternate</td><td>Standard</td></tr>
+<tr><td><code>#\nl</code></td><td><code>#\newline</code></td></tr>
+<tr><td><code>#\np</code></td><td><code>#\page</code></td></tr>
+<tr><td><code>#\null</code></td><td><code>#\nul</code></td></tr>
+</table>
+
+<p>Characters may also be written using their code point values.  They can
+be written with as an octal number, such as <code>#\10</code> for
+<code>#\bs</code> or <code>#\177</code> for <code>#\del</code>.
+</p>
+<p>If one prefers hex to octal, there is an additional syntax for character
+escapes: <code>#\xHHHH</code> &ndash; the letter &rsquo;x&rsquo; followed by a hexadecimal
+number of one to eight digits.
+</p>
+<a name="index-char_003f-2"></a>
+<dl>
+<dt><a name="index-char_003f"></a>Scheme Procedure: <strong>char?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fchar_005fp"></a>C Function: <strong>scm_char_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is a character, else <code>#f</code>.
+</p></dd></dl>
+
+<p>Fundamentally, the character comparison operations below are
+numeric comparisons of the character&rsquo;s code points.
+</p>
+<a name="index-char_003d_003f-2"></a>
+<dl>
+<dt><a name="index-char_003d_003f"></a>Scheme Procedure: <strong>char=?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if code point of <var>x</var> is equal to the code point
+of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_003c_003f-2"></a>
+<dl>
+<dt><a name="index-char_003c_003f"></a>Scheme Procedure: <strong>char&lt;?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the code point of <var>x</var> is less than the code
+point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_003c_003d_003f-2"></a>
+<dl>
+<dt><a name="index-char_003c_003d_003f"></a>Scheme Procedure: <strong>char&lt;=?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the code point of <var>x</var> is less than or equal
+to the code point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_003e_003f-2"></a>
+<dl>
+<dt><a name="index-char_003e_003f"></a>Scheme Procedure: <strong>char&gt;?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the code point of <var>x</var> is greater than the
+code point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_003e_003d_003f-2"></a>
+<dl>
+<dt><a name="index-char_003e_003d_003f"></a>Scheme Procedure: <strong>char&gt;=?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the code point of <var>x</var> is greater than or
+equal to the code point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-case-folding"></a>
+
+<p>Case-insensitive character comparisons use <em>Unicode case
+folding</em>.  In case folding comparisons, if a character is lowercase
+and has an uppercase form that can be expressed as a single character,
+it is converted to uppercase before comparison.  All other characters
+undergo no conversion before the comparison occurs.  This includes the
+German sharp S (Eszett) which is not uppercased before conversion
+because its uppercase form has two characters.  Unicode case folding
+is language independent: it uses rules that are generally true, but,
+it cannot cover all cases for all languages.
+</p>
+<a name="index-char_002dci_003d_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dci_003d_003f"></a>Scheme Procedure: <strong>char-ci=?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the case-folded code point of <var>x</var> is the same
+as the case-folded code point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dci_003c_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dci_003c_003f"></a>Scheme Procedure: <strong>char-ci&lt;?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the case-folded code point of <var>x</var> is less
+than the case-folded code point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dci_003c_003d_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dci_003c_003d_003f"></a>Scheme Procedure: <strong>char-ci&lt;=?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the case-folded code point of <var>x</var> is less
+than or equal to the case-folded code point of <var>y</var>, else
+<code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dci_003e_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dci_003e_003f"></a>Scheme Procedure: <strong>char-ci&gt;?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the case-folded code point of <var>x</var> is greater
+than the case-folded code point of <var>y</var>, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dci_003e_003d_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dci_003e_003d_003f"></a>Scheme Procedure: <strong>char-ci&gt;=?</strong> <em>x y</em></dt>
+<dd><p>Return <code>#t</code> if the case-folded code point of <var>x</var> is greater
+than or equal to the case-folded code point of <var>y</var>, else
+<code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dalphabetic_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dalphabetic_003f"></a>Scheme Procedure: <strong>char-alphabetic?</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005falphabetic_005fp"></a>C Function: <strong>scm_char_alphabetic_p</strong> <em>(chr)</em></dt>
+<dd><p>Return <code>#t</code> if <var>chr</var> is alphabetic, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dnumeric_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dnumeric_003f"></a>Scheme Procedure: <strong>char-numeric?</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fnumeric_005fp"></a>C Function: <strong>scm_char_numeric_p</strong> <em>(chr)</em></dt>
+<dd><p>Return <code>#t</code> if <var>chr</var> is numeric, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dwhitespace_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dwhitespace_003f"></a>Scheme Procedure: <strong>char-whitespace?</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fwhitespace_005fp"></a>C Function: <strong>scm_char_whitespace_p</strong> <em>(chr)</em></dt>
+<dd><p>Return <code>#t</code> if <var>chr</var> is whitespace, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dupper_002dcase_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dupper_002dcase_003f"></a>Scheme Procedure: <strong>char-upper-case?</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fupper_005fcase_005fp"></a>C Function: <strong>scm_char_upper_case_p</strong> <em>(chr)</em></dt>
+<dd><p>Return <code>#t</code> if <var>chr</var> is uppercase, else <code>#f</code>.
+</p></dd></dl>
+
+<a name="index-char_002dlower_002dcase_003f-2"></a>
+<dl>
+<dt><a name="index-char_002dlower_002dcase_003f"></a>Scheme Procedure: <strong>char-lower-case?</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005flower_005fcase_005fp"></a>C Function: <strong>scm_char_lower_case_p</strong> <em>(chr)</em></dt>
+<dd><p>Return <code>#t</code> if <var>chr</var> is lowercase, else <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dis_002dboth_003f"></a>Scheme Procedure: <strong>char-is-both?</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fis_005fboth_005fp"></a>C Function: <strong>scm_char_is_both_p</strong> <em>(chr)</em></dt>
+<dd><p>Return <code>#t</code> if <var>chr</var> is either uppercase or lowercase, else
+<code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dgeneral_002dcategory"></a>Scheme Procedure: <strong>char-general-category</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fgeneral_005fcategory"></a>C Function: <strong>scm_char_general_category</strong> <em>(chr)</em></dt>
+<dd><p>Return a symbol giving the two-letter name of the Unicode general 
+category assigned to <var>chr</var> or <code>#f</code> if no named category is 
+assigned.  The following table provides a list of category names along
+with their meanings.
+</p>
+<table>
+<tr><td width="10%">Lu</td><td width="40%">Uppercase letter</td><td width="10%">Pf</td><td width="40%">Final quote punctuation</td></tr>
+<tr><td width="10%">Ll</td><td width="40%">Lowercase letter</td><td width="10%">Po</td><td width="40%">Other punctuation</td></tr>
+<tr><td width="10%">Lt</td><td width="40%">Titlecase letter</td><td width="10%">Sm</td><td width="40%">Math symbol</td></tr>
+<tr><td width="10%">Lm</td><td width="40%">Modifier letter</td><td width="10%">Sc</td><td width="40%">Currency symbol</td></tr>
+<tr><td width="10%">Lo</td><td width="40%">Other letter</td><td width="10%">Sk</td><td width="40%">Modifier symbol</td></tr>
+<tr><td width="10%">Mn</td><td width="40%">Non-spacing mark</td><td width="10%">So</td><td width="40%">Other symbol</td></tr>
+<tr><td width="10%">Mc</td><td width="40%">Combining spacing mark</td><td width="10%">Zs</td><td width="40%">Space separator</td></tr>
+<tr><td width="10%">Me</td><td width="40%">Enclosing mark</td><td width="10%">Zl</td><td width="40%">Line separator</td></tr>
+<tr><td width="10%">Nd</td><td width="40%">Decimal digit number</td><td width="10%">Zp</td><td width="40%">Paragraph separator</td></tr>
+<tr><td width="10%">Nl</td><td width="40%">Letter number</td><td width="10%">Cc</td><td width="40%">Control</td></tr>
+<tr><td width="10%">No</td><td width="40%">Other number</td><td width="10%">Cf</td><td width="40%">Format</td></tr>
+<tr><td width="10%">Pc</td><td width="40%">Connector punctuation</td><td width="10%">Cs</td><td width="40%">Surrogate</td></tr>
+<tr><td width="10%">Pd</td><td width="40%">Dash punctuation</td><td width="10%">Co</td><td width="40%">Private use</td></tr>
+<tr><td width="10%">Ps</td><td width="40%">Open punctuation</td><td width="10%">Cn</td><td width="40%">Unassigned</td></tr>
+<tr><td width="10%">Pe</td><td width="40%">Close punctuation</td><td width="10%"></td><td width="40%"></td></tr>
+<tr><td width="10%">Pi</td><td width="40%">Initial quote punctuation</td><td width="10%"></td><td width="40%"></td></tr>
+</table>
+</dd></dl>
+
+<a name="index-char_002d_003einteger-2"></a>
+<dl>
+<dt><a name="index-char_002d_003einteger"></a>Scheme Procedure: <strong>char-&gt;integer</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fto_005finteger"></a>C Function: <strong>scm_char_to_integer</strong> <em>(chr)</em></dt>
+<dd><p>Return the code point of <var>chr</var>.
+</p></dd></dl>
+
+<a name="index-integer_002d_003echar-2"></a>
+<dl>
+<dt><a name="index-integer_002d_003echar"></a>Scheme Procedure: <strong>integer-&gt;char</strong> <em>n</em></dt>
+<dt><a name="index-scm_005finteger_005fto_005fchar"></a>C Function: <strong>scm_integer_to_char</strong> <em>(n)</em></dt>
+<dd><p>Return the character that has code point <var>n</var>.  The integer <var>n</var>
+must be a valid code point.  Valid code points are in the ranges 0 to
+<code>#xD7FF</code> inclusive or <code>#xE000</code> to <code>#x10FFFF</code> inclusive.
+</p></dd></dl>
+
+<a name="index-char_002dupcase-2"></a>
+<dl>
+<dt><a name="index-char_002dupcase"></a>Scheme Procedure: <strong>char-upcase</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fupcase"></a>C Function: <strong>scm_char_upcase</strong> <em>(chr)</em></dt>
+<dd><p>Return the uppercase character version of <var>chr</var>.
+</p></dd></dl>
+
+<a name="index-char_002ddowncase-2"></a>
+<dl>
+<dt><a name="index-char_002ddowncase"></a>Scheme Procedure: <strong>char-downcase</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005fdowncase"></a>C Function: <strong>scm_char_downcase</strong> <em>(chr)</em></dt>
+<dd><p>Return the lowercase character version of <var>chr</var>.
+</p></dd></dl>
+
+<a name="index-char_002dtitlecase-2"></a>
+<dl>
+<dt><a name="index-char_002dtitlecase"></a>Scheme Procedure: <strong>char-titlecase</strong> <em>chr</em></dt>
+<dt><a name="index-scm_005fchar_005ftitlecase"></a>C Function: <strong>scm_char_titlecase</strong> <em>(chr)</em></dt>
+<dd><p>Return the titlecase character version of <var>chr</var> if one exists;
+otherwise return the uppercase version.  
+</p>
+<p>For most characters these will be the same, but the Unicode Standard 
+includes certain digraph compatibility characters, such as <code>U+01F3</code>
+&ldquo;dz&rdquo;, for which the uppercase and titlecase characters are different 
+(<code>U+01F1</code> &ldquo;DZ&rdquo; and <code>U+01F2</code> &ldquo;Dz&rdquo; in this case, 
+respectively).
+</p></dd></dl>
+
+<a name="index-scm_005ft_005fwchar"></a>
+<dl>
+<dt><a name="index-scm_005fc_005fupcase"></a>C Function: <em>scm_t_wchar</em> <strong>scm_c_upcase</strong> <em>(scm_t_wchar <var>c</var>)</em></dt>
+<dt><a name="index-scm_005fc_005fdowncase"></a>C Function: <em>scm_t_wchar</em> <strong>scm_c_downcase</strong> <em>(scm_t_wchar <var>c</var>)</em></dt>
+<dt><a name="index-scm_005fc_005ftitlecase"></a>C Function: <em>scm_t_wchar</em> <strong>scm_c_titlecase</strong> <em>(scm_t_wchar <var>c</var>)</em></dt>
+<dd>
+<p>These C functions take an integer representation of a Unicode
+codepoint and return the codepoint corresponding to its uppercase,
+lowercase, and titlecase forms respectively.  The type
+<code>scm_t_wchar</code> is a signed, 32-bit integer.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Character-Sets.html#Character-Sets" accesskey="n" rel="next">Character Sets</a>, Previous: <a href="Numbers.html#Numbers" accesskey="p" rel="prev">Numbers</a>, Up: <a href="Simple-Data-Types.html#Simple-Data-Types" accesskey="u" rel="up">Simple Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

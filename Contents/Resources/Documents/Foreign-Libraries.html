@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Foreign Libraries</title>
+
+<meta name="description" content="Guile Reference Manual: Foreign Libraries">
+<meta name="keywords" content="Guile Reference Manual: Foreign Libraries">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Foreign-Function-Interface.html#Foreign-Function-Interface" rel="up" title="Foreign Function Interface">
+<link href="Foreign-Functions.html#Foreign-Functions" rel="next" title="Foreign Functions">
+<link href="Foreign-Function-Interface.html#Foreign-Function-Interface" rel="prev" title="Foreign Function Interface">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Foreign-Libraries"></a>
+<div class="header">
+<p>
+Next: <a href="Foreign-Functions.html#Foreign-Functions" accesskey="n" rel="next">Foreign Functions</a>, Up: <a href="Foreign-Function-Interface.html#Foreign-Function-Interface" accesskey="u" rel="up">Foreign Function Interface</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Foreign-Libraries-1"></a>
+<h4 class="subsection">6.20.1 Foreign Libraries</h4>
+
+<p>Most modern Unices have something called <em>shared libraries</em>.  This
+ordinarily means that they have the capability to share the executable
+image of a library between several running programs to save memory and
+disk space.  But generally, shared libraries give a lot of additional
+flexibility compared to the traditional static libraries.  In fact,
+calling them &lsquo;dynamic&rsquo; libraries is as correct as calling them &lsquo;shared&rsquo;.
+</p>
+<p>Shared libraries really give you a lot of flexibility in addition to the
+memory and disk space savings.  When you link a program against a shared
+library, that library is not closely incorporated into the final
+executable.  Instead, the executable of your program only contains
+enough information to find the needed shared libraries when the program
+is actually run.  Only then, when the program is starting, is the final
+step of the linking process performed.  This means that you need not
+recompile all programs when you install a new, only slightly modified
+version of a shared library.  The programs will pick up the changes
+automatically the next time they are run.
+</p>
+<p>Now, when all the necessary machinery is there to perform part of the
+linking at run-time, why not take the next step and allow the programmer
+to explicitly take advantage of it from within his program?  Of course,
+many operating systems that support shared libraries do just that, and
+chances are that Guile will allow you to access this feature from within
+your Scheme programs.  As you might have guessed already, this feature
+is called <em>dynamic linking</em>.<a name="DOCF18" href="#FOOT18"><sup>18</sup></a>
+</p>
+<p>We titled this section &ldquo;foreign libraries&rdquo; because although the name
+&ldquo;foreign&rdquo; doesn&rsquo;t leak into the API, the world of C really is foreign
+to Scheme &ndash; and that estrangement extends to components of foreign
+libraries as well, as we see in future sections.
+</p>
+<dl>
+<dt><a name="index-dynamic_002dlink"></a>Scheme Procedure: <strong>dynamic-link</strong> <em>[library]</em></dt>
+<dt><a name="index-scm_005fdynamic_005flink"></a>C Function: <strong>scm_dynamic_link</strong> <em>(library)</em></dt>
+<dd><p>Find the shared library denoted by <var>library</var> (a string) and link it
+into the running Guile application.  When everything works out, return a
+Scheme object suitable for representing the linked object file.
+Otherwise an error is thrown.  How object files are searched is system
+dependent.
+</p>
+<p>Normally, <var>library</var> is just the name of some shared library file
+that will be searched for in the places where shared libraries usually
+reside, such as in <samp>/usr/lib</samp> and <samp>/usr/local/lib</samp>.
+</p>
+<p><var>library</var> should not contain an extension such as <code>.so</code>.  The
+correct file name extension for the host operating system is provided
+automatically, according to libltdl&rsquo;s rules (see <a href="http://www.gnu.org/software/libtool/manual/html_node/Libltdl-interface.html#Libltdl-interface"><code>lt_dlopenext</code></a> in <cite>Shared Library Support for
+GNU</cite>).
+</p>
+<p>When <var>library</var> is omitted, a <em>global symbol handle</em> is returned.  This
+handle provides access to the symbols available to the program at run-time,
+including those exported by the program itself and the shared libraries already
+loaded.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dynamic_002dobject_003f"></a>Scheme Procedure: <strong>dynamic-object?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fdynamic_005fobject_005fp"></a>C Function: <strong>scm_dynamic_object_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a dynamic library handle, or <code>#f</code>
+otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dynamic_002dunlink"></a>Scheme Procedure: <strong>dynamic-unlink</strong> <em>dobj</em></dt>
+<dt><a name="index-scm_005fdynamic_005funlink"></a>C Function: <strong>scm_dynamic_unlink</strong> <em>(dobj)</em></dt>
+<dd><p>Unlink the indicated object file from the application.  The
+argument <var>dobj</var> must have been obtained by a call to
+<code>dynamic-link</code>.  After <code>dynamic-unlink</code> has been
+called on <var>dobj</var>, its content is no longer accessible.
+</p></dd></dl>
+
+<div class="smallexample">
+<pre class="smallexample">(define libgl-obj (dynamic-link &quot;libGL&quot;))
+libgl-obj
+&rArr; #&lt;dynamic-object &quot;libGL&quot;&gt;
+(dynamic-unlink libGL-obj)
+libGL-obj
+&rArr; #&lt;dynamic-object &quot;libGL&quot; (unlinked)&gt;
+</pre></div>
+
+<p>As you can see, after calling <code>dynamic-unlink</code> on a dynamically
+linked library, it is marked as &lsquo;<samp>(unlinked)</samp>&rsquo; and you are no longer
+able to use it with <code>dynamic-call</code>, etc.  Whether the library is
+really removed from you program is system-dependent and will generally
+not happen when some other parts of your program still use it.
+</p>
+<p>When dynamic linking is disabled or not supported on your system,
+the above functions throw errors, but they are still available.
+</p>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT18" href="#DOCF18">(18)</a></h3>
+<p>Some people also refer to the
+final linking stage at program startup as &lsquo;dynamic linking&rsquo;, so if you
+want to make yourself perfectly clear, it is probably best to use the
+more technical term <em>dlopening</em>, as suggested by Gordon Matzigkeit
+in his libtool documentation.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Foreign-Functions.html#Foreign-Functions" accesskey="n" rel="next">Foreign Functions</a>, Up: <a href="Foreign-Function-Interface.html#Foreign-Function-Interface" accesskey="u" rel="up">Foreign Function Interface</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

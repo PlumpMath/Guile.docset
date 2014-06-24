@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Integer Operations</title>
+
+<meta name="description" content="Guile Reference Manual: Integer Operations">
+<meta name="keywords" content="Guile Reference Manual: Integer Operations">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Numbers.html#Numbers" rel="up" title="Numbers">
+<link href="Comparison.html#Comparison" rel="next" title="Comparison">
+<link href="Number-Syntax.html#Number-Syntax" rel="prev" title="Number Syntax">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Integer-Operations"></a>
+<div class="header">
+<p>
+Next: <a href="Comparison.html#Comparison" accesskey="n" rel="next">Comparison</a>, Previous: <a href="Number-Syntax.html#Number-Syntax" accesskey="p" rel="prev">Number Syntax</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Operations-on-Integer-Values"></a>
+<h4 class="subsubsection">6.6.2.7 Operations on Integer Values</h4>
+<a name="index-odd_003f-2"></a>
+<a name="index-even_003f-2"></a>
+<a name="index-quotient-2"></a>
+<a name="index-remainder-2"></a>
+<a name="index-modulo-2"></a>
+<a name="index-gcd-2"></a>
+<a name="index-lcm-2"></a>
+
+<dl>
+<dt><a name="index-odd_003f"></a>Scheme Procedure: <strong>odd?</strong> <em>n</em></dt>
+<dt><a name="index-scm_005fodd_005fp"></a>C Function: <strong>scm_odd_p</strong> <em>(n)</em></dt>
+<dd><p>Return <code>#t</code> if <var>n</var> is an odd number, <code>#f</code>
+otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-even_003f"></a>Scheme Procedure: <strong>even?</strong> <em>n</em></dt>
+<dt><a name="index-scm_005feven_005fp"></a>C Function: <strong>scm_even_p</strong> <em>(n)</em></dt>
+<dd><p>Return <code>#t</code> if <var>n</var> is an even number, <code>#f</code>
+otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-quotient"></a>Scheme Procedure: <strong>quotient</strong> <em>n d</em></dt>
+<dt><a name="index-remainder"></a>Scheme Procedure: <strong>remainder</strong> <em>n d</em></dt>
+<dt><a name="index-scm_005fquotient"></a>C Function: <strong>scm_quotient</strong> <em>(n, d)</em></dt>
+<dt><a name="index-scm_005fremainder"></a>C Function: <strong>scm_remainder</strong> <em>(n, d)</em></dt>
+<dd><p>Return the quotient or remainder from <var>n</var> divided by <var>d</var>.  The
+quotient is rounded towards zero, and the remainder will have the same
+sign as <var>n</var>.  In all cases quotient and remainder satisfy
+<em><var>n</var> = <var>q</var>*<var>d</var> + <var>r</var></em>.
+</p>
+<div class="lisp">
+<pre class="lisp">(remainder 13 4) &rArr; 1
+(remainder -13 4) &rArr; -1
+</pre></div>
+
+<p>See also <code>truncate-quotient</code>, <code>truncate-remainder</code> and
+related operations in <a href="Arithmetic.html#Arithmetic">Arithmetic</a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-modulo"></a>Scheme Procedure: <strong>modulo</strong> <em>n d</em></dt>
+<dt><a name="index-scm_005fmodulo"></a>C Function: <strong>scm_modulo</strong> <em>(n, d)</em></dt>
+<dd><p>Return the remainder from <var>n</var> divided by <var>d</var>, with the same
+sign as <var>d</var>.
+</p>
+<div class="lisp">
+<pre class="lisp">(modulo 13 4) &rArr; 1
+(modulo -13 4) &rArr; 3
+(modulo 13 -4) &rArr; -3
+(modulo -13 -4) &rArr; -1
+</pre></div>
+
+<p>See also <code>floor-quotient</code>, <code>floor-remainder</code> and
+related operations in <a href="Arithmetic.html#Arithmetic">Arithmetic</a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gcd"></a>Scheme Procedure: <strong>gcd</strong> <em>x&hellip;</em></dt>
+<dt><a name="index-scm_005fgcd"></a>C Function: <strong>scm_gcd</strong> <em>(x, y)</em></dt>
+<dd><p>Return the greatest common divisor of all arguments.
+If called without arguments, 0 is returned.
+</p>
+<p>The C function <code>scm_gcd</code> always takes two arguments, while the
+Scheme function can take an arbitrary number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lcm"></a>Scheme Procedure: <strong>lcm</strong> <em>x&hellip;</em></dt>
+<dt><a name="index-scm_005flcm"></a>C Function: <strong>scm_lcm</strong> <em>(x, y)</em></dt>
+<dd><p>Return the least common multiple of the arguments.
+If called without arguments, 1 is returned.
+</p>
+<p>The C function <code>scm_lcm</code> always takes two arguments, while the
+Scheme function can take an arbitrary number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-modulo_002dexpt"></a>Scheme Procedure: <strong>modulo-expt</strong> <em>n k m</em></dt>
+<dt><a name="index-scm_005fmodulo_005fexpt"></a>C Function: <strong>scm_modulo_expt</strong> <em>(n, k, m)</em></dt>
+<dd><p>Return <var>n</var> raised to the integer exponent
+<var>k</var>, modulo <var>m</var>.
+</p>
+<div class="lisp">
+<pre class="lisp">(modulo-expt 2 3 5)
+   &rArr; 3
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-exact_002dinteger_002dsqrt"></a>Scheme Procedure: <em></em> <strong>exact-integer-sqrt</strong> <em><var>k</var></em></dt>
+<dt><a name="index-scm_005fexact_005finteger_005fsqrt"></a>C Function: <em>void</em> <strong>scm_exact_integer_sqrt</strong> <em>(SCM <var>k</var>, SCM *<var>s</var>, SCM *<var>r</var>)</em></dt>
+<dd><p>Return two exact non-negative integers <var>s</var> and <var>r</var>
+such that <em><var>k</var> = <var>s</var>^2 + <var>r</var></em> and
+<em><var>s</var>^2 &lt;= <var>k</var> &lt; (<var>s</var> + 1)^2</em>.
+An error is raised if <var>k</var> is not an exact non-negative integer.
+</p>
+<div class="lisp">
+<pre class="lisp">(exact-integer-sqrt 10) &rArr; 3 and 1
+</pre></div>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Comparison.html#Comparison" accesskey="n" rel="next">Comparison</a>, Previous: <a href="Number-Syntax.html#Number-Syntax" accesskey="p" rel="prev">Number Syntax</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

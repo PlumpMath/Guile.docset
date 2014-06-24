@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Bytevectors as Integers</title>
+
+<meta name="description" content="Guile Reference Manual: Bytevectors as Integers">
+<meta name="keywords" content="Guile Reference Manual: Bytevectors as Integers">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Bytevectors.html#Bytevectors" rel="up" title="Bytevectors">
+<link href="Bytevectors-and-Integer-Lists.html#Bytevectors-and-Integer-Lists" rel="next" title="Bytevectors and Integer Lists">
+<link href="Bytevector-Manipulation.html#Bytevector-Manipulation" rel="prev" title="Bytevector Manipulation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Bytevectors-as-Integers"></a>
+<div class="header">
+<p>
+Next: <a href="Bytevectors-and-Integer-Lists.html#Bytevectors-and-Integer-Lists" accesskey="n" rel="next">Bytevectors and Integer Lists</a>, Previous: <a href="Bytevector-Manipulation.html#Bytevector-Manipulation" accesskey="p" rel="prev">Bytevector Manipulation</a>, Up: <a href="Bytevectors.html#Bytevectors" accesskey="u" rel="up">Bytevectors</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Interpreting-Bytevector-Contents-as-Integers"></a>
+<h4 class="subsubsection">6.6.6.3 Interpreting Bytevector Contents as Integers</h4>
+
+<p>The contents of a bytevector can be interpreted as a sequence of
+integers of any given size, sign, and endianness.
+</p>
+<div class="lisp">
+<pre class="lisp">(let ((bv (make-bytevector 4)))
+  (bytevector-u8-set! bv 0 #x12)
+  (bytevector-u8-set! bv 1 #x34)
+  (bytevector-u8-set! bv 2 #x56)
+  (bytevector-u8-set! bv 3 #x78)
+
+  (map (lambda (number)
+         (number-&gt;string number 16))
+       (list (bytevector-u8-ref bv 0)
+             (bytevector-u16-ref bv 0 (endianness big))
+             (bytevector-u32-ref bv 0 (endianness little)))))
+
+&rArr; (&quot;12&quot; &quot;1234&quot; &quot;78563412&quot;)
+</pre></div>
+
+<p>The most generic procedures to interpret bytevector contents as integers
+are described below.
+</p>
+<dl>
+<dt><a name="index-bytevector_002duint_002dref"></a>Scheme Procedure: <strong>bytevector-uint-ref</strong> <em>bv index endianness size</em></dt>
+<dt><a name="index-scm_005fbytevector_005fuint_005fref"></a>C Function: <strong>scm_bytevector_uint_ref</strong> <em>(bv, index, endianness, size)</em></dt>
+<dd><p>Return the <var>size</var>-byte long unsigned integer at index <var>index</var> in
+<var>bv</var>, decoded according to <var>endianness</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002dsint_002dref"></a>Scheme Procedure: <strong>bytevector-sint-ref</strong> <em>bv index endianness size</em></dt>
+<dt><a name="index-scm_005fbytevector_005fsint_005fref"></a>C Function: <strong>scm_bytevector_sint_ref</strong> <em>(bv, index, endianness, size)</em></dt>
+<dd><p>Return the <var>size</var>-byte long signed integer at index <var>index</var> in
+<var>bv</var>, decoded according to <var>endianness</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002duint_002dset_0021"></a>Scheme Procedure: <strong>bytevector-uint-set!</strong> <em>bv index value endianness size</em></dt>
+<dt><a name="index-scm_005fbytevector_005fuint_005fset_005fx"></a>C Function: <strong>scm_bytevector_uint_set_x</strong> <em>(bv, index, value, endianness, size)</em></dt>
+<dd><p>Set the <var>size</var>-byte long unsigned integer at <var>index</var> to
+<var>value</var>, encoded according to <var>endianness</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002dsint_002dset_0021"></a>Scheme Procedure: <strong>bytevector-sint-set!</strong> <em>bv index value endianness size</em></dt>
+<dt><a name="index-scm_005fbytevector_005fsint_005fset_005fx"></a>C Function: <strong>scm_bytevector_sint_set_x</strong> <em>(bv, index, value, endianness, size)</em></dt>
+<dd><p>Set the <var>size</var>-byte long signed integer at <var>index</var> to
+<var>value</var>, encoded according to <var>endianness</var>.
+</p></dd></dl>
+
+<p>The following procedures are similar to the ones above, but specialized
+to a given integer size:
+</p>
+<dl>
+<dt><a name="index-bytevector_002du8_002dref"></a>Scheme Procedure: <strong>bytevector-u8-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002ds8_002dref"></a>Scheme Procedure: <strong>bytevector-s8-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002du16_002dref"></a>Scheme Procedure: <strong>bytevector-u16-ref</strong> <em>bv index endianness</em></dt>
+<dt><a name="index-bytevector_002ds16_002dref"></a>Scheme Procedure: <strong>bytevector-s16-ref</strong> <em>bv index endianness</em></dt>
+<dt><a name="index-bytevector_002du32_002dref"></a>Scheme Procedure: <strong>bytevector-u32-ref</strong> <em>bv index endianness</em></dt>
+<dt><a name="index-bytevector_002ds32_002dref"></a>Scheme Procedure: <strong>bytevector-s32-ref</strong> <em>bv index endianness</em></dt>
+<dt><a name="index-bytevector_002du64_002dref"></a>Scheme Procedure: <strong>bytevector-u64-ref</strong> <em>bv index endianness</em></dt>
+<dt><a name="index-bytevector_002ds64_002dref"></a>Scheme Procedure: <strong>bytevector-s64-ref</strong> <em>bv index endianness</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu8_005fref"></a>C Function: <strong>scm_bytevector_u8_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs8_005fref"></a>C Function: <strong>scm_bytevector_s8_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu16_005fref"></a>C Function: <strong>scm_bytevector_u16_ref</strong> <em>(bv, index, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs16_005fref"></a>C Function: <strong>scm_bytevector_s16_ref</strong> <em>(bv, index, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu32_005fref"></a>C Function: <strong>scm_bytevector_u32_ref</strong> <em>(bv, index, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs32_005fref"></a>C Function: <strong>scm_bytevector_s32_ref</strong> <em>(bv, index, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu64_005fref"></a>C Function: <strong>scm_bytevector_u64_ref</strong> <em>(bv, index, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs64_005fref"></a>C Function: <strong>scm_bytevector_s64_ref</strong> <em>(bv, index, endianness)</em></dt>
+<dd><p>Return the unsigned <var>n</var>-bit (signed) integer (where <var>n</var> is 8,
+16, 32 or 64) from <var>bv</var> at <var>index</var>, decoded according to
+<var>endianness</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002du8_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u8-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002ds8_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s8-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002du16_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u16-set!</strong> <em>bv index value endianness</em></dt>
+<dt><a name="index-bytevector_002ds16_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s16-set!</strong> <em>bv index value endianness</em></dt>
+<dt><a name="index-bytevector_002du32_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u32-set!</strong> <em>bv index value endianness</em></dt>
+<dt><a name="index-bytevector_002ds32_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s32-set!</strong> <em>bv index value endianness</em></dt>
+<dt><a name="index-bytevector_002du64_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u64-set!</strong> <em>bv index value endianness</em></dt>
+<dt><a name="index-bytevector_002ds64_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s64-set!</strong> <em>bv index value endianness</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu8_005fset_005fx"></a>C Function: <strong>scm_bytevector_u8_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs8_005fset_005fx"></a>C Function: <strong>scm_bytevector_s8_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu16_005fset_005fx"></a>C Function: <strong>scm_bytevector_u16_set_x</strong> <em>(bv, index, value, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs16_005fset_005fx"></a>C Function: <strong>scm_bytevector_s16_set_x</strong> <em>(bv, index, value, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu32_005fset_005fx"></a>C Function: <strong>scm_bytevector_u32_set_x</strong> <em>(bv, index, value, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs32_005fset_005fx"></a>C Function: <strong>scm_bytevector_s32_set_x</strong> <em>(bv, index, value, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu64_005fset_005fx"></a>C Function: <strong>scm_bytevector_u64_set_x</strong> <em>(bv, index, value, endianness)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs64_005fset_005fx"></a>C Function: <strong>scm_bytevector_s64_set_x</strong> <em>(bv, index, value, endianness)</em></dt>
+<dd><p>Store <var>value</var> as an <var>n</var>-bit (signed) integer (where <var>n</var> is
+8, 16, 32 or 64) in <var>bv</var> at <var>index</var>, encoded according to
+<var>endianness</var>.
+</p></dd></dl>
+
+<p>Finally, a variant specialized for the host&rsquo;s endianness is available
+for each of these functions (with the exception of the <code>u8</code>
+accessors, for obvious reasons):
+</p>
+<dl>
+<dt><a name="index-bytevector_002du16_002dnative_002dref"></a>Scheme Procedure: <strong>bytevector-u16-native-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002ds16_002dnative_002dref"></a>Scheme Procedure: <strong>bytevector-s16-native-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002du32_002dnative_002dref"></a>Scheme Procedure: <strong>bytevector-u32-native-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002ds32_002dnative_002dref"></a>Scheme Procedure: <strong>bytevector-s32-native-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002du64_002dnative_002dref"></a>Scheme Procedure: <strong>bytevector-u64-native-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-bytevector_002ds64_002dnative_002dref"></a>Scheme Procedure: <strong>bytevector-s64-native-ref</strong> <em>bv index</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu16_005fnative_005fref"></a>C Function: <strong>scm_bytevector_u16_native_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs16_005fnative_005fref"></a>C Function: <strong>scm_bytevector_s16_native_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu32_005fnative_005fref"></a>C Function: <strong>scm_bytevector_u32_native_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs32_005fnative_005fref"></a>C Function: <strong>scm_bytevector_s32_native_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu64_005fnative_005fref"></a>C Function: <strong>scm_bytevector_u64_native_ref</strong> <em>(bv, index)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs64_005fnative_005fref"></a>C Function: <strong>scm_bytevector_s64_native_ref</strong> <em>(bv, index)</em></dt>
+<dd><p>Return the unsigned <var>n</var>-bit (signed) integer (where <var>n</var> is 8,
+16, 32 or 64) from <var>bv</var> at <var>index</var>, decoded according to the
+host&rsquo;s native endianness.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002du16_002dnative_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u16-native-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002ds16_002dnative_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s16-native-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002du32_002dnative_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u32-native-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002ds32_002dnative_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s32-native-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002du64_002dnative_002dset_0021"></a>Scheme Procedure: <strong>bytevector-u64-native-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-bytevector_002ds64_002dnative_002dset_0021"></a>Scheme Procedure: <strong>bytevector-s64-native-set!</strong> <em>bv index value</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu16_005fnative_005fset_005fx"></a>C Function: <strong>scm_bytevector_u16_native_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs16_005fnative_005fset_005fx"></a>C Function: <strong>scm_bytevector_s16_native_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu32_005fnative_005fset_005fx"></a>C Function: <strong>scm_bytevector_u32_native_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs32_005fnative_005fset_005fx"></a>C Function: <strong>scm_bytevector_s32_native_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fu64_005fnative_005fset_005fx"></a>C Function: <strong>scm_bytevector_u64_native_set_x</strong> <em>(bv, index, value)</em></dt>
+<dt><a name="index-scm_005fbytevector_005fs64_005fnative_005fset_005fx"></a>C Function: <strong>scm_bytevector_s64_native_set_x</strong> <em>(bv, index, value)</em></dt>
+<dd><p>Store <var>value</var> as an <var>n</var>-bit (signed) integer (where <var>n</var> is
+8, 16, 32 or 64) in <var>bv</var> at <var>index</var>, encoded according to the
+host&rsquo;s native endianness.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Bytevectors-and-Integer-Lists.html#Bytevectors-and-Integer-Lists" accesskey="n" rel="next">Bytevectors and Integer Lists</a>, Previous: <a href="Bytevector-Manipulation.html#Bytevector-Manipulation" accesskey="p" rel="prev">Bytevector Manipulation</a>, Up: <a href="Bytevectors.html#Bytevectors" accesskey="u" rel="up">Bytevectors</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

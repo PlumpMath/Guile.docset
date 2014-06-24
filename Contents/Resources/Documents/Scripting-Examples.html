@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Scripting Examples</title>
+
+<meta name="description" content="Guile Reference Manual: Scripting Examples">
+<meta name="keywords" content="Guile Reference Manual: Scripting Examples">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Scripting.html#Guile-Scripting" rel="up" title="Guile Scripting">
+<link href="Using-Guile-Interactively.html#Using-Guile-Interactively" rel="next" title="Using Guile Interactively">
+<link href="Command-Line-Handling.html#Command-Line-Handling" rel="prev" title="Command Line Handling">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Scripting-Examples"></a>
+<div class="header">
+<p>
+Previous: <a href="Command-Line-Handling.html#Command-Line-Handling" accesskey="p" rel="prev">Command Line Handling</a>, Up: <a href="Guile-Scripting.html#Guile-Scripting" accesskey="u" rel="up">Guile Scripting</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Scripting-Examples-1"></a>
+<h4 class="subsection">4.3.4 Scripting Examples</h4>
+
+<p>To start with, here are some examples of invoking Guile directly:
+</p>
+<dl compact="compact">
+<dt><code>guile -- a b c</code></dt>
+<dd><p>Run Guile interactively; <code>(command-line)</code> will return <br>
+<code>(&quot;/usr/local/bin/guile&quot; &quot;a&quot; &quot;b&quot; &quot;c&quot;)</code>.
+</p>
+</dd>
+<dt><code>guile -s /u/jimb/ex2 a b c</code></dt>
+<dd><p>Load the file <samp>/u/jimb/ex2</samp>; <code>(command-line)</code> will return <br>
+<code>(&quot;/u/jimb/ex2&quot; &quot;a&quot; &quot;b&quot; &quot;c&quot;)</code>.
+</p>
+</dd>
+<dt><code>guile -c '(write %load-path) (newline)'</code></dt>
+<dd><p>Write the value of the variable <code>%load-path</code>, print a newline,
+and exit.
+</p>
+</dd>
+<dt><code>guile -e main -s /u/jimb/ex4 foo</code></dt>
+<dd><p>Load the file <samp>/u/jimb/ex4</samp>, and then call the function
+<code>main</code>, passing it the list <code>(&quot;/u/jimb/ex4&quot; &quot;foo&quot;)</code>.
+</p>
+</dd>
+<dt><code>guile -l first -ds -l last -s script</code></dt>
+<dd><p>Load the files <samp>first</samp>, <samp>script</samp>, and <samp>last</samp>, in that
+order.  The <code>-ds</code> switch says when to process the <code>-s</code>
+switch.  For a more motivated example, see the scripts below.
+</p>
+</dd>
+</dl>
+
+
+<p>Here is a very simple Guile script:
+</p><div class="example">
+<pre class="example">#!/usr/local/bin/guile -s
+!#
+(display &quot;Hello, world!&quot;)
+(newline)
+</pre></div>
+<p>The first line marks the file as a Guile script.  When the user invokes
+it, the system runs <samp>/usr/local/bin/guile</samp> to interpret the script,
+passing <code>-s</code>, the script&rsquo;s filename, and any arguments given to the
+script as command-line arguments.  When Guile sees <code>-s
+<var>script</var></code>, it loads <var>script</var>.  Thus, running this program
+produces the output:
+</p><div class="example">
+<pre class="example">Hello, world!
+</pre></div>
+
+<p>Here is a script which prints the factorial of its argument:
+</p><div class="example">
+<pre class="example">#!/usr/local/bin/guile -s
+!#
+(define (fact n)
+  (if (zero? n) 1
+    (* n (fact (- n 1)))))
+
+(display (fact (string-&gt;number (cadr (command-line)))))
+(newline)
+</pre></div>
+<p>In action:
+</p><div class="example">
+<pre class="example">$ ./fact 5
+120
+$
+</pre></div>
+
+<p>However, suppose we want to use the definition of <code>fact</code> in this
+file from another script.  We can&rsquo;t simply <code>load</code> the script file,
+and then use <code>fact</code>&rsquo;s definition, because the script will try to
+compute and display a factorial when we load it.  To avoid this problem,
+we might write the script this way:
+</p>
+<div class="example">
+<pre class="example">#!/usr/local/bin/guile \
+-e main -s
+!#
+(define (fact n)
+  (if (zero? n) 1
+    (* n (fact (- n 1)))))
+
+(define (main args)
+  (display (fact (string-&gt;number (cadr args))))
+  (newline))
+</pre></div>
+<p>This version packages the actions the script should perform in a
+function, <code>main</code>.  This allows us to load the file purely for its
+definitions, without any extraneous computation taking place.  Then we
+used the meta switch <code>\</code> and the entry point switch <code>-e</code> to
+tell Guile to call <code>main</code> after loading the script.
+</p><div class="example">
+<pre class="example">$ ./fact 50
+30414093201713378043612608166064768844377641568960512000000000000
+</pre></div>
+
+<p>Suppose that we now want to write a script which computes the
+<code>choose</code> function: given a set of <var>m</var> distinct objects,
+<code>(choose <var>n</var> <var>m</var>)</code> is the number of distinct subsets
+containing <var>n</var> objects each.  It&rsquo;s easy to write <code>choose</code> given
+<code>fact</code>, so we might write the script this way:
+</p><div class="example">
+<pre class="example">#!/usr/local/bin/guile \
+-l fact -e main -s
+!#
+(define (choose n m)
+  (/ (fact m) (* (fact (- m n)) (fact n))))
+
+(define (main args)
+  (let ((n (string-&gt;number (cadr args)))
+        (m (string-&gt;number (caddr args))))
+    (display (choose n m))
+    (newline)))
+</pre></div>
+
+<p>The command-line arguments here tell Guile to first load the file
+<samp>fact</samp>, and then run the script, with <code>main</code> as the entry
+point.  In other words, the <code>choose</code> script can use definitions
+made in the <code>fact</code> script.  Here are some sample runs:
+</p><div class="example">
+<pre class="example">$ ./choose 0 4
+1
+$ ./choose 1 4
+4
+$ ./choose 2 4
+6
+$ ./choose 3 4
+4
+$ ./choose 4 4
+1
+$ ./choose 50 100
+100891344545564193334812497256
+</pre></div>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Command-Line-Handling.html#Command-Line-Handling" accesskey="p" rel="prev">Command Line Handling</a>, Up: <a href="Guile-Scripting.html#Guile-Scripting" accesskey="u" rel="up">Guile Scripting</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

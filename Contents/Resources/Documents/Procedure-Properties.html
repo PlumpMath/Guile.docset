@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Procedure Properties</title>
+
+<meta name="description" content="Guile Reference Manual: Procedure Properties">
+<meta name="keywords" content="Guile Reference Manual: Procedure Properties">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Procedures.html#Procedures" rel="up" title="Procedures">
+<link href="Procedures-with-Setters.html#Procedures-with-Setters" rel="next" title="Procedures with Setters">
+<link href="Higher_002dOrder-Functions.html#Higher_002dOrder-Functions" rel="prev" title="Higher-Order Functions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Procedure-Properties"></a>
+<div class="header">
+<p>
+Next: <a href="Procedures-with-Setters.html#Procedures-with-Setters" accesskey="n" rel="next">Procedures with Setters</a>, Previous: <a href="Higher_002dOrder-Functions.html#Higher_002dOrder-Functions" accesskey="p" rel="prev">Higher-Order Functions</a>, Up: <a href="Procedures.html#Procedures" accesskey="u" rel="up">Procedures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Procedure-Properties-and-Meta_002dinformation"></a>
+<h4 class="subsection">6.9.7 Procedure Properties and Meta-information</h4>
+
+<p>In addition to the information that is strictly necessary to run,
+procedures may have other associated information. For example, the
+name of a procedure is information not for the procedure, but about
+the procedure. This meta-information can be accessed via the procedure
+properties interface.
+</p>
+<p>The first group of procedures in this meta-interface are predicates to
+test whether a Scheme object is a procedure, or a special procedure,
+respectively.  <code>procedure?</code> is the most general predicates, it
+returns <code>#t</code> for any kind of procedure.
+</p>
+<a name="index-procedure_003f-2"></a>
+<dl>
+<dt><a name="index-procedure_003f"></a>Scheme Procedure: <strong>procedure?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fprocedure_005fp"></a>C Function: <strong>scm_procedure_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a procedure.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-thunk_003f"></a>Scheme Procedure: <strong>thunk?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fthunk_005fp"></a>C Function: <strong>scm_thunk_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a thunk&mdash;a procedure that does
+not accept arguments.
+</p></dd></dl>
+
+<a name="index-procedure-properties"></a>
+<p>Procedure properties are general properties associated with
+procedures. These can be the name of a procedure or other relevant
+information, such as debug hints.
+</p>
+<dl>
+<dt><a name="index-procedure_002dname"></a>Scheme Procedure: <strong>procedure-name</strong> <em>proc</em></dt>
+<dt><a name="index-scm_005fprocedure_005fname"></a>C Function: <strong>scm_procedure_name</strong> <em>(proc)</em></dt>
+<dd><p>Return the name of the procedure <var>proc</var>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-procedure_002dsource"></a>Scheme Procedure: <strong>procedure-source</strong> <em>proc</em></dt>
+<dt><a name="index-scm_005fprocedure_005fsource"></a>C Function: <strong>scm_procedure_source</strong> <em>(proc)</em></dt>
+<dd><p>Return the source of the procedure <var>proc</var>. Returns <code>#f</code> if
+the source code is not available.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-procedure_002dproperties"></a>Scheme Procedure: <strong>procedure-properties</strong> <em>proc</em></dt>
+<dt><a name="index-scm_005fprocedure_005fproperties"></a>C Function: <strong>scm_procedure_properties</strong> <em>(proc)</em></dt>
+<dd><p>Return the properties associated with <var>proc</var>, as an association
+list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-procedure_002dproperty"></a>Scheme Procedure: <strong>procedure-property</strong> <em>proc key</em></dt>
+<dt><a name="index-scm_005fprocedure_005fproperty"></a>C Function: <strong>scm_procedure_property</strong> <em>(proc, key)</em></dt>
+<dd><p>Return the property of <var>proc</var> with name <var>key</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dprocedure_002dproperties_0021"></a>Scheme Procedure: <strong>set-procedure-properties!</strong> <em>proc alist</em></dt>
+<dt><a name="index-scm_005fset_005fprocedure_005fproperties_005fx"></a>C Function: <strong>scm_set_procedure_properties_x</strong> <em>(proc, alist)</em></dt>
+<dd><p>Set <var>proc</var>&rsquo;s property list to <var>alist</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dprocedure_002dproperty_0021"></a>Scheme Procedure: <strong>set-procedure-property!</strong> <em>proc key value</em></dt>
+<dt><a name="index-scm_005fset_005fprocedure_005fproperty_005fx"></a>C Function: <strong>scm_set_procedure_property_x</strong> <em>(proc, key, value)</em></dt>
+<dd><p>In <var>proc</var>&rsquo;s property list, set the property named <var>key</var> to
+<var>value</var>.
+</p></dd></dl>
+
+<a name="index-procedure-documentation"></a>
+<p>Documentation for a procedure can be accessed with the procedure
+<code>procedure-documentation</code>.
+</p>
+<dl>
+<dt><a name="index-procedure_002ddocumentation"></a>Scheme Procedure: <strong>procedure-documentation</strong> <em>proc</em></dt>
+<dt><a name="index-scm_005fprocedure_005fdocumentation"></a>C Function: <strong>scm_procedure_documentation</strong> <em>(proc)</em></dt>
+<dd><p>Return the documentation string associated with <code>proc</code>.  By
+convention, if a procedure contains more than one expression and the
+first expression is a string constant, that string is assumed to contain
+documentation for that procedure.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Procedures-with-Setters.html#Procedures-with-Setters" accesskey="n" rel="next">Procedures with Setters</a>, Previous: <a href="Higher_002dOrder-Functions.html#Higher_002dOrder-Functions" accesskey="p" rel="prev">Higher-Order Functions</a>, Up: <a href="Procedures.html#Procedures" accesskey="u" rel="up">Procedures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

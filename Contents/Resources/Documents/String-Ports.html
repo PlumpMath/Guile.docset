@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: String Ports</title>
+
+<meta name="description" content="Guile Reference Manual: String Ports">
+<meta name="keywords" content="Guile Reference Manual: String Ports">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Port-Types.html#Port-Types" rel="up" title="Port Types">
+<link href="Soft-Ports.html#Soft-Ports" rel="next" title="Soft Ports">
+<link href="File-Ports.html#File-Ports" rel="prev" title="File Ports">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="String-Ports"></a>
+<div class="header">
+<p>
+Next: <a href="Soft-Ports.html#Soft-Ports" accesskey="n" rel="next">Soft Ports</a>, Previous: <a href="File-Ports.html#File-Ports" accesskey="p" rel="prev">File Ports</a>, Up: <a href="Port-Types.html#Port-Types" accesskey="u" rel="up">Port Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="String-Ports-1"></a>
+<h4 class="subsubsection">6.14.9.2 String Ports</h4>
+<a name="index-String-port"></a>
+<a name="index-Port_002c-string"></a>
+
+<p>The following allow string ports to be opened by analogy to R4RS
+file port facilities:
+</p>
+<p>With string ports, the port-encoding is treated differently than other
+types of ports.  When string ports are created, they do not inherit a
+character encoding from the current locale.  They are given a
+default locale that allows them to handle all valid string characters.
+Typically one should not modify a string port&rsquo;s character encoding
+away from its default.
+</p>
+<dl>
+<dt><a name="index-call_002dwith_002doutput_002dstring"></a>Scheme Procedure: <strong>call-with-output-string</strong> <em>proc</em></dt>
+<dt><a name="index-scm_005fcall_005fwith_005foutput_005fstring"></a>C Function: <strong>scm_call_with_output_string</strong> <em>(proc)</em></dt>
+<dd><p>Calls the one-argument procedure <var>proc</var> with a newly created output
+port.  When the function returns, the string composed of the characters
+written into the port is returned.  <var>proc</var> should not close the port.
+</p>
+<p>Note that which characters can be written to a string port depend on the port&rsquo;s
+encoding.  The default encoding of string ports is specified by the
+<code>%default-port-encoding</code> fluid (see <a href="Ports.html#Ports"><code>%default-port-encoding</code></a>).  For instance, it is an error to write Greek
+letter alpha to an ISO-8859-1-encoded string port since this character cannot be
+represented with ISO-8859-1:
+</p>
+<div class="example">
+<pre class="example">(define alpha (integer-&gt;char #x03b1)) ; GREEK SMALL LETTER ALPHA
+
+(with-fluids ((%default-port-encoding &quot;ISO-8859-1&quot;))
+  (call-with-output-string
+    (lambda (p)
+      (display alpha p))))
+
+&rArr;
+Throw to key `encoding-error'
+</pre></div>
+
+<p>Changing the string port&rsquo;s encoding to a Unicode-capable encoding such as UTF-8
+solves the problem.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-call_002dwith_002dinput_002dstring"></a>Scheme Procedure: <strong>call-with-input-string</strong> <em>string proc</em></dt>
+<dt><a name="index-scm_005fcall_005fwith_005finput_005fstring"></a>C Function: <strong>scm_call_with_input_string</strong> <em>(string, proc)</em></dt>
+<dd><p>Calls the one-argument procedure <var>proc</var> with a newly
+created input port from which <var>string</var>&rsquo;s contents may be
+read.  The value yielded by the <var>proc</var> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-with_002doutput_002dto_002dstring"></a>Scheme Procedure: <strong>with-output-to-string</strong> <em>thunk</em></dt>
+<dd><p>Calls the zero-argument procedure <var>thunk</var> with the current output
+port set temporarily to a new string port.  It returns a string
+composed of the characters written to the current output.
+</p>
+<p>See <code>call-with-output-string</code> above for character encoding considerations.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-with_002dinput_002dfrom_002dstring"></a>Scheme Procedure: <strong>with-input-from-string</strong> <em>string thunk</em></dt>
+<dd><p>Calls the zero-argument procedure <var>thunk</var> with the current input
+port set temporarily to a string port opened on the specified
+<var>string</var>.  The value yielded by <var>thunk</var> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-open_002dinput_002dstring"></a>Scheme Procedure: <strong>open-input-string</strong> <em>str</em></dt>
+<dt><a name="index-scm_005fopen_005finput_005fstring"></a>C Function: <strong>scm_open_input_string</strong> <em>(str)</em></dt>
+<dd><p>Take a string and return an input port that delivers characters
+from the string. The port can be closed by
+<code>close-input-port</code>, though its storage will be reclaimed
+by the garbage collector if it becomes inaccessible.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-open_002doutput_002dstring"></a>Scheme Procedure: <strong>open-output-string</strong></dt>
+<dt><a name="index-scm_005fopen_005foutput_005fstring"></a>C Function: <strong>scm_open_output_string</strong> <em>()</em></dt>
+<dd><p>Return an output port that will accumulate characters for
+retrieval by <code>get-output-string</code>. The port can be closed
+by the procedure <code>close-output-port</code>, though its storage
+will be reclaimed by the garbage collector if it becomes
+inaccessible.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002doutput_002dstring"></a>Scheme Procedure: <strong>get-output-string</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fget_005foutput_005fstring"></a>C Function: <strong>scm_get_output_string</strong> <em>(port)</em></dt>
+<dd><p>Given an output port created by <code>open-output-string</code>,
+return a string consisting of the characters that have been
+output to the port so far.
+</p>
+<p><code>get-output-string</code> must be used before closing <var>port</var>, once
+closed the string cannot be obtained.
+</p></dd></dl>
+
+<p>A string port can be used in many procedures which accept a port
+but which are not dependent on implementation details of fports.
+E.g., seeking and truncating will work on a string port,
+but trying to extract the file descriptor number will fail.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Soft-Ports.html#Soft-Ports" accesskey="n" rel="next">Soft Ports</a>, Previous: <a href="File-Ports.html#File-Ports" accesskey="p" rel="prev">File Ports</a>, Up: <a href="Port-Types.html#Port-Types" accesskey="u" rel="up">Port Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

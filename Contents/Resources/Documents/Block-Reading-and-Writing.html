@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Block Reading and Writing</title>
+
+<meta name="description" content="Guile Reference Manual: Block Reading and Writing">
+<meta name="keywords" content="Guile Reference Manual: Block Reading and Writing">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Default-Ports.html#Default-Ports" rel="next" title="Default Ports">
+<link href="Line_002fDelimited.html#Line_002fDelimited" rel="prev" title="Line/Delimited">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Block-Reading-and-Writing"></a>
+<div class="header">
+<p>
+Next: <a href="Default-Ports.html#Default-Ports" accesskey="n" rel="next">Default Ports</a>, Previous: <a href="Line_002fDelimited.html#Line_002fDelimited" accesskey="p" rel="prev">Line/Delimited</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Block-reading-and-writing"></a>
+<h4 class="subsection">6.14.7 Block reading and writing</h4>
+<a name="index-Block-read_002fwrite"></a>
+<a name="index-Port_002c-block-read_002fwrite"></a>
+
+<p>The Block-string-I/O module can be accessed with:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (ice-9 rw))
+</pre></div>
+
+<p>It currently contains procedures that help to implement the
+<code>(scsh rw)</code> module in guile-scsh.
+</p>
+<dl>
+<dt><a name="index-read_002dstring_0021_002fpartial"></a>Scheme Procedure: <strong>read-string!/partial</strong> <em>str [port_or_fdes [start [end]]]</em></dt>
+<dt><a name="index-scm_005fread_005fstring_005fx_005fpartial"></a>C Function: <strong>scm_read_string_x_partial</strong> <em>(str, port_or_fdes, start, end)</em></dt>
+<dd><p>Read characters from a port or file descriptor into a
+string <var>str</var>.  A port must have an underlying file
+descriptor &mdash; a so-called fport.  This procedure is
+scsh-compatible and can efficiently read large strings.
+It will:
+</p>
+<ul>
+<li> attempt to fill the entire string, unless the <var>start</var>
+and/or <var>end</var> arguments are supplied.  i.e., <var>start</var>
+defaults to 0 and <var>end</var> defaults to
+<code>(string-length str)</code>
+</li><li> use the current input port if <var>port_or_fdes</var> is not
+supplied.
+</li><li> return fewer than the requested number of characters in some
+cases, e.g., on end of file, if interrupted by a signal, or if
+not all the characters are immediately available.
+</li><li> wait indefinitely for some input if no characters are
+currently available,
+unless the port is in non-blocking mode.
+</li><li> read characters from the port&rsquo;s input buffers if available,
+instead from the underlying file descriptor.
+</li><li> return <code>#f</code> if end-of-file is encountered before reading
+any characters, otherwise return the number of characters
+read.
+</li><li> return 0 if the port is in non-blocking mode and no characters
+are immediately available.
+</li><li> return 0 if the request is for 0 bytes, with no
+end-of-file check.
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-write_002dstring_002fpartial"></a>Scheme Procedure: <strong>write-string/partial</strong> <em>str [port_or_fdes [start [end]]]</em></dt>
+<dt><a name="index-scm_005fwrite_005fstring_005fpartial"></a>C Function: <strong>scm_write_string_partial</strong> <em>(str, port_or_fdes, start, end)</em></dt>
+<dd><p>Write characters from a string <var>str</var> to a port or file
+descriptor.  A port must have an underlying file descriptor
+&mdash; a so-called fport.  This procedure is
+scsh-compatible and can efficiently write large strings.
+It will:
+</p>
+<ul>
+<li> attempt to write the entire string, unless the <var>start</var>
+and/or <var>end</var> arguments are supplied.  i.e., <var>start</var>
+defaults to 0 and <var>end</var> defaults to
+<code>(string-length str)</code>
+</li><li> use the current output port if <var>port_of_fdes</var> is not
+supplied.
+</li><li> in the case of a buffered port, store the characters in the
+port&rsquo;s output buffer, if all will fit.  If they will not fit
+then any existing buffered characters will be flushed
+before attempting
+to write the new characters directly to the underlying file
+descriptor.  If the port is in non-blocking mode and
+buffered characters can not be flushed immediately, then an
+<code>EAGAIN</code> system-error exception will be raised (Note:
+scsh does not support the use of non-blocking buffered ports.)
+</li><li> write fewer than the requested number of
+characters in some cases, e.g., if interrupted by a signal or
+if not all of the output can be accepted immediately.
+</li><li> wait indefinitely for at least one character
+from <var>str</var> to be accepted by the port, unless the port is
+in non-blocking mode.
+</li><li> return the number of characters accepted by the port.
+</li><li> return 0 if the port is in non-blocking mode and can not accept
+at least one character from <var>str</var> immediately
+</li><li> return 0 immediately if the request size is 0 bytes.
+</li></ul>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Default-Ports.html#Default-Ports" accesskey="n" rel="next">Default Ports</a>, Previous: <a href="Line_002fDelimited.html#Line_002fDelimited" accesskey="p" rel="prev">Line/Delimited</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

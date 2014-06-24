@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Strings</title>
+
+<meta name="description" content="Guile Reference Manual: Strings">
+<meta name="keywords" content="Guile Reference Manual: Strings">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Simple-Data-Types.html#Simple-Data-Types" rel="up" title="Simple Data Types">
+<link href="String-Syntax.html#String-Syntax" rel="next" title="String Syntax">
+<link href="Standard-Character-Sets.html#Standard-Character-Sets" rel="prev" title="Standard Character Sets">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Strings"></a>
+<div class="header">
+<p>
+Next: <a href="Bytevectors.html#Bytevectors" accesskey="n" rel="next">Bytevectors</a>, Previous: <a href="Character-Sets.html#Character-Sets" accesskey="p" rel="prev">Character Sets</a>, Up: <a href="Simple-Data-Types.html#Simple-Data-Types" accesskey="u" rel="up">Simple Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Strings-1"></a>
+<h4 class="subsection">6.6.5 Strings</h4>
+<a name="index-Strings"></a>
+
+<p>Strings are fixed-length sequences of characters.  They can be created
+by calling constructor procedures, but they can also literally get
+entered at the <acronym>REPL</acronym> or in Scheme source files.
+</p>
+
+<p>Strings always carry the information about how many characters they are
+composed of with them, so there is no special end-of-string character,
+like in C.  That means that Scheme strings can contain any character,
+even the &lsquo;<samp>#\nul</samp>&rsquo; character &lsquo;<samp>\0</samp>&rsquo;.
+</p>
+<p>To use strings efficiently, you need to know a bit about how Guile
+implements them.  In Guile, a string consists of two parts, a head and
+the actual memory where the characters are stored.  When a string (or
+a substring of it) is copied, only a new head gets created, the memory
+is usually not copied.  The two heads start out pointing to the same
+memory.
+</p>
+<p>When one of these two strings is modified, as with <code>string-set!</code>,
+their common memory does get copied so that each string has its own
+memory and modifying one does not accidentally modify the other as well.
+Thus, Guile&rsquo;s strings are &lsquo;copy on write&rsquo;; the actual copying of their
+memory is delayed until one string is written to.
+</p>
+<p>This implementation makes functions like <code>substring</code> very
+efficient in the common case that no modifications are done to the
+involved strings.
+</p>
+<p>If you do know that your strings are getting modified right away, you
+can use <code>substring/copy</code> instead of <code>substring</code>.  This
+function performs the copy immediately at the time of creation.  This
+is more efficient, especially in a multi-threaded program.  Also,
+<code>substring/copy</code> can avoid the problem that a short substring
+holds on to the memory of a very large original string that could
+otherwise be recycled.
+</p>
+<p>If you want to avoid the copy altogether, so that modifications of one
+string show up in the other, you can use <code>substring/shared</code>.  The
+strings created by this procedure are called <em>mutation sharing
+substrings</em> since the substring and the original string share
+modifications to each other.
+</p>
+<p>If you want to prevent modifications, use <code>substring/read-only</code>.
+</p>
+<p>Guile provides all procedures of SRFI-13 and a few more.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="String-Syntax.html#String-Syntax" accesskey="1">String Syntax</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Read syntax for strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Predicates.html#String-Predicates" accesskey="2">String Predicates</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Testing strings for certain properties.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Constructors.html#String-Constructors" accesskey="3">String Constructors</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Creating new string objects.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List_002fString-Conversion.html#List_002fString-Conversion" accesskey="4">List/String Conversion</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Converting from/to lists of characters.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Selection.html#String-Selection" accesskey="5">String Selection</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Select portions from strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Modification.html#String-Modification" accesskey="6">String Modification</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Modify parts or whole strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Comparison.html#String-Comparison" accesskey="7">String Comparison</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Lexicographic ordering predicates.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Searching.html#String-Searching" accesskey="8">String Searching</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Searching in strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Alphabetic-Case-Mapping.html#Alphabetic-Case-Mapping" accesskey="9">Alphabetic Case Mapping</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Convert the alphabetic case of strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Reversing-and-Appending-Strings.html#Reversing-and-Appending-Strings">Reversing and Appending Strings</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Appending strings to form a new string.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Mapping-Folding-and-Unfolding.html#Mapping-Folding-and-Unfolding">Mapping Folding and Unfolding</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Iterating over strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Miscellaneous-String-Operations.html#Miscellaneous-String-Operations">Miscellaneous String Operations</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Replicating, insertion, parsing, ...
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Representing-Strings-as-Bytes.html#Representing-Strings-as-Bytes">Representing Strings as Bytes</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Encoding and decoding strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Conversion-to_002ffrom-C.html#Conversion-to_002ffrom-C">Conversion to/from C</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="String-Internals.html#String-Internals">String Internals</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The storage strategy for strings.
+</td></tr>
+</table>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Bytevectors.html#Bytevectors" accesskey="n" rel="next">Bytevectors</a>, Previous: <a href="Character-Sets.html#Character-Sets" accesskey="p" rel="prev">Character Sets</a>, Up: <a href="Simple-Data-Types.html#Simple-Data-Types" accesskey="u" rel="up">Simple Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

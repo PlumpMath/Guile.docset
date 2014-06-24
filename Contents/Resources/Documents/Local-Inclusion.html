@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Local Inclusion</title>
+
+<meta name="description" content="Guile Reference Manual: Local Inclusion">
+<meta name="keywords" content="Guile Reference Manual: Local Inclusion">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" rel="up" title="Read/Load/Eval/Compile">
+<link href="REPL-Servers.html#REPL-Servers" rel="next" title="REPL Servers">
+<link href="Local-Evaluation.html#Local-Evaluation" rel="prev" title="Local Evaluation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Local-Inclusion"></a>
+<div class="header">
+<p>
+Next: <a href="REPL-Servers.html#REPL-Servers" accesskey="n" rel="next">REPL Servers</a>, Previous: <a href="Local-Evaluation.html#Local-Evaluation" accesskey="p" rel="prev">Local Evaluation</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Local-Inclusion-1"></a>
+<h4 class="subsection">6.17.11 Local Inclusion</h4>
+
+<p>This section has discussed various means of linking Scheme code
+together: fundamentally, loading up files at run-time using <code>load</code>
+and <code>load-compiled</code>.  Guile provides another option to compose
+parts of programs together at expansion-time instead of at run-time.
+</p>
+<dl>
+<dt><a name="index-include"></a>Scheme Syntax: <strong>include</strong> <em>file-name</em></dt>
+<dd><p>Open <var>file-name</var>, at expansion-time, and read the Scheme forms that
+it contains, splicing them into the location of the <code>include</code>,
+within a <code>begin</code>.
+</p>
+<p>If <var>file-name</var> is a relative path, it is searched for relative to
+the path that contains the file that the <code>include</code> for appears in.
+</p></dd></dl>
+
+<p>If you are a C programmer, if <code>load</code> in Scheme is like
+<code>dlopen</code> in C, consider <code>include</code> to be like the C
+preprocessor&rsquo;s <code>#include</code>.  When you use <code>include</code>, it is as
+if the contents of the included file were typed in instead of the
+<code>include</code> form.
+</p>
+<p>Because the code is included at compile-time, it is available to the
+macroexpander.  Syntax definitions in the included file are available to
+later code in the form in which the <code>include</code> appears, without the
+need for <code>eval-when</code>.  (See <a href="Eval-When.html#Eval-When">Eval When</a>.)
+</p>
+<p>For the same reason, compiling a form that uses <code>include</code> results
+in one compilation unit, composed of multiple files.  Loading the
+compiled file is one <code>stat</code> operation for the compilation unit,
+instead of <code>2*<var>n</var></code> in the case of <code>load</code> (once for each
+loaded source file, and once each corresponding compiled file, in the
+best case).
+</p>
+<p>Unlike <code>load</code>, <code>include</code> also works within nested lexical
+contexts.  It so happens that the optimizer works best within a lexical
+context, because all of the uses of bindings in a lexical context are
+visible, so composing files by including them within a <code>(let ()
+...)</code> can sometimes lead to important speed improvements.
+</p>
+<p>On the other hand, <code>include</code> does have all the disadvantages of
+early binding: once the code with the <code>include</code> is compiled, no
+change to the included file is reflected in the future behavior of the
+including form.
+</p>
+<p>Also, the particular form of <code>include</code>, which requires an absolute
+path, or a path relative to the current directory at compile-time, is
+not very amenable to compiling the source in one place, but then
+installing the source to another place.  For this reason, Guile provides
+another form, <code>include-from-path</code>, which looks for the source file
+to include within a load path.
+</p>
+<dl>
+<dt><a name="index-include_002dfrom_002dpath"></a>Scheme Syntax: <strong>include-from-path</strong> <em>file-name</em></dt>
+<dd><p>Like <code>include</code>, but instead of expecting <code>file-name</code> to be an
+absolute file name, it is expected to be a relative path to search in
+the <code>%load-path</code>.
+</p></dd></dl>
+
+<p><code>include-from-path</code> is more useful when you want to install all of
+the source files for a package (as you should!).  It makes it possible
+to evaluate an installed file from source, instead of relying on the
+<code>.go</code> file being up to date.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="REPL-Servers.html#REPL-Servers" accesskey="n" rel="next">REPL Servers</a>, Previous: <a href="Local-Evaluation.html#Local-Evaluation" accesskey="p" rel="prev">Local Evaluation</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

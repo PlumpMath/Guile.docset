@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Signals</title>
+
+<meta name="description" content="Guile Reference Manual: Signals">
+<meta name="keywords" content="Guile Reference Manual: Signals">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="POSIX.html#POSIX" rel="up" title="POSIX">
+<link href="Terminals-and-Ptys.html#Terminals-and-Ptys" rel="next" title="Terminals and Ptys">
+<link href="Processes.html#Processes" rel="prev" title="Processes">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Signals"></a>
+<div class="header">
+<p>
+Next: <a href="Terminals-and-Ptys.html#Terminals-and-Ptys" accesskey="n" rel="next">Terminals and Ptys</a>, Previous: <a href="Processes.html#Processes" accesskey="p" rel="prev">Processes</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Signals-1"></a>
+<h4 class="subsection">7.2.8 Signals</h4>
+<a name="index-signal"></a>
+
+<p>The following procedures raise, handle and wait for signals.
+</p>
+<p>Scheme code signal handlers are run via a system async (see <a href="System-asyncs.html#System-asyncs">System asyncs</a>), so they&rsquo;re called in the handler&rsquo;s thread at the next safe
+opportunity.  Generally this is after any currently executing
+primitive procedure finishes (which could be a long time for
+primitives that wait for an external event).
+</p>
+<dl>
+<dt><a name="index-kill"></a>Scheme Procedure: <strong>kill</strong> <em>pid sig</em></dt>
+<dt><a name="index-scm_005fkill"></a>C Function: <strong>scm_kill</strong> <em>(pid, sig)</em></dt>
+<dd><p>Sends a signal to the specified process or group of processes.
+</p>
+<p><var>pid</var> specifies the processes to which the signal is sent:
+</p>
+<dl compact="compact">
+<dt><var>pid</var> greater than 0</dt>
+<dd><p>The process whose identifier is <var>pid</var>.
+</p></dd>
+<dt><var>pid</var> equal to 0</dt>
+<dd><p>All processes in the current process group.
+</p></dd>
+<dt><var>pid</var> less than -1</dt>
+<dd><p>The process group whose identifier is -<var>pid</var>
+</p></dd>
+<dt><var>pid</var> equal to -1</dt>
+<dd><p>If the process is privileged, all processes except for some special
+system processes.  Otherwise, all processes with the current effective
+user ID.
+</p></dd>
+</dl>
+
+<p><var>sig</var> should be specified using a variable corresponding to
+the Unix symbolic name, e.g.,
+</p>
+<dl>
+<dt><a name="index-SIGHUP"></a>Variable: <strong>SIGHUP</strong></dt>
+<dd><p>Hang-up signal.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SIGINT"></a>Variable: <strong>SIGINT</strong></dt>
+<dd><p>Interrupt signal.
+</p></dd></dl>
+
+<p>A full list of signals on the GNU system may be found in <a href="http://www.gnu.org/software/libc/manual/html_node/Standard-Signals.html#Standard-Signals">Standard
+Signals</a> in <cite>The GNU C Library Reference Manual</cite>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-raise"></a>Scheme Procedure: <strong>raise</strong> <em>sig</em></dt>
+<dt><a name="index-scm_005fraise"></a>C Function: <strong>scm_raise</strong> <em>(sig)</em></dt>
+<dd><p>Sends a specified signal <var>sig</var> to the current process, where
+<var>sig</var> is as described for the <code>kill</code> procedure.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sigaction"></a>Scheme Procedure: <strong>sigaction</strong> <em>signum [handler [flags [thread]]]</em></dt>
+<dt><a name="index-scm_005fsigaction"></a>C Function: <strong>scm_sigaction</strong> <em>(signum, handler, flags)</em></dt>
+<dt><a name="index-scm_005fsigaction_005ffor_005fthread"></a>C Function: <strong>scm_sigaction_for_thread</strong> <em>(signum, handler, flags, thread)</em></dt>
+<dd><p>Install or report the signal handler for a specified signal.
+</p>
+<p><var>signum</var> is the signal number, which can be specified using the value
+of variables such as <code>SIGINT</code>.
+</p>
+<p>If <var>handler</var> is omitted, <code>sigaction</code> returns a pair: the
+<acronym>CAR</acronym> is the current signal hander, which will be either an
+integer with the value <code>SIG_DFL</code> (default action) or
+<code>SIG_IGN</code> (ignore), or the Scheme procedure which handles the
+signal, or <code>#f</code> if a non-Scheme procedure handles the signal.
+The <acronym>CDR</acronym> contains the current <code>sigaction</code> flags for the
+handler.
+</p>
+<p>If <var>handler</var> is provided, it is installed as the new handler for
+<var>signum</var>.  <var>handler</var> can be a Scheme procedure taking one
+argument, or the value of <code>SIG_DFL</code> (default action) or
+<code>SIG_IGN</code> (ignore), or <code>#f</code> to restore whatever signal handler
+was installed before <code>sigaction</code> was first used.  When a scheme
+procedure has been specified, that procedure will run in the given
+<var>thread</var>.  When no thread has been given, the thread that made this
+call to <code>sigaction</code> is used.
+</p>
+<p><var>flags</var> is a <code>logior</code> (see <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>) of the
+following (where provided by the system), or <code>0</code> for none.
+</p>
+<dl>
+<dt><a name="index-SA_005fNOCLDSTOP"></a>Variable: <strong>SA_NOCLDSTOP</strong></dt>
+<dd><p>By default, <code>SIGCHLD</code> is signalled when a child process stops
+(ie. receives <code>SIGSTOP</code>), and when a child process terminates.
+With the <code>SA_NOCLDSTOP</code> flag, <code>SIGCHLD</code> is only signalled
+for termination, not stopping.
+</p>
+<p><code>SA_NOCLDSTOP</code> has no effect on signals other than
+<code>SIGCHLD</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SA_005fRESTART"></a>Variable: <strong>SA_RESTART</strong></dt>
+<dd><p>If a signal occurs while in a system call, deliver the signal then
+restart the system call (as opposed to returning an <code>EINTR</code> error
+from that call).
+</p></dd></dl>
+
+<p>The return value is a pair with information about the old handler as
+described above.
+</p>
+<p>This interface does not provide access to the &ldquo;signal blocking&rdquo;
+facility.  Maybe this is not needed, since the thread support may
+provide solutions to the problem of consistent access to data
+structures.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-restore_002dsignals"></a>Scheme Procedure: <strong>restore-signals</strong></dt>
+<dt><a name="index-scm_005frestore_005fsignals"></a>C Function: <strong>scm_restore_signals</strong> <em>()</em></dt>
+<dd><p>Return all signal handlers to the values they had before any call to
+<code>sigaction</code> was made.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-alarm"></a>Scheme Procedure: <strong>alarm</strong> <em>i</em></dt>
+<dt><a name="index-scm_005falarm"></a>C Function: <strong>scm_alarm</strong> <em>(i)</em></dt>
+<dd><p>Set a timer to raise a <code>SIGALRM</code> signal after the specified
+number of seconds (an integer).  It&rsquo;s advisable to install a signal
+handler for
+<code>SIGALRM</code> beforehand, since the default action is to terminate
+the process.
+</p>
+<p>The return value indicates the time remaining for the previous alarm,
+if any.  The new value replaces the previous alarm.  If there was
+no previous alarm, the return value is zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pause"></a>Scheme Procedure: <strong>pause</strong></dt>
+<dt><a name="index-scm_005fpause"></a>C Function: <strong>scm_pause</strong> <em>()</em></dt>
+<dd><p>Pause the current process (thread?) until a signal arrives whose
+action is to either terminate the current process or invoke a
+handler procedure.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sleep"></a>Scheme Procedure: <strong>sleep</strong> <em>secs</em></dt>
+<dt><a name="index-usleep"></a>Scheme Procedure: <strong>usleep</strong> <em>usecs</em></dt>
+<dt><a name="index-scm_005fsleep"></a>C Function: <strong>scm_sleep</strong> <em>(secs)</em></dt>
+<dt><a name="index-scm_005fusleep"></a>C Function: <strong>scm_usleep</strong> <em>(usecs)</em></dt>
+<dd><p>Wait the given period <var>secs</var> seconds or <var>usecs</var> microseconds
+(both integers).  If a signal arrives the wait stops and the return
+value is the time remaining, in seconds or microseconds respectively.
+If the period elapses with no signal the return is zero.
+</p>
+<p>On most systems the process scheduler is not microsecond accurate and
+the actual period slept by <code>usleep</code> might be rounded to a system
+clock tick boundary, which might be 10 milliseconds for instance.
+</p>
+<p>See <code>scm_std_sleep</code> and <code>scm_std_usleep</code> for equivalents at
+the C level (see <a href="Blocking.html#Blocking">Blocking</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getitimer"></a>Scheme Procedure: <strong>getitimer</strong> <em>which_timer</em></dt>
+<dt><a name="index-setitimer"></a>Scheme Procedure: <strong>setitimer</strong> <em>which_timer interval_seconds interval_microseconds periodic_seconds periodic_microseconds</em></dt>
+<dt><a name="index-scm_005fgetitimer"></a>C Function: <strong>scm_getitimer</strong> <em>(which_timer)</em></dt>
+<dt><a name="index-scm_005fsetitimer"></a>C Function: <strong>scm_setitimer</strong> <em>(which_timer, interval_seconds, interval_microseconds, periodic_seconds, periodic_microseconds)</em></dt>
+<dd><p>Get or set the periods programmed in certain system timers.  These
+timers have a current interval value which counts down and on reaching
+zero raises a signal.  An optional periodic value can be set to
+restart from there each time, for periodic operation.
+<var>which_timer</var> is one of the following values
+</p>
+<dl>
+<dt><a name="index-ITIMER_005fREAL"></a>Variable: <strong>ITIMER_REAL</strong></dt>
+<dd><p>A real-time timer, counting down elapsed real time.  At zero it raises
+<code>SIGALRM</code>.  This is like <code>alarm</code> above, but with a higher
+resolution period.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-ITIMER_005fVIRTUAL"></a>Variable: <strong>ITIMER_VIRTUAL</strong></dt>
+<dd><p>A virtual-time timer, counting down while the current process is
+actually using CPU.  At zero it raises <code>SIGVTALRM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-ITIMER_005fPROF"></a>Variable: <strong>ITIMER_PROF</strong></dt>
+<dd><p>A profiling timer, counting down while the process is running (like
+<code>ITIMER_VIRTUAL</code>) and also while system calls are running on the
+process&rsquo;s behalf.  At zero it raises a <code>SIGPROF</code>.
+</p>
+<p>This timer is intended for profiling where a program is spending its
+time (by looking where it is when the timer goes off).
+</p></dd></dl>
+
+<p><code>getitimer</code> returns the current timer value and its programmed
+restart value, as a list containing two pairs.  Each pair is a time in
+seconds and microseconds: <code>((<var>interval_secs</var>
+. <var>interval_usecs</var>) (<var>periodic_secs</var>
+. <var>periodic_usecs</var>))</code>.
+</p>
+<p><code>setitimer</code> sets the timer values similarly, in seconds and
+microseconds (which must be integers).  The periodic value can be zero
+to have the timer run down just once.  The return value is the timer&rsquo;s
+previous setting, in the same form as <code>getitimer</code> returns.
+</p>
+<div class="example">
+<pre class="example">(setitimer ITIMER_REAL
+           5 500000     ;; first SIGALRM in 5.5 seconds time
+           2 0)         ;; then repeat every 2 seconds
+</pre></div>
+
+<p>Although the timers are programmed in microseconds, the actual
+accuracy might not be that high.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Terminals-and-Ptys.html#Terminals-and-Ptys" accesskey="n" rel="next">Terminals and Ptys</a>, Previous: <a href="Processes.html#Processes" accesskey="p" rel="prev">Processes</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

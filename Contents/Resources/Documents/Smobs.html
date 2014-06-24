@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Smobs</title>
+
+<meta name="description" content="Guile Reference Manual: Smobs">
+<meta name="keywords" content="Guile Reference Manual: Smobs">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="API-Reference.html#API-Reference" rel="up" title="API Reference">
+<link href="Procedures.html#Procedures" rel="next" title="Procedures">
+<link href="Hash-Table-Reference.html#Hash-Table-Reference" rel="prev" title="Hash Table Reference">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Smobs"></a>
+<div class="header">
+<p>
+Next: <a href="Procedures.html#Procedures" accesskey="n" rel="next">Procedures</a>, Previous: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="p" rel="prev">Compound Data Types</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Smobs-1"></a>
+<h3 class="section">6.8 Smobs</h3>
+
+<a name="index-smob"></a>
+
+<p>This chapter contains reference information related to defining and
+working with smobs.  See <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029">Defining New Types (Smobs)</a> for a
+tutorial-like introduction to smobs.
+</p>
+<dl>
+<dt><a name="index-scm_005fmake_005fsmob_005ftype"></a>Function: <em>scm_t_bits</em> <strong>scm_make_smob_type</strong> <em>(const char *name, size_t size)</em></dt>
+<dd><p>This function adds a new smob type, named <var>name</var>, with instance size
+<var>size</var>, to the system.  The return value is a tag that is used in
+creating instances of the type.
+</p>
+<p>If <var>size</var> is 0, the default <em>free</em> function will do nothing.
+</p>
+<p>If <var>size</var> is not 0, the default <em>free</em> function will
+deallocate the memory block pointed to by <code>SCM_SMOB_DATA</code> with
+<code>scm_gc_free</code>.  The <var>what</var> parameter in the call to
+<code>scm_gc_free</code> will be <var>name</var>.
+</p>
+<p>Default values are provided for the <em>mark</em>, <em>free</em>,
+<em>print</em>, and <em>equalp</em> functions, as described in
+<a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029">Defining New Types (Smobs)</a>.  If you want to customize any of
+these functions, the call to <code>scm_make_smob_type</code> should be
+immediately followed by calls to one or several of
+<code>scm_set_smob_mark</code>, <code>scm_set_smob_free</code>,
+<code>scm_set_smob_print</code>, and/or <code>scm_set_smob_equalp</code>.
+</p></dd></dl>
+
+<a name="index-finalizer"></a>
+<a name="index-finalization"></a>
+
+<dl>
+<dt><a name="index-scm_005fset_005fsmob_005ffree"></a>C Function: <em>void</em> <strong>scm_set_smob_free</strong> <em>(scm_t_bits tc, size_t (*free) (SCM obj))</em></dt>
+<dd><p>This function sets the smob freeing procedure (sometimes referred to as
+a <em>finalizer</em>) for the smob type specified by the tag
+<var>tc</var>. <var>tc</var> is the tag returned by <code>scm_make_smob_type</code>.
+</p>
+<p>The <var>free</var> procedure must deallocate all resources that are
+directly associated with the smob instance <var>obj</var>.  It must assume
+that all <code>SCM</code> values that it references have already been freed
+and are thus invalid.
+</p>
+<p>It must also not call any libguile function or macro except
+<code>scm_gc_free</code>, <code>SCM_SMOB_FLAGS</code>, <code>SCM_SMOB_DATA</code>,
+<code>SCM_SMOB_DATA_2</code>, and <code>SCM_SMOB_DATA_3</code>.
+</p>
+<p>The <var>free</var> procedure must return 0.
+</p>
+<p>Note that defining a freeing procedure is not necessary if the resources
+associated with <var>obj</var> consists only of memory allocated with
+<code>scm_gc_malloc</code> or <code>scm_gc_malloc_pointerless</code> because this
+memory is automatically reclaimed by the garbage collector when it is no
+longer needed (see <a href="Memory-Blocks.html#Memory-Blocks"><code>scm_gc_malloc</code></a>).
+</p></dd></dl>
+
+<a name="index-precise-marking"></a>
+
+<dl>
+<dt><a name="index-scm_005fset_005fsmob_005fmark"></a>C Function: <em>void</em> <strong>scm_set_smob_mark</strong> <em>(scm_t_bits tc, SCM (*mark) (SCM obj))</em></dt>
+<dd><p>This function sets the smob marking procedure for the smob type specified by
+the tag <var>tc</var>. <var>tc</var> is the tag returned by <code>scm_make_smob_type</code>.
+</p>
+<p>Defining a marking procedure may sometimes be unnecessary because large
+parts of the process&rsquo; memory (with the exception of
+<code>scm_gc_malloc_pointerless</code> regions, and <code>malloc</code>- or
+<code>scm_malloc</code>-allocated memory) are scanned for live
+pointers<a name="DOCF8" href="#FOOT8"><sup>8</sup></a>.
+</p>
+<p>The <var>mark</var> procedure must cause <code>scm_gc_mark</code> to be called
+for every <code>SCM</code> value that is directly referenced by the smob
+instance <var>obj</var>.  One of these <code>SCM</code> values can be returned
+from the procedure and Guile will call <code>scm_gc_mark</code> for it.
+This can be used to avoid deep recursions for smob instances that form
+a list.
+</p>
+<p>It must not call any libguile function or macro except
+<code>scm_gc_mark</code>, <code>SCM_SMOB_FLAGS</code>, <code>SCM_SMOB_DATA</code>,
+<code>SCM_SMOB_DATA_2</code>, and <code>SCM_SMOB_DATA_3</code>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-scm_005fset_005fsmob_005fprint"></a>C Function: <em>void</em> <strong>scm_set_smob_print</strong> <em>(scm_t_bits tc, int (*print) (SCM obj, SCM port, scm_print_state* pstate))</em></dt>
+<dd><p>This function sets the smob printing procedure for the smob type
+specified by the tag <var>tc</var>. <var>tc</var> is the tag returned by
+<code>scm_make_smob_type</code>.
+</p>
+<p>The <var>print</var> procedure should output a textual representation of
+the smob instance <var>obj</var> to <var>port</var>, using information in
+<var>pstate</var>.
+</p>
+<p>The textual representation should be of the form <code>#&lt;name ...&gt;</code>.
+This ensures that <code>read</code> will not interpret it as some other
+Scheme value.
+</p>
+<p>It is often best to ignore <var>pstate</var> and just print to <var>port</var>
+with <code>scm_display</code>, <code>scm_write</code>, <code>scm_simple_format</code>,
+and <code>scm_puts</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fset_005fsmob_005fequalp"></a>C Function: <em>void</em> <strong>scm_set_smob_equalp</strong> <em>(scm_t_bits tc, SCM (*equalp) (SCM obj1, SCM obj2))</em></dt>
+<dd><p>This function sets the smob equality-testing predicate for the smob
+type specified by the tag <var>tc</var>. <var>tc</var> is the tag returned by
+<code>scm_make_smob_type</code>.
+</p>
+<p>The <var>equalp</var> procedure should return <code>SCM_BOOL_T</code> when
+<var>obj1</var> is <code>equal?</code> to <var>obj2</var>.  Else it should return
+<code>SCM_BOOL_F</code>.  Both <var>obj1</var> and <var>obj2</var> are instances of the
+smob type <var>tc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fassert_005fsmob_005ftype"></a>C Function: <em>void</em> <strong>scm_assert_smob_type</strong> <em>(scm_t_bits tag, SCM val)</em></dt>
+<dd><p>When <var>val</var> is a smob of the type indicated by <var>tag</var>, do nothing.
+Else, signal an error.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSMOB_005fPREDICATE"></a>C Macro: <em>int</em> <strong>SCM_SMOB_PREDICATE</strong> <em>(scm_t_bits tag, SCM exp)</em></dt>
+<dd><p>Return true if <var>exp</var> is a smob instance of the type indicated by
+<var>tag</var>, or false otherwise.  The expression <var>exp</var> can be
+evaluated more than once, so it shouldn&rsquo;t contain any side effects.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fnew_005fsmob"></a>C Function: <em>SCM</em> <strong>scm_new_smob</strong> <em>(scm_t_bits tag, void *data)</em></dt>
+<dt><a name="index-scm_005fnew_005fdouble_005fsmob"></a>C Function: <em>SCM</em> <strong>scm_new_double_smob</strong> <em>(scm_t_bits tag, void *data, void *data2, void *data3)</em></dt>
+<dd><p>Make a new smob of the type with tag <var>tag</var> and smob data <var>data</var>,
+<var>data2</var>, and <var>data3</var>, as appropriate.
+</p>
+<p>The <var>tag</var> is what has been returned by <code>scm_make_smob_type</code>.
+The initial values <var>data</var>, <var>data2</var>, and <var>data3</var> are of
+type <code>scm_t_bits</code>; when you want to use them for <code>SCM</code>
+values, these values need to be converted to a <code>scm_t_bits</code> first
+by using <code>SCM_UNPACK</code>.
+</p>
+<p>The flags of the smob instance start out as zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSMOB_005fFLAGS"></a>C Macro: <em>scm_t_bits</em> <strong>SCM_SMOB_FLAGS</strong> <em>(SCM obj)</em></dt>
+<dd><p>Return the 16 extra bits of the smob <var>obj</var>.  No meaning is
+predefined for these bits, you can use them freely.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fFLAGS"></a>C Macro: <em>scm_t_bits</em> <strong>SCM_SET_SMOB_FLAGS</strong> <em>(SCM obj, scm_t_bits flags)</em></dt>
+<dd><p>Set the 16 extra bits of the smob <var>obj</var> to <var>flags</var>.  No
+meaning is predefined for these bits, you can use them freely.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSMOB_005fDATA"></a>C Macro: <em>scm_t_bits</em> <strong>SCM_SMOB_DATA</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-SCM_005fSMOB_005fDATA_005f2"></a>C Macro: <em>scm_t_bits</em> <strong>SCM_SMOB_DATA_2</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-SCM_005fSMOB_005fDATA_005f3"></a>C Macro: <em>scm_t_bits</em> <strong>SCM_SMOB_DATA_3</strong> <em>(SCM obj)</em></dt>
+<dd><p>Return the first (second, third) immediate word of the smob <var>obj</var>
+as a <code>scm_t_bits</code> value.  When the word contains a <code>SCM</code>
+value, use <code>SCM_SMOB_OBJECT</code> (etc.) instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fDATA"></a>C Macro: <em>void</em> <strong>SCM_SET_SMOB_DATA</strong> <em>(SCM obj, scm_t_bits val)</em></dt>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fDATA_005f2"></a>C Macro: <em>void</em> <strong>SCM_SET_SMOB_DATA_2</strong> <em>(SCM obj, scm_t_bits val)</em></dt>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fDATA_005f3"></a>C Macro: <em>void</em> <strong>SCM_SET_SMOB_DATA_3</strong> <em>(SCM obj, scm_t_bits val)</em></dt>
+<dd><p>Set the first (second, third) immediate word of the smob <var>obj</var> to
+<var>val</var>.  When the word should be set to a <code>SCM</code> value, use
+<code>SCM_SMOB_SET_OBJECT</code> (etc.) instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSMOB_005fOBJECT"></a>C Macro: <em>SCM</em> <strong>SCM_SMOB_OBJECT</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-SCM_005fSMOB_005fOBJECT_005f2"></a>C Macro: <em>SCM</em> <strong>SCM_SMOB_OBJECT_2</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-SCM_005fSMOB_005fOBJECT_005f3"></a>C Macro: <em>SCM</em> <strong>SCM_SMOB_OBJECT_3</strong> <em>(SCM obj)</em></dt>
+<dd><p>Return the first (second, third) immediate word of the smob <var>obj</var>
+as a <code>SCM</code> value.  When the word contains a <code>scm_t_bits</code>
+value, use <code>SCM_SMOB_DATA</code> (etc.) instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fOBJECT"></a>C Macro: <em>void</em> <strong>SCM_SET_SMOB_OBJECT</strong> <em>(SCM obj, SCM val)</em></dt>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fOBJECT_005f2"></a>C Macro: <em>void</em> <strong>SCM_SET_SMOB_OBJECT_2</strong> <em>(SCM obj, SCM val)</em></dt>
+<dt><a name="index-SCM_005fSET_005fSMOB_005fOBJECT_005f3"></a>C Macro: <em>void</em> <strong>SCM_SET_SMOB_OBJECT_3</strong> <em>(SCM obj, SCM val)</em></dt>
+<dd><p>Set the first (second, third) immediate word of the smob <var>obj</var> to
+<var>val</var>.  When the word should be set to a <code>scm_t_bits</code> value, use
+<code>SCM_SMOB_SET_DATA</code> (etc.) instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fSMOB_005fOBJECT_005fLOC"></a>C Macro: <em>SCM *</em> <strong>SCM_SMOB_OBJECT_LOC</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-SCM_005fSMOB_005fOBJECT_005f2_005fLOC"></a>C Macro: <em>SCM *</em> <strong>SCM_SMOB_OBJECT_2_LOC</strong> <em>(SCM obj)</em></dt>
+<dt><a name="index-SCM_005fSMOB_005fOBJECT_005f3_005fLOC"></a>C Macro: <em>SCM *</em> <strong>SCM_SMOB_OBJECT_3_LOC</strong> <em>(SCM obj)</em></dt>
+<dd><p>Return a pointer to the first (second, third) immediate word of the
+smob <var>obj</var>.  Note that this is a pointer to <code>SCM</code>.  If you
+need to work with <code>scm_t_bits</code> values, use <code>SCM_PACK</code> and
+<code>SCM_UNPACK</code>, as appropriate.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fmarkcdr"></a>Function: <em>SCM</em> <strong>scm_markcdr</strong> <em>(SCM <var>x</var>)</em></dt>
+<dd><p>Mark the references in the smob <var>x</var>, assuming that <var>x</var>&rsquo;s first
+data word contains an ordinary Scheme object, and <var>x</var> refers to no
+other objects.  This function simply returns <var>x</var>&rsquo;s first data word.
+</p></dd></dl>
+
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT8" href="#DOCF8">(8)</a></h3>
+<p>Conversely, in Guile up to the 1.8 series, the marking
+procedure was always required.  The reason is that Guile&rsquo;s GC would only
+look for pointers in the memory area used for built-in types (the
+<em>cell heap</em>), not in user-allocated or statically allocated memory.
+This approach is often referred to as <em>precise marking</em>.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Procedures.html#Procedures" accesskey="n" rel="next">Procedures</a>, Previous: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="p" rel="prev">Compound Data Types</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

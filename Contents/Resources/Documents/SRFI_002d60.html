@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-60</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-60">
+<meta name="keywords" content="Guile Reference Manual: SRFI-60">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d61.html#SRFI_002d61" rel="next" title="SRFI-61">
+<link href="SRFI_002d55.html#SRFI_002d55" rel="prev" title="SRFI-55">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d60"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d61.html#SRFI_002d61" accesskey="n" rel="next">SRFI-61</a>, Previous: <a href="SRFI_002d55.html#SRFI_002d55" accesskey="p" rel="prev">SRFI-55</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d60-_002d-Integers-as-Bits"></a>
+<h4 class="subsection">7.5.33 SRFI-60 - Integers as Bits</h4>
+<a name="index-SRFI_002d60"></a>
+<a name="index-integers-as-bits"></a>
+<a name="index-bitwise-logical"></a>
+
+<p>This SRFI provides various functions for treating integers as bits and
+for bitwise manipulations.  These functions can be obtained with,
+</p>
+<div class="example">
+<pre class="example">(use-modules (srfi srfi-60))
+</pre></div>
+
+<p>Integers are treated as infinite precision twos-complement, the same
+as in the core logical functions (see <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>).  And
+likewise bit indexes start from 0 for the least significant bit.  The
+following functions in this SRFI are already in the Guile core,
+</p>
+<blockquote>
+<p><code>logand</code>,
+<code>logior</code>,
+<code>logxor</code>,
+<code>lognot</code>,
+<code>logtest</code>,
+<code>logcount</code>,
+<code>integer-length</code>,
+<code>logbit?</code>,
+<code>ash</code>
+</p></blockquote>
+
+<br>
+<dl>
+<dt><a name="index-bitwise_002dand"></a>Function: <strong>bitwise-and</strong> <em>n1 ...</em></dt>
+<dt><a name="index-bitwise_002dior"></a>Function: <strong>bitwise-ior</strong> <em>n1 ...</em></dt>
+<dt><a name="index-bitwise_002dxor"></a>Function: <strong>bitwise-xor</strong> <em>n1 ...</em></dt>
+<dt><a name="index-bitwise_002dnot"></a>Function: <strong>bitwise-not</strong> <em>n</em></dt>
+<dt><a name="index-any_002dbits_002dset_003f"></a>Function: <strong>any-bits-set?</strong> <em>j k</em></dt>
+<dt><a name="index-bit_002dset_003f"></a>Function: <strong>bit-set?</strong> <em>index n</em></dt>
+<dt><a name="index-arithmetic_002dshift"></a>Function: <strong>arithmetic-shift</strong> <em>n count</em></dt>
+<dt><a name="index-bit_002dfield"></a>Function: <strong>bit-field</strong> <em>n start end</em></dt>
+<dt><a name="index-bit_002dcount-1"></a>Function: <strong>bit-count</strong> <em>n</em></dt>
+<dd><p>Aliases for <code>logand</code>, <code>logior</code>, <code>logxor</code>,
+<code>lognot</code>, <code>logtest</code>, <code>logbit?</code>, <code>ash</code>,
+<code>bit-extract</code> and <code>logcount</code> respectively.
+</p>
+<p>Note that the name <code>bit-count</code> conflicts with <code>bit-count</code> in
+the core (see <a href="Bit-Vectors.html#Bit-Vectors">Bit Vectors</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bitwise_002dif"></a>Function: <strong>bitwise-if</strong> <em>mask n1 n0</em></dt>
+<dt><a name="index-bitwise_002dmerge"></a>Function: <strong>bitwise-merge</strong> <em>mask n1 n0</em></dt>
+<dd><p>Return an integer with bits selected from <var>n1</var> and <var>n0</var>
+according to <var>mask</var>.  Those bits where <var>mask</var> has 1s are taken
+from <var>n1</var>, and those where <var>mask</var> has 0s are taken from
+<var>n0</var>.
+</p>
+<div class="example">
+<pre class="example">(bitwise-if 3 #b0101 #b1010) &rArr; 9
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-log2_002dbinary_002dfactors"></a>Function: <strong>log2-binary-factors</strong> <em>n</em></dt>
+<dt><a name="index-first_002dset_002dbit"></a>Function: <strong>first-set-bit</strong> <em>n</em></dt>
+<dd><p>Return a count of how many factors of 2 are present in <var>n</var>.  This
+is also the bit index of the lowest 1 bit in <var>n</var>.  If <var>n</var> is
+0, the return is <em>-1</em>.
+</p>
+<div class="example">
+<pre class="example">(log2-binary-factors 6) &rArr; 1
+(log2-binary-factors -8) &rArr; 3
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-copy_002dbit"></a>Function: <strong>copy-bit</strong> <em>index n newbit</em></dt>
+<dd><p>Return <var>n</var> with the bit at <var>index</var> set according to
+<var>newbit</var>.  <var>newbit</var> should be <code>#t</code> to set the bit to 1,
+or <code>#f</code> to set it to 0.  Bits other than at <var>index</var> are
+unchanged in the return.
+</p>
+<div class="example">
+<pre class="example">(copy-bit 1 #b0101 #t) &rArr; 7
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-copy_002dbit_002dfield"></a>Function: <strong>copy-bit-field</strong> <em>n newbits start end</em></dt>
+<dd><p>Return <var>n</var> with the bits from <var>start</var> (inclusive) to <var>end</var>
+(exclusive) changed to the value <var>newbits</var>.
+</p>
+<p>The least significant bit in <var>newbits</var> goes to <var>start</var>, the
+next to <em><var>start</var>+1</em>, etc.  Anything in <var>newbits</var> past the
+<var>end</var> given is ignored.
+</p>
+<div class="example">
+<pre class="example">(copy-bit-field #b10000 #b11 1 3) &rArr; #b10110
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-rotate_002dbit_002dfield"></a>Function: <strong>rotate-bit-field</strong> <em>n count start end</em></dt>
+<dd><p>Return <var>n</var> with the bit field from <var>start</var> (inclusive) to
+<var>end</var> (exclusive) rotated upwards by <var>count</var> bits.
+</p>
+<p><var>count</var> can be positive or negative, and it can be more than the
+field width (it&rsquo;ll be reduced modulo the width).
+</p>
+<div class="example">
+<pre class="example">(rotate-bit-field #b0110 2 1 4) &rArr; #b1010
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-reverse_002dbit_002dfield"></a>Function: <strong>reverse-bit-field</strong> <em>n start end</em></dt>
+<dd><p>Return <var>n</var> with the bits from <var>start</var> (inclusive) to <var>end</var>
+(exclusive) reversed.
+</p>
+<div class="example">
+<pre class="example">(reverse-bit-field #b101001 2 4) &rArr; #b100101
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-integer_002d_003elist"></a>Function: <strong>integer-&gt;list</strong> <em>n [len]</em></dt>
+<dd><p>Return bits from <var>n</var> in the form of a list of <code>#t</code> for 1 and
+<code>#f</code> for 0.  The least significant <var>len</var> bits are returned,
+and the first list element is the most significant of those bits.  If
+<var>len</var> is not given, the default is <code>(integer-length <var>n</var>)</code>
+(see <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>).
+</p>
+<div class="example">
+<pre class="example">(integer-&gt;list 6)   &rArr; (#t #t #f)
+(integer-&gt;list 1 4) &rArr; (#f #f #f #t)
+</pre></div>
+</dd></dl>
+   
+<dl>
+<dt><a name="index-list_002d_003einteger"></a>Function: <strong>list-&gt;integer</strong> <em>lst</em></dt>
+<dt><a name="index-booleans_002d_003einteger"></a>Function: <strong>booleans-&gt;integer</strong> <em>bool&hellip;</em></dt>
+<dd><p>Return an integer formed bitwise from the given <var>lst</var> list of
+booleans, or for <code>booleans-&gt;integer</code> from the <var>bool</var>
+arguments.
+</p>
+<p>Each boolean is <code>#t</code> for a 1 and <code>#f</code> for a 0.  The first
+element becomes the most significant bit in the return.
+</p>
+<div class="example">
+<pre class="example">(list-&gt;integer '(#t #f #t #f)) &rArr; 10
+</pre></div>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d61.html#SRFI_002d61" accesskey="n" rel="next">SRFI-61</a>, Previous: <a href="SRFI_002d55.html#SRFI_002d55" accesskey="p" rel="prev">SRFI-55</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

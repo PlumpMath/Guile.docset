@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs hashtables</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs hashtables">
+<meta name="keywords" content="Guile Reference Manual: rnrs hashtables">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-enums.html#rnrs-enums" rel="next" title="rnrs enums">
+<link href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase" rel="prev" title="rnrs syntax-case">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-hashtables"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-enums.html#rnrs-enums" accesskey="n" rel="next">rnrs enums</a>, Previous: <a href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase" accesskey="p" rel="prev">rnrs syntax-case</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-hashtables-1"></a>
+<h4 class="subsubsection">7.6.2.23 rnrs hashtables</h4>
+
+<p>The <code>(rnrs hashtables (6))</code> library provides structures and
+procedures for creating and accessing hash tables.  The hash tables API
+defined by R6RS is substantially similar to both Guile&rsquo;s native hash 
+tables implementation as well as the one provided by SRFI-69; 
+See <a href="Hash-Tables.html#Hash-Tables">Hash Tables</a>, and <a href="SRFI_002d69.html#SRFI_002d69">SRFI-69</a>, respectively.  Note that you can
+write portable R6RS library code that manipulates SRFI-69 hash tables 
+(by importing the <code>(srfi :69)</code> library); however, hash tables 
+created by one API cannot be used by another.
+</p>
+<p>Like SRFI-69 hash tables&mdash;and unlike Guile&rsquo;s native ones&mdash;R6RS hash 
+tables associate hash and equality functions with a hash table at the 
+time of its creation.  Additionally, R6RS allows for the creation
+(via <code>hashtable-copy</code>; see below) of immutable hash tables.
+</p>
+<dl>
+<dt><a name="index-make_002deq_002dhashtable"></a>Scheme Procedure: <strong>make-eq-hashtable</strong></dt>
+<dt><a name="index-make_002deq_002dhashtable-1"></a>Scheme Procedure: <strong>make-eq-hashtable</strong> <em>k</em></dt>
+<dd><p>Returns a new hash table that uses <code>eq?</code> to compare keys and 
+Guile&rsquo;s <code>hashq</code> procedure as a hash function.  If <var>k</var> is given,
+it specifies the initial capacity of the hash table.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002deqv_002dhashtable"></a>Scheme Procedure: <strong>make-eqv-hashtable</strong></dt>
+<dt><a name="index-make_002deqv_002dhashtable-1"></a>Scheme Procedure: <strong>make-eqv-hashtable</strong> <em>k</em></dt>
+<dd><p>Returns a new hash table that uses <code>eqv?</code> to compare keys and
+Guile&rsquo;s <code>hashv</code> procedure as a hash function.  If <var>k</var> is given,
+it specifies the initial capacity of the hash table.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dhashtable"></a>Scheme Procedure: <strong>make-hashtable</strong> <em>hash-function equiv</em></dt>
+<dt><a name="index-make_002dhashtable-1"></a>Scheme Procedure: <strong>make-hashtable</strong> <em>hash-function equiv k</em></dt>
+<dd><p>Returns a new hash table that uses <var>equiv</var> to compare keys and
+<var>hash-function</var> as a hash function.  <var>equiv</var> must be a procedure
+that accepts two arguments and returns a true value if they are 
+equivalent, <code>#f</code> otherwise; <var>hash-function</var> must be a procedure
+that accepts one argument and returns a non-negative integer.
+</p>
+<p>If <var>k</var> is given, it specifies the initial capacity of the hash 
+table.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_003f"></a>Scheme Procedure: <strong>hashtable?</strong> <em>obj</em></dt>
+<dd><p>Returns <code>#t</code> if <var>obj</var> is an R6RS hash table, <code>#f</code> 
+otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dsize"></a>Scheme Procedure: <strong>hashtable-size</strong> <em>hashtable</em></dt>
+<dd><p>Returns the number of keys currently in the hash table <var>hashtable</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dref"></a>Scheme Procedure: <strong>hashtable-ref</strong> <em>hashtable key default</em></dt>
+<dd><p>Returns the value associated with <var>key</var> in the hash table
+<var>hashtable</var>, or <var>default</var> if none is found.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dset_0021"></a>Scheme Procedure: <strong>hashtable-set!</strong> <em>hashtable key obj</em></dt>
+<dd><p>Associates the key <var>key</var> with the value <var>obj</var> in the hash table
+<var>hashtable</var>, and returns an unspecified value.  An <code>&amp;assertion</code>
+condition is raised if <var>hashtable</var> is immutable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002ddelete_0021"></a>Scheme Procedure: <strong>hashtable-delete!</strong> <em>hashtable key</em></dt>
+<dd><p>Removes any association found for the key <var>key</var> in the hash table
+<var>hashtable</var>, and returns an unspecified value.  An <code>&amp;assertion</code>
+condition is raised if <var>hashtable</var> is immutable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dcontains_003f"></a>Scheme Procedure: <strong>hashtable-contains?</strong> <em>hashtable key</em></dt>
+<dd><p>Returns <code>#t</code> if the hash table <var>hashtable</var> contains an
+association for the key <var>key</var>, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dupdate_0021"></a>Scheme Procedure: <strong>hashtable-update!</strong> <em>hashtable key proc default</em></dt>
+<dd><p>Associates with <var>key</var> in the hash table <var>hashtable</var> the result 
+of calling <var>proc</var>, which must be a procedure that takes one 
+argument, on the value currently associated <var>key</var> in 
+<var>hashtable</var>&mdash;or on <var>default</var> if no such association exists.
+An <code>&amp;assertion</code> condition is raised if <var>hashtable</var> is
+immutable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dcopy"></a>Scheme Procedure: <strong>hashtable-copy</strong> <em>hashtable</em></dt>
+<dt><a name="index-hashtable_002dcopy-1"></a>Scheme Procedure: <strong>hashtable-copy</strong> <em>hashtable mutable</em></dt>
+<dd><p>Returns a copy of the hash table <var>hashtable</var>.  If the optional
+argument <var>mutable</var> is provided and is a true value, the new hash
+table will be mutable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dclear_0021"></a>Scheme Procedure: <strong>hashtable-clear!</strong> <em>hashtable</em></dt>
+<dt><a name="index-hashtable_002dclear_0021-1"></a>Scheme Procedure: <strong>hashtable-clear!</strong> <em>hashtable k</em></dt>
+<dd><p>Removes all of the associations from the hash table <var>hashtable</var>.
+The optional argument <var>k</var>, which specifies a new capacity for the
+hash table, is accepted by Guile&rsquo;s <code>(rnrs hashtables)</code> 
+implementation, but is ignored.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dkeys"></a>Scheme Procedure: <strong>hashtable-keys</strong> <em>hashtable</em></dt>
+<dd><p>Returns a vector of the keys with associations in the hash table 
+<var>hashtable</var>, in an unspecified order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dentries"></a>Scheme Procedure: <strong>hashtable-entries</strong> <em>hashtable</em></dt>
+<dd><p>Return two values&mdash;a vector of the keys with associations in the hash
+table <var>hashtable</var>, and a vector of the values to which these keys
+are mapped, in corresponding but unspecified order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dequivalence_002dfunction"></a>Scheme Procedure: <strong>hashtable-equivalence-function</strong> <em>hashtable</em></dt>
+<dd><p>Returns the equivalence predicated use by <var>hashtable</var>.  This
+procedure returns <code>eq?</code> and <code>eqv?</code>, respectively, for hash
+tables created by <code>make-eq-hashtable</code> and 
+<code>make-eqv-hashtable</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dhash_002dfunction"></a>Scheme Procedure: <strong>hashtable-hash-function</strong> <em>hashtable</em></dt>
+<dd><p>Returns the hash function used by <var>hashtable</var>.  For hash tables
+created by <code>make-eq-hashtable</code> or <code>make-eqv-hashtable</code>, 
+<code>#f</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hashtable_002dmutable_003f"></a>Scheme Procedure: <strong>hashtable-mutable?</strong> <em>hashtable</em></dt>
+<dd><p>Returns <code>#t</code> if <var>hashtable</var> is mutable, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<p>A number of hash functions are provided for convenience:
+</p>
+<dl>
+<dt><a name="index-equal_002dhash"></a>Scheme Procedure: <strong>equal-hash</strong> <em>obj</em></dt>
+<dd><p>Returns an integer hash value for <var>obj</var>, based on its structure and 
+current contents. This hash function is suitable for use with 
+<code>equal?</code> as an equivalence function.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dhash-2"></a>Scheme Procedure: <strong>string-hash</strong> <em>string</em></dt>
+<dt><a name="index-symbol_002dhash-1"></a>Scheme Procedure: <strong>symbol-hash</strong> <em>symbol</em></dt>
+<dd><p>These procedures are identical to the ones provided by Guile&rsquo;s core 
+library.  See <a href="Hash-Table-Reference.html#Hash-Table-Reference">Hash Table Reference</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dci_002dhash-1"></a>Scheme Procedure: <strong>string-ci-hash</strong> <em>string</em></dt>
+<dd><p>Returns an integer hash value for <var>string</var> based on its contents,
+ignoring case.  This hash function is suitable for use with 
+<code>string-ci=?</code> as an equivalence function.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-enums.html#rnrs-enums" accesskey="n" rel="next">rnrs enums</a>, Previous: <a href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase" accesskey="p" rel="prev">rnrs syntax-case</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

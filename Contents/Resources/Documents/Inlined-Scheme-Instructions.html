@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Inlined Scheme Instructions</title>
+
+<meta name="description" content="Guile Reference Manual: Inlined Scheme Instructions">
+<meta name="keywords" content="Guile Reference Manual: Inlined Scheme Instructions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Instruction-Set.html#Instruction-Set" rel="up" title="Instruction Set">
+<link href="Inlined-Mathematical-Instructions.html#Inlined-Mathematical-Instructions" rel="next" title="Inlined Mathematical Instructions">
+<link href="Miscellaneous-Instructions.html#Miscellaneous-Instructions" rel="prev" title="Miscellaneous Instructions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Inlined-Scheme-Instructions"></a>
+<div class="header">
+<p>
+Next: <a href="Inlined-Mathematical-Instructions.html#Inlined-Mathematical-Instructions" accesskey="n" rel="next">Inlined Mathematical Instructions</a>, Previous: <a href="Miscellaneous-Instructions.html#Miscellaneous-Instructions" accesskey="p" rel="prev">Miscellaneous Instructions</a>, Up: <a href="Instruction-Set.html#Instruction-Set" accesskey="u" rel="up">Instruction Set</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Inlined-Scheme-Instructions-1"></a>
+<h4 class="subsubsection">9.3.6.11 Inlined Scheme Instructions</h4>
+
+<p>The Scheme compiler can recognize the application of standard Scheme
+procedures. It tries to inline these small operations to avoid the
+overhead of creating new stack frames.
+</p>
+<p>Since most of these operations are historically implemented as C
+primitives, not inlining them would entail constantly calling out from
+the VM to the interpreter, which has some costs&mdash;registers must be
+saved, the interpreter has to dispatch, called procedures have to do
+much type checking, etc. It&rsquo;s much more efficient to inline these
+operations in the virtual machine itself.
+</p>
+<p>All of these instructions pop their arguments from the stack and push
+their results, and take no parameters from the instruction stream.
+Thus, unlike in the previous sections, these instruction definitions
+show stack parameters instead of parameters from the instruction
+stream.
+</p>
+<dl>
+<dt><a name="index-not-2"></a>Instruction: <strong>not</strong> <em>x</em></dt>
+<dt><a name="index-not_002dnot"></a>Instruction: <strong>not-not</strong> <em>x</em></dt>
+<dt><a name="index-eq_003f-2"></a>Instruction: <strong>eq?</strong> <em>x y</em></dt>
+<dt><a name="index-not_002deq_003f"></a>Instruction: <strong>not-eq?</strong> <em>x y</em></dt>
+<dt><a name="index-null_003f-2"></a>Instruction: <strong>null?</strong></dt>
+<dt><a name="index-not_002dnull_003f"></a>Instruction: <strong>not-null?</strong></dt>
+<dt><a name="index-eqv_003f-2"></a>Instruction: <strong>eqv?</strong> <em>x y</em></dt>
+<dt><a name="index-equal_003f-2"></a>Instruction: <strong>equal?</strong> <em>x y</em></dt>
+<dt><a name="index-pair_003f-2"></a>Instruction: <strong>pair?</strong> <em>x y</em></dt>
+<dt><a name="index-list_003f-2"></a>Instruction: <strong>list?</strong> <em>x</em></dt>
+<dt><a name="index-set_002dcar_0021-1"></a>Instruction: <strong>set-car!</strong> <em>pair x</em></dt>
+<dt><a name="index-set_002dcdr_0021-1"></a>Instruction: <strong>set-cdr!</strong> <em>pair x</em></dt>
+<dt><a name="index-cons-2"></a>Instruction: <strong>cons</strong> <em>x y</em></dt>
+<dt><a name="index-car-2"></a>Instruction: <strong>car</strong> <em>x</em></dt>
+<dt><a name="index-cdr-2"></a>Instruction: <strong>cdr</strong> <em>x</em></dt>
+<dt><a name="index-vector_002dref-3"></a>Instruction: <strong>vector-ref</strong> <em>x y</em></dt>
+<dt><a name="index-vector_002dset"></a>Instruction: <strong>vector-set</strong> <em>x n y</em></dt>
+<dt><a name="index-struct_003f-1"></a>Instruction: <strong>struct?</strong> <em>x</em></dt>
+<dt><a name="index-struct_002dref-1"></a>Instruction: <strong>struct-ref</strong> <em>x n</em></dt>
+<dt><a name="index-struct_002dset"></a>Instruction: <strong>struct-set</strong> <em>x n v</em></dt>
+<dt><a name="index-struct_002dvtable-1"></a>Instruction: <strong>struct-vtable</strong> <em>x</em></dt>
+<dt><a name="index-class_002dof-1"></a>Instruction: <strong>class-of</strong> <em>x</em></dt>
+<dt><a name="index-slot_002dref-2"></a>Instruction: <strong>slot-ref</strong> <em>struct n</em></dt>
+<dt><a name="index-slot_002dset"></a>Instruction: <strong>slot-set</strong> <em>struct n x</em></dt>
+<dd><p>Inlined implementations of their Scheme equivalents.
+</p></dd></dl>
+
+<p>Note that <code>caddr</code> and friends compile to a series of <code>car</code>
+and <code>cdr</code> instructions.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Inlined-Mathematical-Instructions.html#Inlined-Mathematical-Instructions" accesskey="n" rel="next">Inlined Mathematical Instructions</a>, Previous: <a href="Miscellaneous-Instructions.html#Miscellaneous-Instructions" accesskey="p" rel="prev">Miscellaneous Instructions</a>, Up: <a href="Instruction-Set.html#Instruction-Set" accesskey="u" rel="up">Instruction Set</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

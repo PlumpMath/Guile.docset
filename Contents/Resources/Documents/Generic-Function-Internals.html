@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Generic Function Internals</title>
+
+<meta name="description" content="Guile Reference Manual: Generic Function Internals">
+<meta name="keywords" content="Guile Reference Manual: Generic Function Internals">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" rel="up" title="The Metaobject Protocol">
+<link href="Generic-Function-Invocation.html#Generic-Function-Invocation" rel="next" title="Generic Function Invocation">
+<link href="Method-Definition-Internals.html#Method-Definition-Internals" rel="prev" title="Method Definition Internals">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Generic-Function-Internals"></a>
+<div class="header">
+<p>
+Next: <a href="Generic-Function-Invocation.html#Generic-Function-Invocation" accesskey="n" rel="next">Generic Function Invocation</a>, Previous: <a href="Method-Definition-Internals.html#Method-Definition-Internals" accesskey="p" rel="prev">Method Definition Internals</a>, Up: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="u" rel="up">The Metaobject Protocol</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Generic-Function-Internals-1"></a>
+<h4 class="subsection">8.11.9 Generic Function Internals</h4>
+
+<p><code>define-generic</code> calls <code>ensure-generic</code> to upgrade a
+pre-existing procedure value, or <code>make</code> with metaclass
+<code>&lt;generic&gt;</code> to create a new generic function.
+</p>
+<p><code>define-accessor</code> calls <code>ensure-accessor</code> to upgrade a
+pre-existing procedure value, or <code>make-accessor</code> to create a new
+accessor.
+</p>
+<dl>
+<dt><a name="index-ensure_002dgeneric"></a>procedure: <strong>ensure-generic</strong> <em>old-definition [name]</em></dt>
+<dd><p>Return a generic function with name <var>name</var>, if possible by using or
+upgrading <var>old-definition</var>.  If unspecified, <var>name</var> defaults to
+<code>#f</code>.
+</p>
+<p>If <var>old-definition</var> is already a generic function, it is returned
+unchanged.
+</p>
+<p>If <var>old-definition</var> is a Scheme procedure or procedure-with-setter,
+<code>ensure-generic</code> returns a new generic function that uses
+<var>old-definition</var> for its default procedure and setter.
+</p>
+<p>Otherwise <code>ensure-generic</code> returns a new generic function with no
+defaults and no methods.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dgeneric"></a>procedure: <strong>make-generic</strong> <em>[name]</em></dt>
+<dd><p>Return a new generic function with name <code>(car <var>name</var>)</code>.  If
+unspecified, <var>name</var> defaults to <code>#f</code>.
+</p></dd></dl>
+
+<p><code>ensure-generic</code> calls <code>make</code> with metaclasses
+<code>&lt;generic&gt;</code> and <code>&lt;generic-with-setter&gt;</code>, depending on the
+previous value of the variable that it is trying to upgrade.
+</p>
+<p><code>make-generic</code> is a simple wrapper for <code>make</code> with metaclass
+<code>&lt;generic&gt;</code>.
+</p>
+<dl>
+<dt><a name="index-ensure_002daccessor"></a>procedure: <strong>ensure-accessor</strong> <em>proc [name]</em></dt>
+<dd><p>Return an accessor with name <var>name</var>, if possible by using or
+upgrading <var>proc</var>.  If unspecified, <var>name</var> defaults to <code>#f</code>.
+</p>
+<p>If <var>proc</var> is already an accessor, it is returned unchanged.
+</p>
+<p>If <var>proc</var> is a Scheme procedure, procedure-with-setter or generic
+function, <code>ensure-accessor</code> returns an accessor that reuses the
+reusable elements of <var>proc</var>.
+</p>
+<p>Otherwise <code>ensure-accessor</code> returns a new accessor with no defaults
+and no methods.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002daccessor"></a>procedure: <strong>make-accessor</strong> <em>[name]</em></dt>
+<dd><p>Return a new accessor with name <code>(car <var>name</var>)</code>.  If
+unspecified, <var>name</var> defaults to <code>#f</code>.
+</p></dd></dl>
+
+<p><code>ensure-accessor</code> calls <code>make</code> with
+metaclass <code>&lt;generic-with-setter&gt;</code>, as well as calls to
+<code>ensure-generic</code>, <code>make-accessor</code> and (tail recursively)
+<code>ensure-accessor</code>.
+</p>
+<p><code>make-accessor</code> calls <code>make</code> twice, first
+with metaclass <code>&lt;generic&gt;</code> to create a generic function for the
+setter, then with metaclass <code>&lt;generic-with-setter&gt;</code> to create the
+accessor, passing the setter generic function as the value of the
+<code>#:setter</code> keyword.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Generic-Function-Invocation.html#Generic-Function-Invocation" accesskey="n" rel="next">Generic Function Invocation</a>, Previous: <a href="Method-Definition-Internals.html#Method-Definition-Internals" accesskey="p" rel="prev">Method Definition Internals</a>, Up: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="u" rel="up">The Metaobject Protocol</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Network Socket Address</title>
+
+<meta name="description" content="Guile Reference Manual: Network Socket Address">
+<meta name="keywords" content="Guile Reference Manual: Network Socket Address">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Networking.html#Networking" rel="up" title="Networking">
+<link href="Network-Sockets-and-Communication.html#Network-Sockets-and-Communication" rel="next" title="Network Sockets and Communication">
+<link href="Network-Databases.html#Network-Databases" rel="prev" title="Network Databases">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Network-Socket-Address"></a>
+<div class="header">
+<p>
+Next: <a href="Network-Sockets-and-Communication.html#Network-Sockets-and-Communication" accesskey="n" rel="next">Network Sockets and Communication</a>, Previous: <a href="Network-Databases.html#Network-Databases" accesskey="p" rel="prev">Network Databases</a>, Up: <a href="Networking.html#Networking" accesskey="u" rel="up">Networking</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Network-Socket-Address-1"></a>
+<h4 class="subsubsection">7.2.11.3 Network Socket Address</h4>
+<a name="index-socket-address"></a>
+<a name="index-network-socket-address"></a>
+<a name="index-Socket-address"></a>
+
+<p>A <em>socket address</em> object identifies a socket endpoint for
+communication.  In the case of <code>AF_INET</code> for instance, the socket
+address object comprises the host address (or interface on the host)
+and a port number which specifies a particular open socket in a
+running client or server process.  A socket address object can be
+created with,
+</p>
+<dl>
+<dt><a name="index-make_002dsocket_002daddress"></a>Scheme Procedure: <strong>make-socket-address</strong> <em>AF_INET ipv4addr port</em></dt>
+<dt><a name="index-make_002dsocket_002daddress-1"></a>Scheme Procedure: <strong>make-socket-address</strong> <em>AF_INET6 ipv6addr port [flowinfo [scopeid]]</em></dt>
+<dt><a name="index-make_002dsocket_002daddress-2"></a>Scheme Procedure: <strong>make-socket-address</strong> <em>AF_UNIX path</em></dt>
+<dt><a name="index-scm_005fmake_005fsocket_005faddress"></a>C Function: <strong>scm_make_socket_address</strong> <em>(family, address, arglist)</em></dt>
+<dd><p>Return a new socket address object.  The first argument is the address
+family, one of the <code>AF</code> constants, then the arguments vary
+according to the family.
+</p>
+<p>For <code>AF_INET</code> the arguments are an IPv4 network address number
+(see <a href="Network-Address-Conversion.html#Network-Address-Conversion">Network Address Conversion</a>), and a port number.
+</p>
+<p>For <code>AF_INET6</code> the arguments are an IPv6 network address number
+and a port number.  Optional <var>flowinfo</var> and <var>scopeid</var>
+arguments may be given (both integers, default 0).
+</p>
+<p>For <code>AF_UNIX</code> the argument is a filename (a string).
+</p>
+<p>The C function <code>scm_make_socket_address</code> takes the <var>family</var>
+and <var>address</var> arguments directly, then <var>arglist</var> is a list of
+further arguments, being the port for IPv4, port and optional flowinfo
+and scopeid for IPv6, or the empty list <code>SCM_EOL</code> for Unix
+domain.
+</p></dd></dl>
+
+<p>The following functions access the fields of a socket address object,
+</p>
+<dl>
+<dt><a name="index-sockaddr_003afam"></a>Scheme Procedure: <strong>sockaddr:fam</strong> <em>sa</em></dt>
+<dd><p>Return the address family from socket address object <var>sa</var>.  This
+is one of the <code>AF</code> constants (e.g. <code>AF_INET</code>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sockaddr_003apath"></a>Scheme Procedure: <strong>sockaddr:path</strong> <em>sa</em></dt>
+<dd><p>For an <code>AF_UNIX</code> socket address object <var>sa</var>, return the
+filename.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sockaddr_003aaddr"></a>Scheme Procedure: <strong>sockaddr:addr</strong> <em>sa</em></dt>
+<dd><p>For an <code>AF_INET</code> or <code>AF_INET6</code> socket address object
+<var>sa</var>, return the network address number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sockaddr_003aport"></a>Scheme Procedure: <strong>sockaddr:port</strong> <em>sa</em></dt>
+<dd><p>For an <code>AF_INET</code> or <code>AF_INET6</code> socket address object
+<var>sa</var>, return the port number.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sockaddr_003aflowinfo"></a>Scheme Procedure: <strong>sockaddr:flowinfo</strong> <em>sa</em></dt>
+<dd><p>For an <code>AF_INET6</code> socket address object <var>sa</var>, return the
+flowinfo value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sockaddr_003ascopeid"></a>Scheme Procedure: <strong>sockaddr:scopeid</strong> <em>sa</em></dt>
+<dd><p>For an <code>AF_INET6</code> socket address object <var>sa</var>, return the
+scope ID value.
+</p></dd></dl>
+
+<a name="index-struct-sockaddr"></a>
+<a name="index-sockaddr"></a>
+<p>The functions below convert to and from the C <code>struct sockaddr</code>
+(see <a href="http://www.gnu.org/software/libc/manual/html_node/Address-Formats.html#Address-Formats">Address Formats</a> in <cite>The GNU C Library Reference Manual</cite>).
+That structure is a generic type, an application can cast to or from
+<code>struct sockaddr_in</code>, <code>struct sockaddr_in6</code> or <code>struct
+sockaddr_un</code> according to the address family.
+</p>
+<p>In a <code>struct sockaddr</code> taken or returned, the byte ordering in
+the fields follows the C conventions (see <a href="http://www.gnu.org/software/libc/manual/html_node/Byte-Order.html#Byte-Order">Byte Order
+Conversion</a> in <cite>The GNU C Library Reference Manual</cite>).  This means
+network byte order for <code>AF_INET</code> host address
+(<code>sin_addr.s_addr</code>) and port number (<code>sin_port</code>), and
+<code>AF_INET6</code> port number (<code>sin6_port</code>).  But at the Scheme
+level these values are taken or returned in host byte order, so the
+port is an ordinary integer, and the host address likewise is an
+ordinary integer (as described in <a href="Network-Address-Conversion.html#Network-Address-Conversion">Network Address Conversion</a>).
+</p>
+<dl>
+<dt><a name="index-scm_005fc_005fmake_005fsocket_005faddress"></a>C Function: <em>struct sockaddr *</em> <strong>scm_c_make_socket_address</strong> <em>(SCM family, SCM address, SCM args, size_t *outsize)</em></dt>
+<dd><p>Return a newly-<code>malloc</code>ed <code>struct sockaddr</code> created from
+arguments like those taken by <code>scm_make_socket_address</code> above.
+</p>
+<p>The size (in bytes) of the <code>struct sockaddr</code> return is stored
+into <code>*<var>outsize</var></code>.  An application must call <code>free</code> to
+release the returned structure when no longer required.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005ffrom_005fsockaddr"></a>C Function: <em>SCM</em> <strong>scm_from_sockaddr</strong> <em>(const struct sockaddr *address, unsigned address_size)</em></dt>
+<dd><p>Return a Scheme socket address object from the C <var>address</var>
+structure.  <var>address_size</var> is the size in bytes of <var>address</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fto_005fsockaddr"></a>C Function: <em>struct sockaddr *</em> <strong>scm_to_sockaddr</strong> <em>(SCM address, size_t *address_size)</em></dt>
+<dd><p>Return a newly-<code>malloc</code>ed <code>struct sockaddr</code> from a Scheme
+level socket address object.
+</p>
+<p>The size (in bytes) of the <code>struct sockaddr</code> return is stored
+into <code>*<var>outsize</var></code>.  An application must call <code>free</code> to
+release the returned structure when no longer required.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Network-Sockets-and-Communication.html#Network-Sockets-and-Communication" accesskey="n" rel="next">Network Sockets and Communication</a>, Previous: <a href="Network-Databases.html#Network-Databases" accesskey="p" rel="prev">Network Databases</a>, Up: <a href="Networking.html#Networking" accesskey="u" rel="up">Networking</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

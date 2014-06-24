@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Customizing Class Redefinition</title>
+
+<meta name="description" content="Guile Reference Manual: Customizing Class Redefinition">
+<meta name="keywords" content="Guile Reference Manual: Customizing Class Redefinition">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Redefining-a-Class.html#Redefining-a-Class" rel="up" title="Redefining a Class">
+<link href="Changing-the-Class-of-an-Instance.html#Changing-the-Class-of-an-Instance" rel="next" title="Changing the Class of an Instance">
+<link href="Default-Class-Redefinition-Behaviour.html#Default-Class-Redefinition-Behaviour" rel="prev" title="Default Class Redefinition Behaviour">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Customizing-Class-Redefinition"></a>
+<div class="header">
+<p>
+Previous: <a href="Default-Class-Redefinition-Behaviour.html#Default-Class-Redefinition-Behaviour" accesskey="p" rel="prev">Default Class Redefinition Behaviour</a>, Up: <a href="Redefining-a-Class.html#Redefining-a-Class" accesskey="u" rel="up">Redefining a Class</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Customizing-Class-Redefinition-1"></a>
+<h4 class="subsection">8.12.2 Customizing Class Redefinition</h4>
+
+<p>When <code>define-class</code> notices that a class is being redefined, it
+constructs the new class metaobject as usual, then invokes the
+<code>class-redefinition</code> generic function with the old and new classes
+as arguments.  Therefore, if the old or new classes have metaclasses
+other than the default <code>&lt;class&gt;</code>, class redefinition behaviour can
+be customized by defining a <code>class-redefinition</code> method that is
+specialized for the relevant metaclasses.
+</p>
+<dl>
+<dt><a name="index-class_002dredefinition"></a>generic: <strong>class-redefinition</strong></dt>
+<dd><p>Handle the class redefinition from <var>old-class</var> to <var>new-class</var>,
+and return the new class metaobject that should be bound to the
+variable specified by <code>define-class</code>&rsquo;s first argument.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-class_002dredefinition-1"></a>method: <strong>class-redefinition</strong> <em>(old-class &lt;class&gt;) (new-class &lt;class&gt;)</em></dt>
+<dd><p>Implements GOOPS&rsquo; default class redefinition behaviour, as described in
+<a href="Default-Class-Redefinition-Behaviour.html#Default-Class-Redefinition-Behaviour">Default Class Redefinition Behaviour</a>.  Returns the metaobject
+for the new class definition.
+</p></dd></dl>
+
+<p>The default <code>class-redefinition</code> method, for classes with the
+default metaclass <code>&lt;class&gt;</code>, calls the following generic functions,
+which could of course be individually customized.
+</p>
+<dl>
+<dt><a name="index-remove_002dclass_002daccessors_0021"></a>generic: <strong>remove-class-accessors!</strong> <em>old</em></dt>
+<dd><p>The default <code>remove-class-accessors!</code> method removes the accessor
+methods of the old class from all classes which they specialize.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-update_002ddirect_002dmethod_0021"></a>generic: <strong>update-direct-method!</strong> <em>method old new</em></dt>
+<dd><p>The default <code>update-direct-method!</code> method substitutes the new
+class for the old in all methods specialized to the old class.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-update_002ddirect_002dsubclass_0021"></a>generic: <strong>update-direct-subclass!</strong> <em>subclass old new</em></dt>
+<dd><p>The default <code>update-direct-subclass!</code> method invokes
+<code>class-redefinition</code> recursively to handle the redefinition of
+subclasses.
+</p></dd></dl>
+
+<p>An alternative class redefinition strategy could be to leave all
+existing instances as instances of the old class, but accepting that the
+old class is now &ldquo;nameless&rdquo;, since its name has been taken over by the
+new definition.  In this strategy, any existing subclasses could also
+be left as they are, on the understanding that they inherit from a nameless
+superclass.
+</p>
+<p>This strategy is easily implemented in GOOPS, by defining a new metaclass,
+that will be used as the metaclass for all classes to which the strategy
+should apply, and then defining a <code>class-redefinition</code> method that
+is specialized for this metaclass:
+</p>
+<div class="example">
+<pre class="example">(define-class &lt;can-be-nameless&gt; (&lt;class&gt;))
+
+(define-method (class-redefinition (old &lt;can-be-nameless&gt;)
+                                   (new &lt;class&gt;))
+  new)
+</pre></div>
+
+<p>When customization can be as easy as this, aren&rsquo;t you glad that GOOPS
+implements the far more difficult strategy as its default!
+</p>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Default-Class-Redefinition-Behaviour.html#Default-Class-Redefinition-Behaviour" accesskey="p" rel="prev">Default Class Redefinition Behaviour</a>, Up: <a href="Redefining-a-Class.html#Redefining-a-Class" accesskey="u" rel="up">Redefining a Class</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

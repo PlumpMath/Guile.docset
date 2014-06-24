@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Equality</title>
+
+<meta name="description" content="Guile Reference Manual: Equality">
+<meta name="keywords" content="Guile Reference Manual: Equality">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Utility-Functions.html#Utility-Functions" rel="up" title="Utility Functions">
+<link href="Object-Properties.html#Object-Properties" rel="next" title="Object Properties">
+<link href="Utility-Functions.html#Utility-Functions" rel="prev" title="Utility Functions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Equality"></a>
+<div class="header">
+<p>
+Next: <a href="Object-Properties.html#Object-Properties" accesskey="n" rel="next">Object Properties</a>, Up: <a href="Utility-Functions.html#Utility-Functions" accesskey="u" rel="up">Utility Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Equality-1"></a>
+<h4 class="subsection">6.11.1 Equality</h4>
+<a name="index-sameness"></a>
+<a name="index-equality"></a>
+
+<p>There are three kinds of core equality predicates in Scheme, described
+below.  The same kinds of comparisons arise in other functions, like
+<code>memq</code> and friends (see <a href="List-Searching.html#List-Searching">List Searching</a>).
+</p>
+<p>For all three tests, objects of different types are never equal.  So
+for instance a list and a vector are not <code>equal?</code>, even if their
+contents are the same.  Exact and inexact numbers are considered
+different types too, and are hence not equal even if their values are
+the same.
+</p>
+<p><code>eq?</code> tests just for the same object (essentially a pointer
+comparison).  This is fast, and can be used when searching for a
+particular object, or when working with symbols or keywords (which are
+always unique objects).
+</p>
+<p><code>eqv?</code> extends <code>eq?</code> to look at the value of numbers and
+characters.  It can for instance be used somewhat like <code>=</code>
+(see <a href="Comparison.html#Comparison">Comparison</a>) but without an error if one operand isn&rsquo;t a
+number.
+</p>
+<p><code>equal?</code> goes further, it looks (recursively) into the contents
+of lists, vectors, etc.  This is good for instance on lists that have
+been read or calculated in various places and are the same, just not
+made up of the same pairs.  Such lists look the same (when printed),
+and <code>equal?</code> will consider them the same.
+</p>
+<br>
+<dl>
+<dt><a name="index-eq_003f"></a>Scheme Procedure: <strong>eq?</strong> <em>x y</em></dt>
+<dt><a name="index-scm_005feq_005fp"></a>C Function: <strong>scm_eq_p</strong> <em>(x, y)</em></dt>
+<dd><a name="index-eq_003f-3"></a>
+<p>Return <code>#t</code> if <var>x</var> and <var>y</var> are the same object, except
+for numbers and characters.  For example,
+</p>
+<div class="example">
+<pre class="example">(define x (vector 1 2 3))
+(define y (vector 1 2 3))
+
+(eq? x x)  &rArr; #t
+(eq? x y)  &rArr; #f
+</pre></div>
+
+<p>Numbers and characters are not equal to any other object, but the
+problem is they&rsquo;re not necessarily <code>eq?</code> to themselves either.
+This is even so when the number comes directly from a variable,
+</p>
+<div class="example">
+<pre class="example">(let ((n (+ 2 3)))
+  (eq? n n))       &rArr; *unspecified*
+</pre></div>
+
+<p>Generally <code>eqv?</code> below should be used when comparing numbers or
+characters.  <code>=</code> (see <a href="Comparison.html#Comparison">Comparison</a>) or <code>char=?</code>
+(see <a href="Characters.html#Characters">Characters</a>) can be used too.
+</p>
+<p>It&rsquo;s worth noting that end-of-list <code>()</code>, <code>#t</code>, <code>#f</code>, a
+symbol of a given name, and a keyword of a given name, are unique
+objects.  There&rsquo;s just one of each, so for instance no matter how
+<code>()</code> arises in a program, it&rsquo;s the same object and can be
+compared with <code>eq?</code>,
+</p>
+<div class="example">
+<pre class="example">(define x (cdr '(123)))
+(define y (cdr '(456)))
+(eq? x y) &rArr; #t
+
+(define x (string-&gt;symbol &quot;foo&quot;))
+(eq? x 'foo) &rArr; #t
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005feq"></a>C Function: <em>int</em> <strong>scm_is_eq</strong> <em>(SCM x, SCM y)</em></dt>
+<dd><p>Return <code>1</code> when <var>x</var> and <var>y</var> are equal in the sense of
+<code>eq?</code>, otherwise return <code>0</code>.
+</p>
+<a name="index-_003d_003d"></a>
+<p>The <code>==</code> operator should not be used on <code>SCM</code> values, an
+<code>SCM</code> is a C type which cannot necessarily be compared using
+<code>==</code> (see <a href="The-SCM-Type.html#The-SCM-Type">The SCM Type</a>).
+</p></dd></dl>
+
+<br>
+<dl>
+<dt><a name="index-eqv_003f"></a>Scheme Procedure: <strong>eqv?</strong> <em>x y</em></dt>
+<dt><a name="index-scm_005feqv_005fp"></a>C Function: <strong>scm_eqv_p</strong> <em>(x, y)</em></dt>
+<dd><a name="index-eqv_003f-3"></a>
+<p>Return <code>#t</code> if <var>x</var> and <var>y</var> are the same object, or for
+characters and numbers the same value.
+</p>
+<p>On objects except characters and numbers, <code>eqv?</code> is the same as
+<code>eq?</code> above, it&rsquo;s true if <var>x</var> and <var>y</var> are the same
+object.
+</p>
+<p>If <var>x</var> and <var>y</var> are numbers or characters, <code>eqv?</code> compares
+their type and value.  An exact number is not <code>eqv?</code> to an
+inexact number (even if their value is the same).
+</p>
+<div class="example">
+<pre class="example">(eqv? 3 (+ 1 2)) &rArr; #t
+(eqv? 1 1.0)     &rArr; #f
+</pre></div>
+</dd></dl>
+
+<br>
+<dl>
+<dt><a name="index-equal_003f"></a>Scheme Procedure: <strong>equal?</strong> <em>x y</em></dt>
+<dt><a name="index-scm_005fequal_005fp"></a>C Function: <strong>scm_equal_p</strong> <em>(x, y)</em></dt>
+<dd><a name="index-equal_003f-3"></a>
+<p>Return <code>#t</code> if <var>x</var> and <var>y</var> are the same type, and their
+contents or value are equal.
+</p>
+<p>For a pair, string, vector, array or structure, <code>equal?</code> compares the
+contents, and does so using the same <code>equal?</code> recursively,
+so a deep structure can be traversed.
+</p>
+<div class="example">
+<pre class="example">(equal? (list 1 2 3) (list 1 2 3))   &rArr; #t
+(equal? (list 1 2 3) (vector 1 2 3)) &rArr; #f
+</pre></div>
+
+<p>For other objects, <code>equal?</code> compares as per <code>eqv?</code> above,
+which means characters and numbers are compared by type and value (and
+like <code>eqv?</code>, exact and inexact numbers are not <code>equal?</code>,
+even if their value is the same).
+</p>
+<div class="example">
+<pre class="example">(equal? 3 (+ 1 2)) &rArr; #t
+(equal? 1 1.0)     &rArr; #f
+</pre></div>
+
+<p>Hash tables are currently only compared as per <code>eq?</code>, so two
+different tables are not <code>equal?</code>, even if their contents are the
+same.
+</p>
+<p><code>equal?</code> does not support circular data structures, it may go
+into an infinite loop if asked to compare two circular lists or
+similar.
+</p>
+<p>New application-defined object types (see <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029">Defining New Types (Smobs)</a>) have an <code>equalp</code> handler which is called by
+<code>equal?</code>.  This lets an application traverse the contents or
+control what is considered <code>equal?</code> for two objects of such a
+type.  If there&rsquo;s no such handler, the default is to just compare as
+per <code>eq?</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Object-Properties.html#Object-Properties" accesskey="n" rel="next">Object Properties</a>, Up: <a href="Utility-Functions.html#Utility-Functions" accesskey="u" rel="up">Utility Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

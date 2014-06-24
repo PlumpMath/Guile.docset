@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Chaining</title>
+
+<meta name="description" content="Guile Reference Manual: Chaining">
+<meta name="keywords" content="Guile Reference Manual: Chaining">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="About-Closure.html#About-Closure" rel="up" title="About Closure">
+<link href="Lexical-Scope.html#Lexical-Scope" rel="next" title="Lexical Scope">
+<link href="Local-Variables.html#Local-Variables" rel="prev" title="Local Variables">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Chaining"></a>
+<div class="header">
+<p>
+Next: <a href="Lexical-Scope.html#Lexical-Scope" accesskey="n" rel="next">Lexical Scope</a>, Previous: <a href="Local-Variables.html#Local-Variables" accesskey="p" rel="prev">Local Variables</a>, Up: <a href="About-Closure.html#About-Closure" accesskey="u" rel="up">About Closure</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Environment-Chaining"></a>
+<h4 class="subsection">3.4.3 Environment Chaining</h4>
+
+<a name="index-shadowing-an-imported-variable-binding"></a>
+<a name="index-chaining-environments"></a>
+
+<p>In the example of the previous subsection, we glossed over an important
+point.  The body of the <code>let</code> expression in that example refers not
+only to the local variable <code>s</code>, but also to the top level variables
+<code>a</code>, <code>b</code>, <code>c</code> and <code>sqrt</code>.  (<code>sqrt</code> is the
+standard Scheme procedure for calculating a square root.)  If the body
+of the <code>let</code> expression is evaluated in the context of the
+<em>local</em> <code>let</code> environment, how does the evaluation get at the
+values of these top level variables?
+</p>
+<p>The answer is that the local environment created by a <code>let</code>
+expression automatically has a reference to its containing environment
+&mdash; in this case the top level environment &mdash; and that the Scheme
+interpreter automatically looks for a variable binding in the containing
+environment if it doesn&rsquo;t find one in the local environment.  More
+generally, every environment except for the top level one has a
+reference to its containing environment, and the interpreter keeps
+searching back up the chain of environments &mdash; from most local to top
+level &mdash; until it either finds a variable binding for the required
+identifier or exhausts the chain.
+</p>
+<p>This description also determines what happens when there is more than
+one variable binding with the same name.  Suppose, continuing the
+example of the previous subsection, that there was also a pre-existing
+top level variable <code>s</code> created by the expression:
+</p>
+<div class="lisp">
+<pre class="lisp">(define s &quot;Some beans, my lord!&quot;)
+</pre></div>
+
+<p>Then both the top level environment and the local <code>let</code> environment
+would contain bindings for the name <code>s</code>.  When evaluating code
+within the <code>let</code> body, the interpreter looks first in the local
+<code>let</code> environment, and so finds the binding for <code>s</code> created by
+the <code>let</code> syntax.  Even though this environment has a reference to
+the top level environment, which also has a binding for <code>s</code>, the
+interpreter doesn&rsquo;t get as far as looking there.  When evaluating code
+outside the <code>let</code> body, the interpreter looks up variable names in
+the top level environment, so the name <code>s</code> refers to the top level
+variable.
+</p>
+<p>Within the <code>let</code> body, the binding for <code>s</code> in the local
+environment is said to <em>shadow</em> the binding for <code>s</code> in the top
+level environment.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Lexical-Scope.html#Lexical-Scope" accesskey="n" rel="next">Lexical Scope</a>, Previous: <a href="Local-Variables.html#Local-Variables" accesskey="p" rel="prev">Local Variables</a>, Up: <a href="About-Closure.html#About-Closure" accesskey="u" rel="up">About Closure</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

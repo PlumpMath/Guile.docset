@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: lambda* and define*</title>
+
+<meta name="description" content="Guile Reference Manual: lambda* and define*">
+<meta name="keywords" content="Guile Reference Manual: lambda* and define*">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Optional-Arguments.html#Optional-Arguments" rel="up" title="Optional Arguments">
+<link href="ice_002d9-optargs.html#ice_002d9-optargs" rel="next" title="ice-9 optargs">
+<link href="Optional-Arguments.html#Optional-Arguments" rel="prev" title="Optional Arguments">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="lambda_002a-and-define_002a"></a>
+<div class="header">
+<p>
+Next: <a href="ice_002d9-optargs.html#ice_002d9-optargs" accesskey="n" rel="next">ice-9 optargs</a>, Up: <a href="Optional-Arguments.html#Optional-Arguments" accesskey="u" rel="up">Optional Arguments</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="lambda_002a-and-define_002a_002e"></a>
+<h4 class="subsubsection">6.9.4.1 lambda* and define*.</h4>
+
+<p><code>lambda*</code> is like <code>lambda</code>, except with some extensions to
+allow optional and keyword arguments.
+</p>
+<dl>
+<dt><a name="index-lambda_002a"></a>library syntax: <strong>lambda*</strong> <em>([var&hellip;] <br>                         [#:optional vardef&hellip;] <br>                         [#:key  vardef&hellip; [#:allow-other-keys]] <br>                         [#:rest var | . var]) <br>                         body1 body2 &hellip;</em></dt>
+<dd><br>
+<p>Create a procedure which takes optional and/or keyword arguments
+specified with <code>#:optional</code> and <code>#:key</code>.  For example,
+</p>
+<div class="lisp">
+<pre class="lisp">(lambda* (a b #:optional c d . e) '())
+</pre></div>
+
+<p>is a procedure with fixed arguments <var>a</var> and <var>b</var>, optional
+arguments <var>c</var> and <var>d</var>, and rest argument <var>e</var>.  If the
+optional arguments are omitted in a call, the variables for them are
+bound to <code>#f</code>.
+</p>
+<a name="index-define_002a"></a>
+<p>Likewise, <code>define*</code> is syntactic sugar for defining procedures
+using <code>lambda*</code>.
+</p>
+<p><code>lambda*</code> can also make procedures with keyword arguments. For
+example, a procedure defined like this:
+</p>
+<div class="lisp">
+<pre class="lisp">(define* (sir-yes-sir #:key action how-high)
+  (list action how-high))
+</pre></div>
+
+<p>can be called as <code>(sir-yes-sir #:action 'jump)</code>,
+<code>(sir-yes-sir #:how-high 13)</code>, <code>(sir-yes-sir #:action
+'lay-down #:how-high 0)</code>, or just <code>(sir-yes-sir)</code>. Whichever
+arguments are given as keywords are bound to values (and those not
+given are <code>#f</code>).
+</p>
+<p>Optional and keyword arguments can also have default values to take
+when not present in a call, by giving a two-element list of variable
+name and expression.  For example in
+</p>
+<div class="lisp">
+<pre class="lisp">(define* (frob foo #:optional (bar 42) #:key (baz 73))
+  (list foo bar baz))
+</pre></div>
+
+<p><var>foo</var> is a fixed argument, <var>bar</var> is an optional argument with
+default value 42, and baz is a keyword argument with default value 73.
+Default value expressions are not evaluated unless they are needed,
+and until the procedure is called.
+</p>
+<p>Normally it&rsquo;s an error if a call has keywords other than those
+specified by <code>#:key</code>, but adding <code>#:allow-other-keys</code> to the
+definition (after the keyword argument declarations) will ignore
+unknown keywords.
+</p>
+<p>If a call has a keyword given twice, the last value is used.  For
+example,
+</p>
+<div class="lisp">
+<pre class="lisp">(define* (flips #:key (heads 0) (tails 0))
+  (display (list heads tails)))
+
+(flips #:heads 37 #:tails 42 #:heads 99)
+-| (99 42)
+</pre></div>
+
+<p><code>#:rest</code> is a synonym for the dotted syntax rest argument.  The
+argument lists <code>(a . b)</code> and <code>(a #:rest b)</code> are equivalent
+in all respects.  This is provided for more similarity to DSSSL,
+MIT-Scheme and Kawa among others, as well as for refugees from other
+Lisp dialects.
+</p>
+<p>When <code>#:key</code> is used together with a rest argument, the keyword
+parameters in a call all remain in the rest list.  This is the same as
+Common Lisp.  For example,
+</p>
+<div class="lisp">
+<pre class="lisp">((lambda* (#:key (x 0) #:allow-other-keys #:rest r)
+   (display r))
+ #:x 123 #:y 456)
+-| (#:x 123 #:y 456)
+</pre></div>
+
+<p><code>#:optional</code> and <code>#:key</code> establish their bindings
+successively, from left to right. This means default expressions can
+refer back to prior parameters, for example
+</p>
+<div class="lisp">
+<pre class="lisp">(lambda* (start #:optional (end (+ 10 start)))
+  (do ((i start (1+ i)))
+      ((&gt; i end))
+    (display i)))
+</pre></div>
+
+<p>The exception to this left-to-right scoping rule is the rest argument.
+If there is a rest argument, it is bound after the optional arguments,
+but before the keyword arguments.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="ice_002d9-optargs.html#ice_002d9-optargs" accesskey="n" rel="next">ice-9 optargs</a>, Up: <a href="Optional-Arguments.html#Optional-Arguments" accesskey="u" rel="up">Optional Arguments</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

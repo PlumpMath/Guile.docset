@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Web</title>
+
+<meta name="description" content="Guile Reference Manual: Web">
+<meta name="keywords" content="Guile Reference Manual: Web">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="Types-and-the-Web.html#Types-and-the-Web" rel="next" title="Types and the Web">
+<link href="Encryption.html#Encryption" rel="prev" title="Encryption">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Web"></a>
+<div class="header">
+<p>
+Next: <a href="getopt_002dlong.html#getopt_002dlong" accesskey="n" rel="next">getopt-long</a>, Previous: <a href="POSIX.html#POSIX" accesskey="p" rel="prev">POSIX</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="HTTP_002c-the-Web_002c-and-All-That"></a>
+<h3 class="section">7.3 <acronym>HTTP</acronym>, the Web, and All That</h3>
+<a name="index-Web"></a>
+<a name="index-WWW"></a>
+<a name="index-HTTP"></a>
+
+<p>It has always been possible to connect computers together and share
+information between them, but the rise of the World Wide Web over the
+last couple of decades has made it much easier to do so.  The result is
+a richly connected network of computation, in which Guile forms a part.
+</p>
+<p>By &ldquo;the web&rdquo;, we mean the HTTP protocol<a name="DOCF23" href="#FOOT23"><sup>23</sup></a> as handled by
+servers, clients, proxies, caches, and the various kinds of messages and
+message components that can be sent and received by that protocol,
+notably HTML.
+</p>
+<p>On one level, the web is text in motion: the protocols themselves are
+textual (though the payload may be binary), and it&rsquo;s possible to create
+a socket and speak text to the web.  But such an approach is obviously
+primitive.  This section details the higher-level data types and
+operations provided by Guile: URIs, HTTP request and response records,
+and a conventional web server implementation.
+</p>
+<p>The material in this section is arranged in ascending order, in which
+later concepts build on previous ones.  If you prefer to start with the
+highest-level perspective, see <a href="Web-Examples.html#Web-Examples">Web Examples</a>, and work your way
+back.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Types-and-the-Web.html#Types-and-the-Web" accesskey="1">Types and the Web</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Types prevent bugs and security problems.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="URIs.html#URIs" accesskey="2">URIs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Universal Resource Identifiers.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="HTTP.html#HTTP" accesskey="3">HTTP</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The Hyper-Text Transfer Protocol.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="HTTP-Headers.html#HTTP-Headers" accesskey="4">HTTP Headers</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How Guile represents specific header values.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Transfer-Codings.html#Transfer-Codings" accesskey="5">Transfer Codings</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">HTTP Transfer Codings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Requests.html#Requests" accesskey="6">Requests</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">HTTP requests.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Responses.html#Responses" accesskey="7">Responses</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">HTTP responses.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Web-Client.html#Web-Client" accesskey="8">Web Client</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Accessing web resources over HTTP.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Web-Server.html#Web-Server" accesskey="9">Web Server</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Serving HTTP to the internet.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Web-Examples.html#Web-Examples">Web Examples</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How to use this thing.
+</td></tr>
+</table>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT23" href="#DOCF23">(23)</a></h3>
+<p>Yes, the P is for
+protocol, but this phrase appears repeatedly in RFC 2616.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="getopt_002dlong.html#getopt_002dlong" accesskey="n" rel="next">getopt-long</a>, Previous: <a href="POSIX.html#POSIX" accesskey="p" rel="prev">POSIX</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

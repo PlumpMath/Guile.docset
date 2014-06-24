@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Module System Reflection</title>
+
+<meta name="description" content="Guile Reference Manual: Module System Reflection">
+<meta name="keywords" content="Guile Reference Manual: Module System Reflection">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Modules.html#Modules" rel="up" title="Modules">
+<link href="Accessing-Modules-from-C.html#Accessing-Modules-from-C" rel="next" title="Accessing Modules from C">
+<link href="Variables.html#Variables" rel="prev" title="Variables">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Module-System-Reflection"></a>
+<div class="header">
+<p>
+Next: <a href="Accessing-Modules-from-C.html#Accessing-Modules-from-C" accesskey="n" rel="next">Accessing Modules from C</a>, Previous: <a href="Variables.html#Variables" accesskey="p" rel="prev">Variables</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Module-System-Reflection-1"></a>
+<h4 class="subsection">6.19.8 Module System Reflection</h4>
+
+<p>The previous sections have described a declarative view of the module
+system.  You can also work with it programmatically by accessing and
+modifying various parts of the Scheme objects that Guile uses to
+implement the module system.
+</p>
+<p>At any time, there is a <em>current module</em>.  This module is the one
+where a top-level <code>define</code> and similar syntax will add new
+bindings.  You can find other module objects with <code>resolve-module</code>,
+for example.
+</p>
+<p>These module objects can be used as the second argument to <code>eval</code>.
+</p>
+<dl>
+<dt><a name="index-current_002dmodule"></a>Scheme Procedure: <strong>current-module</strong></dt>
+<dt><a name="index-scm_005fcurrent_005fmodule"></a>C Function: <strong>scm_current_module</strong> <em>()</em></dt>
+<dd><p>Return the current module object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dcurrent_002dmodule"></a>Scheme Procedure: <strong>set-current-module</strong> <em>module</em></dt>
+<dt><a name="index-scm_005fset_005fcurrent_005fmodule"></a>C Function: <strong>scm_set_current_module</strong> <em>(module)</em></dt>
+<dd><p>Set the current module to <var>module</var> and return
+the previous current module.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-save_002dmodule_002dexcursion"></a>Scheme Procedure: <strong>save-module-excursion</strong> <em>thunk</em></dt>
+<dd><p>Call <var>thunk</var> within a <code>dynamic-wind</code> such that the module that
+is current at invocation time is restored when <var>thunk</var>&rsquo;s dynamic
+extent is left (see <a href="Dynamic-Wind.html#Dynamic-Wind">Dynamic Wind</a>).
+</p>
+<p>More precisely, if <var>thunk</var> escapes non-locally, the current module
+(at the time of escape) is saved, and the original current module (at
+the time <var>thunk</var>&rsquo;s dynamic extent was last entered) is restored.  If
+<var>thunk</var>&rsquo;s dynamic extent is re-entered, then the current module is
+saved, and the previously saved inner module is set current again.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-resolve_002dmodule"></a>Scheme Procedure: <strong>resolve-module</strong> <em>name [autoload=#t] [version=#f]                           [#:ensure=#t]</em></dt>
+<dt><a name="index-scm_005fresolve_005fmodule"></a>C Function: <strong>scm_resolve_module</strong> <em>(name)</em></dt>
+<dd><p>Find the module named <var>name</var> and return it.  When it has not already
+been defined and <var>autoload</var> is true, try to auto-load it.  When it
+can&rsquo;t be found that way either, create an empty module if <var>ensure</var>
+is true, otherwise return <code>#f</code>.  If <var>version</var> is true, ensure
+that the resulting module is compatible with the given version reference
+(see <a href="R6RS-Version-References.html#R6RS-Version-References">R6RS Version References</a>).  The name is a list of symbols.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-resolve_002dinterface"></a>Scheme Procedure: <strong>resolve-interface</strong> <em>name [#:select=#f]                           [#:hide='()] [#:prefix=#f]                           [#:renamer=#f] [#:version=#f]</em></dt>
+<dd><p>Find the module named <var>name</var> as with <code>resolve-module</code> and
+return its interface.  The interface of a module is also a module
+object, but it contains only the exported bindings.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-module_002duses"></a>Scheme Procedure: <strong>module-uses</strong> <em>module</em></dt>
+<dd><p>Return a list of the interfaces used by <var>module</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-module_002duse_0021"></a>Scheme Procedure: <strong>module-use!</strong> <em>module interface</em></dt>
+<dd><p>Add <var>interface</var> to the front of the use-list of <var>module</var>.  Both
+arguments should be module objects, and <var>interface</var> should very
+likely be a module returned by <code>resolve-interface</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-reload_002dmodule"></a>Scheme Procedure: <strong>reload-module</strong> <em>module</em></dt>
+<dd><p>Revisit the source file that corresponds to <var>module</var>.  Raises an
+error if no source file is associated with the given module.
+</p></dd></dl>
+
+<p>As mentioned in the previous section, modules contain a mapping between
+identifiers (as symbols) and storage locations (as variables).  Guile
+defines a number of procedures to allow access to this mapping.  If you
+are programming in C, <a href="Accessing-Modules-from-C.html#Accessing-Modules-from-C">Accessing Modules from C</a>.
+</p>
+<dl>
+<dt><a name="index-module_002dvariable"></a>Scheme Procedure: <strong>module-variable</strong> <em>module name</em></dt>
+<dd><p>Return the variable bound to <var>name</var> (a symbol) in <var>module</var>, or
+<code>#f</code> if <var>name</var> is unbound.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-module_002dadd_0021"></a>Scheme Procedure: <strong>module-add!</strong> <em>module name var</em></dt>
+<dd><p>Define a new binding between <var>name</var> (a symbol) and <var>var</var> (a
+variable) in <var>module</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-module_002dref"></a>Scheme Procedure: <strong>module-ref</strong> <em>module name</em></dt>
+<dd><p>Look up the value bound to <var>name</var> in <var>module</var>.  Like
+<code>module-variable</code>, but also does a <code>variable-ref</code> on the
+resulting variable, raising an error if <var>name</var> is unbound.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-module_002ddefine_0021"></a>Scheme Procedure: <strong>module-define!</strong> <em>module name value</em></dt>
+<dd><p>Locally bind <var>name</var> to <var>value</var> in <var>module</var>.  If <var>name</var>
+was already locally bound in <var>module</var>, i.e., defined locally and not
+by an imported module, the value stored in the existing variable will be
+updated.  Otherwise, a new variable will be added to the module, via
+<code>module-add!</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-module_002dset_0021"></a>Scheme Procedure: <strong>module-set!</strong> <em>module name value</em></dt>
+<dd><p>Update the binding of <var>name</var> in <var>module</var> to <var>value</var>, raising
+an error if <var>name</var> is not already bound in <var>module</var>.
+</p></dd></dl>
+
+<p>There are many other reflective procedures available in the default
+environment.  If you find yourself using one of them, please contact the
+Guile developers so that we can commit to stability for that interface.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Accessing-Modules-from-C.html#Accessing-Modules-from-C" accesskey="n" rel="next">Accessing Modules from C</a>, Previous: <a href="Variables.html#Variables" accesskey="p" rel="prev">Variables</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

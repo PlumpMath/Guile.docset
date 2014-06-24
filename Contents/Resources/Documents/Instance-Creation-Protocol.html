@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Instance Creation Protocol</title>
+
+<meta name="description" content="Guile Reference Manual: Instance Creation Protocol">
+<meta name="keywords" content="Guile Reference Manual: Instance Creation Protocol">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" rel="up" title="The Metaobject Protocol">
+<link href="Class-Definition-Protocol.html#Class-Definition-Protocol" rel="next" title="Class Definition Protocol">
+<link href="MOP-Specification.html#MOP-Specification" rel="prev" title="MOP Specification">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Instance-Creation-Protocol"></a>
+<div class="header">
+<p>
+Next: <a href="Class-Definition-Protocol.html#Class-Definition-Protocol" accesskey="n" rel="next">Class Definition Protocol</a>, Previous: <a href="MOP-Specification.html#MOP-Specification" accesskey="p" rel="prev">MOP Specification</a>, Up: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="u" rel="up">The Metaobject Protocol</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Instance-Creation-Protocol-1"></a>
+<h4 class="subsection">8.11.4 Instance Creation Protocol</h4>
+
+<p><code>make &lt;class&gt; . <var>initargs</var></code> (method)
+</p>
+<ul>
+<li> <code>allocate-instance <var>class</var> <var>initargs</var></code> (generic)
+
+<p>The applied <code>allocate-instance</code> method should allocate storage for
+a new instance of class <var>class</var> and return the uninitialized instance.
+</p>
+</li><li> <code>initialize <var>instance</var> <var>initargs</var></code> (generic)
+
+<p><var>instance</var> is the uninitialized instance returned by
+<code>allocate-instance</code>.  The applied method should initialize the new
+instance in whatever sense is appropriate for its class.  The method&rsquo;s
+return value is ignored.
+</p></li></ul>
+
+<p><code>make</code> itself is a generic function.  Hence the <code>make</code>
+invocation itself can be customized in the case where the new instance&rsquo;s
+metaclass is more specialized than the default <code>&lt;class&gt;</code>, by
+defining a <code>make</code> method that is specialized to that metaclass.
+</p>
+<p>Normally, however, the method for classes with metaclass <code>&lt;class&gt;</code>
+will be applied.  This method calls two generic functions:
+</p>
+<ul>
+<li> (allocate-instance <var>class</var> . <var>initargs</var>)
+
+</li><li> (initialize <var>instance</var> . <var>initargs</var>)
+</li></ul>
+
+<p><code>allocate-instance</code> allocates storage for and returns the new
+instance, uninitialized.  You might customize <code>allocate-instance</code>,
+for example, if you wanted to provide a GOOPS wrapper around some other
+object programming system.
+</p>
+<p>To do this, you would create a specialized metaclass, which would act as
+the metaclass for all classes and instances from the other system.  Then
+define an <code>allocate-instance</code> method, specialized to that
+metaclass, which calls a Guile primitive C function (or FFI code), which
+in turn allocates the new instance using the interface of the other
+object system.
+</p>
+<p>In this case, for a complete system, you would also need to customize a
+number of other generic functions like <code>make</code> and
+<code>initialize</code>, so that GOOPS knows how to make classes from the
+other system, access instance slots, and so on.
+</p>
+<p><code>initialize</code> initializes the instance that is returned by
+<code>allocate-instance</code>.  The standard GOOPS methods perform
+initializations appropriate to the instance class.
+</p>
+<ul>
+<li> At the least specialized level, the method for instances of type
+<code>&lt;object&gt;</code> performs internal GOOPS instance initialization, and
+initializes the instance&rsquo;s slots according to the slot definitions and
+any slot initialization keywords that appear in <var>initargs</var>.
+
+</li><li> The method for instances of type <code>&lt;class&gt;</code> calls
+<code>(next-method)</code>, then performs the class initializations described
+in <a href="Class-Definition-Protocol.html#Class-Definition-Protocol">Class Definition Protocol</a>.
+
+</li><li> and so on for generic functions, methods, operator classes &hellip;
+</li></ul>
+
+<p>Similarly, you can customize the initialization of instances of any
+application-defined class by defining an <code>initialize</code> method
+specialized to that class.
+</p>
+<p>Imagine a class whose instances&rsquo; slots need to be initialized at
+instance creation time by querying a database.  Although it might be
+possible to achieve this a combination of <code>#:init-thunk</code> keywords
+and closures in the slot definitions, it may be neater to write an
+<code>initialize</code> method for the class that queries the database once
+and initializes all the dependent slot values according to the results.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Class-Definition-Protocol.html#Class-Definition-Protocol" accesskey="n" rel="next">Class Definition Protocol</a>, Previous: <a href="MOP-Specification.html#MOP-Specification" accesskey="p" rel="prev">MOP Specification</a>, Up: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="u" rel="up">The Metaobject Protocol</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Tree-IL</title>
+
+<meta name="description" content="Guile Reference Manual: Tree-IL">
+<meta name="keywords" content="Guile Reference Manual: Tree-IL">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" rel="up" title="Compiling to the Virtual Machine">
+<link href="GLIL.html#GLIL" rel="next" title="GLIL">
+<link href="The-Scheme-Compiler.html#The-Scheme-Compiler" rel="prev" title="The Scheme Compiler">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Tree_002dIL"></a>
+<div class="header">
+<p>
+Next: <a href="GLIL.html#GLIL" accesskey="n" rel="next">GLIL</a>, Previous: <a href="The-Scheme-Compiler.html#The-Scheme-Compiler" accesskey="p" rel="prev">The Scheme Compiler</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Tree_002dIL-1"></a>
+<h4 class="subsection">9.4.3 Tree-IL</h4>
+
+<p>Tree Intermediate Language (Tree-IL) is a structured intermediate
+language that is close in expressive power to Scheme. It is an
+expanded, pre-analyzed Scheme.
+</p>
+<p>Tree-IL is &ldquo;structured&rdquo; in the sense that its representation is
+based on records, not S-expressions. This gives a rigidity to the
+language that ensures that compiling to a lower-level language only
+requires a limited set of transformations. For example, the Tree-IL
+type <code>&lt;const&gt;</code> is a record type with two fields, <code>src</code> and
+<code>exp</code>. Instances of this type are created via <code>make-const</code>.
+Fields of this type are accessed via the <code>const-src</code> and
+<code>const-exp</code> procedures. There is also a predicate, <code>const?</code>.
+See <a href="Records.html#Records">Records</a>, for more information on records.
+</p>
+
+<p>All Tree-IL types have a <code>src</code> slot, which holds source location
+information for the expression. This information, if present, will be
+residualized into the compiled object code, allowing backtraces to
+show source information. The format of <code>src</code> is the same as that
+returned by Guile&rsquo;s <code>source-properties</code> function. See <a href="Source-Properties.html#Source-Properties">Source Properties</a>, for more information.
+</p>
+<p>Although Tree-IL objects are represented internally using records,
+there is also an equivalent S-expression external representation for
+each kind of Tree-IL. For example, the S-expression representation
+of <code>#&lt;const src: #f exp: 3&gt;</code> expression would be:
+</p>
+<div class="example">
+<pre class="example">(const 3)
+</pre></div>
+
+<p>Users may program with this format directly at the REPL:
+</p>
+<div class="example">
+<pre class="example">scheme@(guile-user)&gt; ,language tree-il
+Happy hacking with Tree Intermediate Language!  To switch back, type `,L scheme'.
+tree-il@(guile-user)&gt; (apply (primitive +) (const 32) (const 10))
+&rArr; 42
+</pre></div>
+
+<p>The <code>src</code> fields are left out of the external representation.
+</p>
+<p>One may create Tree-IL objects from their external representations via
+calling <code>parse-tree-il</code>, the reader for Tree-IL. If any source
+information is attached to the input S-expression, it will be
+propagated to the resulting Tree-IL expressions. This is probably the
+easiest way to compile to Tree-IL: just make the appropriate external
+representations in S-expression format, and let <code>parse-tree-il</code>
+take care of the rest.
+</p>
+<dl>
+<dt><a name="index-_003cvoid_003e"></a>Scheme Variable: <strong>&lt;void&gt;</strong> <em>src</em></dt>
+<dt><a name="index-_0028void_0029"></a>External Representation: <strong>(void)</strong></dt>
+<dd><p>An empty expression. In practice, equivalent to Scheme&rsquo;s <code>(if #f
+#f)</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cconst_003e"></a>Scheme Variable: <strong>&lt;const&gt;</strong> <em>src exp</em></dt>
+<dt><a name="index-_0028const"></a>External Representation: <strong>(const</strong> <em><var>exp</var>)</em></dt>
+<dd><p>A constant.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cprimitive_002dref_003e"></a>Scheme Variable: <strong>&lt;primitive-ref&gt;</strong> <em>src name</em></dt>
+<dt><a name="index-_0028primitive"></a>External Representation: <strong>(primitive</strong> <em><var>name</var>)</em></dt>
+<dd><p>A reference to a &ldquo;primitive&rdquo;. A primitive is a procedure that, when
+compiled, may be open-coded. For example, <code>cons</code> is usually
+recognized as a primitive, so that it compiles down to a single
+instruction.
+</p>
+<p>Compilation of Tree-IL usually begins with a pass that resolves some
+<code>&lt;module-ref&gt;</code> and <code>&lt;toplevel-ref&gt;</code> expressions to
+<code>&lt;primitive-ref&gt;</code> expressions. The actual compilation pass
+has special cases for applications of certain primitives, like
+<code>apply</code> or <code>cons</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003clexical_002dref_003e"></a>Scheme Variable: <strong>&lt;lexical-ref&gt;</strong> <em>src name gensym</em></dt>
+<dt><a name="index-_0028lexical"></a>External Representation: <strong>(lexical</strong> <em><var>name</var> <var>gensym</var>)</em></dt>
+<dd><p>A reference to a lexically-bound variable. The <var>name</var> is the
+original name of the variable in the source program. <var>gensym</var> is a
+unique identifier for this variable.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003clexical_002dset_003e"></a>Scheme Variable: <strong>&lt;lexical-set&gt;</strong> <em>src name gensym exp</em></dt>
+<dt><a name="index-_0028set_0021"></a>External Representation: <strong>(set!</strong> <em>(lexical <var>name</var> <var>gensym</var>) <var>exp</var>)</em></dt>
+<dd><p>Sets a lexically-bound variable.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cmodule_002dref_003e"></a>Scheme Variable: <strong>&lt;module-ref&gt;</strong> <em>src mod name public?</em></dt>
+<dt><a name="index-_0028"></a>External Representation: <strong>(</strong> <em>@ <var>mod</var> <var>name</var>)</em></dt>
+<dt><a name="index-_0028-1"></a>External Representation: <strong>(</strong> <em>@@ <var>mod</var> <var>name</var>)</em></dt>
+<dd><p>A reference to a variable in a specific module. <var>mod</var> should be
+the name of the module, e.g. <code>(guile-user)</code>.
+</p>
+<p>If <var>public?</var> is true, the variable named <var>name</var> will be looked
+up in <var>mod</var>&rsquo;s public interface, and serialized with <code>@</code>;
+otherwise it will be looked up among the module&rsquo;s private bindings,
+and is serialized with <code>@@</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cmodule_002dset_003e"></a>Scheme Variable: <strong>&lt;module-set&gt;</strong> <em>src mod name public? exp</em></dt>
+<dt><a name="index-_0028set_0021-1"></a>External Representation: <strong>(set!</strong> <em>(@ <var>mod</var> <var>name</var>) <var>exp</var>)</em></dt>
+<dt><a name="index-_0028set_0021-2"></a>External Representation: <strong>(set!</strong> <em>(@@ <var>mod</var> <var>name</var>) <var>exp</var>)</em></dt>
+<dd><p>Sets a variable in a specific module.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003ctoplevel_002dref_003e"></a>Scheme Variable: <strong>&lt;toplevel-ref&gt;</strong> <em>src name</em></dt>
+<dt><a name="index-_0028toplevel"></a>External Representation: <strong>(toplevel</strong> <em><var>name</var>)</em></dt>
+<dd><p>References a variable from the current procedure&rsquo;s module.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003ctoplevel_002dset_003e"></a>Scheme Variable: <strong>&lt;toplevel-set&gt;</strong> <em>src name exp</em></dt>
+<dt><a name="index-_0028set_0021-3"></a>External Representation: <strong>(set!</strong> <em>(toplevel <var>name</var>) <var>exp</var>)</em></dt>
+<dd><p>Sets a variable in the current procedure&rsquo;s module.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003ctoplevel_002ddefine_003e"></a>Scheme Variable: <strong>&lt;toplevel-define&gt;</strong> <em>src name exp</em></dt>
+<dt><a name="index-_0028define"></a>External Representation: <strong>(define</strong> <em>(toplevel <var>name</var>) <var>exp</var>)</em></dt>
+<dd><p>Defines a new top-level variable in the current procedure&rsquo;s module.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cconditional_003e"></a>Scheme Variable: <strong>&lt;conditional&gt;</strong> <em>src test then else</em></dt>
+<dt><a name="index-_0028if"></a>External Representation: <strong>(if</strong> <em><var>test</var> <var>then</var> <var>else</var>)</em></dt>
+<dd><p>A conditional. Note that <var>else</var> is not optional.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003capplication_003e"></a>Scheme Variable: <strong>&lt;application&gt;</strong> <em>src proc args</em></dt>
+<dt><a name="index-_0028apply"></a>External Representation: <strong>(apply</strong> <em><var>proc</var> . <var>args</var>)</em></dt>
+<dd><p>A procedure call.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003csequence_003e"></a>Scheme Variable: <strong>&lt;sequence&gt;</strong> <em>src exps</em></dt>
+<dt><a name="index-_0028begin"></a>External Representation: <strong>(begin</strong> <em>. <var>exps</var>)</em></dt>
+<dd><p>Like Scheme&rsquo;s <code>begin</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003clambda_003e"></a>Scheme Variable: <strong>&lt;lambda&gt;</strong> <em>src meta body</em></dt>
+<dt><a name="index-_0028lambda"></a>External Representation: <strong>(lambda</strong> <em><var>meta</var> <var>body</var>)</em></dt>
+<dd><p>A closure. <var>meta</var> is an association list of properties for the
+procedure. <var>body</var> is a single Tree-IL expression of type
+<code>&lt;lambda-case&gt;</code>. As the <code>&lt;lambda-case&gt;</code> clause can chain to
+an alternate clause, this makes Tree-IL&rsquo;s <code>&lt;lambda&gt;</code> have the
+expressiveness of Scheme&rsquo;s <code>case-lambda</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003clambda_002dcase_003e"></a>Scheme Variable: <strong>&lt;lambda-case&gt;</strong> <em>req opt rest kw inits gensyms body alternate</em></dt>
+<dt><a name="index-_0028lambda_002dcase"></a>External Representation: <strong>(lambda-case</strong> <em>((<var>req</var> <var>opt</var> <var>rest</var> <var>kw</var> <var>inits</var> <var>gensyms</var>)                <var>body</var>)               [<var>alternate</var>])</em></dt>
+<dd><p>One clause of a <code>case-lambda</code>. A <code>lambda</code> expression in
+Scheme is treated as a <code>case-lambda</code> with one clause.
+</p>
+<p><var>req</var> is a list of the procedure&rsquo;s required arguments, as symbols.
+<var>opt</var> is a list of the optional arguments, or <code>#f</code> if there
+are no optional arguments. <var>rest</var> is the name of the rest
+argument, or <code>#f</code>.
+</p>
+<p><var>kw</var> is a list of the form, <code>(<var>allow-other-keys?</var>
+(<var>keyword</var> <var>name</var> <var>var</var>) ...)</code>, where <var>keyword</var> is the
+keyword corresponding to the argument named <var>name</var>, and whose
+corresponding gensym is <var>var</var>. <var>inits</var> are tree-il expressions
+corresponding to all of the optional and keyword arguments, evaluated
+to bind variables whose value is not supplied by the procedure caller.
+Each <var>init</var> expression is evaluated in the lexical context of
+previously bound variables, from left to right.
+</p>
+<p><var>gensyms</var> is a list of gensyms corresponding to all arguments:
+first all of the required arguments, then the optional arguments if
+any, then the rest argument if any, then all of the keyword arguments.
+</p>
+<p><var>body</var> is the body of the clause. If the procedure is called with
+an appropriate number of arguments, <var>body</var> is evaluated in tail
+position. Otherwise, if there is an <var>alternate</var>, it should be a
+<code>&lt;lambda-case&gt;</code> expression, representing the next clause to try.
+If there is no <var>alternate</var>, a wrong-number-of-arguments error is
+signaled.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003clet_003e"></a>Scheme Variable: <strong>&lt;let&gt;</strong> <em>src names gensyms vals exp</em></dt>
+<dt><a name="index-_0028let"></a>External Representation: <strong>(let</strong> <em><var>names</var> <var>gensyms</var> <var>vals</var> <var>exp</var>)</em></dt>
+<dd><p>Lexical binding, like Scheme&rsquo;s <code>let</code>. <var>names</var> are the
+original binding names, <var>gensyms</var> are gensyms corresponding to the
+<var>names</var>, and <var>vals</var> are Tree-IL expressions for the values.
+<var>exp</var> is a single Tree-IL expression.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cletrec_003e"></a>Scheme Variable: <strong>&lt;letrec&gt;</strong> <em>in-order? src names gensyms vals exp</em></dt>
+<dt><a name="index-_0028letrec"></a>External Representation: <strong>(letrec</strong> <em><var>names</var> <var>gensyms</var> <var>vals</var> <var>exp</var>)</em></dt>
+<dt><a name="index-_0028letrec_002a"></a>External Representation: <strong>(letrec*</strong> <em><var>names</var> <var>gensyms</var> <var>vals</var> <var>exp</var>)</em></dt>
+<dd><p>A version of <code>&lt;let&gt;</code> that creates recursive bindings, like
+Scheme&rsquo;s <code>letrec</code>, or <code>letrec*</code> if <var>in-order?</var> is true.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cdynlet_003e"></a>Scheme Variable: <strong>&lt;dynlet&gt;</strong> <em>fluids vals body</em></dt>
+<dt><a name="index-_0028dynlet"></a>External Representation: <strong>(dynlet</strong> <em><var>fluids</var> <var>vals</var> <var>body</var>)</em></dt>
+<dd><p>Dynamic binding; the equivalent of Scheme&rsquo;s <code>with-fluids</code>.
+<var>fluids</var> should be a list of Tree-IL expressions that will
+evaluate to fluids, and <var>vals</var> a corresponding list of expressions
+to bind to the fluids during the dynamic extent of the evaluation of
+<var>body</var>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cdynref_003e"></a>Scheme Variable: <strong>&lt;dynref&gt;</strong> <em>fluid</em></dt>
+<dt><a name="index-_0028dynref"></a>External Representation: <strong>(dynref</strong> <em><var>fluid</var>)</em></dt>
+<dd><p>A dynamic variable reference. <var>fluid</var> should be a Tree-IL
+expression evaluating to a fluid.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cdynset_003e"></a>Scheme Variable: <strong>&lt;dynset&gt;</strong> <em>fluid exp</em></dt>
+<dt><a name="index-_0028dynset"></a>External Representation: <strong>(dynset</strong> <em><var>fluid</var> <var>exp</var>)</em></dt>
+<dd><p>A dynamic variable set. <var>fluid</var>, a Tree-IL expression evaluating
+to a fluid, will be set to the result of evaluating <var>exp</var>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cdynwind_003e"></a>Scheme Variable: <strong>&lt;dynwind&gt;</strong> <em>winder body unwinder</em></dt>
+<dt><a name="index-_0028dynwind"></a>External Representation: <strong>(dynwind</strong> <em><var>winder</var> <var>body</var> <var>unwinder</var>)</em></dt>
+<dd><p>A <code>dynamic-wind</code>. <var>winder</var> and <var>unwinder</var> should both
+evaluate to thunks. Ensure that the winder and the unwinder are called
+before entering and after leaving <var>body</var>. Note that <var>body</var> is
+an expression, without a thunk wrapper.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cprompt_003e"></a>Scheme Variable: <strong>&lt;prompt&gt;</strong> <em>tag body handler</em></dt>
+<dt><a name="index-_0028prompt"></a>External Representation: <strong>(prompt</strong> <em><var>tag</var> <var>body</var> <var>handler</var>)</em></dt>
+<dd><p>A dynamic prompt. Instates a prompt named <var>tag</var>, an expression,
+during the dynamic extent of the execution of <var>body</var>, also an
+expression. If an abort occurs to this prompt, control will be passed
+to <var>handler</var>, a <code>&lt;lambda-case&gt;</code> expression with no optional
+or keyword arguments, and no alternate. The first argument to the
+<code>&lt;lambda-case&gt;</code> will be the captured continuation, and then all
+of the values passed to the abort. See <a href="Prompts.html#Prompts">Prompts</a>, for more
+information.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cabort_003e"></a>Scheme Variable: <strong>&lt;abort&gt;</strong> <em>tag args tail</em></dt>
+<dt><a name="index-_0028abort"></a>External Representation: <strong>(abort</strong> <em><var>tag</var> <var>args</var> <var>tail</var>)</em></dt>
+<dd><p>An abort to the nearest prompt with the name <var>tag</var>, an expression.
+<var>args</var> should be a list of expressions to pass to the prompt&rsquo;s
+handler, and <var>tail</var> should be an expression that will evaluate to
+a list of additional arguments. An abort will save the partial
+continuation, which may later be reinstated, resulting in the
+<code>&lt;abort&gt;</code> expression evaluating to some number of values.
+</p></dd></dl>
+
+<p>There are two Tree-IL constructs that are not normally produced by
+higher-level compilers, but instead are generated during the
+source-to-source optimization and analysis passes that the Tree-IL
+compiler does. Users should not generate these expressions directly,
+unless they feel very clever, as the default analysis pass will
+generate them as necessary.
+</p>
+<dl>
+<dt><a name="index-_003clet_002dvalues_003e"></a>Scheme Variable: <strong>&lt;let-values&gt;</strong> <em>src names gensyms exp body</em></dt>
+<dt><a name="index-_0028let_002dvalues"></a>External Representation: <strong>(let-values</strong> <em><var>names</var> <var>gensyms</var> <var>exp</var> <var>body</var>)</em></dt>
+<dd><p>Like Scheme&rsquo;s <code>receive</code> &ndash; binds the values returned by
+evaluating <code>exp</code> to the <code>lambda</code>-like bindings described by
+<var>gensyms</var>. That is to say, <var>gensyms</var> may be an improper list.
+</p>
+<p><code>&lt;let-values&gt;</code> is an optimization of <code>&lt;application&gt;</code> of the
+primitive, <code>call-with-values</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-_003cfix_003e"></a>Scheme Variable: <strong>&lt;fix&gt;</strong> <em>src names gensyms vals body</em></dt>
+<dt><a name="index-_0028fix"></a>External Representation: <strong>(fix</strong> <em><var>names</var> <var>gensyms</var> <var>vals</var> <var>body</var>)</em></dt>
+<dd><p>Like <code>&lt;letrec&gt;</code>, but only for <var>vals</var> that are unset
+<code>lambda</code> expressions.
+</p>
+<p><code>fix</code> is an optimization of <code>letrec</code> (and <code>let</code>).
+</p></dd></dl>
+
+<p>Tree-IL implements a compiler to GLIL that recursively traverses
+Tree-IL expressions, writing out GLIL expressions into a linear list.
+The compiler also keeps some state as to whether the current
+expression is in tail context, and whether its value will be used in
+future computations. This state allows the compiler not to emit code
+for constant expressions that will not be used (e.g. docstrings), and
+to perform tail calls when in tail position.
+</p>
+<p>Most optimization, such as it currently is, is performed on Tree-IL
+expressions as source-to-source transformations. There will be more
+optimizations added in the future.
+</p>
+<p>Interested readers are encouraged to read the implementation in
+<code>(language tree-il compile-glil)</code> for more details.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="GLIL.html#GLIL" accesskey="n" rel="next">GLIL</a>, Previous: <a href="The-Scheme-Compiler.html#The-Scheme-Compiler" accesskey="p" rel="prev">The Scheme Compiler</a>, Up: <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine" accesskey="u" rel="up">Compiling to the Virtual Machine</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

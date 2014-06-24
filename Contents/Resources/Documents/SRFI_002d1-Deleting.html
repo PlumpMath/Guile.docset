@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-1 Deleting</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-1 Deleting">
+<meta name="keywords" content="Guile Reference Manual: SRFI-1 Deleting">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d1.html#SRFI_002d1" rel="up" title="SRFI-1">
+<link href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists" rel="next" title="SRFI-1 Association Lists">
+<link href="SRFI_002d1-Searching.html#SRFI_002d1-Searching" rel="prev" title="SRFI-1 Searching">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d1-Deleting"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists" accesskey="n" rel="next">SRFI-1 Association Lists</a>, Previous: <a href="SRFI_002d1-Searching.html#SRFI_002d1-Searching" accesskey="p" rel="prev">SRFI-1 Searching</a>, Up: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="u" rel="up">SRFI-1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Deleting"></a>
+<h4 class="subsubsection">7.5.3.8 Deleting</h4>
+<a name="index-list-delete"></a>
+
+<dl>
+<dt><a name="index-delete-1"></a>Scheme Procedure: <strong>delete</strong> <em>x lst [=]</em></dt>
+<dt><a name="index-delete_0021-1"></a>Scheme Procedure: <strong>delete!</strong> <em>x lst [=]</em></dt>
+<dd><p>Return a list containing the elements of <var>lst</var> but with those
+equal to <var>x</var> deleted.  The returned elements will be in the same
+order as they were in <var>lst</var>.
+</p>
+<p>Equality is determined by the <var>=</var> predicate, or <code>equal?</code> if
+not given.  An equality call is made just once for each element, but
+the order in which the calls are made on the elements is unspecified.
+</p>
+<p>The equality calls are always <code>(= x elem)</code>, ie. the given <var>x</var>
+is first.  This means for instance elements greater than 5 can be
+deleted with <code>(delete 5 lst &lt;)</code>.
+</p>
+<p><code>delete</code> does not modify <var>lst</var>, but the return might share a
+common tail with <var>lst</var>.  <code>delete!</code> may modify the structure
+of <var>lst</var> to construct its return.
+</p>
+<p>These functions extend the core <code>delete</code> and <code>delete!</code>
+(see <a href="List-Modification.html#List-Modification">List Modification</a>) in accepting an equality predicate.  See
+also <code>lset-difference</code> (see <a href="SRFI_002d1-Set-Operations.html#SRFI_002d1-Set-Operations">SRFI-1 Set Operations</a>) for
+deleting multiple elements from a list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delete_002dduplicates"></a>Scheme Procedure: <strong>delete-duplicates</strong> <em>lst [=]</em></dt>
+<dt><a name="index-delete_002dduplicates_0021"></a>Scheme Procedure: <strong>delete-duplicates!</strong> <em>lst [=]</em></dt>
+<dd><p>Return a list containing the elements of <var>lst</var> but without
+duplicates.
+</p>
+<p>When elements are equal, only the first in <var>lst</var> is retained.
+Equal elements can be anywhere in <var>lst</var>, they don&rsquo;t have to be
+adjacent.  The returned list will have the retained elements in the
+same order as they were in <var>lst</var>.
+</p>
+<p>Equality is determined by the <var>=</var> predicate, or <code>equal?</code> if
+not given.  Calls <code>(= x y)</code> are made with element <var>x</var> being
+before <var>y</var> in <var>lst</var>.  A call is made at most once for each
+combination, but the sequence of the calls across the elements is
+unspecified.
+</p>
+<p><code>delete-duplicates</code> does not modify <var>lst</var>, but the return
+might share a common tail with <var>lst</var>.  <code>delete-duplicates!</code>
+may modify the structure of <var>lst</var> to construct its return.
+</p>
+<p>In the worst case, this is an <em>O(N^2)</em> algorithm because it must
+check each element against all those preceding it.  For long lists it
+is more efficient to sort and then compare only adjacent elements.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d1-Association-Lists.html#SRFI_002d1-Association-Lists" accesskey="n" rel="next">SRFI-1 Association Lists</a>, Previous: <a href="SRFI_002d1-Searching.html#SRFI_002d1-Searching" accesskey="p" rel="prev">SRFI-1 Searching</a>, Up: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="u" rel="up">SRFI-1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Prompt Primitives</title>
+
+<meta name="description" content="Guile Reference Manual: Prompt Primitives">
+<meta name="keywords" content="Guile Reference Manual: Prompt Primitives">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Prompts.html#Prompts" rel="up" title="Prompts">
+<link href="Shift-and-Reset.html#Shift-and-Reset" rel="next" title="Shift and Reset">
+<link href="Prompts.html#Prompts" rel="prev" title="Prompts">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Prompt-Primitives"></a>
+<div class="header">
+<p>
+Next: <a href="Shift-and-Reset.html#Shift-and-Reset" accesskey="n" rel="next">Shift and Reset</a>, Up: <a href="Prompts.html#Prompts" accesskey="u" rel="up">Prompts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Prompt-Primitives-1"></a>
+<h4 class="subsubsection">6.13.5.1 Prompt Primitives</h4>
+
+<p>Guile&rsquo;s primitive delimited control operators are
+<code>call-with-prompt</code> and <code>abort-to-prompt</code>.
+</p>
+<dl>
+<dt><a name="index-call_002dwith_002dprompt"></a>Scheme Procedure: <strong>call-with-prompt</strong> <em>tag thunk handler</em></dt>
+<dd><p>Set up a prompt, and call <var>thunk</var> within that prompt.
+</p>
+<p>During the dynamic extent of the call to <var>thunk</var>, a prompt named <var>tag</var>
+will be present in the dynamic context, such that if a user calls
+<code>abort-to-prompt</code> (see below) with that tag, control rewinds back to the
+prompt, and the <var>handler</var> is run.
+</p>
+<p><var>handler</var> must be a procedure. The first argument to <var>handler</var> will be
+the state of the computation begun when <var>thunk</var> was called, and ending with
+the call to <code>abort-to-prompt</code>. The remaining arguments to <var>handler</var> are
+those passed to <code>abort-to-prompt</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dprompt_002dtag"></a>Scheme Procedure: <strong>make-prompt-tag</strong> <em>[stem]</em></dt>
+<dd><p>Make a new prompt tag.  Currently prompt tags are generated symbols.
+This may change in some future Guile version.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-default_002dprompt_002dtag"></a>Scheme Procedure: <strong>default-prompt-tag</strong></dt>
+<dd><p>Return the default prompt tag.  Having a distinguished default prompt
+tag allows some useful prompt and abort idioms, discussed in the next
+section.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-abort_002dto_002dprompt"></a>Scheme Procedure: <strong>abort-to-prompt</strong> <em>tag val1 val2 &hellip;</em></dt>
+<dd><p>Unwind the dynamic and control context to the nearest prompt named <var>tag</var>,
+also passing the given values.
+</p></dd></dl>
+
+<p>C programmers may recognize <code>call-with-prompt</code> and <code>abort-to-prompt</code>
+as a fancy kind of <code>setjmp</code> and <code>longjmp</code>, respectively. Prompts are
+indeed quite useful as non-local escape mechanisms. Guile&rsquo;s <code>catch</code> and
+<code>throw</code> are implemented in terms of prompts. Prompts are more convenient
+than <code>longjmp</code>, in that one has the opportunity to pass multiple values to
+the jump target.
+</p>
+<p>Also unlike <code>longjmp</code>, the prompt handler is given the full state of the
+process that was aborted, as the first argument to the prompt&rsquo;s handler. That
+state is the <em>continuation</em> of the computation wrapped by the prompt. It is
+a <em>delimited continuation</em>, because it is not the whole continuation of the
+program; rather, just the computation initiated by the call to
+<code>call-with-prompt</code>.
+</p>
+<p>The continuation is a procedure, and may be reinstated simply by invoking it,
+with any number of values. Here&rsquo;s where things get interesting, and complicated
+as well. Besides being described as delimited, continuations reified by prompts
+are also <em>composable</em>, because invoking a prompt-saved continuation composes
+that continuation with the current one.
+</p>
+<p>Imagine you have saved a continuation via call-with-prompt:
+</p>
+<div class="example">
+<pre class="example">(define cont
+  (call-with-prompt
+   ;; tag
+   'foo
+   ;; thunk
+   (lambda ()
+     (+ 34 (abort-to-prompt 'foo)))
+   ;; handler
+   (lambda (k) k)))
+</pre></div>
+
+<p>The resulting continuation is the addition of 34. It&rsquo;s as if you had written:
+</p>
+<div class="example">
+<pre class="example">(define cont
+  (lambda (x)
+    (+ 34 x)))
+</pre></div>
+
+<p>So, if we call <code>cont</code> with one numeric value, we get that number,
+incremented by 34:
+</p>
+<div class="example">
+<pre class="example">(cont 8)
+&rArr; 42
+(* 2 (cont 8))
+&rArr; 84
+</pre></div>
+
+<p>The last example illustrates what we mean when we say, &quot;composes with the
+current continuation&quot;. We mean that there is a current continuation &ndash; some
+remaining things to compute, like <code>(lambda (x) (* x 2))</code> &ndash; and that
+calling the saved continuation doesn&rsquo;t wipe out the current continuation, it
+composes the saved continuation with the current one.
+</p>
+<p>We&rsquo;re belaboring the point here because traditional Scheme continuations, as
+discussed in the next section, aren&rsquo;t composable, and are actually less
+expressive than continuations captured by prompts. But there&rsquo;s a place for them
+both.
+</p>
+<p>Before moving on, we should mention that if the handler of a prompt is a
+<code>lambda</code> expression, and the first argument isn&rsquo;t referenced, an abort to
+that prompt will not cause a continuation to be reified.  This can be an
+important efficiency consideration to keep in mind.
+</p>
+<a name="index-continuation_002c-escape"></a>
+<p>One example where this optimization matters is <em>escape
+continuations</em>.  Escape continuations are delimited continuations whose
+only use is to make a non-local exit&mdash;i.e., to escape from the current
+continuation.  Such continuations are invoked only once, and for this
+reason they are sometimes called <em>one-shot continuations</em>.  A common
+use of escape continuations is when throwing an exception
+(see <a href="Exceptions.html#Exceptions">Exceptions</a>).
+</p>
+<p>The constructs below are syntactic sugar atop prompts to simplify the
+use of escape continuations.
+</p>
+<dl>
+<dt><a name="index-call_002dwith_002descape_002dcontinuation"></a>Scheme Procedure: <strong>call-with-escape-continuation</strong> <em>proc</em></dt>
+<dt><a name="index-call_002fec"></a>Scheme Procedure: <strong>call/ec</strong> <em>proc</em></dt>
+<dd><p>Call <var>proc</var> with an escape continuation.
+</p>
+<p>In the example below, the <var>return</var> continuation is used to escape
+the continuation of the call to <code>fold</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (ice-9 control)
+             (srfi srfi-1))
+
+(define (prefix x lst)
+  ;; Return all the elements before the first occurrence
+  ;; of X in LST.
+  (call/ec
+    (lambda (return)
+      (fold (lambda (element prefix)
+              (if (equal? element x)
+                  (return (reverse prefix))  ; escape `fold'
+                  (cons element prefix)))
+            '()
+            lst))))
+
+(prefix 'a '(0 1 2 a 3 4 5))
+&rArr; (0 1 2)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-let_002descape_002dcontinuation"></a>Scheme Syntax: <strong>let-escape-continuation</strong> <em>k body &hellip;</em></dt>
+<dt><a name="index-let_002fec"></a>Scheme Syntax: <strong>let/ec</strong> <em>k body &hellip;</em></dt>
+<dd><p>Bind <var>k</var> within <var>body</var> to an escape continuation.
+</p>
+<p>This is equivalent to
+<code>(call/ec (lambda (<var>k</var>) <var>body</var> &hellip;))</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Shift-and-Reset.html#Shift-and-Reset" accesskey="n" rel="next">Shift and Reset</a>, Up: <a href="Prompts.html#Prompts" accesskey="u" rel="up">Prompts</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

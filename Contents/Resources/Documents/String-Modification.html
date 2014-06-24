@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: String Modification</title>
+
+<meta name="description" content="Guile Reference Manual: String Modification">
+<meta name="keywords" content="Guile Reference Manual: String Modification">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Strings.html#Strings" rel="up" title="Strings">
+<link href="String-Comparison.html#String-Comparison" rel="next" title="String Comparison">
+<link href="String-Selection.html#String-Selection" rel="prev" title="String Selection">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="String-Modification"></a>
+<div class="header">
+<p>
+Next: <a href="String-Comparison.html#String-Comparison" accesskey="n" rel="next">String Comparison</a>, Previous: <a href="String-Selection.html#String-Selection" accesskey="p" rel="prev">String Selection</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="String-Modification-1"></a>
+<h4 class="subsubsection">6.6.5.6 String Modification</h4>
+
+<p>These procedures are for modifying strings in-place.  This means that the
+result of the operation is not a new string; instead, the original string&rsquo;s
+memory representation is modified.
+</p>
+<a name="index-string_002dset_0021-1"></a>
+<dl>
+<dt><a name="index-string_002dset_0021"></a>Scheme Procedure: <strong>string-set!</strong> <em>str k chr</em></dt>
+<dt><a name="index-scm_005fstring_005fset_005fx"></a>C Function: <strong>scm_string_set_x</strong> <em>(str, k, chr)</em></dt>
+<dd><p>Store <var>chr</var> in element <var>k</var> of <var>str</var> and return
+an unspecified value. <var>k</var> must be a valid index of
+<var>str</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fstring_005fset_005fx"></a>C Function: <em>void</em> <strong>scm_c_string_set_x</strong> <em>(SCM str, size_t k, SCM chr)</em></dt>
+<dd><p>Like <code>scm_string_set_x</code>, but the index is given as a <code>size_t</code>.
+</p></dd></dl>
+
+<a name="index-string_002dfill_0021-1"></a>
+<dl>
+<dt><a name="index-string_002dfill_0021"></a>Scheme Procedure: <strong>string-fill!</strong> <em>str chr [start [end]]</em></dt>
+<dt><a name="index-scm_005fsubstring_005ffill_005fx"></a>C Function: <strong>scm_substring_fill_x</strong> <em>(str, chr, start, end)</em></dt>
+<dt><a name="index-scm_005fstring_005ffill_005fx"></a>C Function: <strong>scm_string_fill_x</strong> <em>(str, chr)</em></dt>
+<dd><p>Stores <var>chr</var> in every element of the given <var>str</var> and
+returns an unspecified value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-substring_002dfill_0021"></a>Scheme Procedure: <strong>substring-fill!</strong> <em>str start end fill</em></dt>
+<dt><a name="index-scm_005fsubstring_005ffill_005fx-1"></a>C Function: <strong>scm_substring_fill_x</strong> <em>(str, start, end, fill)</em></dt>
+<dd><p>Change every character in <var>str</var> between <var>start</var> and
+<var>end</var> to <var>fill</var>.
+</p>
+<div class="lisp">
+<pre class="lisp">(define y (string-copy &quot;abcdefg&quot;))
+(substring-fill! y 1 3 #\r)
+y
+&rArr; &quot;arrdefg&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-substring_002dmove_0021"></a>Scheme Procedure: <strong>substring-move!</strong> <em>str1 start1 end1 str2 start2</em></dt>
+<dt><a name="index-scm_005fsubstring_005fmove_005fx"></a>C Function: <strong>scm_substring_move_x</strong> <em>(str1, start1, end1, str2, start2)</em></dt>
+<dd><p>Copy the substring of <var>str1</var> bounded by <var>start1</var> and <var>end1</var>
+into <var>str2</var> beginning at position <var>start2</var>.
+<var>str1</var> and <var>str2</var> can be the same string.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dcopy_0021"></a>Scheme Procedure: <strong>string-copy!</strong> <em>target tstart s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005fcopy_005fx"></a>C Function: <strong>scm_string_copy_x</strong> <em>(target, tstart, s, start, end)</em></dt>
+<dd><p>Copy the sequence of characters from index range [<var>start</var>,
+<var>end</var>) in string <var>s</var> to string <var>target</var>, beginning
+at index <var>tstart</var>.  The characters are copied left-to-right
+or right-to-left as needed &ndash; the copy is guaranteed to work,
+even if <var>target</var> and <var>s</var> are the same string.  It is an
+error if the copy operation runs off the end of the target
+string.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="String-Comparison.html#String-Comparison" accesskey="n" rel="next">String Comparison</a>, Previous: <a href="String-Selection.html#String-Selection" accesskey="p" rel="prev">String Selection</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

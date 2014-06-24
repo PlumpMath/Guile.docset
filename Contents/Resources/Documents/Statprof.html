@@ -1,0 +1,395 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Statprof</title>
+
+<meta name="description" content="Guile Reference Manual: Statprof">
+<meta name="keywords" content="Guile Reference Manual: Statprof">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="SXML.html#SXML" rel="next" title="SXML">
+<link href="Curried-Definitions.html#Curried-Definitions" rel="prev" title="Curried Definitions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Statprof"></a>
+<div class="header">
+<p>
+Next: <a href="SXML.html#SXML" accesskey="n" rel="next">SXML</a>, Previous: <a href="Curried-Definitions.html#Curried-Definitions" accesskey="p" rel="prev">Curried Definitions</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Statprof-1"></a>
+<h3 class="section">7.19 Statprof</h3>
+
+<p><code>(statprof)</code> is a fairly simple statistical profiler for Guile.
+</p>
+<p>A simple use of statprof would look like this:
+</p>
+<div class="example">
+<pre class="example">(statprof-reset 0 50000 #t)
+(statprof-start)
+(do-something)
+(statprof-stop)
+(statprof-display)
+</pre></div>
+
+<p>This would reset statprof, clearing all accumulated statistics, then
+start profiling, run some code, stop profiling, and finally display a
+gprof flat-style table of statistics which will look something like
+this:
+</p>
+<div class="example">
+<pre class="example">  %   cumulative      self              self    total
+ time    seconds   seconds    calls  ms/call  ms/call  name
+ 35.29      0.23      0.23     2002     0.11     0.11  -
+ 23.53      0.15      0.15     2001     0.08     0.08  positive?
+ 23.53      0.15      0.15     2000     0.08     0.08  +
+ 11.76      0.23      0.08     2000     0.04     0.11  do-nothing
+  5.88      0.64      0.04     2001     0.02     0.32  loop
+  0.00      0.15      0.00        1     0.00   150.59  do-something
+ ...
+</pre></div>
+
+<p>All of the numerical data with the exception of the calls column is
+statistically approximate. In the following column descriptions, and in
+all of statprof, &quot;time&quot; refers to execution time (both user and system),
+not wall clock time.
+</p>
+<dl compact="compact">
+<dt>% time</dt>
+<dd><p>The percent of the time spent inside the procedure itself (not counting
+children).
+</p>
+</dd>
+<dt>cumulative seconds</dt>
+<dd><p>The total number of seconds spent in the procedure, including children.
+</p>
+</dd>
+<dt>self seconds</dt>
+<dd><p>The total number of seconds spent in the procedure itself (not counting
+children).
+</p>
+</dd>
+<dt>calls</dt>
+<dd><p>The total number of times the procedure was called.
+</p>
+</dd>
+<dt>self ms/call</dt>
+<dd><p>The average time taken by the procedure itself on each call, in ms.
+</p>
+</dd>
+<dt>total ms/call</dt>
+<dd><p>The average time taken by each call to the procedure, including time
+spent in child functions.
+</p>
+</dd>
+<dt>name</dt>
+<dd><p>The name of the procedure.
+</p>
+</dd>
+</dl>
+
+<p>The profiler uses <code>eq?</code> and the procedure object itself to identify
+the procedures, so it won&rsquo;t confuse different procedures with the same
+name. They will show up as two different rows in the output.
+</p>
+<p>Right now the profiler is quite simplistic. I cannot provide call-graphs
+or other higher level information. What you see in the table is pretty
+much all there is. Patches are welcome :-)
+</p>
+<a name="Implementation-notes"></a>
+<h3 class="section">7.20 Implementation notes</h3>
+<p>The profiler works by setting the unix profiling signal
+<code>ITIMER_PROF</code> to go off after the interval you define in the call
+to <code>statprof-reset</code>. When the signal fires, a sampling routine is
+run which looks at the current procedure that&rsquo;s executing, and then
+crawls up the stack, and for each procedure encountered, increments that
+procedure&rsquo;s sample count. Note that if a procedure is encountered
+multiple times on a given stack, it is only counted once. After the
+sampling is complete, the profiler resets profiling timer to fire again
+after the appropriate interval.
+</p>
+<p>Meanwhile, the profiler keeps track, via <code>get-internal-run-time</code>,
+how much CPU time (system and user &ndash; which is also what
+<code>ITIMER_PROF</code> tracks), has elapsed while code has been executing
+within a statprof-start/stop block.
+</p>
+<p>The profiler also tries to avoid counting or timing its own code as much
+as possible.
+</p>
+<a name="Usage"></a>
+<h3 class="section">7.21 Usage</h3>
+<a name="statprof-statprof_002dactive_003f"></a><dl>
+<dt><a name="index-statprof_002dactive_003f"></a>Function: <strong>statprof-active?</strong></dt>
+<dd><p>Returns <code>#t</code> if <code>statprof-start</code> has been called more times
+than <code>statprof-stop</code>, <code>#f</code> otherwise.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dstart"></a><dl>
+<dt><a name="index-statprof_002dstart"></a>Function: <strong>statprof-start</strong></dt>
+<dd><p>Start the profiler.<code></code>
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dstop"></a><dl>
+<dt><a name="index-statprof_002dstop"></a>Function: <strong>statprof-stop</strong></dt>
+<dd><p>Stop the profiler.<code></code>
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dreset"></a><dl>
+<dt><a name="index-statprof_002dreset"></a>Function: <strong>statprof-reset</strong> <em>sample-seconds sample-microseconds count-calls? [full-stacks?]</em></dt>
+<dd><p>Reset the statprof sampler interval to <var>sample-seconds</var> and
+<var>sample-microseconds</var>. If <var>count-calls?</var> is true, arrange to
+instrument procedure calls as well as collecting statistical profiling
+data. If <var>full-stacks?</var> is true, collect all sampled stacks into a
+list for later analysis.
+</p>
+<p>Enables traps and debugging as necessary.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002daccumulated_002dtime"></a><dl>
+<dt><a name="index-statprof_002daccumulated_002dtime"></a>Function: <strong>statprof-accumulated-time</strong></dt>
+<dd><p>Returns the time accumulated during the last statprof run.<code></code>
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dsample_002dcount"></a><dl>
+<dt><a name="index-statprof_002dsample_002dcount"></a>Function: <strong>statprof-sample-count</strong></dt>
+<dd><p>Returns the number of samples taken during the last statprof run.<code></code>
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dfold_002dcall_002ddata"></a><dl>
+<dt><a name="index-statprof_002dfold_002dcall_002ddata"></a>Function: <strong>statprof-fold-call-data</strong> <em>proc init</em></dt>
+<dd><p>Fold <var>proc</var> over the call-data accumulated by statprof. Cannot be
+called while statprof is active. <var>proc</var> should take two arguments,
+<code>(<var>call-data</var> <var>prior-result</var>)</code>.
+</p>
+<p>Note that a given proc-name may appear multiple times, but if it does,
+it represents different functions with the same name.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dproc_002dcall_002ddata"></a><dl>
+<dt><a name="index-statprof_002dproc_002dcall_002ddata"></a>Function: <strong>statprof-proc-call-data</strong> <em>proc</em></dt>
+<dd><p>Returns the call-data associated with <var>proc</var>, or <code>#f</code> if none
+is available.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dcall_002ddata_002dname"></a><dl>
+<dt><a name="index-statprof_002dcall_002ddata_002dname"></a>Function: <strong>statprof-call-data-name</strong> <em>cd</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dcall_002ddata_002dcalls"></a><dl>
+<dt><a name="index-statprof_002dcall_002ddata_002dcalls"></a>Function: <strong>statprof-call-data-calls</strong> <em>cd</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dcall_002ddata_002dcum_002dsamples"></a><dl>
+<dt><a name="index-statprof_002dcall_002ddata_002dcum_002dsamples"></a>Function: <strong>statprof-call-data-cum-samples</strong> <em>cd</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dcall_002ddata_002dself_002dsamples"></a><dl>
+<dt><a name="index-statprof_002dcall_002ddata_002dself_002dsamples"></a>Function: <strong>statprof-call-data-self-samples</strong> <em>cd</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dcall_002ddata_002d_003estats"></a><dl>
+<dt><a name="index-statprof_002dcall_002ddata_002d_003estats"></a>Function: <strong>statprof-call-data-&gt;stats</strong> <em>call-data</em></dt>
+<dd><p>Returns an object of type <code>statprof-stats</code>.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dstats_002dproc_002dname"></a><dl>
+<dt><a name="index-statprof_002dstats_002dproc_002dname"></a>Function: <strong>statprof-stats-proc-name</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dstats_002d_0025_002dtime_002din_002dproc"></a><dl>
+<dt><a name="index-statprof_002dstats_002d_0025_002dtime_002din_002dproc"></a>Function: <strong>statprof-stats-%-time-in-proc</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dstats_002dcum_002dsecs_002din_002dproc"></a><dl>
+<dt><a name="index-statprof_002dstats_002dcum_002dsecs_002din_002dproc"></a>Function: <strong>statprof-stats-cum-secs-in-proc</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dstats_002dself_002dsecs_002din_002dproc"></a><dl>
+<dt><a name="index-statprof_002dstats_002dself_002dsecs_002din_002dproc"></a>Function: <strong>statprof-stats-self-secs-in-proc</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dstats_002dcalls"></a><dl>
+<dt><a name="index-statprof_002dstats_002dcalls"></a>Function: <strong>statprof-stats-calls</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dstats_002dself_002dsecs_002dper_002dcall"></a><dl>
+<dt><a name="index-statprof_002dstats_002dself_002dsecs_002dper_002dcall"></a>Function: <strong>statprof-stats-self-secs-per-call</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002dstats_002dcum_002dsecs_002dper_002dcall"></a><dl>
+<dt><a name="index-statprof_002dstats_002dcum_002dsecs_002dper_002dcall"></a>Function: <strong>statprof-stats-cum-secs-per-call</strong> <em>stats</em></dt>
+</dl>
+
+<a name="statprof-statprof_002ddisplay"></a><dl>
+<dt><a name="index-statprof_002ddisplay"></a>Function: <strong>statprof-display</strong> <em>. _</em></dt>
+<dd><p>Displays a gprof-like summary of the statistics collected. Unless an
+optional <var>port</var> argument is passed, uses the current output port.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002ddisplay_002danomolies"></a><dl>
+<dt><a name="index-statprof_002ddisplay_002danomolies"></a>Function: <strong>statprof-display-anomolies</strong></dt>
+<dd><p>A sanity check that attempts to detect anomolies in statprof&rsquo;s
+statistics.<code></code>
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dfetch_002dstacks"></a><dl>
+<dt><a name="index-statprof_002dfetch_002dstacks"></a>Function: <strong>statprof-fetch-stacks</strong></dt>
+<dd><p>Returns a list of stacks, as they were captured since the last call to
+<code>statprof-reset</code>.
+</p>
+<p>Note that stacks are only collected if the <var>full-stacks?</var> argument
+to <code>statprof-reset</code> is true.
+</p>
+</dd></dl>
+
+<a name="statprof-statprof_002dfetch_002dcall_002dtree"></a><dl>
+<dt><a name="index-statprof_002dfetch_002dcall_002dtree"></a>Function: <strong>statprof-fetch-call-tree</strong></dt>
+<dd><pre class="verbatim">Return a call tree for the previous statprof run.
+
+The return value is a list of nodes, each of which is of the type:
+@@code
+ node ::= (@@var@{proc@} @@var@{count@} . @@var@{nodes@})
+@@end code
+</pre>
+</dd></dl>
+
+<a name="statprof-statprof"></a><dl>
+<dt><a name="index-statprof"></a>Function: <strong>statprof</strong> <em>thunk [#:loop] [#:hz] [#:count-calls?] [#:full-stacks?]</em></dt>
+<dd><p>Profiles the execution of <var>thunk</var>.
+</p>
+<p>The stack will be sampled <var>hz</var> times per second, and the thunk
+itself will be called <var>loop</var> times.
+</p>
+<p>If <var>count-calls?</var> is true, all procedure calls will be recorded.
+This operation is somewhat expensive.
+</p>
+<p>If <var>full-stacks?</var> is true, at each sample, statprof will store away
+the whole call tree, for later analysis. Use
+<code>statprof-fetch-stacks</code> or <code>statprof-fetch-call-tree</code> to
+retrieve the last-stored stacks.
+</p>
+</dd></dl>
+
+<a name="statprof-with_002dstatprof"></a><dl>
+<dt><a name="index-with_002dstatprof"></a>Special Form: <strong>with-statprof</strong> <em>args</em></dt>
+<dd><p>Profiles the expressions in its body.
+</p>
+<p>Keyword arguments:
+</p>
+<dl compact="compact">
+<dt><code>#:loop</code></dt>
+<dd><p>Execute the body <var>loop</var> number of times, or <code>#f</code> for no looping
+</p>
+<p>default: <code>#f</code>
+</p>
+</dd>
+<dt><code>#:hz</code></dt>
+<dd><p>Sampling rate
+</p>
+<p>default: <code>20</code>
+</p>
+</dd>
+<dt><code>#:count-calls?</code></dt>
+<dd><p>Whether to instrument each function call (expensive)
+</p>
+<p>default: <code>#f</code>
+</p>
+</dd>
+<dt><code>#:full-stacks?</code></dt>
+<dd><p>Whether to collect away all sampled stacks into a list
+</p>
+<p>default: <code>#f</code>
+</p>
+</dd>
+</dl>
+
+</dd></dl>
+
+<a name="statprof-gcprof"></a><dl>
+<dt><a name="index-gcprof"></a>Function: <strong>gcprof</strong> <em>thunk [#:loop] [#:full-stacks?]</em></dt>
+<dd><p>Do an allocation profile of the execution of <var>thunk</var>.
+</p>
+<p>The stack will be sampled soon after every garbage collection, yielding
+an approximate idea of what is causing allocation in your program.
+</p>
+<p>Since GC does not occur very frequently, you may need to use the
+<var>loop</var> parameter, to cause <var>thunk</var> to be called <var>loop</var>
+times.
+</p>
+<p>If <var>full-stacks?</var> is true, at each sample, statprof will store away
+the whole call tree, for later analysis. Use
+<code>statprof-fetch-stacks</code> or <code>statprof-fetch-call-tree</code> to
+retrieve the last-stored stacks.
+</p>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SXML.html#SXML" accesskey="n" rel="next">SXML</a>, Previous: <a href="Curried-Definitions.html#Curried-Definitions" accesskey="p" rel="prev">Curried Definitions</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

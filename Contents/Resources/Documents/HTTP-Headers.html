@@ -1,0 +1,684 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: HTTP Headers</title>
+
+<meta name="description" content="Guile Reference Manual: HTTP Headers">
+<meta name="keywords" content="Guile Reference Manual: HTTP Headers">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Web.html#Web" rel="up" title="Web">
+<link href="Transfer-Codings.html#Transfer-Codings" rel="next" title="Transfer Codings">
+<link href="HTTP.html#HTTP" rel="prev" title="HTTP">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="HTTP-Headers"></a>
+<div class="header">
+<p>
+Next: <a href="Transfer-Codings.html#Transfer-Codings" accesskey="n" rel="next">Transfer Codings</a>, Previous: <a href="HTTP.html#HTTP" accesskey="p" rel="prev">HTTP</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="HTTP-Headers-1"></a>
+<h4 class="subsection">7.3.4 HTTP Headers</h4>
+
+<p>In addition to defining the infrastructure to parse headers, the
+<code>(web http)</code> module defines specific parsers and unparsers for all
+headers defined in the HTTP/1.1 standard.
+</p>
+<p>For example, if you receive a header named &lsquo;<samp>Accept-Language</samp>&rsquo; with a
+value &lsquo;<samp>en, es;q=0.8</samp>&rsquo;, Guile parses it as a quality list (defined
+below):
+</p>
+<div class="example">
+<pre class="example">(parse-header 'accept-language &quot;en, es;q=0.8&quot;)
+&rArr; ((1000 . &quot;en&quot;) (800 . &quot;es&quot;))
+</pre></div>
+
+<p>The format of the value for &lsquo;<samp>Accept-Language</samp>&rsquo; headers is defined
+below, along with all other headers defined in the HTTP standard.  (If
+the header were unknown, the value would have been returned as a
+string.)
+</p>
+<p>For brevity, the header definitions below are given in the form,
+<var>Type</var> <code><var>name</var></code>, indicating that values for the header
+<code><var>name</var></code> will be of the given <var>Type</var>.  Since Guile
+internally treats header names in lower case, in this document we give
+types title-cased names.  A short description of the each header&rsquo;s
+purpose and an example follow.
+</p>
+<p>For full details on the meanings of all of these headers, see the HTTP
+1.1 standard, RFC 2616.
+</p>
+<a name="HTTP-Header-Types"></a>
+<h4 class="subsubsection">7.3.4.1 HTTP Header Types</h4>
+
+<p>Here we define the types that are used below, when defining headers.
+</p>
+<dl>
+<dt><a name="index-Date"></a>HTTP Header Type: <strong>Date</strong></dt>
+<dd><p>A SRFI-19 date.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-KVList"></a>HTTP Header Type: <strong>KVList</strong></dt>
+<dd><p>A list whose elements are keys or key-value pairs.  Keys are parsed to
+symbols.  Values are strings by default.  Non-string values are the
+exception, and are mentioned explicitly below, as appropriate.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SList"></a>HTTP Header Type: <strong>SList</strong></dt>
+<dd><p>A list of strings.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-Quality"></a>HTTP Header Type: <strong>Quality</strong></dt>
+<dd><p>An exact integer between 0 and 1000.  Qualities are used to express
+preference, given multiple options.  An option with a quality of 870,
+for example, is preferred over an option with quality 500.
+</p>
+<p>(Qualities are written out over the wire as numbers between 0.0 and
+1.0, but since the standard only allows three digits after the decimal,
+it&rsquo;s equivalent to integers between 0 and 1000, so that&rsquo;s what Guile
+uses.)
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-QList"></a>HTTP Header Type: <strong>QList</strong></dt>
+<dd><p>A quality list: a list of pairs, the car of which is a quality, and the
+cdr a string.  Used to express a list of options, along with their
+qualities.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-ETag"></a>HTTP Header Type: <strong>ETag</strong></dt>
+<dd><p>An entity tag, represented as a pair.  The car of the pair is an opaque
+string, and the cdr is <code>#t</code> if the entity tag is a &ldquo;strong&rdquo; entity
+tag, and <code>#f</code> otherwise.
+</p></dd></dl>
+
+<a name="General-Headers"></a>
+<h4 class="subsubsection">7.3.4.2 General Headers</h4>
+
+<p>General HTTP headers may be present in any HTTP message.
+</p>
+<dl>
+<dt><a name="index-cache_002dcontrol"></a>HTTP Header: <em>KVList</em> <strong>cache-control</strong></dt>
+<dd><p>A key-value list of cache-control directives.  See RFC 2616, for more
+details.
+</p>
+<p>If present, parameters to <code>max-age</code>, <code>max-stale</code>,
+<code>min-fresh</code>, and <code>s-maxage</code> are all parsed as non-negative
+integers.
+</p>
+<p>If present, parameters to <code>private</code> and <code>no-cache</code> are parsed
+as lists of header names, as symbols.
+</p>
+<div class="example">
+<pre class="example">(parse-header 'cache-control &quot;no-cache,no-store&quot;
+&rArr; (no-cache no-store)
+(parse-header 'cache-control &quot;no-cache=\&quot;Authorization,Date\&quot;,no-store&quot;
+&rArr; ((no-cache . (authorization date)) no-store)
+(parse-header 'cache-control &quot;no-cache=\&quot;Authorization,Date\&quot;,max-age=10&quot;
+&rArr; ((no-cache . (authorization date)) (max-age . 10))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-connection"></a>HTTP Header: <em>List</em> <strong>connection</strong></dt>
+<dd><p>A list of header names that apply only to this HTTP connection, as
+symbols.  Additionally, the symbol &lsquo;<samp>close</samp>&rsquo; may be present, to
+indicate that the server should close the connection after responding to
+the request.
+</p><div class="example">
+<pre class="example">(parse-header 'connection &quot;close&quot;)
+&rArr; (close)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-date-2"></a>HTTP Header: <em>Date</em> <strong>date</strong></dt>
+<dd><p>The date that a given HTTP message was originated.
+</p><div class="example">
+<pre class="example">(parse-header 'date &quot;Tue, 15 Nov 1994 08:12:31 GMT&quot;)
+&rArr; #&lt;date ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-pragma"></a>HTTP Header: <em>KVList</em> <strong>pragma</strong></dt>
+<dd><p>A key-value list of implementation-specific directives.
+</p><div class="example">
+<pre class="example">(parse-header 'pragma &quot;no-cache, broccoli=tasty&quot;)
+&rArr; (no-cache (broccoli . &quot;tasty&quot;))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-trailer"></a>HTTP Header: <em>List</em> <strong>trailer</strong></dt>
+<dd><p>A list of header names which will appear after the message body, instead
+of with the message headers.
+</p><div class="example">
+<pre class="example">(parse-header 'trailer &quot;ETag&quot;)
+&rArr; (etag)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-transfer_002dencoding"></a>HTTP Header: <em>List</em> <strong>transfer-encoding</strong></dt>
+<dd><p>A list of transfer codings, expressed as key-value lists.  The only
+transfer coding defined by the specification is <code>chunked</code>.
+</p><div class="example">
+<pre class="example">(parse-header 'transfer-encoding &quot;chunked&quot;)
+&rArr; ((chunked))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-upgrade"></a>HTTP Header: <em>List</em> <strong>upgrade</strong></dt>
+<dd><p>A list of strings, indicating additional protocols that a server could use
+in response to a request.
+</p><div class="example">
+<pre class="example">(parse-header 'upgrade &quot;WebSocket&quot;)
+&rArr; (&quot;WebSocket&quot;)
+</pre></div>
+</dd></dl>
+
+<p>FIXME: parse out more fully?
+</p><dl>
+<dt><a name="index-via"></a>HTTP Header: <em>List</em> <strong>via</strong></dt>
+<dd><p>A list of strings, indicating the protocol versions and hosts of
+intermediate servers and proxies.  There may be multiple <code>via</code>
+headers in one message.
+</p><div class="example">
+<pre class="example">(parse-header 'via &quot;1.0 venus, 1.1 mars&quot;)
+&rArr; (&quot;1.0 venus&quot; &quot;1.1 mars&quot;)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-warning"></a>HTTP Header: <em>List</em> <strong>warning</strong></dt>
+<dd><p>A list of warnings given by a server or intermediate proxy.  Each
+warning is a itself a list of four elements: a code, as an exact integer
+between 0 and 1000, a host as a string, the warning text as a string,
+and either <code>#f</code> or a SRFI-19 date.
+</p>
+<p>There may be multiple <code>warning</code> headers in one message.
+</p><div class="example">
+<pre class="example">(parse-header 'warning &quot;123 foo \&quot;core breach imminent\&quot;&quot;)
+&rArr; ((123 &quot;foo&quot; &quot;core-breach imminent&quot; #f))
+</pre></div>
+</dd></dl>
+
+
+<a name="Entity-Headers"></a>
+<h4 class="subsubsection">7.3.4.3 Entity Headers</h4>
+
+<p>Entity headers may be present in any HTTP message, and refer to the
+resource referenced in the HTTP request or response.
+</p>
+<dl>
+<dt><a name="index-allow"></a>HTTP Header: <em>List</em> <strong>allow</strong></dt>
+<dd><p>A list of allowed methods on a given resource, as symbols.
+</p><div class="example">
+<pre class="example">(parse-header 'allow &quot;GET, HEAD&quot;)
+&rArr; (GET HEAD)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002dencoding"></a>HTTP Header: <em>List</em> <strong>content-encoding</strong></dt>
+<dd><p>A list of content codings, as symbols.
+</p><div class="example">
+<pre class="example">(parse-header 'content-encoding &quot;gzip&quot;)
+&rArr; (gzip)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002dlanguage"></a>HTTP Header: <em>List</em> <strong>content-language</strong></dt>
+<dd><p>The languages that a resource is in, as strings.
+</p><div class="example">
+<pre class="example">(parse-header 'content-language &quot;en&quot;)
+&rArr; (&quot;en&quot;)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002dlength"></a>HTTP Header: <em>UInt</em> <strong>content-length</strong></dt>
+<dd><p>The number of bytes in a resource, as an exact, non-negative integer.
+</p><div class="example">
+<pre class="example">(parse-header 'content-length &quot;300&quot;)
+&rArr; 300
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002dlocation"></a>HTTP Header: <em>URI</em> <strong>content-location</strong></dt>
+<dd><p>The canonical URI for a resource, in the case that it is also accessible
+from a different URI.
+</p><div class="example">
+<pre class="example">(parse-header 'content-location &quot;http://example.com/foo&quot;)
+&rArr; #&lt;&lt;uri&gt; ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002dmd5"></a>HTTP Header: <em>String</em> <strong>content-md5</strong></dt>
+<dd><p>The MD5 digest of a resource.
+</p><div class="example">
+<pre class="example">(parse-header 'content-md5 &quot;ffaea1a79810785575e29e2bd45e2fa5&quot;)
+&rArr; &quot;ffaea1a79810785575e29e2bd45e2fa5&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002drange"></a>HTTP Header: <em>List</em> <strong>content-range</strong></dt>
+<dd><p>A range specification, as a list of three elements: the symbol
+<code>bytes</code>, either the symbol <code>*</code> or a pair of integers,
+indicating the byte rage, and either <code>*</code> or an integer, for the
+instance length.  Used to indicate that a response only includes part of
+a resource.
+</p><div class="example">
+<pre class="example">(parse-header 'content-range &quot;bytes 10-20/*&quot;)
+&rArr; (bytes (10 . 20) *)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-content_002dtype"></a>HTTP Header: <em>List</em> <strong>content-type</strong></dt>
+<dd><p>The MIME type of a resource, as a symbol, along with any parameters.
+</p><div class="example">
+<pre class="example">(parse-header 'content-length &quot;text/plain&quot;)
+&rArr; (text/plain)
+(parse-header 'content-length &quot;text/plain;charset=utf-8&quot;)
+&rArr; (text/plain (charset . &quot;utf-8&quot;))
+</pre></div>
+<p>Note that the <code>charset</code> parameter is something is a misnomer, and
+the HTTP specification admits this.  It specifies the <em>encoding</em> of
+the characters, not the character set.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-expires"></a>HTTP Header: <em>Date</em> <strong>expires</strong></dt>
+<dd><p>The date/time after which the resource given in a response is considered
+stale.
+</p><div class="example">
+<pre class="example">(parse-header 'expires &quot;Tue, 15 Nov 1994 08:12:31 GMT&quot;)
+&rArr; #&lt;date ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-last_002dmodified"></a>HTTP Header: <em>Date</em> <strong>last-modified</strong></dt>
+<dd><p>The date/time on which the resource given in a response was last
+modified.
+</p><div class="example">
+<pre class="example">(parse-header 'expires &quot;Tue, 15 Nov 1994 08:12:31 GMT&quot;)
+&rArr; #&lt;date ...&gt;
+</pre></div>
+</dd></dl>
+
+
+<a name="Request-Headers"></a>
+<h4 class="subsubsection">7.3.4.4 Request Headers</h4>
+
+<p>Request headers may only appear in an HTTP request, not in a response.
+</p>
+<dl>
+<dt><a name="index-accept-1"></a>HTTP Header: <em>List</em> <strong>accept</strong></dt>
+<dd><p>A list of preferred media types for a response.  Each element of the
+list is itself a list, in the same format as <code>content-type</code>.  
+</p><div class="example">
+<pre class="example">(parse-header 'accept &quot;text/html,text/plain;charset=utf-8&quot;)
+&rArr; ((text/html) (text/plain (charset . &quot;utf-8&quot;)))
+</pre></div>
+<p>Preference is expressed with quality values:
+</p><div class="example">
+<pre class="example">(parse-header 'accept &quot;text/html;q=0.8,text/plain;q=0.6&quot;)
+&rArr; ((text/html (q . 800)) (text/plain (q . 600)))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-accept_002dcharset"></a>HTTP Header: <em>QList</em> <strong>accept-charset</strong></dt>
+<dd><p>A quality list of acceptable charsets.  Note again that what HTTP calls
+a &ldquo;charset&rdquo; is what Guile calls a &ldquo;character encoding&rdquo;.
+</p><div class="example">
+<pre class="example">(parse-header 'accept-charset &quot;iso-8859-5, unicode-1-1;q=0.8&quot;)
+&rArr; ((1000 . &quot;iso-8859-5&quot;) (800 . &quot;unicode-1-1&quot;))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-accept_002dencoding"></a>HTTP Header: <em>QList</em> <strong>accept-encoding</strong></dt>
+<dd><p>A quality list of acceptable content codings.
+</p><div class="example">
+<pre class="example">(parse-header 'accept-encoding &quot;gzip,identity=0.8&quot;)
+&rArr; ((1000 . &quot;gzip&quot;) (800 . &quot;identity&quot;))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-accept_002dlanguage"></a>HTTP Header: <em>QList</em> <strong>accept-language</strong></dt>
+<dd><p>A quality list of acceptable languages.
+</p><div class="example">
+<pre class="example">(parse-header 'accept-language &quot;cn,en=0.75&quot;)
+&rArr; ((1000 . &quot;cn&quot;) (750 . &quot;en&quot;))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-authorization"></a>HTTP Header: <em>Pair</em> <strong>authorization</strong></dt>
+<dd><p>Authorization credentials.  The car of the pair indicates the
+authentication scheme, like <code>basic</code>.  For basic authentication, the
+cdr of the pair will be the base64-encoded &lsquo;<samp><var>user</var>:<var>pass</var></samp>&rsquo;
+string.  For other authentication schemes, like <code>digest</code>, the cdr
+will be a key-value list of credentials.
+</p><div class="example">
+<pre class="example">(parse-header 'authorization &quot;Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==&quot;
+&rArr; (basic . &quot;QWxhZGRpbjpvcGVuIHNlc2FtZQ==&quot;)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-expect-1"></a>HTTP Header: <em>List</em> <strong>expect</strong></dt>
+<dd><p>A list of expectations that a client has of a server.  The expectations
+are key-value lists.
+</p><div class="example">
+<pre class="example">(parse-header 'expect &quot;100-continue&quot;)
+&rArr; ((100-continue))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-from"></a>HTTP Header: <em>String</em> <strong>from</strong></dt>
+<dd><p>The email address of a user making an HTTP request.
+</p><div class="example">
+<pre class="example">(parse-header 'from &quot;bob@example.com&quot;)
+&rArr; &quot;bob@example.com&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-host"></a>HTTP Header: <em>Pair</em> <strong>host</strong></dt>
+<dd><p>The host for the resource being requested, as a hostname-port pair.  If
+no port is given, the port is <code>#f</code>.
+</p><div class="example">
+<pre class="example">(parse-header 'host &quot;gnu.org:80&quot;)
+&rArr; (&quot;gnu.org&quot; . 80)
+(parse-header 'host &quot;gnu.org&quot;)
+&rArr; (&quot;gnu.org&quot; . #f)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-if_002dmatch"></a>HTTP Header: <em>*|List</em> <strong>if-match</strong></dt>
+<dd><p>A set of etags, indicating that the request should proceed if and only
+if the etag of the resource is in that set.  Either the symbol <code>*</code>,
+indicating any etag, or a list of entity tags.
+</p><div class="example">
+<pre class="example">(parse-header 'if-match &quot;*&quot;)
+&rArr; *
+(parse-header 'if-match &quot;asdfadf&quot;)
+&rArr; ((&quot;asdfadf&quot; . #t))
+(parse-header 'if-match W/&quot;asdfadf&quot;)
+&rArr; ((&quot;asdfadf&quot; . #f))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-if_002dmodified_002dsince"></a>HTTP Header: <em>Date</em> <strong>if-modified-since</strong></dt>
+<dd><p>Indicates that a response should proceed if and only if the resource has
+been modified since the given date.
+</p><div class="example">
+<pre class="example">(parse-header 'if-modified-since &quot;Tue, 15 Nov 1994 08:12:31 GMT&quot;)
+&rArr; #&lt;date ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-if_002dnone_002dmatch"></a>HTTP Header: <em>*|List</em> <strong>if-none-match</strong></dt>
+<dd><p>A set of etags, indicating that the request should proceed if and only
+if the etag of the resource is not in the set.  Either the symbol
+<code>*</code>, indicating any etag, or a list of entity tags.
+</p><div class="example">
+<pre class="example">(parse-header 'if-none-match &quot;*&quot;)
+&rArr; *
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-if_002drange"></a>HTTP Header: <em>ETag|Date</em> <strong>if-range</strong></dt>
+<dd><p>Indicates that the range request should proceed if and only if the
+resource matches a modification date or an etag.  Either an entity tag,
+or a SRFI-19 date.
+</p><div class="example">
+<pre class="example">(parse-header 'if-range &quot;\&quot;original-etag\&quot;&quot;)
+&rArr; (&quot;original-etag&quot; . #t)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-if_002dunmodified_002dsince"></a>HTTP Header: <em>Date</em> <strong>if-unmodified-since</strong></dt>
+<dd><p>Indicates that a response should proceed if and only if the resource has
+not been modified since the given date.
+</p><div class="example">
+<pre class="example">(parse-header 'if-not-modified-since &quot;Tue, 15 Nov 1994 08:12:31 GMT&quot;)
+&rArr; #&lt;date ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-max_002dforwards"></a>HTTP Header: <em>UInt</em> <strong>max-forwards</strong></dt>
+<dd><p>The maximum number of proxy or gateway hops that a request should be
+subject to.
+</p><div class="example">
+<pre class="example">(parse-header 'max-forwards &quot;10&quot;)
+&rArr; 10
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-proxy_002dauthorization"></a>HTTP Header: <em>Pair</em> <strong>proxy-authorization</strong></dt>
+<dd><p>Authorization credentials for a proxy connection.  See the documentation
+for <code>authorization</code> above for more information on the format.
+</p><div class="example">
+<pre class="example">(parse-header 'proxy-authorization &quot;Digest foo=bar,baz=qux&quot;
+&rArr; (digest (foo . &quot;bar&quot;) (baz . &quot;qux&quot;))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-range"></a>HTTP Header: <em>Pair</em> <strong>range</strong></dt>
+<dd><p>A range request, indicating that the client wants only part of a
+resource.  The car of the pair is the symbol <code>bytes</code>, and the cdr
+is a list of pairs. Each element of the cdr indicates a range; the car
+is the first byte position and the cdr is the last byte position, as
+integers, or <code>#f</code> if not given.
+</p><div class="example">
+<pre class="example">(parse-header 'range &quot;bytes=10-30,50-&quot;)
+&rArr; (bytes (10 . 30) (50 . #f))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-referer"></a>HTTP Header: <em>URI</em> <strong>referer</strong></dt>
+<dd><p>The URI of the resource that referred the user to this resource.  The
+name of the header is a misspelling, but we are stuck with it.
+</p><div class="example">
+<pre class="example">(parse-header 'referer &quot;http://www.gnu.org/&quot;)
+&rArr; #&lt;uri ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-te"></a>HTTP Header: <em>List</em> <strong>te</strong></dt>
+<dd><p>A list of transfer codings, expressed as key-value lists.  A common
+transfer coding is <code>trailers</code>.
+</p><div class="example">
+<pre class="example">(parse-header 'te &quot;trailers&quot;)
+&rArr; ((trailers))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-user_002dagent"></a>HTTP Header: <em>String</em> <strong>user-agent</strong></dt>
+<dd><p>A string indicating the user agent making the request.  The
+specification defines a structured format for this header, but it is
+widely disregarded, so Guile does not attempt to parse strictly.
+</p><div class="example">
+<pre class="example">(parse-header 'user-agent &quot;Mozilla/5.0&quot;)
+&rArr; &quot;Mozilla/5.0&quot;
+</pre></div>
+</dd></dl>
+
+
+<a name="Response-Headers"></a>
+<h4 class="subsubsection">7.3.4.5 Response Headers</h4>
+
+<dl>
+<dt><a name="index-accept_002dranges"></a>HTTP Header: <em>List</em> <strong>accept-ranges</strong></dt>
+<dd><p>A list of range units that the server supports, as symbols.
+</p><div class="example">
+<pre class="example">(parse-header 'accept-ranges &quot;bytes&quot;)
+&rArr; (bytes)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-age"></a>HTTP Header: <em>UInt</em> <strong>age</strong></dt>
+<dd><p>The age of a cached response, in seconds.
+</p><div class="example">
+<pre class="example">(parse-header 'age &quot;3600&quot;)
+&rArr; 3600
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-etag"></a>HTTP Header: <em>ETag</em> <strong>etag</strong></dt>
+<dd><p>The entity-tag of the resource.
+</p><div class="example">
+<pre class="example">(parse-header 'etag &quot;\&quot;foo\&quot;&quot;)
+&rArr; (&quot;foo&quot; . #t)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-location-1"></a>HTTP Header: <em>URI</em> <strong>location</strong></dt>
+<dd><p>A URI on which a request may be completed.  Used in combination with a
+redirecting status code to perform client-side redirection.
+</p><div class="example">
+<pre class="example">(parse-header 'location &quot;http://example.com/other&quot;)
+&rArr; #&lt;uri ...&gt;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-proxy_002dauthenticate"></a>HTTP Header: <em>List</em> <strong>proxy-authenticate</strong></dt>
+<dd><p>A list of challenges to a proxy, indicating the need for authentication.
+</p><div class="example">
+<pre class="example">(parse-header 'proxy-authenticate &quot;Basic realm=\&quot;foo\&quot;&quot;)
+&rArr; ((basic (realm . &quot;foo&quot;)))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-retry_002dafter"></a>HTTP Header: <em>UInt|Date</em> <strong>retry-after</strong></dt>
+<dd><p>Used in combination with a server-busy status code, like 503, to
+indicate that a client should retry later.  Either a number of seconds,
+or a date.
+</p><div class="example">
+<pre class="example">(parse-header 'retry-after &quot;60&quot;)
+&rArr; 60
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-server"></a>HTTP Header: <em>String</em> <strong>server</strong></dt>
+<dd><p>A string identifying the server.
+</p><div class="example">
+<pre class="example">(parse-header 'server &quot;My first web server&quot;)
+&rArr; &quot;My first web server&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-vary"></a>HTTP Header: <em>*|List</em> <strong>vary</strong></dt>
+<dd><p>A set of request headers that were used in computing this response.
+Used to indicate that server-side content negotiation was performed, for
+example in response to the <code>accept-language</code> header.  Can also be
+the symbol <code>*</code>, indicating that all headers were considered.
+</p><div class="example">
+<pre class="example">(parse-header 'vary &quot;Accept-Language, Accept&quot;)
+&rArr; (accept-language accept)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-www_002dauthenticate"></a>HTTP Header: <em>List</em> <strong>www-authenticate</strong></dt>
+<dd><p>A list of challenges to a user, indicating the need for authentication.
+</p><div class="example">
+<pre class="example">(parse-header 'www-authenticate &quot;Basic realm=\&quot;foo\&quot;&quot;)
+&rArr; ((basic (realm . &quot;foo&quot;)))
+</pre></div>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Transfer-Codings.html#Transfer-Codings" accesskey="n" rel="next">Transfer Codings</a>, Previous: <a href="HTTP.html#HTTP" accesskey="p" rel="prev">HTTP</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

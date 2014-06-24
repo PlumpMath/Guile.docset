@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Catch</title>
+
+<meta name="description" content="Guile Reference Manual: Catch">
+<meta name="keywords" content="Guile Reference Manual: Catch">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Exceptions.html#Exceptions" rel="up" title="Exceptions">
+<link href="Throw-Handlers.html#Throw-Handlers" rel="next" title="Throw Handlers">
+<link href="Exception-Terminology.html#Exception-Terminology" rel="prev" title="Exception Terminology">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Catch"></a>
+<div class="header">
+<p>
+Next: <a href="Throw-Handlers.html#Throw-Handlers" accesskey="n" rel="next">Throw Handlers</a>, Previous: <a href="Exception-Terminology.html#Exception-Terminology" accesskey="p" rel="prev">Exception Terminology</a>, Up: <a href="Exceptions.html#Exceptions" accesskey="u" rel="up">Exceptions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Catching-Exceptions-1"></a>
+<h4 class="subsubsection">6.13.8.2 Catching Exceptions</h4>
+
+<p><code>catch</code> is used to set up a target for a possible non-local jump.
+The arguments of a <code>catch</code> expression are a <em>key</em>, which
+restricts the set of exceptions to which this <code>catch</code> applies, a
+thunk that specifies the code to execute and one or two <em>handler</em>
+procedures that say what to do if an exception is thrown while executing
+the code.  If the execution thunk executes <em>normally</em>, which means
+without throwing any exceptions, the handler procedures are not called
+at all.
+</p>
+<p>When an exception is thrown using the <code>throw</code> function, the first
+argument of the <code>throw</code> is a symbol that indicates the type of the
+exception.  For example, Guile throws an exception using the symbol
+<code>numerical-overflow</code> to indicate numerical overflow errors such as
+division by zero:
+</p>
+<div class="lisp">
+<pre class="lisp">(/ 1 0)
+&rArr;
+ABORT: (numerical-overflow)
+</pre></div>
+
+<p>The <var>key</var> argument in a <code>catch</code> expression corresponds to this
+symbol.  <var>key</var> may be a specific symbol, such as
+<code>numerical-overflow</code>, in which case the <code>catch</code> applies
+specifically to exceptions of that type; or it may be <code>#t</code>, which
+means that the <code>catch</code> applies to all exceptions, irrespective of
+their type.
+</p>
+<p>The second argument of a <code>catch</code> expression should be a thunk
+(i.e. a procedure that accepts no arguments) that specifies the normal
+case code.  The <code>catch</code> is active for the execution of this thunk,
+including any code called directly or indirectly by the thunk&rsquo;s body.
+Evaluation of the <code>catch</code> expression activates the catch and then
+calls this thunk.
+</p>
+<p>The third argument of a <code>catch</code> expression is a handler procedure.
+If an exception is thrown, this procedure is called with exactly the
+arguments specified by the <code>throw</code>.  Therefore, the handler
+procedure must be designed to accept a number of arguments that
+corresponds to the number of arguments in all <code>throw</code> expressions
+that can be caught by this <code>catch</code>.
+</p>
+<p>The fourth, optional argument of a <code>catch</code> expression is another
+handler procedure, called the <em>pre-unwind</em> handler.  It differs from
+the third argument in that if an exception is thrown, it is called,
+<em>before</em> the third argument handler, in exactly the dynamic context
+of the <code>throw</code> expression that threw the exception.  This means
+that it is useful for capturing or displaying the stack at the point of
+the <code>throw</code>, or for examining other aspects of the dynamic context,
+such as fluid values, before the context is unwound back to that of the
+prevailing <code>catch</code>.
+</p>
+<dl>
+<dt><a name="index-catch"></a>Scheme Procedure: <strong>catch</strong> <em>key thunk handler [pre-unwind-handler]</em></dt>
+<dt><a name="index-scm_005fcatch_005fwith_005fpre_005funwind_005fhandler"></a>C Function: <strong>scm_catch_with_pre_unwind_handler</strong> <em>(key, thunk, handler, pre_unwind_handler)</em></dt>
+<dt><a name="index-scm_005fcatch"></a>C Function: <strong>scm_catch</strong> <em>(key, thunk, handler)</em></dt>
+<dd><p>Invoke <var>thunk</var> in the dynamic context of <var>handler</var> for
+exceptions matching <var>key</var>.  If thunk throws to the symbol
+<var>key</var>, then <var>handler</var> is invoked this way:
+</p><div class="lisp">
+<pre class="lisp">(handler key args ...)
+</pre></div>
+
+<p><var>key</var> is a symbol or <code>#t</code>.
+</p>
+<p><var>thunk</var> takes no arguments.  If <var>thunk</var> returns
+normally, that is the return value of <code>catch</code>.
+</p>
+<p>Handler is invoked outside the scope of its own <code>catch</code>.
+If <var>handler</var> again throws to the same key, a new handler
+from further up the call chain is invoked.
+</p>
+<p>If the key is <code>#t</code>, then a throw to <em>any</em> symbol will
+match this call to <code>catch</code>.
+</p>
+<p>If a <var>pre-unwind-handler</var> is given and <var>thunk</var> throws
+an exception that matches <var>key</var>, Guile calls the
+<var>pre-unwind-handler</var> before unwinding the dynamic state and
+invoking the main <var>handler</var>.  <var>pre-unwind-handler</var> should
+be a procedure with the same signature as <var>handler</var>, that
+is <code>(lambda (key . args))</code>.  It is typically used to save
+the stack at the point where the exception occurred, but can also
+query other parts of the dynamic state at that point, such as
+fluid values.
+</p>
+<p>A <var>pre-unwind-handler</var> can exit either normally or non-locally.
+If it exits normally, Guile unwinds the stack and dynamic context
+and then calls the normal (third argument) handler.  If it exits
+non-locally, that exit determines the continuation.
+</p></dd></dl>
+
+<p>If a handler procedure needs to match a variety of <code>throw</code>
+expressions with varying numbers of arguments, you should write it like
+this:
+</p>
+<div class="lisp">
+<pre class="lisp">(lambda (key . args)
+  &hellip;)
+</pre></div>
+
+<p>The <var>key</var> argument is guaranteed always to be present, because a
+<code>throw</code> without a <var>key</var> is not valid.  The number and
+interpretation of the <var>args</var> varies from one type of exception to
+another, but should be specified by the documentation for each exception
+type.
+</p>
+<p>Note that, once the normal (post-unwind) handler procedure is invoked,
+the catch that led to the handler procedure being called is no longer
+active.  Therefore, if the handler procedure itself throws an exception,
+that exception can only be caught by another active catch higher up the
+call stack, if there is one.
+</p>
+<br>
+<dl>
+<dt><a name="index-scm_005fc_005fcatch"></a>C Function: <em>SCM</em> <strong>scm_c_catch</strong> <em>(SCM tag, scm_t_catch_body body, void *body_data, scm_t_catch_handler handler, void *handler_data, scm_t_catch_handler pre_unwind_handler, void *pre_unwind_handler_data)</em></dt>
+<dt><a name="index-scm_005finternal_005fcatch"></a>C Function: <em>SCM</em> <strong>scm_internal_catch</strong> <em>(SCM tag, scm_t_catch_body body, void *body_data, scm_t_catch_handler handler, void *handler_data)</em></dt>
+<dd><p>The above <code>scm_catch_with_pre_unwind_handler</code> and <code>scm_catch</code>
+take Scheme procedures as body and handler arguments.
+<code>scm_c_catch</code> and <code>scm_internal_catch</code> are equivalents taking
+C functions.
+</p>
+<p><var>body</var> is called as <code><var>body</var> (<var>body_data</var>)</code> with a catch
+on exceptions of the given <var>tag</var> type.  If an exception is caught,
+<var>pre_unwind_handler</var> and <var>handler</var> are called as
+<code><var>handler</var> (<var>handler_data</var>, <var>key</var>, <var>args</var>)</code>.
+<var>key</var> and <var>args</var> are the <code>SCM</code> key and argument list from
+the <code>throw</code>.
+</p>
+<a name="index-scm_005ft_005fcatch_005fbody"></a>
+<a name="index-scm_005ft_005fcatch_005fhandler"></a>
+<p><var>body</var> and <var>handler</var> should have the following prototypes.
+<code>scm_t_catch_body</code> and <code>scm_t_catch_handler</code> are pointer
+typedefs for these.
+</p>
+<div class="example">
+<pre class="example">SCM body (void *data);
+SCM handler (void *data, SCM key, SCM args);
+</pre></div>
+
+<p>The <var>body_data</var> and <var>handler_data</var> parameters are passed to
+the respective calls so an application can communicate extra
+information to those functions.
+</p>
+<p>If the data consists of an <code>SCM</code> object, care should be taken
+that it isn&rsquo;t garbage collected while still required.  If the
+<code>SCM</code> is a local C variable, one way to protect it is to pass a
+pointer to that variable as the data parameter, since the C compiler
+will then know the value must be held on the stack.  Another way is to
+use <code>scm_remember_upto_here_1</code> (see <a href="Remembering-During-Operations.html#Remembering-During-Operations">Remembering During Operations</a>).
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Throw-Handlers.html#Throw-Handlers" accesskey="n" rel="next">Throw Handlers</a>, Previous: <a href="Exception-Terminology.html#Exception-Terminology" accesskey="p" rel="prev">Exception Terminology</a>, Up: <a href="Exceptions.html#Exceptions" accesskey="u" rel="up">Exceptions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

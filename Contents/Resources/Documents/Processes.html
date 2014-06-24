@@ -1,0 +1,567 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Processes</title>
+
+<meta name="description" content="Guile Reference Manual: Processes">
+<meta name="keywords" content="Guile Reference Manual: Processes">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="POSIX.html#POSIX" rel="up" title="POSIX">
+<link href="Signals.html#Signals" rel="next" title="Signals">
+<link href="Runtime-Environment.html#Runtime-Environment" rel="prev" title="Runtime Environment">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Processes"></a>
+<div class="header">
+<p>
+Next: <a href="Signals.html#Signals" accesskey="n" rel="next">Signals</a>, Previous: <a href="Runtime-Environment.html#Runtime-Environment" accesskey="p" rel="prev">Runtime Environment</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Processes-1"></a>
+<h4 class="subsection">7.2.7 Processes</h4>
+<a name="index-processes"></a>
+<a name="index-child-processes"></a>
+
+<a name="index-cd"></a>
+<dl>
+<dt><a name="index-chdir"></a>Scheme Procedure: <strong>chdir</strong> <em>str</em></dt>
+<dt><a name="index-scm_005fchdir"></a>C Function: <strong>scm_chdir</strong> <em>(str)</em></dt>
+<dd><a name="index-current-directory"></a>
+<p>Change the current working directory to <var>str</var>.
+The return value is unspecified.
+</p></dd></dl>
+
+<a name="index-pwd"></a>
+<dl>
+<dt><a name="index-getcwd"></a>Scheme Procedure: <strong>getcwd</strong></dt>
+<dt><a name="index-scm_005fgetcwd"></a>C Function: <strong>scm_getcwd</strong> <em>()</em></dt>
+<dd><p>Return the name of the current working directory.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-umask"></a>Scheme Procedure: <strong>umask</strong> <em>[mode]</em></dt>
+<dt><a name="index-scm_005fumask"></a>C Function: <strong>scm_umask</strong> <em>(mode)</em></dt>
+<dd><p>If <var>mode</var> is omitted, returns a decimal number representing the
+current file creation mask.  Otherwise the file creation mask is set
+to <var>mode</var> and the previous value is returned. See <a href="http://www.gnu.org/software/libc/manual/html_node/Setting-Permissions.html#Setting-Permissions">Assigning File Permissions</a> in <cite>The GNU C Library
+Reference Manual</cite>, for more on how to use umasks.
+</p>
+<p>E.g., <code>(umask #o022)</code> sets the mask to octal 22/decimal 18.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-chroot"></a>Scheme Procedure: <strong>chroot</strong> <em>path</em></dt>
+<dt><a name="index-scm_005fchroot"></a>C Function: <strong>scm_chroot</strong> <em>(path)</em></dt>
+<dd><p>Change the root directory to that specified in <var>path</var>.
+This directory will be used for path names beginning with
+<samp>/</samp>.  The root directory is inherited by all children
+of the current process.  Only the superuser may change the
+root directory.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getpid"></a>Scheme Procedure: <strong>getpid</strong></dt>
+<dt><a name="index-scm_005fgetpid"></a>C Function: <strong>scm_getpid</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the current process ID.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getgroups"></a>Scheme Procedure: <strong>getgroups</strong></dt>
+<dt><a name="index-scm_005fgetgroups"></a>C Function: <strong>scm_getgroups</strong> <em>()</em></dt>
+<dd><p>Return a vector of integers representing the current
+supplementary group IDs.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getppid"></a>Scheme Procedure: <strong>getppid</strong></dt>
+<dt><a name="index-scm_005fgetppid"></a>C Function: <strong>scm_getppid</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the process ID of the parent
+process.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getuid"></a>Scheme Procedure: <strong>getuid</strong></dt>
+<dt><a name="index-scm_005fgetuid"></a>C Function: <strong>scm_getuid</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the current real user ID.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getgid"></a>Scheme Procedure: <strong>getgid</strong></dt>
+<dt><a name="index-scm_005fgetgid"></a>C Function: <strong>scm_getgid</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the current real group ID.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-geteuid"></a>Scheme Procedure: <strong>geteuid</strong></dt>
+<dt><a name="index-scm_005fgeteuid"></a>C Function: <strong>scm_geteuid</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the current effective user ID.
+If the system does not support effective IDs, then the real ID
+is returned.  <code>(provided? 'EIDs)</code> reports whether the
+system supports effective IDs.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getegid"></a>Scheme Procedure: <strong>getegid</strong></dt>
+<dt><a name="index-scm_005fgetegid"></a>C Function: <strong>scm_getegid</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the current effective group ID.
+If the system does not support effective IDs, then the real ID
+is returned.  <code>(provided? 'EIDs)</code> reports whether the
+system supports effective IDs.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setgroups"></a>Scheme Procedure: <strong>setgroups</strong> <em>vec</em></dt>
+<dt><a name="index-scm_005fsetgroups"></a>C Function: <strong>scm_setgroups</strong> <em>(vec)</em></dt>
+<dd><p>Set the current set of supplementary group IDs to the integers in the
+given vector <var>vec</var>.  The return value is unspecified.
+</p>
+<p>Generally only the superuser can set the process group IDs
+(see <a href="http://www.gnu.org/software/libc/manual/html_node/Setting-Groups.html#Setting-Groups">Setting the Group IDs</a> in <cite>The GNU C
+Library Reference Manual</cite>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setuid"></a>Scheme Procedure: <strong>setuid</strong> <em>id</em></dt>
+<dt><a name="index-scm_005fsetuid"></a>C Function: <strong>scm_setuid</strong> <em>(id)</em></dt>
+<dd><p>Sets both the real and effective user IDs to the integer <var>id</var>, provided
+the process has appropriate privileges.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setgid"></a>Scheme Procedure: <strong>setgid</strong> <em>id</em></dt>
+<dt><a name="index-scm_005fsetgid"></a>C Function: <strong>scm_setgid</strong> <em>(id)</em></dt>
+<dd><p>Sets both the real and effective group IDs to the integer <var>id</var>, provided
+the process has appropriate privileges.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-seteuid"></a>Scheme Procedure: <strong>seteuid</strong> <em>id</em></dt>
+<dt><a name="index-scm_005fseteuid"></a>C Function: <strong>scm_seteuid</strong> <em>(id)</em></dt>
+<dd><p>Sets the effective user ID to the integer <var>id</var>, provided the process
+has appropriate privileges.  If effective IDs are not supported, the
+real ID is set instead&mdash;<code>(provided? 'EIDs)</code> reports whether the
+system supports effective IDs.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setegid"></a>Scheme Procedure: <strong>setegid</strong> <em>id</em></dt>
+<dt><a name="index-scm_005fsetegid"></a>C Function: <strong>scm_setegid</strong> <em>(id)</em></dt>
+<dd><p>Sets the effective group ID to the integer <var>id</var>, provided the process
+has appropriate privileges.  If effective IDs are not supported, the
+real ID is set instead&mdash;<code>(provided? 'EIDs)</code> reports whether the
+system supports effective IDs.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getpgrp"></a>Scheme Procedure: <strong>getpgrp</strong></dt>
+<dt><a name="index-scm_005fgetpgrp"></a>C Function: <strong>scm_getpgrp</strong> <em>()</em></dt>
+<dd><p>Return an integer representing the current process group ID.
+This is the <acronym>POSIX</acronym> definition, not <acronym>BSD</acronym>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setpgid"></a>Scheme Procedure: <strong>setpgid</strong> <em>pid pgid</em></dt>
+<dt><a name="index-scm_005fsetpgid"></a>C Function: <strong>scm_setpgid</strong> <em>(pid, pgid)</em></dt>
+<dd><p>Move the process <var>pid</var> into the process group <var>pgid</var>.  <var>pid</var> or
+<var>pgid</var> must be integers: they can be zero to indicate the ID of the
+current process.
+Fails on systems that do not support job control.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setsid"></a>Scheme Procedure: <strong>setsid</strong></dt>
+<dt><a name="index-scm_005fsetsid"></a>C Function: <strong>scm_setsid</strong> <em>()</em></dt>
+<dd><p>Creates a new session.  The current process becomes the session leader
+and is put in a new process group.  The process will be detached
+from its controlling terminal if it has one.
+The return value is an integer representing the new process group ID.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getsid"></a>Scheme Procedure: <strong>getsid</strong> <em>pid</em></dt>
+<dt><a name="index-scm_005fgetsid"></a>C Function: <strong>scm_getsid</strong> <em>(pid)</em></dt>
+<dd><p>Returns the session ID of process <var>pid</var>.  (The session
+ID of a process is the process group ID of its session leader.)
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-waitpid"></a>Scheme Procedure: <strong>waitpid</strong> <em>pid [options]</em></dt>
+<dt><a name="index-scm_005fwaitpid"></a>C Function: <strong>scm_waitpid</strong> <em>(pid, options)</em></dt>
+<dd><p>This procedure collects status information from a child process which
+has terminated or (optionally) stopped.  Normally it will
+suspend the calling process until this can be done.  If more than one
+child process is eligible then one will be chosen by the operating system.
+</p>
+<p>The value of <var>pid</var> determines the behaviour:
+</p>
+<dl compact="compact">
+<dt><var>pid</var> greater than 0</dt>
+<dd><p>Request status information from the specified child process.
+</p></dd>
+<dt><var>pid</var> equal to -1 or <code>WAIT_ANY</code></dt>
+<dd><a name="index-WAIT_005fANY"></a>
+<p>Request status information for any child process.
+</p></dd>
+<dt><var>pid</var> equal to 0 or <code>WAIT_MYPGRP</code></dt>
+<dd><a name="index-WAIT_005fMYPGRP"></a>
+<p>Request status information for any child process in the current process
+group.
+</p></dd>
+<dt><var>pid</var> less than -1</dt>
+<dd><p>Request status information for any child process whose process group ID
+is -<var>pid</var>.
+</p></dd>
+</dl>
+
+<p>The <var>options</var> argument, if supplied, should be the bitwise OR of the
+values of zero or more of the following variables:
+</p>
+<dl>
+<dt><a name="index-WNOHANG"></a>Variable: <strong>WNOHANG</strong></dt>
+<dd><p>Return immediately even if there are no child processes to be collected.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-WUNTRACED"></a>Variable: <strong>WUNTRACED</strong></dt>
+<dd><p>Report status information for stopped processes as well as terminated
+processes.
+</p></dd></dl>
+
+<p>The return value is a pair containing:
+</p>
+<ol>
+<li> The process ID of the child process, or 0 if <code>WNOHANG</code> was
+specified and no process was collected.
+</li><li> The integer status value.
+</li></ol>
+</dd></dl>
+
+<p>The following three
+functions can be used to decode the process status code returned
+by <code>waitpid</code>.
+</p>
+<dl>
+<dt><a name="index-status_003aexit_002dval"></a>Scheme Procedure: <strong>status:exit-val</strong> <em>status</em></dt>
+<dt><a name="index-scm_005fstatus_005fexit_005fval"></a>C Function: <strong>scm_status_exit_val</strong> <em>(status)</em></dt>
+<dd><p>Return the exit status value, as would be set if a process
+ended normally through a call to <code>exit</code> or <code>_exit</code>,
+if any, otherwise <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-status_003aterm_002dsig"></a>Scheme Procedure: <strong>status:term-sig</strong> <em>status</em></dt>
+<dt><a name="index-scm_005fstatus_005fterm_005fsig"></a>C Function: <strong>scm_status_term_sig</strong> <em>(status)</em></dt>
+<dd><p>Return the signal number which terminated the process, if any,
+otherwise <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-status_003astop_002dsig"></a>Scheme Procedure: <strong>status:stop-sig</strong> <em>status</em></dt>
+<dt><a name="index-scm_005fstatus_005fstop_005fsig"></a>C Function: <strong>scm_status_stop_sig</strong> <em>(status)</em></dt>
+<dd><p>Return the signal number which stopped the process, if any,
+otherwise <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-system"></a>Scheme Procedure: <strong>system</strong> <em>[cmd]</em></dt>
+<dt><a name="index-scm_005fsystem"></a>C Function: <strong>scm_system</strong> <em>(cmd)</em></dt>
+<dd><p>Execute <var>cmd</var> using the operating system&rsquo;s &ldquo;command
+processor&rdquo;.  Under Unix this is usually the default shell
+<code>sh</code>.  The value returned is <var>cmd</var>&rsquo;s exit status as
+returned by <code>waitpid</code>, which can be interpreted using the
+functions above.
+</p>
+<p>If <code>system</code> is called without arguments, return a boolean
+indicating whether the command processor is available.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-system_002a"></a>Scheme Procedure: <strong>system*</strong> <em>arg1 arg2 &hellip;</em></dt>
+<dt><a name="index-scm_005fsystem_005fstar"></a>C Function: <strong>scm_system_star</strong> <em>(args)</em></dt>
+<dd><p>Execute the command indicated by <var>arg1</var> <var>arg2</var> <small class="enddots">...</small>.  The
+first element must be a string indicating the command to be executed,
+and the remaining items must be strings representing each of the
+arguments to that command.
+</p>
+<p>This function returns the exit status of the command as provided by
+<code>waitpid</code>.  This value can be handled with <code>status:exit-val</code>
+and the related functions.
+</p>
+<p><code>system*</code> is similar to <code>system</code>, but accepts only one
+string per-argument, and performs no shell interpretation.  The
+command is executed using fork and execlp.  Accordingly this function
+may be safer than <code>system</code> in situations where shell
+interpretation is not required.
+</p>
+<p>Example: (system* &quot;echo&quot; &quot;foo&quot; &quot;bar&quot;)
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-quit-1"></a>Scheme Procedure: <strong>quit</strong> <em>[status]</em></dt>
+<dt><a name="index-exit"></a>Scheme Procedure: <strong>exit</strong> <em>[status]</em></dt>
+<dd><p>Terminate the current process with proper unwinding of the Scheme stack.
+The exit status zero if <var>status</var> is not supplied.  If <var>status</var>
+is supplied, and it is an integer, that integer is used as the exit
+status.  If <var>status</var> is <code>#t</code> or <code>#f</code>, the exit status is 0
+or 1, respectively.
+</p>
+<p>The procedure <code>exit</code> is an alias of <code>quit</code>.  They have the
+same functionality.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-primitive_002dexit"></a>Scheme Procedure: <strong>primitive-exit</strong> <em>[status]</em></dt>
+<dt><a name="index-primitive_002d_005fexit"></a>Scheme Procedure: <strong>primitive-_exit</strong> <em>[status]</em></dt>
+<dt><a name="index-scm_005fprimitive_005fexit"></a>C Function: <strong>scm_primitive_exit</strong> <em>(status)</em></dt>
+<dt><a name="index-scm_005fprimitive_005f_005fexit"></a>C Function: <strong>scm_primitive__exit</strong> <em>(status)</em></dt>
+<dd><p>Terminate the current process without unwinding the Scheme stack.  The
+exit status is <var>status</var> if supplied, otherwise zero.
+</p>
+<p><code>primitive-exit</code> uses the C <code>exit</code> function and hence runs
+usual C level cleanups (flush output streams, call <code>atexit</code>
+functions, etc, see <a href="http://www.gnu.org/software/libc/manual/html_node/Normal-Termination.html#Normal-Termination">Normal Termination</a> in <cite>The GNU C Library
+Reference Manual</cite>)).
+</p>
+<p><code>primitive-_exit</code> is the <code>_exit</code> system call
+(see <a href="http://www.gnu.org/software/libc/manual/html_node/Termination-Internals.html#Termination-Internals">Termination Internals</a> in <cite>The GNU C Library Reference
+Manual</cite>).  This terminates the program immediately, with neither
+Scheme-level nor C-level cleanups.
+</p>
+<p>The typical use for <code>primitive-_exit</code> is from a child process
+created with <code>primitive-fork</code>.  For example in a Gdk program the
+child process inherits the X server connection and a C-level
+<code>atexit</code> cleanup which will close that connection.  But closing
+in the child would upset the protocol in the parent, so
+<code>primitive-_exit</code> should be used to exit without that.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-execl"></a>Scheme Procedure: <strong>execl</strong> <em>filename arg &hellip;</em></dt>
+<dt><a name="index-scm_005fexecl"></a>C Function: <strong>scm_execl</strong> <em>(filename, args)</em></dt>
+<dd><p>Executes the file named by <var>filename</var> as a new process image.
+The remaining arguments are supplied to the process; from a C program
+they are accessible as the <code>argv</code> argument to <code>main</code>.
+Conventionally the first <var>arg</var> is the same as <var>filename</var>.
+All arguments must be strings.
+</p>
+<p>If <var>arg</var> is missing, <var>filename</var> is executed with a null
+argument list, which may have system-dependent side-effects.
+</p>
+<p>This procedure is currently implemented using the <code>execv</code> system
+call, but we call it <code>execl</code> because of its Scheme calling interface.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-execlp"></a>Scheme Procedure: <strong>execlp</strong> <em>filename arg &hellip;</em></dt>
+<dt><a name="index-scm_005fexeclp"></a>C Function: <strong>scm_execlp</strong> <em>(filename, args)</em></dt>
+<dd><p>Similar to <code>execl</code>, however if
+<var>filename</var> does not contain a slash
+then the file to execute will be located by searching the
+directories listed in the <code>PATH</code> environment variable.
+</p>
+<p>This procedure is currently implemented using the <code>execvp</code> system
+call, but we call it <code>execlp</code> because of its Scheme calling interface.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-execle"></a>Scheme Procedure: <strong>execle</strong> <em>filename env arg &hellip;</em></dt>
+<dt><a name="index-scm_005fexecle"></a>C Function: <strong>scm_execle</strong> <em>(filename, env, args)</em></dt>
+<dd><p>Similar to <code>execl</code>, but the environment of the new process is
+specified by <var>env</var>, which must be a list of strings as returned by the
+<code>environ</code> procedure.
+</p>
+<p>This procedure is currently implemented using the <code>execve</code> system
+call, but we call it <code>execle</code> because of its Scheme calling interface.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-primitive_002dfork"></a>Scheme Procedure: <strong>primitive-fork</strong></dt>
+<dt><a name="index-scm_005ffork"></a>C Function: <strong>scm_fork</strong> <em>()</em></dt>
+<dd><p>Creates a new &ldquo;child&rdquo; process by duplicating the current &ldquo;parent&rdquo; process.
+In the child the return value is 0.  In the parent the return value is
+the integer process ID of the child.
+</p>
+<p>Note that it is unsafe to fork a process that has multiple threads
+running, as only the thread that calls <code>primitive-fork</code> will
+persist in the child.  Any resources that other threads held, such as
+locked mutexes or open file descriptors, are lost.  Indeed, <acronym>POSIX</acronym>
+specifies that only async-signal-safe procedures are safe to call after
+a multithreaded fork, which is a very limited set.  Guile issues a
+warning if it detects a fork from a multi-threaded program.
+</p>
+<p>If you are going to <code>exec</code> soon after forking, the procedures in
+<code>(ice-9 popen)</code> may be useful to you, as they fork and exec within
+an async-signal-safe function carefully written to ensure robust program
+behavior, even in the presence of threads.  See <a href="Pipes.html#Pipes">Pipes</a>, for more.
+</p>
+<p>This procedure has been renamed from <code>fork</code> to avoid a naming conflict
+with the scsh fork.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-nice"></a>Scheme Procedure: <strong>nice</strong> <em>incr</em></dt>
+<dt><a name="index-scm_005fnice"></a>C Function: <strong>scm_nice</strong> <em>(incr)</em></dt>
+<dd><a name="index-process-priority"></a>
+<p>Increment the priority of the current process by <var>incr</var>.  A higher
+priority value means that the process runs less often.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setpriority"></a>Scheme Procedure: <strong>setpriority</strong> <em>which who prio</em></dt>
+<dt><a name="index-scm_005fsetpriority"></a>C Function: <strong>scm_setpriority</strong> <em>(which, who, prio)</em></dt>
+<dd><a name="index-PRIO_005fPROCESS"></a>
+<a name="index-PRIO_005fPGRP"></a>
+<a name="index-PRIO_005fUSER"></a>
+<p>Set the scheduling priority of the process, process group
+or user, as indicated by <var>which</var> and <var>who</var>. <var>which</var>
+is one of the variables <code>PRIO_PROCESS</code>, <code>PRIO_PGRP</code>
+or <code>PRIO_USER</code>, and <var>who</var> is interpreted relative to
+<var>which</var> (a process identifier for <code>PRIO_PROCESS</code>,
+process group identifier for <code>PRIO_PGRP</code>, and a user
+identifier for <code>PRIO_USER</code>.  A zero value of <var>who</var>
+denotes the current process, process group, or user.
+<var>prio</var> is a value in the range [-20,20].  The default
+priority is 0; lower priorities (in numerical terms) cause more
+favorable scheduling.  Sets the priority of all of the specified
+processes.  Only the super-user may lower priorities.  The return
+value is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-getpriority"></a>Scheme Procedure: <strong>getpriority</strong> <em>which who</em></dt>
+<dt><a name="index-scm_005fgetpriority"></a>C Function: <strong>scm_getpriority</strong> <em>(which, who)</em></dt>
+<dd><a name="index-PRIO_005fPROCESS-1"></a>
+<a name="index-PRIO_005fPGRP-1"></a>
+<a name="index-PRIO_005fUSER-1"></a>
+<p>Return the scheduling priority of the process, process group
+or user, as indicated by <var>which</var> and <var>who</var>. <var>which</var>
+is one of the variables <code>PRIO_PROCESS</code>, <code>PRIO_PGRP</code>
+or <code>PRIO_USER</code>, and <var>who</var> should be interpreted depending on
+<var>which</var> (a process identifier for <code>PRIO_PROCESS</code>,
+process group identifier for <code>PRIO_PGRP</code>, and a user
+identifier for <code>PRIO_USER</code>).  A zero value of <var>who</var>
+denotes the current process, process group, or user.  Return
+the highest priority (lowest numerical value) of any of the
+specified processes.
+</p></dd></dl>
+
+<a name="index-affinity_002c-CPU"></a>
+
+<dl>
+<dt><a name="index-getaffinity"></a>Scheme Procedure: <strong>getaffinity</strong> <em>pid</em></dt>
+<dt><a name="index-scm_005fgetaffinity"></a>C Function: <strong>scm_getaffinity</strong> <em>(pid)</em></dt>
+<dd><p>Return a bitvector representing the CPU affinity mask for
+process <var>pid</var>.  Each CPU the process has affinity with
+has its corresponding bit set in the returned bitvector.
+The number of bits set is a good estimate of how many CPUs
+Guile can use without stepping on other processes&rsquo; toes.
+</p>
+<p>Currently this procedure is only defined on GNU variants
+(see <a href="http://www.gnu.org/software/libc/manual/html_node/CPU-Affinity.html#CPU-Affinity"><code>sched_getaffinity</code></a> in <cite>The
+GNU C Library Reference Manual</cite>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setaffinity"></a>Scheme Procedure: <strong>setaffinity</strong> <em>pid mask</em></dt>
+<dt><a name="index-scm_005fsetaffinity"></a>C Function: <strong>scm_setaffinity</strong> <em>(pid, mask)</em></dt>
+<dd><p>Install the CPU affinity mask <var>mask</var>, a bitvector, for
+the process or thread with ID <var>pid</var>.  The return value
+is unspecified.
+</p>
+<p>Currently this procedure is only defined on GNU variants
+(see <a href="http://www.gnu.org/software/libc/manual/html_node/CPU-Affinity.html#CPU-Affinity"><code>sched_setaffinity</code></a> in <cite>The
+GNU C Library Reference Manual</cite>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-total_002dprocessor_002dcount"></a>Scheme Procedure: <strong>total-processor-count</strong></dt>
+<dt><a name="index-scm_005ftotal_005fprocessor_005fcount"></a>C Function: <strong>scm_total_processor_count</strong> <em>()</em></dt>
+<dd><p>Return the total number of processors of the machine, which
+is guaranteed to be at least 1.  A &ldquo;processor&rdquo; here is a
+thread execution unit, which can be either:
+</p>
+<ul>
+<li> an execution core in a (possibly multi-core) chip, in a
+  (possibly multi- chip) module, in a single computer, or
+</li><li> a thread execution unit inside a core in the case of
+  <em>hyper-threaded</em> CPUs.
+</li></ul>
+
+<p>Which of the two definitions is used, is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-current_002dprocessor_002dcount"></a>Scheme Procedure: <strong>current-processor-count</strong></dt>
+<dt><a name="index-scm_005fcurrent_005fprocessor_005fcount"></a>C Function: <strong>scm_current_processor_count</strong> <em>()</em></dt>
+<dd><p>Like <code>total-processor-count</code>, but return the number of
+processors available to the current process.  See
+<code>setaffinity</code> and <code>getaffinity</code> for more
+information.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Signals.html#Signals" accesskey="n" rel="next">Signals</a>, Previous: <a href="Runtime-Environment.html#Runtime-Environment" accesskey="p" rel="prev">Runtime Environment</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

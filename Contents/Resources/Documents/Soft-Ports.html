@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Soft Ports</title>
+
+<meta name="description" content="Guile Reference Manual: Soft Ports">
+<meta name="keywords" content="Guile Reference Manual: Soft Ports">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Port-Types.html#Port-Types" rel="up" title="Port Types">
+<link href="Void-Ports.html#Void-Ports" rel="next" title="Void Ports">
+<link href="String-Ports.html#String-Ports" rel="prev" title="String Ports">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Soft-Ports"></a>
+<div class="header">
+<p>
+Next: <a href="Void-Ports.html#Void-Ports" accesskey="n" rel="next">Void Ports</a>, Previous: <a href="String-Ports.html#String-Ports" accesskey="p" rel="prev">String Ports</a>, Up: <a href="Port-Types.html#Port-Types" accesskey="u" rel="up">Port Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Soft-Ports-1"></a>
+<h4 class="subsubsection">6.14.9.3 Soft Ports</h4>
+<a name="index-Soft-port"></a>
+<a name="index-Port_002c-soft"></a>
+
+<p>A <em>soft-port</em> is a port based on a vector of procedures capable of
+accepting or delivering characters.  It allows emulation of I/O ports.
+</p>
+<dl>
+<dt><a name="index-make_002dsoft_002dport"></a>Scheme Procedure: <strong>make-soft-port</strong> <em>pv modes</em></dt>
+<dt><a name="index-scm_005fmake_005fsoft_005fport"></a>C Function: <strong>scm_make_soft_port</strong> <em>(pv, modes)</em></dt>
+<dd><p>Return a port capable of receiving or delivering characters as
+specified by the <var>modes</var> string (see <a href="File-Ports.html#File-Ports">open-file</a>).  <var>pv</var> must be a vector of length 5 or 6.  Its
+components are as follows:
+</p>
+<ol>
+<li> procedure accepting one character for output
+</li><li> procedure accepting a string for output
+</li><li> thunk for flushing output
+</li><li> thunk for getting one character
+</li><li> thunk for closing port (not by garbage collection)
+</li><li> (if present and not <code>#f</code>) thunk for computing the number of
+characters that can be read from the port without blocking.
+</li></ol>
+
+<p>For an output-only port only elements 0, 1, 2, and 4 need be
+procedures.  For an input-only port only elements 3 and 4 need
+be procedures.  Thunks 2 and 4 can instead be <code>#f</code> if
+there is no useful operation for them to perform.
+</p>
+<p>If thunk 3 returns <code>#f</code> or an <code>eof-object</code>
+(see <a href="../r5rs/Input.html#Input">eof-object?</a> in <cite>The Revised^5 Report on
+Scheme</cite>) it indicates that the port has reached end-of-file.
+For example:
+</p>
+<div class="lisp">
+<pre class="lisp">(define stdout (current-output-port))
+(define p (make-soft-port
+           (vector
+            (lambda (c) (write c stdout))
+            (lambda (s) (display s stdout))
+            (lambda () (display &quot;.&quot; stdout))
+            (lambda () (char-upcase (read-char)))
+            (lambda () (display &quot;@&quot; stdout)))
+           &quot;rw&quot;))
+
+(write p p) &rArr; #&lt;input-output: soft 8081e20&gt;
+</pre></div>
+</dd></dl>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Responses</title>
+
+<meta name="description" content="Guile Reference Manual: Responses">
+<meta name="keywords" content="Guile Reference Manual: Responses">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Web.html#Web" rel="up" title="Web">
+<link href="Web-Client.html#Web-Client" rel="next" title="Web Client">
+<link href="Requests.html#Requests" rel="prev" title="Requests">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Responses"></a>
+<div class="header">
+<p>
+Next: <a href="Web-Client.html#Web-Client" accesskey="n" rel="next">Web Client</a>, Previous: <a href="Requests.html#Requests" accesskey="p" rel="prev">Requests</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="HTTP-Responses"></a>
+<h4 class="subsection">7.3.7 HTTP Responses</h4>
+
+<div class="example">
+<pre class="example">(use-modules (web response))
+</pre></div>
+
+<p>As with requests (see <a href="Requests.html#Requests">Requests</a>), Guile offers a data type for HTTP
+responses.  Again, the body is represented separately from the request.
+</p>
+<dl>
+<dt><a name="index-response_003f"></a>Scheme Procedure: <strong>response?</strong> <em>obj</em></dt>
+<dt><a name="index-response_002dversion"></a>Scheme Procedure: <strong>response-version</strong> <em>response</em></dt>
+<dt><a name="index-response_002dcode"></a>Scheme Procedure: <strong>response-code</strong> <em>response</em></dt>
+<dt><a name="index-response_002dreason_002dphrase"></a>Scheme Procedure: <strong>response-reason-phrase</strong> <em>response</em></dt>
+<dt><a name="index-response_002dheaders"></a>Scheme Procedure: <strong>response-headers</strong> <em>response</em></dt>
+<dt><a name="index-response_002dport"></a>Scheme Procedure: <strong>response-port</strong> <em>response</em></dt>
+<dd><p>A predicate and field accessors for the response type.  The fields are as
+follows:
+</p><dl compact="compact">
+<dt><code>version</code></dt>
+<dd><p>The HTTP version pair, like <code>(1 . 1)</code>.
+</p></dd>
+<dt><code>code</code></dt>
+<dd><p>The HTTP response code, like <code>200</code>.
+</p></dd>
+<dt><code>reason-phrase</code></dt>
+<dd><p>The reason phrase, or the standard reason phrase for the response&rsquo;s
+code.
+</p></dd>
+<dt><code>headers</code></dt>
+<dd><p>The response headers, as an alist of parsed values.
+</p></dd>
+<dt><code>port</code></dt>
+<dd><p>The port on which to read or write a response body, if any.
+</p></dd>
+</dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-read_002dresponse"></a>Scheme Procedure: <strong>read-response</strong> <em>port</em></dt>
+<dd><p>Read an HTTP response from <var>port</var>.
+</p>
+<p>As a side effect, sets the encoding on <var>port</var> to ISO-8859-1
+(latin-1), so that reading one character reads one byte. See the
+discussion of character sets in <a href="#Responses">Responses</a>, for more information.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-build_002dresponse"></a>Scheme Procedure: <strong>build-response</strong> <em>[#:version='(1 . 1)] [#:code=200] [#:reason-phrase=#f] [#:headers='()] [#:port=#f] [#:validate-headers?=#t]</em></dt>
+<dd><p>Construct an HTTP response object. If <var>validate-headers?</var> is true,
+the headers are each run through their respective validators.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-adapt_002dresponse_002dversion"></a>Scheme Procedure: <strong>adapt-response-version</strong> <em>response version</em></dt>
+<dd><p>Adapt the given response to a different HTTP version.  Return a new HTTP
+response.
+</p>
+<p>The idea is that many applications might just build a response for the
+default HTTP version, and this method could handle a number of
+programmatic transformations to respond to older HTTP versions (0.9 and
+1.0). But currently this function is a bit heavy-handed, just updating
+the version field.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-write_002dresponse"></a>Scheme Procedure: <strong>write-response</strong> <em>r port</em></dt>
+<dd><p>Write the given HTTP response to <var>port</var>.
+</p>
+<p>Return a new response, whose <code>response-port</code> will continue writing
+on <var>port</var>, perhaps using some transfer encoding.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-response_002dmust_002dnot_002dinclude_002dbody_003f"></a>Scheme Procedure: <strong>response-must-not-include-body?</strong> <em>r</em></dt>
+<dd><p>Some responses, like those with status code 304, are specified as never
+having bodies.  This predicate returns <code>#t</code> for those responses.
+</p>
+<p>Note also, though, that responses to <code>HEAD</code> requests must also not
+have a body.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-response_002dbody_002dport"></a>Scheme Procedure: <strong>response-body-port</strong> <em>r [#:decode?=#t] [#:keep-alive?=#t]</em></dt>
+<dd><p>Return an input port from which the body of <var>r</var> can be read.  The encoding
+of the returned port is set according to <var>r</var>&rsquo;s <code>content-type</code> header,
+when it&rsquo;s textual, except if <var>decode?</var> is <code>#f</code>.  Return <code>#f</code>
+when no body is available.
+</p>
+<p>When <var>keep-alive?</var> is <code>#f</code>, closing the returned port also closes
+<var>r</var>&rsquo;s response port.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-read_002dresponse_002dbody"></a>Scheme Procedure: <strong>read-response-body</strong> <em>r</em></dt>
+<dd><p>Read the response body from <var>r</var>, as a bytevector.  Returns <code>#f</code>
+if there was no response body.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-write_002dresponse_002dbody"></a>Scheme Procedure: <strong>write-response-body</strong> <em>r bv</em></dt>
+<dd><p>Write <var>bv</var>, a bytevector, to the port corresponding to the HTTP
+response <var>r</var>.
+</p></dd></dl>
+
+<p>As with requests, the various headers that are typically associated with
+HTTP responses may be accessed with these dedicated accessors.
+See <a href="HTTP-Headers.html#HTTP-Headers">HTTP Headers</a>, for more information on the format of parsed
+headers.
+</p>
+<dl>
+<dt><a name="index-response_002daccept_002dranges"></a>Scheme Procedure: <strong>response-accept-ranges</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dage"></a>Scheme Procedure: <strong>response-age</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dallow"></a>Scheme Procedure: <strong>response-allow</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dcache_002dcontrol"></a>Scheme Procedure: <strong>response-cache-control</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dconnection"></a>Scheme Procedure: <strong>response-connection</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dcontent_002dencoding"></a>Scheme Procedure: <strong>response-content-encoding</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dcontent_002dlanguage"></a>Scheme Procedure: <strong>response-content-language</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dcontent_002dlength"></a>Scheme Procedure: <strong>response-content-length</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dcontent_002dlocation"></a>Scheme Procedure: <strong>response-content-location</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dcontent_002dmd5"></a>Scheme Procedure: <strong>response-content-md5</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dcontent_002drange"></a>Scheme Procedure: <strong>response-content-range</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dcontent_002dtype"></a>Scheme Procedure: <strong>response-content-type</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002ddate"></a>Scheme Procedure: <strong>response-date</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002detag"></a>Scheme Procedure: <strong>response-etag</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dexpires"></a>Scheme Procedure: <strong>response-expires</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dlast_002dmodified"></a>Scheme Procedure: <strong>response-last-modified</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dlocation"></a>Scheme Procedure: <strong>response-location</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dpragma"></a>Scheme Procedure: <strong>response-pragma</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dproxy_002dauthenticate"></a>Scheme Procedure: <strong>response-proxy-authenticate</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dretry_002dafter"></a>Scheme Procedure: <strong>response-retry-after</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dserver"></a>Scheme Procedure: <strong>response-server</strong> <em>response [default=#f]</em></dt>
+<dt><a name="index-response_002dtrailer"></a>Scheme Procedure: <strong>response-trailer</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dtransfer_002dencoding"></a>Scheme Procedure: <strong>response-transfer-encoding</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dupgrade"></a>Scheme Procedure: <strong>response-upgrade</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dvary"></a>Scheme Procedure: <strong>response-vary</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dvia"></a>Scheme Procedure: <strong>response-via</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dwarning"></a>Scheme Procedure: <strong>response-warning</strong> <em>response [default='()]</em></dt>
+<dt><a name="index-response_002dwww_002dauthenticate"></a>Scheme Procedure: <strong>response-www-authenticate</strong> <em>response [default=#f]</em></dt>
+<dd><p>Return the given response header, or <var>default</var> if none was present.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-text_002dcontent_002dtype_003f"></a>Scheme Procedure: <strong>text-content-type?</strong> <em><var>type</var></em></dt>
+<dd><p>Return <code>#t</code> if <var>type</var>, a symbol as returned by
+<code>response-content-type</code>, represents a textual type such as
+<code>text/plain</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Web-Client.html#Web-Client" accesskey="n" rel="next">Web Client</a>, Previous: <a href="Requests.html#Requests" accesskey="p" rel="prev">Requests</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

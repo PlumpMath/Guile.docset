@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Line/Delimited</title>
+
+<meta name="description" content="Guile Reference Manual: Line/Delimited">
+<meta name="keywords" content="Guile Reference Manual: Line/Delimited">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Block-Reading-and-Writing.html#Block-Reading-and-Writing" rel="next" title="Block Reading and Writing">
+<link href="Random-Access.html#Random-Access" rel="prev" title="Random Access">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Line_002fDelimited"></a>
+<div class="header">
+<p>
+Next: <a href="Block-Reading-and-Writing.html#Block-Reading-and-Writing" accesskey="n" rel="next">Block Reading and Writing</a>, Previous: <a href="Random-Access.html#Random-Access" accesskey="p" rel="prev">Random Access</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Line-Oriented-and-Delimited-Text"></a>
+<h4 class="subsection">6.14.6 Line Oriented and Delimited Text</h4>
+<a name="index-Line-input_002foutput"></a>
+<a name="index-Port_002c-line-input_002foutput"></a>
+
+<p>The delimited-I/O module can be accessed with:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (ice-9 rdelim))
+</pre></div>
+
+<p>It can be used to read or write lines of text, or read text delimited by
+a specified set of characters.  It&rsquo;s similar to the <code>(scsh rdelim)</code>
+module from guile-scsh, but does not use multiple values or character
+sets and has an extra procedure <code>write-line</code>.
+</p>
+<dl>
+<dt><a name="index-read_002dline"></a>Scheme Procedure: <strong>read-line</strong> <em>[port] [handle-delim]</em></dt>
+<dd><p>Return a line of text from <var>port</var> if specified, otherwise from the
+value returned by <code>(current-input-port)</code>.  Under Unix, a line of text
+is terminated by the first end-of-line character or by end-of-file.
+</p>
+<p>If <var>handle-delim</var> is specified, it should be one of the following
+symbols:
+</p><dl compact="compact">
+<dt><code>trim</code></dt>
+<dd><p>Discard the terminating delimiter.  This is the default, but it will
+be impossible to tell whether the read terminated with a delimiter or
+end-of-file.
+</p></dd>
+<dt><code>concat</code></dt>
+<dd><p>Append the terminating delimiter (if any) to the returned string.
+</p></dd>
+<dt><code>peek</code></dt>
+<dd><p>Push the terminating delimiter (if any) back on to the port.
+</p></dd>
+<dt><code>split</code></dt>
+<dd><p>Return a pair containing the string read from the port and the
+terminating delimiter or end-of-file object.
+</p></dd>
+</dl>
+
+<p>Like <code>read-char</code>, this procedure can throw to <code>decoding-error</code>
+(see <a href="Reading.html#Reading"><code>read-char</code></a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-read_002dline_0021"></a>Scheme Procedure: <strong>read-line!</strong> <em>buf [port]</em></dt>
+<dd><p>Read a line of text into the supplied string <var>buf</var> and return the
+number of characters added to <var>buf</var>.  If <var>buf</var> is filled, then
+<code>#f</code> is returned.
+Read from <var>port</var> if
+specified, otherwise from the value returned by <code>(current-input-port)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-read_002ddelimited"></a>Scheme Procedure: <strong>read-delimited</strong> <em>delims [port] [handle-delim]</em></dt>
+<dd><p>Read text until one of the characters in the string <var>delims</var> is found
+or end-of-file is reached.  Read from <var>port</var> if supplied, otherwise
+from the value returned by <code>(current-input-port)</code>.
+<var>handle-delim</var> takes the same values as described for <code>read-line</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-read_002ddelimited_0021"></a>Scheme Procedure: <strong>read-delimited!</strong> <em>delims buf [port] [handle-delim] [start] [end]</em></dt>
+<dd><p>Read text into the supplied string <var>buf</var>.
+</p>
+<p>If a delimiter was found, return the number of characters written,
+except if <var>handle-delim</var> is <code>split</code>, in which case the return
+value is a pair, as noted above.
+</p>
+<p>As a special case, if <var>port</var> was already at end-of-stream, the EOF
+object is returned. Also, if no characters were written because the
+buffer was full, <code>#f</code> is returned.
+</p>
+<p>It&rsquo;s something of a wacky interface, to be honest.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-write_002dline"></a>Scheme Procedure: <strong>write-line</strong> <em>obj [port]</em></dt>
+<dt><a name="index-scm_005fwrite_005fline"></a>C Function: <strong>scm_write_line</strong> <em>(obj, port)</em></dt>
+<dd><p>Display <var>obj</var> and a newline character to <var>port</var>.  If
+<var>port</var> is not specified, <code>(current-output-port)</code> is
+used.  This function is equivalent to:
+</p><div class="lisp">
+<pre class="lisp">(display obj [port])
+(newline [port])
+</pre></div>
+</dd></dl>
+
+<p>In the past, Guile did not have a procedure that would just read out all
+of the characters from a port.  As a workaround, many people just called
+<code>read-delimited</code> with no delimiters, knowing that would produce the
+behavior they wanted.  This prompted Guile developers to add some
+routines that would read all characters from a port.  So it is that
+<code>(ice-9 rdelim)</code> is also the home for procedures that can reading
+undelimited text:
+</p>
+<dl>
+<dt><a name="index-read_002dstring"></a>Scheme Procedure: <strong>read-string</strong> <em>[port] [count]</em></dt>
+<dd><p>Read all of the characters out of <var>port</var> and return them as a
+string.  If the <var>count</var> is present, treat it as a limit to the
+number of characters to read.
+</p>
+<p>By default, read from the current input port, with no size limit on the
+result.  This procedure always returns a string, even if no characters
+were read.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-read_002dstring_0021"></a>Scheme Procedure: <strong>read-string!</strong> <em>buf [port] [start] [end]</em></dt>
+<dd><p>Fill <var>buf</var> with characters read from <var>port</var>, defaulting to the
+current input port.  Return the number of characters read.
+</p>
+<p>If <var>start</var> or <var>end</var> are specified, store data only into the
+substring of <var>str</var> bounded by <var>start</var> and <var>end</var> (which
+default to the beginning and end of the string, respectively).
+</p></dd></dl>
+
+<p>Some of the aforementioned I/O functions rely on the following C
+primitives.  These will mainly be of interest to people hacking Guile
+internals.
+</p>
+<dl>
+<dt><a name="index-_0025read_002ddelimited_0021"></a>Scheme Procedure: <strong>%read-delimited!</strong> <em>delims str gobble [port [start [end]]]</em></dt>
+<dt><a name="index-scm_005fread_005fdelimited_005fx"></a>C Function: <strong>scm_read_delimited_x</strong> <em>(delims, str, gobble, port, start, end)</em></dt>
+<dd><p>Read characters from <var>port</var> into <var>str</var> until one of the
+characters in the <var>delims</var> string is encountered.  If
+<var>gobble</var> is true, discard the delimiter character;
+otherwise, leave it in the input stream for the next read.  If
+<var>port</var> is not specified, use the value of
+<code>(current-input-port)</code>.  If <var>start</var> or <var>end</var> are
+specified, store data only into the substring of <var>str</var>
+bounded by <var>start</var> and <var>end</var> (which default to the
+beginning and end of the string, respectively).
+</p>
+<p>Return a pair consisting of the delimiter that terminated the
+string and the number of characters read.  If reading stopped
+at the end of file, the delimiter returned is the
+<var>eof-object</var>; if the string was filled without encountering
+a delimiter, this value is <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0025read_002dline"></a>Scheme Procedure: <strong>%read-line</strong> <em>[port]</em></dt>
+<dt><a name="index-scm_005fread_005fline"></a>C Function: <strong>scm_read_line</strong> <em>(port)</em></dt>
+<dd><p>Read a newline-terminated line from <var>port</var>, allocating storage as
+necessary.  The newline terminator (if any) is removed from the string,
+and a pair consisting of the line and its delimiter is returned.  The
+delimiter may be either a newline or the <var>eof-object</var>; if
+<code>%read-line</code> is called at the end of file, it returns the pair
+<code>(#&lt;eof&gt; . #&lt;eof&gt;)</code>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Block-Reading-and-Writing.html#Block-Reading-and-Writing" accesskey="n" rel="next">Block Reading and Writing</a>, Previous: <a href="Random-Access.html#Random-Access" accesskey="p" rel="prev">Random Access</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Data Representation</title>
+
+<meta name="description" content="Guile Reference Manual: Data Representation">
+<meta name="keywords" content="Guile Reference Manual: Data Representation">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Implementation.html#Guile-Implementation" rel="up" title="Guile Implementation">
+<link href="A-Simple-Representation.html#A-Simple-Representation" rel="next" title="A Simple Representation">
+<link href="Status.html#Status" rel="prev" title="Status">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Data-Representation"></a>
+<div class="header">
+<p>
+Next: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="n" rel="next">A Virtual Machine for Guile</a>, Previous: <a href="History.html#History" accesskey="p" rel="prev">History</a>, Up: <a href="Guile-Implementation.html#Guile-Implementation" accesskey="u" rel="up">Guile Implementation</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Data-Representation-1"></a>
+<h3 class="section">9.2 Data Representation</h3>
+
+<p>Scheme is a latently-typed language; this means that the system cannot,
+in general, determine the type of a given expression at compile time.
+Types only become apparent at run time.  Variables do not have fixed
+types; a variable may hold a pair at one point, an integer at the next,
+and a thousand-element vector later.  Instead, values, not variables,
+have fixed types.
+</p>
+<p>In order to implement standard Scheme functions like <code>pair?</code> and
+<code>string?</code> and provide garbage collection, the representation of
+every value must contain enough information to accurately determine its
+type at run time.  Often, Scheme systems also use this information to
+determine whether a program has attempted to apply an operation to an
+inappropriately typed value (such as taking the <code>car</code> of a string).
+</p>
+<p>Because variables, pairs, and vectors may hold values of any type,
+Scheme implementations use a uniform representation for values &mdash; a
+single type large enough to hold either a complete value or a pointer
+to a complete value, along with the necessary typing information.
+</p>
+<p>The following sections will present a simple typing system, and then
+make some refinements to correct its major weaknesses. We then conclude
+with a discussion of specific choices that Guile has made regarding
+garbage collection and data representation.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="A-Simple-Representation.html#A-Simple-Representation" accesskey="1">A Simple Representation</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Faster-Integers.html#Faster-Integers" accesskey="2">Faster Integers</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Cheaper-Pairs.html#Cheaper-Pairs" accesskey="3">Cheaper Pairs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Conservative-GC.html#Conservative-GC" accesskey="4">Conservative GC</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="The-SCM-Type-in-Guile.html#The-SCM-Type-in-Guile" accesskey="5">The SCM Type in Guile</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="n" rel="next">A Virtual Machine for Guile</a>, Previous: <a href="History.html#History" accesskey="p" rel="prev">History</a>, Up: <a href="Guile-Implementation.html#Guile-Implementation" accesskey="u" rel="up">Guile Implementation</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

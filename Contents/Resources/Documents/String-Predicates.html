@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: String Predicates</title>
+
+<meta name="description" content="Guile Reference Manual: String Predicates">
+<meta name="keywords" content="Guile Reference Manual: String Predicates">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Strings.html#Strings" rel="up" title="Strings">
+<link href="String-Constructors.html#String-Constructors" rel="next" title="String Constructors">
+<link href="String-Syntax.html#String-Syntax" rel="prev" title="String Syntax">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="String-Predicates"></a>
+<div class="header">
+<p>
+Next: <a href="String-Constructors.html#String-Constructors" accesskey="n" rel="next">String Constructors</a>, Previous: <a href="String-Syntax.html#String-Syntax" accesskey="p" rel="prev">String Syntax</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="String-Predicates-1"></a>
+<h4 class="subsubsection">6.6.5.2 String Predicates</h4>
+
+<p>The following procedures can be used to check whether a given string
+fulfills some specified property.
+</p>
+<a name="index-string_003f-2"></a>
+<dl>
+<dt><a name="index-string_003f"></a>Scheme Procedure: <strong>string?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fstring_005fp"></a>C Function: <strong>scm_string_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a string, else <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005fstring"></a>C Function: <em>int</em> <strong>scm_is_string</strong> <em>(SCM obj)</em></dt>
+<dd><p>Returns <code>1</code> if <var>obj</var> is a string, <code>0</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dnull_003f"></a>Scheme Procedure: <strong>string-null?</strong> <em>str</em></dt>
+<dt><a name="index-scm_005fstring_005fnull_005fp"></a>C Function: <strong>scm_string_null_p</strong> <em>(str)</em></dt>
+<dd><p>Return <code>#t</code> if <var>str</var>&rsquo;s length is zero, and
+<code>#f</code> otherwise.
+</p><div class="lisp">
+<pre class="lisp">(string-null? &quot;&quot;)  &rArr; #t
+y                    &rArr; &quot;foo&quot;
+(string-null? y)     &rArr; #f
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-string_002dany"></a>Scheme Procedure: <strong>string-any</strong> <em>char_pred s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005fany"></a>C Function: <strong>scm_string_any</strong> <em>(char_pred, s, start, end)</em></dt>
+<dd><p>Check if <var>char_pred</var> is true for any character in string <var>s</var>.
+</p>
+<p><var>char_pred</var> can be a character to check for any equal to that, or
+a character set (see <a href="Character-Sets.html#Character-Sets">Character Sets</a>) to check for any in that set,
+or a predicate procedure to call.
+</p>
+<p>For a procedure, calls <code>(<var>char_pred</var> c)</code> are made
+successively on the characters from <var>start</var> to <var>end</var>.  If
+<var>char_pred</var> returns true (ie. non-<code>#f</code>), <code>string-any</code>
+stops and that return value is the return from <code>string-any</code>.  The
+call on the last character (ie. at <em><var>end</var>-1</em>), if that
+point is reached, is a tail call.
+</p>
+<p>If there are no characters in <var>s</var> (ie. <var>start</var> equals
+<var>end</var>) then the return is <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002devery"></a>Scheme Procedure: <strong>string-every</strong> <em>char_pred s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005fevery"></a>C Function: <strong>scm_string_every</strong> <em>(char_pred, s, start, end)</em></dt>
+<dd><p>Check if <var>char_pred</var> is true for every character in string
+<var>s</var>.
+</p>
+<p><var>char_pred</var> can be a character to check for every character equal
+to that, or a character set (see <a href="Character-Sets.html#Character-Sets">Character Sets</a>) to check for
+every character being in that set, or a predicate procedure to call.
+</p>
+<p>For a procedure, calls <code>(<var>char_pred</var> c)</code> are made
+successively on the characters from <var>start</var> to <var>end</var>.  If
+<var>char_pred</var> returns <code>#f</code>, <code>string-every</code> stops and
+returns <code>#f</code>.  The call on the last character (ie. at
+<em><var>end</var>-1</em>), if that point is reached, is a tail call and the
+return from that call is the return from <code>string-every</code>.
+</p>
+<p>If there are no characters in <var>s</var> (ie. <var>start</var> equals
+<var>end</var>) then the return is <code>#t</code>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="String-Constructors.html#String-Constructors" accesskey="n" rel="next">String Constructors</a>, Previous: <a href="String-Syntax.html#String-Syntax" accesskey="p" rel="prev">String Syntax</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

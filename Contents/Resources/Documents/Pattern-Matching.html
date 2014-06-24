@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Pattern Matching</title>
+
+<meta name="description" content="Guile Reference Manual: Pattern Matching">
+<meta name="keywords" content="Guile Reference Manual: Pattern Matching">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="Readline-Support.html#Readline-Support" rel="next" title="Readline Support">
+<link href="rnrs-r5rs.html#rnrs-r5rs" rel="prev" title="rnrs r5rs">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Pattern-Matching"></a>
+<div class="header">
+<p>
+Next: <a href="Readline-Support.html#Readline-Support" accesskey="n" rel="next">Readline Support</a>, Previous: <a href="R6RS-Support.html#R6RS-Support" accesskey="p" rel="prev">R6RS Support</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Pattern-Matching-1"></a>
+<h3 class="section">7.7 Pattern Matching</h3>
+
+<a name="index-pattern-matching"></a>
+<a name="index-_0028ice_002d9-match_0029"></a>
+
+<p>The <code>(ice-9 match)</code> module provides a <em>pattern matcher</em>,
+written by Alex Shinn, and compatible with Andrew K. Wright&rsquo;s pattern
+matcher found in many Scheme implementations.
+</p>
+<a name="index-pattern-variable"></a>
+<p>A pattern matcher can match an object against several patterns and
+extract the elements that make it up.  Patterns can represent any Scheme
+object: lists, strings, symbols, records, etc.  They can optionally contain
+<em>pattern variables</em>.  When a matching pattern is found, an
+expression associated with the pattern is evaluated, optionally with all
+pattern variables bound to the corresponding elements of the object:
+</p>
+<div class="example">
+<pre class="example">(let ((l '(hello (world))))
+  (match l           ;; &lt;- the input object
+    (('hello (who))  ;; &lt;- the pattern
+     who)))          ;; &lt;- the expression evaluated upon matching
+&rArr; world
+</pre></div>
+
+<p>In this example, list <var>l</var> matches the pattern <code>('hello (who))</code>,
+because it is a two-element list whose first element is the symbol
+<code>hello</code> and whose second element is a one-element list.  Here
+<var>who</var> is a pattern variable.  <code>match</code>, the pattern matcher,
+locally binds <var>who</var> to the value contained in this one-element
+list&mdash;i.e., the symbol <code>world</code>.  An error would be raised if
+<var>l</var> did not match the pattern.
+</p>
+<p>The same object can be matched against a simpler pattern:
+</p>
+<div class="example">
+<pre class="example">(let ((l '(hello (world))))
+  (match l
+    ((x y)
+     (values x y))))
+&rArr; hello
+&rArr; (world)
+</pre></div>
+
+<p>Here pattern <code>(x y)</code> matches any two-element list, regardless of
+the types of these elements.  Pattern variables <var>x</var> and <var>y</var> are
+bound to, respectively, the first and second element of <var>l</var>.
+</p>
+<p>Patterns can be composed, and nested.  For instance, <code>...</code>
+(ellipsis) means that the previous pattern may be matched zero or more
+times in a list:
+</p>
+<div class="example">
+<pre class="example">(match lst
+  (((heads tails ...) ...)
+   heads))
+</pre></div>
+
+<p>This expression returns the first element of each list within <var>lst</var>.
+For proper lists of proper lists, it is equivalent to <code>(map car
+lst)</code>.  However, it performs additional checks to make sure that
+<var>lst</var> and the lists therein are proper lists, as prescribed by the
+pattern, raising an error if they are not.
+</p>
+<p>Compared to hand-written code, pattern matching noticeably improves
+clarity and conciseness&mdash;no need to resort to series of <code>car</code> and
+<code>cdr</code> calls when matching lists, for instance.  It also improves
+robustness, by making sure the input <em>completely</em> matches the
+pattern&mdash;conversely, hand-written code often trades robustness for
+conciseness.  And of course, <code>match</code> is a macro, and the code it
+expands to is just as efficient as equivalent hand-written code.
+</p>
+<p>The pattern matcher is defined as follows:
+</p>
+<dl>
+<dt><a name="index-match"></a>Scheme Syntax: <strong>match</strong> <em>exp clause1 clause2 &hellip;</em></dt>
+<dd><p>Match object <var>exp</var> against the patterns in <var>clause1</var>
+<var>clause2</var> &hellip;  in the order in which they appear.  Return the
+value produced by the first matching clause.  If no clause matches,
+throw an exception with key <code>match-error</code>.
+</p>
+<p>Each clause has the form <code>(pattern body1 body2 &hellip;)</code>.  Each
+<var>pattern</var> must follow the syntax described below.  Each body is an
+arbitrary Scheme expression, possibly referring to pattern variables of
+<var>pattern</var>.
+</p></dd></dl>
+
+
+<p>The syntax and interpretation of patterns is as follows:
+</p>
+<pre class="verbatim">        patterns:                       matches:
+
+pat ::= identifier                      anything, and binds identifier
+      | _                               anything
+      | ()                              the empty list
+      | #t                              #t
+      | #f                              #f
+      | string                          a string
+      | number                          a number
+      | character                       a character
+      | 'sexp                           an s-expression
+      | 'symbol                         a symbol (special case of s-expr)
+      | (pat_1 ... pat_n)               list of n elements
+      | (pat_1 ... pat_n . pat_{n+1})   list of n or more
+      | (pat_1 ... pat_n pat_n+1 ooo)   list of n or more, each element
+                                          of remainder must match pat_n+1
+      | #(pat_1 ... pat_n)              vector of n elements
+      | #(pat_1 ... pat_n pat_n+1 ooo)  vector of n or more, each element
+                                          of remainder must match pat_n+1
+      | #&amp;pat                           box
+      | ($ record-name pat_1 ... pat_n) a record
+      | (= field pat)                   a ``field'' of an object
+      | (and pat_1 ... pat_n)           if all of pat_1 thru pat_n match
+      | (or pat_1 ... pat_n)            if any of pat_1 thru pat_n match
+      | (not pat_1 ... pat_n)           if all pat_1 thru pat_n don't match
+      | (? predicate pat_1 ... pat_n)   if predicate true and all of
+                                          pat_1 thru pat_n match
+      | (set! identifier)               anything, and binds setter
+      | (get! identifier)               anything, and binds getter
+      | `qp                             a quasi-pattern
+      | (identifier *** pat)            matches pat in a tree and binds
+                                        identifier to the path leading
+                                        to the object that matches pat
+
+ooo ::= ...                             zero or more
+      | ___                             zero or more
+      | ..1                             1 or more
+
+        quasi-patterns:                 matches:
+
+qp  ::= ()                              the empty list
+      | #t                              #t
+      | #f                              #f
+      | string                          a string
+      | number                          a number
+      | character                       a character
+      | identifier                      a symbol
+      | (qp_1 ... qp_n)                 list of n elements
+      | (qp_1 ... qp_n . qp_{n+1})      list of n or more
+      | (qp_1 ... qp_n qp_n+1 ooo)      list of n or more, each element
+                                          of remainder must match qp_n+1
+      | #(qp_1 ... qp_n)                vector of n elements
+      | #(qp_1 ... qp_n qp_n+1 ooo)     vector of n or more, each element
+                                          of remainder must match qp_n+1
+      | #&amp;qp                            box
+      | ,pat                            a pattern
+      | ,@pat                           a pattern
+</pre>
+<p>The names <code>quote</code>, <code>quasiquote</code>, <code>unquote</code>,
+<code>unquote-splicing</code>, <code>?</code>, <code>_</code>, <code>$</code>, <code>and</code>,
+<code>or</code>, <code>not</code>, <code>set!</code>, <code>get!</code>, <code>...</code>, and
+<code>___</code> cannot be used as pattern variables.
+</p>
+<p>Here is a more complex example:
+</p>
+<div class="example">
+<pre class="example">(use-modules (srfi srfi-9))
+
+(let ()
+  (define-record-type person
+    (make-person name friends)
+    person?
+    (name    person-name)
+    (friends person-friends))
+
+  (letrec ((alice (make-person &quot;Alice&quot; (delay (list bob))))
+           (bob   (make-person &quot;Bob&quot; (delay (list alice)))))
+    (match alice
+      (($ person name (= force (($ person &quot;Bob&quot;))))
+       (list 'friend-of-bob name))
+      (_ #f))))
+
+&rArr; (friend-of-bob &quot;Alice&quot;)
+</pre></div>
+
+<p>Here the <code>$</code> pattern is used to match a SRFI-9 record of type
+<var>person</var> containing two or more slots.  The value of the first slot
+is bound to <var>name</var>.  The <code>=</code> pattern is used to apply
+<code>force</code> on the second slot, and then checking that the result
+matches the given pattern.  In other words, the complete pattern matches
+any <var>person</var> whose second slot is a promise that evaluates to a
+one-element list containing a <var>person</var> whose first slot is
+<code>&quot;Bob&quot;</code>.
+</p>
+<p>Please refer to the <code>ice-9/match.upstream.scm</code> file in your Guile
+installation for more details.
+</p>
+<p>Guile also comes with a pattern matcher specifically tailored to SXML
+trees, See <a href="sxml_002dmatch.html#sxml_002dmatch">sxml-match</a>.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Readline-Support.html#Readline-Support" accesskey="n" rel="next">Readline Support</a>, Previous: <a href="R6RS-Support.html#R6RS-Support" accesskey="p" rel="prev">R6RS Support</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

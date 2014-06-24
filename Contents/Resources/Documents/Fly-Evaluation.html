@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Fly Evaluation</title>
+
+<meta name="description" content="Guile Reference Manual: Fly Evaluation">
+<meta name="keywords" content="Guile Reference Manual: Fly Evaluation">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" rel="up" title="Read/Load/Eval/Compile">
+<link href="Compilation.html#Compilation" rel="next" title="Compilation">
+<link href="Scheme-Write.html#Scheme-Write" rel="prev" title="Scheme Write">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Fly-Evaluation"></a>
+<div class="header">
+<p>
+Next: <a href="Compilation.html#Compilation" accesskey="n" rel="next">Compilation</a>, Previous: <a href="Scheme-Write.html#Scheme-Write" accesskey="p" rel="prev">Scheme Write</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Procedures-for-On-the-Fly-Evaluation"></a>
+<h4 class="subsection">6.17.4 Procedures for On the Fly Evaluation</h4>
+
+<p>Scheme has the lovely property that its expressions may be represented
+as data.  The <code>eval</code> procedure takes a Scheme datum and evaluates
+it as code.
+</p>
+<a name="index-eval-2"></a>
+<dl>
+<dt><a name="index-eval"></a>Scheme Procedure: <strong>eval</strong> <em>exp module_or_state</em></dt>
+<dt><a name="index-scm_005feval"></a>C Function: <strong>scm_eval</strong> <em>(exp, module_or_state)</em></dt>
+<dd><p>Evaluate <var>exp</var>, a list representing a Scheme expression,
+in the top-level environment specified by <var>module_or_state</var>.
+While <var>exp</var> is evaluated (using <code>primitive-eval</code>),
+<var>module_or_state</var> is made the current module.  The current module
+is reset to its previous value when <code>eval</code> returns.
+XXX - dynamic states.
+Example: (eval &rsquo;(+ 1 2) (interaction-environment))
+</p></dd></dl>
+
+<a name="index-interaction_002denvironment-1"></a>
+<dl>
+<dt><a name="index-interaction_002denvironment"></a>Scheme Procedure: <strong>interaction-environment</strong></dt>
+<dt><a name="index-scm_005finteraction_005fenvironment"></a>C Function: <strong>scm_interaction_environment</strong> <em>()</em></dt>
+<dd><p>Return a specifier for the environment that contains
+implementation&ndash;defined bindings, typically a superset of those
+listed in the report.  The intent is that this procedure will
+return the environment in which the implementation would
+evaluate expressions dynamically typed by the user.
+</p></dd></dl>
+
+<p>See <a href="Environments.html#Environments">Environments</a>, for other environments.
+</p>
+<p>One does not always receive code as Scheme data, of course, and this is
+especially the case for Guile&rsquo;s other language implementations
+(see <a href="Other-Languages.html#Other-Languages">Other Languages</a>).  For the case in which all you have is a
+string, we have <code>eval-string</code>.  There is a legacy version of this
+procedure in the default environment, but you really want the one from
+<code>(ice-9 eval-string)</code>, so load it up:
+</p>
+<div class="example">
+<pre class="example">(use-modules (ice-9 eval-string))
+</pre></div>
+
+<dl>
+<dt><a name="index-eval_002dstring"></a>Scheme Procedure: <strong>eval-string</strong> <em>string [#:module=#f] [#:file=#f]                           [#:line=#f] [#:column=#f]                           [#:lang=(current-language)]                           [#:compile?=#f]</em></dt>
+<dd><p>Parse <var>string</var> according to the current language, normally Scheme.
+Evaluate or compile the expressions it contains, in order, returning the
+last expression.
+</p>
+<p>If the <var>module</var> keyword argument is set, save a module excursion
+(see <a href="Module-System-Reflection.html#Module-System-Reflection">Module System Reflection</a>) and set the current module to
+<var>module</var> before evaluation.
+</p>
+<p>The <var>file</var>, <var>line</var>, and <var>column</var> keyword arguments can be
+used to indicate that the source string begins at a particular source
+location.
+</p>
+<p>Finally, <var>lang</var> is a language, defaulting to the current language,
+and the expression is compiled if <var>compile?</var> is true or there is no
+evaluator for the given language.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005feval_005fstring"></a>C Function: <strong>scm_eval_string</strong> <em>(string)</em></dt>
+<dt><a name="index-scm_005feval_005fstring_005fin_005fmodule"></a>C Function: <strong>scm_eval_string_in_module</strong> <em>(string, module)</em></dt>
+<dd><p>These C bindings call <code>eval-string</code> from <code>(ice-9
+eval-string)</code>, evaluating within <var>module</var> or the current module.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005feval_005fstring"></a>C Function: <em>SCM</em> <strong>scm_c_eval_string</strong> <em>(const char *string)</em></dt>
+<dd><p><code>scm_eval_string</code>, but taking a C string in locale encoding instead
+of an <code>SCM</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-apply"></a>Scheme Procedure: <strong>apply</strong> <em>proc arg &hellip; arglst</em></dt>
+<dt><a name="index-scm_005fapply_005f0"></a>C Function: <strong>scm_apply_0</strong> <em>(proc, arglst)</em></dt>
+<dt><a name="index-scm_005fapply_005f1"></a>C Function: <strong>scm_apply_1</strong> <em>(proc, arg1, arglst)</em></dt>
+<dt><a name="index-scm_005fapply_005f2"></a>C Function: <strong>scm_apply_2</strong> <em>(proc, arg1, arg2, arglst)</em></dt>
+<dt><a name="index-scm_005fapply_005f3"></a>C Function: <strong>scm_apply_3</strong> <em>(proc, arg1, arg2, arg3, arglst)</em></dt>
+<dt><a name="index-scm_005fapply"></a>C Function: <strong>scm_apply</strong> <em>(proc, arg, rest)</em></dt>
+<dd><a name="index-apply-3"></a>
+<p>Call <var>proc</var> with arguments <var>arg</var> &hellip; and the
+elements of the <var>arglst</var> list.
+</p>
+<p><code>scm_apply</code> takes parameters corresponding to a Scheme level
+<code>(lambda (proc arg1 . rest) ...)</code>.  So <var>arg1</var> and all but the
+last element of the <var>rest</var> list make up <var>arg</var> &hellip;, and the
+last element of <var>rest</var> is the <var>arglst</var> list.  Or if <var>rest</var>
+is the empty list <code>SCM_EOL</code> then there&rsquo;s no <var>arg</var> &hellip;, and
+(<var>arg1</var>) is the <var>arglst</var>.
+</p>
+<p><var>arglst</var> is not modified, but the <var>rest</var> list passed to
+<code>scm_apply</code> is modified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fcall_005f0"></a>C Function: <strong>scm_call_0</strong> <em>(proc)</em></dt>
+<dt><a name="index-scm_005fcall_005f1"></a>C Function: <strong>scm_call_1</strong> <em>(proc, arg1)</em></dt>
+<dt><a name="index-scm_005fcall_005f2"></a>C Function: <strong>scm_call_2</strong> <em>(proc, arg1, arg2)</em></dt>
+<dt><a name="index-scm_005fcall_005f3"></a>C Function: <strong>scm_call_3</strong> <em>(proc, arg1, arg2, arg3)</em></dt>
+<dt><a name="index-scm_005fcall_005f4"></a>C Function: <strong>scm_call_4</strong> <em>(proc, arg1, arg2, arg3, arg4)</em></dt>
+<dt><a name="index-scm_005fcall_005f5"></a>C Function: <strong>scm_call_5</strong> <em>(proc, arg1, arg2, arg3, arg4, arg5)</em></dt>
+<dt><a name="index-scm_005fcall_005f6"></a>C Function: <strong>scm_call_6</strong> <em>(proc, arg1, arg2, arg3, arg4, arg5, arg6)</em></dt>
+<dt><a name="index-scm_005fcall_005f7"></a>C Function: <strong>scm_call_7</strong> <em>(proc, arg1, arg2, arg3, arg4, arg5, arg6, arg7)</em></dt>
+<dt><a name="index-scm_005fcall_005f8"></a>C Function: <strong>scm_call_8</strong> <em>(proc, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)</em></dt>
+<dt><a name="index-scm_005fcall_005f9"></a>C Function: <strong>scm_call_9</strong> <em>(proc, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)</em></dt>
+<dd><p>Call <var>proc</var> with the given arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fcall"></a>C Function: <strong>scm_call</strong> <em>(proc, ...)</em></dt>
+<dd><p>Call <var>proc</var> with any number of arguments.  The argument list must be
+terminated by <code>SCM_UNDEFINED</code>.  For example:
+</p>
+<div class="example">
+<pre class="example">scm_call (scm_c_public_ref (&quot;guile&quot;, &quot;+&quot;),
+          scm_from_int (1),
+          scm_from_int (2),
+          SCM_UNDEFINED);
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fcall_005fn"></a>C Function: <strong>scm_call_n</strong> <em>(proc, argv, nargs)</em></dt>
+<dd><p>Call <var>proc</var> with the array of arguments <var>argv</var>, as a
+<code>SCM*</code>.  The length of the arguments should be passed in
+<var>nargs</var>, as a <code>size_t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-apply_003anconc2last"></a>Scheme Procedure: <strong>apply:nconc2last</strong> <em>lst</em></dt>
+<dt><a name="index-scm_005fnconc2last"></a>C Function: <strong>scm_nconc2last</strong> <em>(lst)</em></dt>
+<dd><p><var>lst</var> should be a list (<var>arg1</var> &hellip; <var>argN</var>
+<var>arglst</var>), with <var>arglst</var> being a list.  This function returns
+a list comprising <var>arg1</var> to <var>argN</var> plus the elements of
+<var>arglst</var>.  <var>lst</var> is modified to form the return.  <var>arglst</var>
+is not modified, though the return does share structure with it.
+</p>
+<p>This operation collects up the arguments from a list which is
+<code>apply</code> style parameters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-primitive_002deval"></a>Scheme Procedure: <strong>primitive-eval</strong> <em>exp</em></dt>
+<dt><a name="index-scm_005fprimitive_005feval"></a>C Function: <strong>scm_primitive_eval</strong> <em>(exp)</em></dt>
+<dd><p>Evaluate <var>exp</var> in the top-level environment specified by
+the current module.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Compilation.html#Compilation" accesskey="n" rel="next">Compilation</a>, Previous: <a href="Scheme-Write.html#Scheme-Write" accesskey="p" rel="prev">Scheme Write</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

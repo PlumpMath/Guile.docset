@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-69</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-69">
+<meta name="keywords" content="Guile Reference Manual: SRFI-69">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d69-Creating-hash-tables.html#SRFI_002d69-Creating-hash-tables" rel="next" title="SRFI-69 Creating hash tables">
+<link href="SRFI_002d67.html#SRFI_002d67" rel="prev" title="SRFI-67">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d69"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d87.html#SRFI_002d87" accesskey="n" rel="next">SRFI-87</a>, Previous: <a href="SRFI_002d67.html#SRFI_002d67" accesskey="p" rel="prev">SRFI-67</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d69-_002d-Basic-hash-tables"></a>
+<h4 class="subsection">7.5.38 SRFI-69 - Basic hash tables</h4>
+<a name="index-SRFI_002d69"></a>
+
+<p>This is a portable wrapper around Guile&rsquo;s built-in hash table and weak
+table support.  See <a href="Hash-Tables.html#Hash-Tables">Hash Tables</a>, for information on that built-in
+support.  Above that, this hash-table interface provides association
+of equality and hash functions with tables at creation time, so
+variants of each function are not required, as well as a procedure
+that takes care of most uses for Guile hash table handles, which this
+SRFI does not provide as such.
+</p>
+<p>Access it with:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (srfi srfi-69))
+</pre></div>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d69-Creating-hash-tables.html#SRFI_002d69-Creating-hash-tables" accesskey="1">SRFI-69 Creating hash tables</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d69-Accessing-table-items.html#SRFI_002d69-Accessing-table-items" accesskey="2">SRFI-69 Accessing table items</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d69-Table-properties.html#SRFI_002d69-Table-properties" accesskey="3">SRFI-69 Table properties</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d69-Hash-table-algorithms.html#SRFI_002d69-Hash-table-algorithms" accesskey="4">SRFI-69 Hash table algorithms</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+
+
+</body>
+</html>

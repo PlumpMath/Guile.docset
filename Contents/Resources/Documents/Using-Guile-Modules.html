@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Using Guile Modules</title>
+
+<meta name="description" content="Guile Reference Manual: Using Guile Modules">
+<meta name="keywords" content="Guile Reference Manual: Using Guile Modules">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Modules.html#Modules" rel="up" title="Modules">
+<link href="Creating-Guile-Modules.html#Creating-Guile-Modules" rel="next" title="Creating Guile Modules">
+<link href="General-Information-about-Modules.html#General-Information-about-Modules" rel="prev" title="General Information about Modules">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Using-Guile-Modules"></a>
+<div class="header">
+<p>
+Next: <a href="Creating-Guile-Modules.html#Creating-Guile-Modules" accesskey="n" rel="next">Creating Guile Modules</a>, Previous: <a href="General-Information-about-Modules.html#General-Information-about-Modules" accesskey="p" rel="prev">General Information about Modules</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Using-Guile-Modules-1"></a>
+<h4 class="subsection">6.19.2 Using Guile Modules</h4>
+
+<p>To use a Guile module is to access either its public interface or a
+custom interface (see <a href="General-Information-about-Modules.html#General-Information-about-Modules">General Information about Modules</a>).  Both
+types of access are handled by the syntactic form <code>use-modules</code>,
+which accepts one or more interface specifications and, upon evaluation,
+arranges for those interfaces to be available to the current module.
+This process may include locating and loading code for a given module if
+that code has not yet been loaded, following <code>%load-path</code>
+(see <a href="Modules-and-the-File-System.html#Modules-and-the-File-System">Modules and the File System</a>).
+</p>
+<p>An <em>interface specification</em> has one of two forms.  The first
+variation is simply to name the module, in which case its public
+interface is the one accessed.  For example:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (ice-9 popen))
+</pre></div>
+
+<p>Here, the interface specification is <code>(ice-9 popen)</code>, and the
+result is that the current module now has access to <code>open-pipe</code>,
+<code>close-pipe</code>, <code>open-input-pipe</code>, and so on (see <a href="Pipes.html#Pipes">Pipes</a>).
+</p>
+<p>Note in the previous example that if the current module had already
+defined <code>open-pipe</code>, that definition would be overwritten by the
+definition in <code>(ice-9 popen)</code>.  For this reason (and others), there
+is a second variation of interface specification that not only names a
+module to be accessed, but also selects bindings from it and renames
+them to suit the current module&rsquo;s needs.  For example:
+</p>
+<a name="index-binding-renamer"></a>
+<div class="lisp">
+<pre class="lisp">(use-modules ((ice-9 popen)
+              #:select ((open-pipe . pipe-open) close-pipe)
+              #:renamer (symbol-prefix-proc 'unixy:)))
+</pre></div>
+
+<p>Here, the interface specification is more complex than before, and the
+result is that a custom interface with only two bindings is created and
+subsequently accessed by the current module.  The mapping of old to new
+names is as follows:
+</p>
+<div class="smallexample">
+<pre class="smallexample">(ice-9 popen) sees:             current module sees:
+open-pipe                       unixy:pipe-open
+close-pipe                      unixy:close-pipe
+</pre></div>
+
+<p>This example also shows how to use the convenience procedure
+<code>symbol-prefix-proc</code>.
+</p>
+<p>You can also directly refer to bindings in a module by using the
+<code>@</code> syntax.  For example, instead of using the
+<code>use-modules</code> statement from above and writing
+<code>unixy:pipe-open</code> to refer to the <code>pipe-open</code> from the
+<code>(ice-9 popen)</code>, you could also write <code>(@ (ice-9 popen)
+open-pipe)</code>.  Thus an alternative to the complete <code>use-modules</code>
+statement would be
+</p>
+<div class="lisp">
+<pre class="lisp">(define unixy:pipe-open (@ (ice-9 popen) open-pipe))
+(define unixy:close-pipe (@ (ice-9 popen) close-pipe))
+</pre></div>
+
+<p>There is also <code>@@</code>, which can be used like <code>@</code>, but does
+not check whether the variable that is being accessed is actually
+exported.  Thus, <code>@@</code> can be thought of as the impolite version
+of <code>@</code> and should only be used as a last resort or for
+debugging, for example.
+</p>
+<p>Note that just as with a <code>use-modules</code> statement, any module that
+has not yet been loaded yet will be loaded when referenced by a
+<code>@</code> or <code>@@</code> form.
+</p>
+<p>You can also use the <code>@</code> and <code>@@</code> syntaxes as the target
+of a <code>set!</code> when the binding refers to a variable.
+</p>
+<dl>
+<dt><a name="index-symbol_002dprefix_002dproc"></a>Scheme Procedure: <strong>symbol-prefix-proc</strong> <em>prefix-sym</em></dt>
+<dd><p>Return a procedure that prefixes its arg (a symbol) with
+<var>prefix-sym</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-use_002dmodules"></a>syntax: <strong>use-modules</strong> <em>spec &hellip;</em></dt>
+<dd><p>Resolve each interface specification <var>spec</var> into an interface and
+arrange for these to be accessible by the current module.  The return
+value is unspecified.
+</p>
+<p><var>spec</var> can be a list of symbols, in which case it names a module
+whose public interface is found and used.
+</p>
+<p><var>spec</var> can also be of the form:
+</p>
+<a name="index-binding-renamer-1"></a>
+<div class="lisp">
+<pre class="lisp"> (MODULE-NAME [#:select SELECTION] [#:renamer RENAMER])
+</pre></div>
+
+<p>in which case a custom interface is newly created and used.
+<var>module-name</var> is a list of symbols, as above; <var>selection</var> is a
+list of selection-specs; and <var>renamer</var> is a procedure that takes a
+symbol and returns its new name.  A selection-spec is either a symbol or
+a pair of symbols <code>(ORIG . SEEN)</code>, where <var>orig</var> is the name in
+the used module and <var>seen</var> is the name in the using module.  Note
+that <var>seen</var> is also passed through <var>renamer</var>.
+</p>
+<p>The <code>#:select</code> and <code>#:renamer</code> clauses are optional.  If both are
+omitted, the returned interface has no bindings.  If the <code>#:select</code>
+clause is omitted, <var>renamer</var> operates on the used module&rsquo;s public
+interface.
+</p>
+<p>In addition to the above, <var>spec</var> can also include a <code>#:version</code> 
+clause, of the form:
+</p>
+<div class="lisp">
+<pre class="lisp"> #:version VERSION-SPEC
+</pre></div>
+
+<p>where <var>version-spec</var> is an R6RS-compatible version reference.  An
+error will be signaled in the case in which a module with the same name
+has already been loaded, if that module specifies a version and that
+version is not compatible with <var>version-spec</var>.  See <a href="R6RS-Version-References.html#R6RS-Version-References">R6RS Version References</a>, for more on version references.
+</p>
+<p>If the module name is not resolvable, <code>use-modules</code> will signal an
+error.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0040"></a>syntax: <strong>@</strong> <em>module-name binding-name</em></dt>
+<dd><p>Refer to the binding named <var>binding-name</var> in module
+<var>module-name</var>.  The binding must have been exported by the module.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0040-1"></a>syntax: <strong>@</strong> <em>@ module-name binding-name</em></dt>
+<dd><p>Refer to the binding named <var>binding-name</var> in module
+<var>module-name</var>.  The binding must not have been exported by the
+module.  This syntax is only intended for debugging purposes or as a
+last resort.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Creating-Guile-Modules.html#Creating-Guile-Modules" accesskey="n" rel="next">Creating Guile Modules</a>, Previous: <a href="General-Information-about-Modules.html#General-Information-about-Modules" accesskey="p" rel="prev">General Information about Modules</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

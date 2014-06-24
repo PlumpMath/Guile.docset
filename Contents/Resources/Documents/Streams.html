@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Streams</title>
+
+<meta name="description" content="Guile Reference Manual: Streams">
+<meta name="keywords" content="Guile Reference Manual: Streams">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="Buffered-Input.html#Buffered-Input" rel="next" title="Buffered Input">
+<link href="Queues.html#Queues" rel="prev" title="Queues">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Streams"></a>
+<div class="header">
+<p>
+Next: <a href="Buffered-Input.html#Buffered-Input" accesskey="n" rel="next">Buffered Input</a>, Previous: <a href="Queues.html#Queues" accesskey="p" rel="prev">Queues</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Streams-1"></a>
+<h3 class="section">7.13 Streams</h3>
+<a name="index-streams"></a>
+
+<p>This section documents Guile&rsquo;s legacy stream module.  For a more
+complete and portable stream library, see <a href="SRFI_002d41.html#SRFI_002d41">SRFI-41</a>.
+</p>
+<p>A stream represents a sequence of values, each of which is calculated
+only when required.  This allows large or even infinite sequences to
+be represented and manipulated with familiar operations like &ldquo;car&rdquo;,
+&ldquo;cdr&rdquo;, &ldquo;map&rdquo; or &ldquo;fold&rdquo;.  In such manipulations only as much as
+needed is actually held in memory at any one time.  The functions in
+this section are available from
+</p>
+<div class="example">
+<pre class="example">(use-modules (ice-9 streams))
+</pre></div>
+
+<p>Streams are implemented using promises (see <a href="Delayed-Evaluation.html#Delayed-Evaluation">Delayed Evaluation</a>),
+which is how the underlying calculation of values is made only when
+needed, and the values then retained so the calculation is not
+repeated.
+</p>
+<p>Here is a simple example producing a stream of all odd numbers,
+</p>
+<div class="example">
+<pre class="example">(define odds (make-stream (lambda (state)
+                            (cons state (+ state 2)))
+                          1))
+(stream-car odds)              &rArr; 1
+(stream-car (stream-cdr odds)) &rArr; 3
+</pre></div>
+
+<p><code>stream-map</code> could be used to derive a stream of odd squares,
+</p>
+<div class="example">
+<pre class="example">(define (square n) (* n n))
+(define oddsquares (stream-map square odds))
+</pre></div>
+
+<p>These are infinite sequences, so it&rsquo;s not possible to convert them to
+a list, but they could be printed (infinitely) with for example
+</p>
+<div class="example">
+<pre class="example">(stream-for-each (lambda (n sq)
+                   (format #t &quot;~a squared is ~a\n&quot; n sq))
+                 odds oddsquares)
+-|
+1 squared is 1
+3 squared is 9
+5 squared is 25
+7 squared is 49
+&hellip;
+</pre></div>
+
+<br>
+<dl>
+<dt><a name="index-make_002dstream"></a>Scheme Procedure: <strong>make-stream</strong> <em>proc initial-state</em></dt>
+<dd><p>Return a new stream, formed by calling <var>proc</var> successively.
+</p>
+<p>Each call is <code>(<var>proc</var> <var>state</var>)</code>, it should return a pair,
+the <code>car</code> being the value for the stream, and the <code>cdr</code>
+being the new <var>state</var> for the next call.  For the first call
+<var>state</var> is the given <var>initial-state</var>.  At the end of the
+stream, <var>proc</var> should return some non-pair object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002dcar-1"></a>Scheme Procedure: <strong>stream-car</strong> <em>stream</em></dt>
+<dd><p>Return the first element from <var>stream</var>.  <var>stream</var> must not be
+empty.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002dcdr-1"></a>Scheme Procedure: <strong>stream-cdr</strong> <em>stream</em></dt>
+<dd><p>Return a stream which is the second and subsequent elements of
+<var>stream</var>.  <var>stream</var> must not be empty.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002dnull_003f-1"></a>Scheme Procedure: <strong>stream-null?</strong> <em>stream</em></dt>
+<dd><p>Return true if <var>stream</var> is empty.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_002d_003estream-1"></a>Scheme Procedure: <strong>list-&gt;stream</strong> <em>list</em></dt>
+<dt><a name="index-vector_002d_003estream"></a>Scheme Procedure: <strong>vector-&gt;stream</strong> <em>vector</em></dt>
+<dd><p>Return a stream with the contents of <var>list</var> or <var>vector</var>.
+</p>
+<p><var>list</var> or <var>vector</var> should not be modified subsequently, since
+it&rsquo;s unspecified whether changes there will be reflected in the stream
+returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002d_003estream-1"></a>Scheme Procedure: <strong>port-&gt;stream</strong> <em>port readproc</em></dt>
+<dd><p>Return a stream which is the values obtained by reading from
+<var>port</var> using <var>readproc</var>.  Each read call is
+<code>(<var>readproc</var> <var>port</var>)</code>, and it should return an EOF object
+(see <a href="Reading.html#Reading">Reading</a>) at the end of input.
+</p>
+<p>For example a stream of characters from a file,
+</p>
+<div class="example">
+<pre class="example">(port-&gt;stream (open-input-file &quot;/foo/bar.txt&quot;) read-char)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-stream_002d_003elist-1"></a>Scheme Procedure: <strong>stream-&gt;list</strong> <em>stream</em></dt>
+<dd><p>Return a list which is the entire contents of <var>stream</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002d_003ereversed_002dlist"></a>Scheme Procedure: <strong>stream-&gt;reversed-list</strong> <em>stream</em></dt>
+<dd><p>Return a list which is the entire contents of <var>stream</var>, but in
+reverse order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002d_003elist_0026length"></a>Scheme Procedure: <strong>stream-&gt;list&amp;length</strong> <em>stream</em></dt>
+<dd><p>Return two values (see <a href="Multiple-Values.html#Multiple-Values">Multiple Values</a>), being firstly a list
+which is the entire contents of <var>stream</var>, and secondly the number
+of elements in that list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002d_003ereversed_002dlist_0026length"></a>Scheme Procedure: <strong>stream-&gt;reversed-list&amp;length</strong> <em>stream</em></dt>
+<dd><p>Return two values (see <a href="Multiple-Values.html#Multiple-Values">Multiple Values</a>) being firstly a list which
+is the entire contents of <var>stream</var>, but in reverse order, and
+secondly the number of elements in that list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002d_003evector"></a>Scheme Procedure: <strong>stream-&gt;vector</strong> <em>stream</em></dt>
+<dd><p>Return a vector which is the entire contents of <var>stream</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002dfold-1"></a>Function: <strong>stream-fold</strong> <em>proc init stream1 stream2 &hellip;</em></dt>
+<dd><p>Apply <var>proc</var> successively over the elements of the given streams,
+from first to last until the end of the shortest stream is reached.
+Return the result from the last <var>proc</var> call.
+</p>
+<p>Each call is <code>(<var>proc</var> elem1 elem2 &hellip; prev)</code>, where each
+<var>elem</var> is from the corresponding <var>stream</var>.  <var>prev</var> is the
+return from the previous <var>proc</var> call, or the given <var>init</var> for
+the first call.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002dfor_002deach-1"></a>Function: <strong>stream-for-each</strong> <em>proc stream1 stream2 &hellip;</em></dt>
+<dd><p>Call <var>proc</var> on the elements from the given <var>stream</var>s.  The
+return value is unspecified.
+</p>
+<p>Each call is <code>(<var>proc</var> elem1 elem2 &hellip;)</code>, where each
+<var>elem</var> is from the corresponding <var>stream</var>.
+<code>stream-for-each</code> stops when it reaches the end of the shortest
+<var>stream</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-stream_002dmap-1"></a>Function: <strong>stream-map</strong> <em>proc stream1 stream2 &hellip;</em></dt>
+<dd><p>Return a new stream which is the results of applying <var>proc</var> to the
+elements of the given <var>stream</var>s.
+</p>
+<p>Each call is <code>(<var>proc</var> elem1 elem2 &hellip;)</code>, where each
+<var>elem</var> is from the corresponding <var>stream</var>.  The new stream
+ends when the end of the shortest given <var>stream</var> is reached.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Buffered-Input.html#Buffered-Input" accesskey="n" rel="next">Buffered Input</a>, Previous: <a href="Queues.html#Queues" accesskey="p" rel="prev">Queues</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

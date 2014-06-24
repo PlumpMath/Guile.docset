@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SSAX</title>
+
+<meta name="description" content="Guile Reference Manual: SSAX">
+<meta name="keywords" content="Guile Reference Manual: SSAX">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SXML.html#SXML" rel="up" title="SXML">
+<link href="Transforming-SXML.html#Transforming-SXML" rel="next" title="Transforming SXML">
+<link href="Reading-and-Writing-XML.html#Reading-and-Writing-XML" rel="prev" title="Reading and Writing XML">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SSAX"></a>
+<div class="header">
+<p>
+Next: <a href="Transforming-SXML.html#Transforming-SXML" accesskey="n" rel="next">Transforming SXML</a>, Previous: <a href="Reading-and-Writing-XML.html#Reading-and-Writing-XML" accesskey="p" rel="prev">Reading and Writing XML</a>, Up: <a href="SXML.html#SXML" accesskey="u" rel="up">SXML</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SSAX_003a-A-Functional-XML-Parsing-Toolkit"></a>
+<h4 class="subsection">7.22.3 SSAX: A Functional XML Parsing Toolkit</h4>
+
+<p>Guile&rsquo;s XML parser is based on Oleg Kiselyov&rsquo;s powerful XML parsing
+toolkit, SSAX.
+</p>
+<a name="History-1"></a>
+<h4 class="subsubsection">7.22.3.1 History</h4>
+
+<p>Back in the 1990s, when the world was young again and XML was the
+solution to all of its problems, there were basically two kinds of XML
+parsers out there: DOM parsers and SAX parsers.
+</p>
+<p>A DOM parser reads through an entire XML document, building up a tree of
+&ldquo;DOM objects&rdquo; representing the document structure.  They are very easy
+to use, but sometimes you don&rsquo;t actually want all of the information in
+a document; building an object tree is not necessary if all you want to
+do is to count word frequencies in a document, for example.
+</p>
+<p>SAX parsers were created to give the programmer more control on the
+parsing process.  A programmer gives the SAX parser a number of
+&ldquo;callbacks&rdquo;: functions that will be called on various features of the
+XML stream as they are encountered.  SAX parsers are more efficient, but
+much harder to user, as users typically have to manually maintain a
+stack of open elements.
+</p>
+<p>Kiselyov realized that the SAX programming model could be made much
+simpler if the callbacks were formulated not as a linear fold across the
+features of the XML stream, but as a <em>tree fold</em> over the structure
+implicit in the XML.  In this way, the user has a very convenient,
+functional-style interface that can still generate optimal parsers.
+</p>
+<p>The <code>xml-&gt;sxml</code> interface from the <code>(sxml simple)</code> module is a
+DOM-style parser built using SSAX, though it returns SXML instead of DOM
+objects.
+</p>
+<a name="Implementation"></a>
+<h4 class="subsubsection">7.22.3.2 Implementation</h4>
+
+<p><code>(sxml ssax)</code> is a package of low-to-high level lexing and parsing
+procedures that can be combined to yield a SAX, a DOM, a validating
+parser, or a parser intended for a particular document type.  The
+procedures in the package can be used separately to tokenize or parse
+various pieces of XML documents.  The package supports XML Namespaces,
+internal and external parsed entities, user-controlled handling of
+whitespace, and validation.  This module therefore is intended to be a
+framework, a set of &ldquo;Lego blocks&rdquo; you can use to build a parser
+following any discipline and performing validation to any degree.  As an
+example of the parser construction, this file includes a semi-validating
+SXML parser.
+</p>
+<p>SSAX has a &ldquo;sequential&rdquo; feel of SAX yet a &ldquo;functional style&rdquo; of DOM.
+Like a SAX parser, the framework scans the document only once and
+permits incremental processing.  An application that handles document
+elements in order can run as efficiently as possible.  <em>Unlike</em> a
+SAX parser, the framework does not require an application register
+stateful callbacks and surrender control to the parser.  Rather, it is
+the application that can drive the framework &ndash; calling its functions to
+get the current lexical or syntax element.  These functions do not
+maintain or mutate any state save the input port.  Therefore, the
+framework permits parsing of XML in a pure functional style, with the
+input port being a monad (or a linear, read-once parameter).
+</p>
+<p>Besides the <var>port</var>, there is another monad &ndash; <var>seed</var>.  Most of
+the middle- and high-level parsers are single-threaded through the
+<var>seed</var>.  The functions of this framework do not process or affect
+the <var>seed</var> in any way: they simply pass it around as an instance of
+an opaque datatype.  User functions, on the other hand, can use the seed
+to maintain user&rsquo;s state, to accumulate parsing results, etc.  A user
+can freely mix his own functions with those of the framework.  On the
+other hand, the user may wish to instantiate a high-level parser:
+<code>SSAX:make-elem-parser</code> or <code>SSAX:make-parser</code>.  In the latter
+case, the user must provide functions of specific signatures, which are
+called at predictable moments during the parsing: to handle character
+data, element data, or processing instructions (PI).  The functions are
+always given the <var>seed</var>, among other parameters, and must return the
+new <var>seed</var>.
+</p>
+<p>From a functional point of view, XML parsing is a combined
+pre-post-order traversal of a &ldquo;tree&rdquo; that is the XML document itself.
+This down-and-up traversal tells the user about an element when its
+start tag is encountered.  The user is notified about the element once
+more, after all element&rsquo;s children have been handled.  The process of
+XML parsing therefore is a fold over the raw XML document.  Unlike a
+fold over trees defined in [1], the parser is necessarily
+single-threaded &ndash; obviously as elements in a text XML document are laid
+down sequentially.  The parser therefore is a tree fold that has been
+transformed to accept an accumulating parameter [1,2].
+</p>
+<p>Formally, the denotational semantics of the parser can be expressed as
+</p>
+<div class="smallexample">
+<pre class="smallexample"> parser:: (Start-tag -&gt; Seed -&gt; Seed) -&gt;
+	   (Start-tag -&gt; Seed -&gt; Seed -&gt; Seed) -&gt;
+	   (Char-Data -&gt; Seed -&gt; Seed) -&gt;
+	   XML-text-fragment -&gt; Seed -&gt; Seed
+ parser fdown fup fchar &quot;&lt;elem attrs&gt; content &lt;/elem&gt;&quot; seed
+  = fup &quot;&lt;elem attrs&gt;&quot; seed
+	(parser fdown fup fchar &quot;content&quot; (fdown &quot;&lt;elem attrs&gt;&quot; seed))
+
+ parser fdown fup fchar &quot;char-data content&quot; seed
+  = parser fdown fup fchar &quot;content&quot; (fchar &quot;char-data&quot; seed)
+
+ parser fdown fup fchar &quot;elem-content content&quot; seed
+  = parser fdown fup fchar &quot;content&quot; (
+	parser fdown fup fchar &quot;elem-content&quot; seed)
+</pre></div>
+
+<p>Compare the last two equations with the left fold
+</p>
+<div class="smallexample">
+<pre class="smallexample"> fold-left kons elem:list seed = fold-left kons list (kons elem seed)
+</pre></div>
+
+<p>The real parser created by <code>SSAX:make-parser</code> is slightly more
+complicated, to account for processing instructions, entity references,
+namespaces, processing of document type declaration, etc.
+</p>
+<p>The XML standard document referred to in this module is
+<a href="http://www.w3.org/TR/1998/REC-xml-19980210.html">http://www.w3.org/TR/1998/REC-xml-19980210.html</a>
+</p>
+<p>The present file also defines a procedure that parses the text of an XML
+document or of a separate element into SXML, an S-expression-based model
+of an XML Information Set.  SXML is also an Abstract Syntax Tree of an
+XML document.  SXML is similar but not identical to DOM; SXML is
+particularly suitable for Scheme-based XML/HTML authoring, SXPath
+queries, and tree transformations.  See SXML.html for more details.
+SXML is a term implementation of evaluation of the XML document [3].
+The other implementation is context-passing.
+</p>
+<p>The present frameworks fully supports the XML Namespaces Recommendation:
+<a href="http://www.w3.org/TR/REC-xml-names/">http://www.w3.org/TR/REC-xml-names/</a>.
+</p>
+<p>Other links:
+</p>
+<dl compact="compact">
+<dt>[1]</dt>
+<dd><p>Jeremy Gibbons, Geraint Jones, &quot;The Under-appreciated Unfold,&quot; Proc.
+ICFP&rsquo;98, 1998, pp. 273-279.
+</p>
+</dd>
+<dt>[2]</dt>
+<dd><p>Richard S. Bird, The promotion and accumulation strategies in
+transformational programming, ACM Trans. Progr. Lang. Systems,
+6(4):487-504, October 1984.
+</p>
+</dd>
+<dt>[3]</dt>
+<dd><p>Ralf Hinze, &quot;Deriving Backtracking Monad Transformers,&quot; Functional
+Pearl. Proc ICFP&rsquo;00, pp. 186-197.
+</p>
+</dd>
+</dl>
+
+<a name="Usage-1"></a>
+<h4 class="subsubsection">7.22.3.3 Usage</h4>
+<dl>
+<dt><a name="index-current_002dssax_002derror_002dport"></a>Scheme Procedure: <strong>current-ssax-error-port</strong></dt>
+</dl>
+
+<dl>
+<dt><a name="index-with_002dssax_002derror_002dto_002dport"></a>Scheme Procedure: <strong>with-ssax-error-to-port</strong> <em>port thunk</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-xml_002dtoken_003f"></a>Scheme Procedure: <strong>xml-token?</strong> <em>_</em></dt>
+<dd><pre class="verbatim"> -- Scheme Procedure: pair? x
+     Return `#t' if X is a pair; otherwise return `#f'.
+
+ 
+</pre></dd></dl>
+
+<dl>
+<dt><a name="index-xml_002dtoken_002dkind"></a>Scheme Syntax: <strong>xml-token-kind</strong> <em>token</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-xml_002dtoken_002dhead"></a>Scheme Syntax: <strong>xml-token-head</strong> <em>token</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-make_002dempty_002dattlist"></a>Scheme Procedure: <strong>make-empty-attlist</strong></dt>
+</dl>
+
+<dl>
+<dt><a name="index-attlist_002dadd"></a>Scheme Procedure: <strong>attlist-add</strong> <em>attlist name-value</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-attlist_002dnull_003f"></a>Scheme Procedure: <strong>attlist-null?</strong> <em>x</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is the empty list, else <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-attlist_002dremove_002dtop"></a>Scheme Procedure: <strong>attlist-remove-top</strong> <em>attlist</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-attlist_002d_003ealist"></a>Scheme Procedure: <strong>attlist-&gt;alist</strong> <em>attlist</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-attlist_002dfold"></a>Scheme Procedure: <strong>attlist-fold</strong> <em>kons knil lis1</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-define_002dparsed_002dentity_0021"></a>Scheme Procedure: <strong>define-parsed-entity!</strong> <em>entity str</em></dt>
+<dd><p>Define a new parsed entity.  <var>entity</var> should be a symbol.
+</p>
+<p>Instances of &amp;<var>entity</var>; in XML text will be replaced with the string
+<var>str</var>, which will then be parsed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-reset_002dparsed_002dentity_002ddefinitions_0021"></a>Scheme Procedure: <strong>reset-parsed-entity-definitions!</strong></dt>
+<dd><p>Restore the set of parsed entity definitions to its initial state.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-ssax_003auri_002dstring_002d_003esymbol"></a>Scheme Procedure: <strong>ssax:uri-string-&gt;symbol</strong> <em>uri-str</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003askip_002dinternal_002ddtd"></a>Scheme Procedure: <strong>ssax:skip-internal-dtd</strong> <em>port</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dpi_002dbody_002das_002dstring"></a>Scheme Procedure: <strong>ssax:read-pi-body-as-string</strong> <em>port</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003areverse_002dcollect_002dstr_002ddrop_002dws"></a>Scheme Procedure: <strong>ssax:reverse-collect-str-drop-ws</strong> <em>fragments</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dmarkup_002dtoken"></a>Scheme Procedure: <strong>ssax:read-markup-token</strong> <em>port</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dcdata_002dbody"></a>Scheme Procedure: <strong>ssax:read-cdata-body</strong> <em>port str-handler seed</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dchar_002dref"></a>Scheme Procedure: <strong>ssax:read-char-ref</strong> <em>port</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dattributes"></a>Scheme Procedure: <strong>ssax:read-attributes</strong> <em>port entities</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003acomplete_002dstart_002dtag"></a>Scheme Procedure: <strong>ssax:complete-start-tag</strong> <em>tag-head port elems entities namespaces</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dexternal_002did"></a>Scheme Procedure: <strong>ssax:read-external-id</strong> <em>port</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003aread_002dchar_002ddata"></a>Scheme Procedure: <strong>ssax:read-char-data</strong> <em>port expect-eof? str-handler seed</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003axml_002d_003esxml"></a>Scheme Procedure: <strong>ssax:xml-&gt;sxml</strong> <em>port namespace-prefix-assig</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003amake_002dparser"></a>Scheme Syntax: <strong>ssax:make-parser</strong> <em>. kw-val-pairs</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003amake_002dpi_002dparser"></a>Scheme Syntax: <strong>ssax:make-pi-parser</strong> <em>orig-handlers</em></dt>
+</dl>
+
+<dl>
+<dt><a name="index-ssax_003amake_002delem_002dparser"></a>Scheme Syntax: <strong>ssax:make-elem-parser</strong> <em>my-new-level-seed my-finish-element my-char-data-handler my-pi-handlers</em></dt>
+</dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Transforming-SXML.html#Transforming-SXML" accesskey="n" rel="next">Transforming SXML</a>, Previous: <a href="Reading-and-Writing-XML.html#Reading-and-Writing-XML" accesskey="p" rel="prev">Reading and Writing XML</a>, Up: <a href="SXML.html#SXML" accesskey="u" rel="up">SXML</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

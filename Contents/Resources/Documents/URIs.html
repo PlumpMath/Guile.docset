@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: URIs</title>
+
+<meta name="description" content="Guile Reference Manual: URIs">
+<meta name="keywords" content="Guile Reference Manual: URIs">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Web.html#Web" rel="up" title="Web">
+<link href="HTTP.html#HTTP" rel="next" title="HTTP">
+<link href="Types-and-the-Web.html#Types-and-the-Web" rel="prev" title="Types and the Web">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="URIs"></a>
+<div class="header">
+<p>
+Next: <a href="HTTP.html#HTTP" accesskey="n" rel="next">HTTP</a>, Previous: <a href="Types-and-the-Web.html#Types-and-the-Web" accesskey="p" rel="prev">Types and the Web</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Universal-Resource-Identifiers"></a>
+<h4 class="subsection">7.3.2 Universal Resource Identifiers</h4>
+
+<p>Guile provides a standard data type for Universal Resource Identifiers
+(URIs), as defined in RFC 3986.
+</p>
+<p>The generic URI syntax is as follows:
+</p>
+<div class="example">
+<pre class="example">URI := scheme &quot;:&quot; [&quot;//&quot; [userinfo &quot;@&quot;] host [&quot;:&quot; port]] path \
+       [ &quot;?&quot; query ] [ &quot;#&quot; fragment ]
+</pre></div>
+
+<p>For example, in the URI, &lsquo;<code>http://www.gnu.org/help/</code>&rsquo;, the
+scheme is <code>http</code>, the host is <code>www.gnu.org</code>, the path is
+<code>/help/</code>, and there is no userinfo, port, query, or fragment.  All
+URIs have a scheme and a path (though the path might be empty).  Some
+URIs have a host, and some of those have ports and userinfo.  Any URI
+might have a query part or a fragment.
+</p>
+<p>Userinfo is something of an abstraction, as some legacy URI schemes
+allowed userinfo of the form <code><var>username</var>:<var>passwd</var></code>.  But
+since passwords do not belong in URIs, the RFC does not want to condone
+this practice, so it calls anything before the <code>@</code> sign
+<em>userinfo</em>.
+</p>
+<p>Properly speaking, a fragment is not part of a URI.  For example, when a
+web browser follows a link to &lsquo;<code>http://example.com/#foo</code>&rsquo;, it
+sends a request for &lsquo;<code>http://example.com/</code>&rsquo;, then looks in the
+resulting page for the fragment identified <code>foo</code> reference.  A
+fragment identifies a part of a resource, not the resource itself.  But
+it is useful to have a fragment field in the URI record itself, so we
+hope you will forgive the inconsistency.
+</p>
+<div class="example">
+<pre class="example">(use-modules (web uri))
+</pre></div>
+
+<p>The following procedures can be found in the <code>(web uri)</code>
+module. Load it into your Guile, using a form like the above, to have
+access to them.
+</p>
+<dl>
+<dt><a name="index-build_002duri"></a>Scheme Procedure: <strong>build-uri</strong> <em>scheme        [#:userinfo=<code>#f</code>] [#:host=<code>#f</code>] [#:port=<code>#f</code>]        [#:path=<code>&quot;&quot;</code>] [#:query=<code>#f</code>] [#:fragment=<code>#f</code>]        [#:validate?=<code>#t</code>]</em></dt>
+<dd><p>Construct a URI object.  <var>scheme</var> should be a symbol, <var>port</var>
+either a positive, exact integer or <code>#f</code>, and the rest of the
+fields are either strings or <code>#f</code>.  If <var>validate?</var> is true,
+also run some consistency checks to make sure that the constructed URI
+is valid.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-uri_003f"></a>Scheme Procedure: <strong>uri?</strong> <em>obj</em></dt>
+<dt><a name="index-uri_002dscheme"></a>Scheme Procedure: <strong>uri-scheme</strong> <em>uri</em></dt>
+<dt><a name="index-uri_002duserinfo"></a>Scheme Procedure: <strong>uri-userinfo</strong> <em>uri</em></dt>
+<dt><a name="index-uri_002dhost"></a>Scheme Procedure: <strong>uri-host</strong> <em>uri</em></dt>
+<dt><a name="index-uri_002dport"></a>Scheme Procedure: <strong>uri-port</strong> <em>uri</em></dt>
+<dt><a name="index-uri_002dpath"></a>Scheme Procedure: <strong>uri-path</strong> <em>uri</em></dt>
+<dt><a name="index-uri_002dquery"></a>Scheme Procedure: <strong>uri-query</strong> <em>uri</em></dt>
+<dt><a name="index-uri_002dfragment"></a>Scheme Procedure: <strong>uri-fragment</strong> <em>uri</em></dt>
+<dd><p>A predicate and field accessors for the URI record type.  The URI scheme
+will be a symbol, the port either a positive, exact integer or <code>#f</code>,
+and the rest either strings or <code>#f</code> if not present.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002d_003euri"></a>Scheme Procedure: <strong>string-&gt;uri</strong> <em>string</em></dt>
+<dd><p>Parse <var>string</var> into a URI object.  Return <code>#f</code> if the string
+could not be parsed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-uri_002d_003estring"></a>Scheme Procedure: <strong>uri-&gt;string</strong> <em>uri</em></dt>
+<dd><p>Serialize <var>uri</var> to a string.  If the URI has a port that is the
+default port for its scheme, the port is not included in the
+serialization.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-declare_002ddefault_002dport_0021"></a>Scheme Procedure: <strong>declare-default-port!</strong> <em>scheme port</em></dt>
+<dd><p>Declare a default port for the given URI scheme.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-uri_002ddecode"></a>Scheme Procedure: <strong>uri-decode</strong> <em>str [#:encoding=<code>&quot;utf-8&quot;</code>]</em></dt>
+<dd><p>Percent-decode the given <var>str</var>, according to <var>encoding</var>, which
+should be the name of a character encoding.
+</p>
+<p>Note that this function should not generally be applied to a full URI
+string. For paths, use <code>split-and-decode-uri-path</code> instead. For
+query strings, split the query on <code>&amp;</code> and <code>=</code> boundaries, and
+decode the components separately.
+</p>
+<p>Note also that percent-encoded strings encode <em>bytes</em>, not
+characters.  There is no guarantee that a given byte sequence is a valid
+string encoding. Therefore this routine may signal an error if the
+decoded bytes are not valid for the given encoding. Pass <code>#f</code> for
+<var>encoding</var> if you want decoded bytes as a bytevector directly.
+See <a href="Ports.html#Ports"><code>set-port-encoding!</code></a>, for more information on
+character encodings.
+</p>
+<p>Returns a string of the decoded characters, or a bytevector if
+<var>encoding</var> was <code>#f</code>.
+</p></dd></dl>
+
+<p>Fixme: clarify return type. indicate default values. type of
+unescaped-chars.
+</p>
+<dl>
+<dt><a name="index-uri_002dencode"></a>Scheme Procedure: <strong>uri-encode</strong> <em>str [#:encoding=<code>&quot;utf-8&quot;</code>] [#:unescaped-chars]</em></dt>
+<dd><p>Percent-encode any character not in the character set,
+<var>unescaped-chars</var>.
+</p>
+<p>The default character set includes alphanumerics from ASCII, as well as
+the special characters &lsquo;<samp>-</samp>&rsquo;, &lsquo;<samp>.</samp>&rsquo;, &lsquo;<samp>_</samp>&rsquo;, and &lsquo;<samp>~</samp>&rsquo;.  Any
+other character will be percent-encoded, by writing out the character to
+a bytevector within the given <var>encoding</var>, then encoding each byte as
+<code>%<var>HH</var></code>, where <var>HH</var> is the hexadecimal representation of
+the byte.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-split_002dand_002ddecode_002duri_002dpath"></a>Scheme Procedure: <strong>split-and-decode-uri-path</strong> <em>path</em></dt>
+<dd><p>Split <var>path</var> into its components, and decode each component,
+removing empty components.
+</p>
+<p>For example, <code>&quot;/foo/bar%20baz/&quot;</code> decodes to the two-element list,
+<code>(&quot;foo&quot; &quot;bar baz&quot;)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-encode_002dand_002djoin_002duri_002dpath"></a>Scheme Procedure: <strong>encode-and-join-uri-path</strong> <em>parts</em></dt>
+<dd><p>URI-encode each element of <var>parts</var>, which should be a list of
+strings, and join the parts together with <code>/</code> as a delimiter.
+</p>
+<p>For example, the list <code>(&quot;scrambled eggs&quot; &quot;biscuits&amp;gravy&quot;)</code> encodes
+as <code>&quot;scrambled%20eggs/biscuits%26gravy&quot;</code>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="HTTP.html#HTTP" accesskey="n" rel="next">HTTP</a>, Previous: <a href="Types-and-the-Web.html#Types-and-the-Web" accesskey="p" rel="prev">Types and the Web</a>, Up: <a href="Web.html#Web" accesskey="u" rel="up">Web</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

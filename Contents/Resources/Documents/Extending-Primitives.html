@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Extending Primitives</title>
+
+<meta name="description" content="Guile Reference Manual: Extending Primitives">
+<meta name="keywords" content="Guile Reference Manual: Extending Primitives">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Methods-and-Generic-Functions.html#Methods-and-Generic-Functions" rel="up" title="Methods and Generic Functions">
+<link href="Merging-Generics.html#Merging-Generics" rel="next" title="Merging Generics">
+<link href="Accessors.html#Accessors" rel="prev" title="Accessors">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Extending-Primitives"></a>
+<div class="header">
+<p>
+Next: <a href="Merging-Generics.html#Merging-Generics" accesskey="n" rel="next">Merging Generics</a>, Previous: <a href="Accessors.html#Accessors" accesskey="p" rel="prev">Accessors</a>, Up: <a href="Methods-and-Generic-Functions.html#Methods-and-Generic-Functions" accesskey="u" rel="up">Methods and Generic Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Extending-Primitives-1"></a>
+<h4 class="subsection">8.6.2 Extending Primitives</h4>
+
+<p>Many of Guile&rsquo;s primitive procedures can be extended by giving them a
+generic function definition that operates in conjunction with their
+normal C-coded implementation.  When a primitive is extended in this
+way, it behaves like a generic function with the C-coded implementation
+as its default method.
+</p>
+<p>This extension happens automatically if a method is defined (by a
+<code>define-method</code> call) for a variable whose current value is a
+primitive.  But it can also be forced by calling
+<code>enable-primitive-generic!</code>.
+</p>
+<dl>
+<dt><a name="index-enable_002dprimitive_002dgeneric_0021"></a>primitive procedure: <strong>enable-primitive-generic!</strong> <em>primitive</em></dt>
+<dd><p>Force the creation of a generic function definition for
+<var>primitive</var>.
+</p></dd></dl>
+
+<p>Once the generic function definition for a primitive has been created,
+it can be retrieved using <code>primitive-generic-generic</code>.
+</p>
+<dl>
+<dt><a name="index-primitive_002dgeneric_002dgeneric"></a>primitive procedure: <strong>primitive-generic-generic</strong> <em>primitive</em></dt>
+<dd><p>Return the generic function definition of <var>primitive</var>.
+</p>
+<p><code>primitive-generic-generic</code> raises an error if <var>primitive</var>
+is not a primitive with generic capability.
+</p></dd></dl>
+
+
+
+
+</body>
+</html>

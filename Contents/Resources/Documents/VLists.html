@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: VLists</title>
+
+<meta name="description" content="Guile Reference Manual: VLists">
+<meta name="keywords" content="Guile Reference Manual: VLists">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compound-Data-Types.html#Compound-Data-Types" rel="up" title="Compound Data Types">
+<link href="Record-Overview.html#Record-Overview" rel="next" title="Record Overview">
+<link href="Accessing-Arrays-from-C.html#Accessing-Arrays-from-C" rel="prev" title="Accessing Arrays from C">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="VLists"></a>
+<div class="header">
+<p>
+Next: <a href="Record-Overview.html#Record-Overview" accesskey="n" rel="next">Record Overview</a>, Previous: <a href="Arrays.html#Arrays" accesskey="p" rel="prev">Arrays</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="VLists-1"></a>
+<h4 class="subsection">6.7.6 VLists</h4>
+
+<a name="index-vlist"></a>
+
+<p>The <code>(ice-9 vlist)</code> module provides an implementation of the <em>VList</em>
+data structure designed by Phil Bagwell in 2002.  VLists are immutable lists,
+which can contain any Scheme object.  They improve on standard Scheme linked
+lists in several areas:
+</p>
+<ul>
+<li> Random access has typically constant-time complexity.
+
+</li><li> Computing the length of a VList has time complexity logarithmic in the number of
+elements.
+
+</li><li> VLists use less storage space than standard lists.
+
+</li><li> VList elements are stored in contiguous regions, which improves memory locality
+and leads to more efficient use of hardware caches.
+</li></ul>
+
+<p>The idea behind VLists is to store vlist elements in increasingly large
+contiguous blocks (implemented as vectors here).  These blocks are linked to one
+another using a pointer to the next block and an offset within that block.  The
+size of these blocks form a geometric series with ratio
+<code>block-growth-factor</code> (2 by default).
+</p>
+<p>The VList structure also serves as the basis for the <em>VList-based hash
+lists</em> or &ldquo;vhashes&rdquo;, an immutable dictionary type (see <a href="VHashes.html#VHashes">VHashes</a>).
+</p>
+<p>However, the current implementation in <code>(ice-9 vlist)</code> has several
+noteworthy shortcomings:
+</p>
+<ul>
+<li> It is <em>not</em> thread-safe.  Although operations on vlists are all
+<em>referentially transparent</em> (i.e., purely functional), adding elements to a
+vlist with <code>vlist-cons</code> mutates part of its internal structure, which makes
+it non-thread-safe.  This could be fixed, but it would slow down
+<code>vlist-cons</code>.
+
+</li><li> <code>vlist-cons</code> always allocates at least as much memory as <code>cons</code>.
+Again, Phil Bagwell describes how to fix it, but that would require tuning the
+garbage collector in a way that may not be generally beneficial.
+
+</li><li> <code>vlist-cons</code> is a Scheme procedure compiled to bytecode, and it does not
+compete with the straightforward C implementation of <code>cons</code>, and with the
+fact that the VM has a special <code>cons</code> instruction.
+
+</li></ul>
+
+<p>We hope to address these in the future.
+</p>
+<p>The programming interface exported by <code>(ice-9 vlist)</code> is defined below.
+Most of it is the same as SRFI-1 with an added <code>vlist-</code> prefix to function
+names.
+</p>
+<dl>
+<dt><a name="index-vlist_003f"></a>Scheme Procedure: <strong>vlist?</strong> <em>obj</em></dt>
+<dd><p>Return true if <var>obj</var> is a VList.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dnull"></a>Scheme Variable: <strong>vlist-null</strong></dt>
+<dd><p>The empty VList.  Note that it&rsquo;s possible to create an empty VList not
+<code>eq?</code> to <code>vlist-null</code>; thus, callers should always use
+<code>vlist-null?</code> when testing whether a VList is empty.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dnull_003f"></a>Scheme Procedure: <strong>vlist-null?</strong> <em>vlist</em></dt>
+<dd><p>Return true if <var>vlist</var> is empty.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dcons"></a>Scheme Procedure: <strong>vlist-cons</strong> <em>item vlist</em></dt>
+<dd><p>Return a new vlist with <var>item</var> as its head and <var>vlist</var> as its tail.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dhead"></a>Scheme Procedure: <strong>vlist-head</strong> <em>vlist</em></dt>
+<dd><p>Return the head of <var>vlist</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dtail"></a>Scheme Procedure: <strong>vlist-tail</strong> <em>vlist</em></dt>
+<dd><p>Return the tail of <var>vlist</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-block_002dgrowth_002dfactor"></a>Scheme Variable: <strong>block-growth-factor</strong></dt>
+<dd><p>A fluid that defines the growth factor of VList blocks, 2 by default.
+</p></dd></dl>
+
+<p>The functions below provide the usual set of higher-level list operations.
+</p>
+<dl>
+<dt><a name="index-vlist_002dfold"></a>Scheme Procedure: <strong>vlist-fold</strong> <em>proc init vlist</em></dt>
+<dt><a name="index-vlist_002dfold_002dright"></a>Scheme Procedure: <strong>vlist-fold-right</strong> <em>proc init vlist</em></dt>
+<dd><p>Fold over <var>vlist</var>, calling <var>proc</var> for each element, as for SRFI-1
+<code>fold</code> and <code>fold-right</code> (see <a href="SRFI_002d1.html#SRFI_002d1"><code>fold</code></a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dref"></a>Scheme Procedure: <strong>vlist-ref</strong> <em>vlist index</em></dt>
+<dd><p>Return the element at index <var>index</var> in <var>vlist</var>.  This is typically a
+constant-time operation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dlength"></a>Scheme Procedure: <strong>vlist-length</strong> <em>vlist</em></dt>
+<dd><p>Return the length of <var>vlist</var>.  This is typically logarithmic in the number
+of elements in <var>vlist</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dreverse"></a>Scheme Procedure: <strong>vlist-reverse</strong> <em>vlist</em></dt>
+<dd><p>Return a new <var>vlist</var> whose content are those of <var>vlist</var> in reverse
+order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dmap"></a>Scheme Procedure: <strong>vlist-map</strong> <em>proc vlist</em></dt>
+<dd><p>Map <var>proc</var> over the elements of <var>vlist</var> and return a new vlist.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dfor_002deach"></a>Scheme Procedure: <strong>vlist-for-each</strong> <em>proc vlist</em></dt>
+<dd><p>Call <var>proc</var> on each element of <var>vlist</var>.  The result is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002ddrop"></a>Scheme Procedure: <strong>vlist-drop</strong> <em>vlist count</em></dt>
+<dd><p>Return a new vlist that does not contain the <var>count</var> first elements of
+<var>vlist</var>.  This is typically a constant-time operation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dtake"></a>Scheme Procedure: <strong>vlist-take</strong> <em>vlist count</em></dt>
+<dd><p>Return a new vlist that contains only the <var>count</var> first elements of
+<var>vlist</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dfilter"></a>Scheme Procedure: <strong>vlist-filter</strong> <em>pred vlist</em></dt>
+<dd><p>Return a new vlist containing all the elements from <var>vlist</var> that satisfy
+<var>pred</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002ddelete"></a>Scheme Procedure: <strong>vlist-delete</strong> <em>x vlist [equal?]</em></dt>
+<dd><p>Return a new vlist corresponding to <var>vlist</var> without the elements
+<var>equal?</var> to <var>x</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dunfold"></a>Scheme Procedure: <strong>vlist-unfold</strong> <em>p f g seed [tail-gen]</em></dt>
+<dt><a name="index-vlist_002dunfold_002dright"></a>Scheme Procedure: <strong>vlist-unfold-right</strong> <em>p f g seed [tail]</em></dt>
+<dd><p>Return a new vlist, as for SRFI-1 <code>unfold</code> and <code>unfold-right</code>
+(see <a href="SRFI_002d1.html#SRFI_002d1"><code>unfold</code></a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002dappend"></a>Scheme Procedure: <strong>vlist-append</strong> <em>vlist &hellip;</em></dt>
+<dd><p>Append the given vlists and return the resulting vlist.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_002d_003evlist"></a>Scheme Procedure: <strong>list-&gt;vlist</strong> <em>lst</em></dt>
+<dd><p>Return a new vlist whose contents correspond to <var>lst</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vlist_002d_003elist"></a>Scheme Procedure: <strong>vlist-&gt;list</strong> <em>vlist</em></dt>
+<dd><p>Return a new list whose contents match those of <var>vlist</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Record-Overview.html#Record-Overview" accesskey="n" rel="next">Record Overview</a>, Previous: <a href="Arrays.html#Arrays" accesskey="p" rel="prev">Arrays</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

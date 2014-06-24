@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Lists</title>
+
+<meta name="description" content="Guile Reference Manual: Lists">
+<meta name="keywords" content="Guile Reference Manual: Lists">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compound-Data-Types.html#Compound-Data-Types" rel="up" title="Compound Data Types">
+<link href="List-Syntax.html#List-Syntax" rel="next" title="List Syntax">
+<link href="Pairs.html#Pairs" rel="prev" title="Pairs">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Lists"></a>
+<div class="header">
+<p>
+Next: <a href="Vectors.html#Vectors" accesskey="n" rel="next">Vectors</a>, Previous: <a href="Pairs.html#Pairs" accesskey="p" rel="prev">Pairs</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Lists-1"></a>
+<h4 class="subsection">6.7.2 Lists</h4>
+<a name="index-Lists"></a>
+
+<p>A very important data type in Scheme&mdash;as well as in all other Lisp
+dialects&mdash;is the data type <em>list</em>.<a name="DOCF6" href="#FOOT6"><sup>6</sup></a>
+</p>
+<p>This is the short definition of what a list is:
+</p>
+<ul>
+<li> Either the empty list <code>()</code>,
+
+</li><li> or a pair which has a list in its cdr.
+</li></ul>
+
+
+
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="List-Syntax.html#List-Syntax" accesskey="1">List Syntax</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Writing literal lists.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List-Predicates.html#List-Predicates" accesskey="2">List Predicates</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Testing lists.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List-Constructors.html#List-Constructors" accesskey="3">List Constructors</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Creating new lists.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List-Selection.html#List-Selection" accesskey="4">List Selection</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Selecting from lists, getting their length.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Append_002fReverse.html#Append_002fReverse" accesskey="5">Append/Reverse</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Appending and reversing lists.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List-Modification.html#List-Modification" accesskey="6">List Modification</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Modifying existing lists.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List-Searching.html#List-Searching" accesskey="7">List Searching</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Searching for list elements
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="List-Mapping.html#List-Mapping" accesskey="8">List Mapping</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Applying procedures to lists.
+</td></tr>
+</table>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT6" href="#DOCF6">(6)</a></h3>
+<p>Strictly speaking,
+Scheme does not have a real datatype <em>list</em>.  Lists are made up of
+<em>chained pairs</em>, and only exist by definition&mdash;a list is a chain
+of pairs which looks like a list.</p>
+</div>
+
+
+
+</body>
+</html>

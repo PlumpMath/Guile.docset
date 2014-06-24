@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS Standard Libraries</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS Standard Libraries">
+<meta name="keywords" content="Guile Reference Manual: R6RS Standard Libraries">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Support.html#R6RS-Support" rel="up" title="R6RS Support">
+<link href="Library-Usage.html#Library-Usage" rel="next" title="Library Usage">
+<link href="R6RS-Incompatibilities.html#R6RS-Incompatibilities" rel="prev" title="R6RS Incompatibilities">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-Standard-Libraries"></a>
+<div class="header">
+<p>
+Previous: <a href="R6RS-Incompatibilities.html#R6RS-Incompatibilities" accesskey="p" rel="prev">R6RS Incompatibilities</a>, Up: <a href="R6RS-Support.html#R6RS-Support" accesskey="u" rel="up">R6RS Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="R6RS-Standard-Libraries-1"></a>
+<h4 class="subsection">7.6.2 R6RS Standard Libraries</h4>
+
+<p>In contrast with earlier versions of the Revised Report, the R6RS 
+organizes the procedures and syntactic forms required of conforming
+implementations into a set of &ldquo;standard libraries&rdquo; which can be
+imported as necessary by user programs and libraries.  Here we briefly 
+list the libraries that have been implemented for Guile.
+</p>
+<p>We do not attempt to document these libraries fully here, as most of 
+their functionality is already available in Guile itself.  The 
+expectation is that most Guile users will use the well-known and 
+well-documented Guile modules.  These R6RS libraries are mostly useful
+to users who want to port their code to other R6RS systems.
+</p>
+<p>The documentation in the following sections reproduces some of the 
+content of the library section of the Report, but is mostly intended to
+provide supplementary information about Guile&rsquo;s implementation of the
+R6RS standard libraries.  For complete documentation, design rationales
+and further examples, we advise you to consult the &ldquo;Standard 
+Libraries&rdquo; section of the Report (see <a href="../r6rs/Standard-Libraries.html#Standard-Libraries">R6RS Standard Libraries</a> in <cite>The Revised^6 Report on the Algorithmic
+Language Scheme</cite>).
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Library-Usage.html#Library-Usage" accesskey="1">Library Usage</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">What to know about Guile&rsquo;s library support.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-base.html#rnrs-base" accesskey="2">rnrs base</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The base library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-unicode.html#rnrs-unicode" accesskey="3">rnrs unicode</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Access to Unicode operations.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-bytevectors.html#rnrs-bytevectors" accesskey="4">rnrs bytevectors</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Functions for working with binary data.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-lists.html#rnrs-lists" accesskey="5">rnrs lists</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">List utilities.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-sorting.html#rnrs-sorting" accesskey="6">rnrs sorting</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Sorting for lists and vectors.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-control.html#rnrs-control" accesskey="7">rnrs control</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Additional control structures.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+</pre></th></tr><tr><td align="left" valign="top">&bull; <a href="R6RS-Records.html#R6RS-Records" accesskey="8">R6RS Records</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">A note about R6RS records.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-records-syntactic.html#rnrs-records-syntactic" accesskey="9">rnrs records syntactic</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Syntactic API for R6RS records.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-records-procedural.html#rnrs-records-procedural">rnrs records procedural</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Procedural API for R6RS records.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-records-inspection.html#rnrs-records-inspection">rnrs records inspection</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Reflection on R6RS records.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+</pre></th></tr><tr><td align="left" valign="top">&bull; <a href="rnrs-exceptions.html#rnrs-exceptions">rnrs exceptions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Handling exceptional situations.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-conditions.html#rnrs-conditions">rnrs conditions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Data structures for exceptions.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+</pre></th></tr><tr><td align="left" valign="top">&bull; <a href="I_002fO-Conditions.html#I_002fO-Conditions">I/O Conditions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Predefined I/O error types.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-io-ports.html#rnrs-io-ports">rnrs io ports</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Support for port-based I/O.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-io-simple.html#rnrs-io-simple">rnrs io simple</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">High-level I/O API.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+</pre></th></tr><tr><td align="left" valign="top">&bull; <a href="rnrs-files.html#rnrs-files">rnrs files</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Functions for working with files.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-programs.html#rnrs-programs">rnrs programs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Functions for working with processes.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-arithmetic-fixnums.html#rnrs-arithmetic-fixnums">rnrs arithmetic fixnums</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Fixed-precision arithmetic operations.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums">rnrs arithmetic flonums</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Floating-point arithmetic operations.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-arithmetic-bitwise.html#rnrs-arithmetic-bitwise">rnrs arithmetic bitwise</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Exact bitwise arithmetic operations.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-syntax_002dcase.html#rnrs-syntax_002dcase">rnrs syntax-case</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Support for &lsquo;syntax-case&rsquo; macros.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-hashtables.html#rnrs-hashtables">rnrs hashtables</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Hashtables.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-enums.html#rnrs-enums">rnrs enums</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Enumerations.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs.html#rnrs">rnrs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The composite library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-eval.html#rnrs-eval">rnrs eval</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Support for on-the-fly evaluation.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-mutable_002dpairs.html#rnrs-mutable_002dpairs">rnrs mutable-pairs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Support for mutable pairs.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-mutable_002dstrings.html#rnrs-mutable_002dstrings">rnrs mutable-strings</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Support for mutable strings.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="rnrs-r5rs.html#rnrs-r5rs">rnrs r5rs</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Compatibility layer for R5RS Scheme.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+</pre></th></tr></table>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="R6RS-Incompatibilities.html#R6RS-Incompatibilities" accesskey="p" rel="prev">R6RS Incompatibilities</a>, Up: <a href="R6RS-Support.html#R6RS-Support" accesskey="u" rel="up">R6RS Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

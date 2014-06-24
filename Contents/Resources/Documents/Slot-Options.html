@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Slot Options</title>
+
+<meta name="description" content="Guile Reference Manual: Slot Options">
+<meta name="keywords" content="Guile Reference Manual: Slot Options">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GOOPS.html#GOOPS" rel="up" title="GOOPS">
+<link href="Slot-Description-Example.html#Slot-Description-Example" rel="next" title="Slot Description Example">
+<link href="Instance-Creation.html#Instance-Creation" rel="prev" title="Instance Creation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Slot-Options"></a>
+<div class="header">
+<p>
+Next: <a href="Slot-Description-Example.html#Slot-Description-Example" accesskey="n" rel="next">Slot Description Example</a>, Previous: <a href="Instance-Creation.html#Instance-Creation" accesskey="p" rel="prev">Instance Creation</a>, Up: <a href="GOOPS.html#GOOPS" accesskey="u" rel="up">GOOPS</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Slot-Options-1"></a>
+<h3 class="section">8.4 Slot Options</h3>
+
+<p>When specifying a slot (in a <code>(define-class &hellip;)</code> form),
+various options can be specified in addition to the slot&rsquo;s name.  Each
+option is specified by a keyword.  The list of possible keywords is
+as follows.
+</p>
+<dl>
+<dt><a name="index-_0023_003ainit_002dvalue"></a>slot option: <strong>#:init-value</strong> <em>init-value</em></dt>
+<dt><a name="index-_0023_003ainit_002dform"></a>slot option: <strong>#:init-form</strong> <em>init-form</em></dt>
+<dt><a name="index-_0023_003ainit_002dthunk"></a>slot option: <strong>#:init-thunk</strong> <em>init-thunk</em></dt>
+<dt><a name="index-_0023_003ainit_002dkeyword"></a>slot option: <strong>#:init-keyword</strong> <em>init-keyword</em></dt>
+<dd><p>These options provide various ways to specify how to initialize the
+slot&rsquo;s value at instance creation time.
+<a name="index-default-slot-value"></a>
+</p>
+<p><var>init-value</var> specifies a fixed initial slot value (shared across all
+new instances of the class).
+</p>
+<p><var>init-thunk</var> specifies a thunk that will provide a default value for
+the slot.  The thunk is called when a new instance is created and should
+return the desired initial slot value.
+</p>
+<p><var>init-form</var> specifies a form that, when evaluated, will return
+an initial value for the slot.  The form is evaluated each time that
+an instance of the class is created, in the lexical environment of the
+containing <code>define-class</code> expression.
+</p>
+<p><var>init-keyword</var> specifies a keyword that can be used to pass an
+initial slot value to <code>make</code> when creating a new instance.
+</p>
+<p>Note that, since an <code>init-value</code> value is shared across all
+instances of a class, you should only use it when the initial value is
+an immutable value, like a constant.  If you want to initialize a slot
+with a fresh, independently mutable value, you should use
+<code>init-thunk</code> or <code>init-form</code> instead.  Consider the following
+example.
+</p>
+<div class="example">
+<pre class="example">(define-class &lt;chbouib&gt; ()
+  (hashtab #:init-value (make-hash-table)))
+</pre></div>
+
+<p>Here only one hash table is created and all instances of
+<code>&lt;chbouib&gt;</code> have their <code>hashtab</code> slot refer to it.  In order
+to have each instance of <code>&lt;chbouib&gt;</code> refer to a new hash table, you
+should instead write:
+</p>
+<div class="example">
+<pre class="example">(define-class &lt;chbouib&gt; ()
+  (hashtab #:init-thunk make-hash-table))
+</pre></div>
+
+<p>or:
+</p>
+<div class="example">
+<pre class="example">(define-class &lt;chbouib&gt; ()
+  (hashtab #:init-form (make-hash-table)))
+</pre></div>
+
+<p>If more than one of these options is specified for the same slot, the
+order of precedence, highest first is
+</p>
+<ul>
+<li> <code>#:init-keyword</code>, if <var>init-keyword</var> is present in the options
+passed to <code>make</code>
+
+</li><li> <code>#:init-thunk</code>, <code>#:init-form</code> or <code>#:init-value</code>.
+</li></ul>
+
+<p>If the slot definition contains more than one initialization option of
+the same precedence, the later ones are ignored.  If a slot is not
+initialized at all, its value is unbound.
+</p>
+<p>In general, slots that are shared between more than one instance are
+only initialized at new instance creation time if the slot value is
+unbound at that time.  However, if the new instance creation specifies
+a valid init keyword and value for a shared slot, the slot is
+re-initialized regardless of its previous value.
+</p>
+<p>Note, however, that the power of GOOPS&rsquo; metaobject protocol means that
+everything written here may be customized or overridden for particular
+classes!  The slot initializations described here are performed by the least
+specialized method of the generic function <code>initialize</code>, whose
+signature is
+</p>
+<div class="example">
+<pre class="example">(define-method (initialize (object &lt;object&gt;) initargs) ...)
+</pre></div>
+
+<p>The initialization of instances of any given class can be customized by
+defining a <code>initialize</code> method that is specialized for that class,
+and the author of the specialized method may decide to call
+<code>next-method</code> - which will result in a call to the next less
+specialized <code>initialize</code> method - at any point within the
+specialized code, or maybe not at all.  In general, therefore, the
+initialization mechanisms described here may be modified or overridden by
+more specialized code, or may not be supported at all for particular
+classes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0023_003agetter"></a>slot option: <strong>#:getter</strong> <em>getter</em></dt>
+<dt><a name="index-_0023_003asetter"></a>slot option: <strong>#:setter</strong> <em>setter</em></dt>
+<dt><a name="index-_0023_003aaccessor"></a>slot option: <strong>#:accessor</strong> <em>accessor</em></dt>
+<dd><p>Given an object <var>obj</var> with slots named <code>foo</code> and <code>bar</code>, it
+is always possible to read and write those slots by calling
+<code>slot-ref</code> and <code>slot-set!</code> with the relevant slot name; for
+example:
+</p>
+<div class="example">
+<pre class="example">(slot-ref <var>obj</var> 'foo)
+(slot-set! <var>obj</var> 'bar 25)
+</pre></div>
+
+<p>The <code>#:getter</code>, <code>#:setter</code> and <code>#:accessor</code> options, if
+present, tell GOOPS to create generic function and method definitions
+that can be used to get and set the slot value more conveniently.
+<var>getter</var> specifies a generic function to which GOOPS will add a
+method for getting the slot value.  <var>setter</var> specifies a generic
+function to which GOOPS will add a method for setting the slot value.
+<var>accessor</var> specifies an accessor to which GOOPS will add methods for
+both getting and setting the slot value.
+</p>
+<p>So if a class includes a slot definition like this:
+</p>
+<div class="example">
+<pre class="example">(c #:getter get-count #:setter set-count #:accessor count)
+</pre></div>
+
+<p>GOOPS defines generic function methods such that the slot value can be
+referenced using either the getter or the accessor -
+</p>
+<div class="example">
+<pre class="example">(let ((current-count (get-count obj))) &hellip;)
+(let ((current-count (count obj))) &hellip;)
+</pre></div>
+
+<p>- and set using either the setter or the accessor -
+</p>
+<div class="example">
+<pre class="example">(set-count obj (+ 1 current-count))
+(set! (count obj) (+ 1 current-count))
+</pre></div>
+
+<p>Note that
+</p>
+<ul>
+<li> with an accessor, the slot value is set using the generalized
+<code>set!</code> syntax
+
+</li><li> in practice, it is unusual for a slot to use all three of these options:
+read-only, write-only and read-write slots would typically use only
+<code>#:getter</code>, <code>#:setter</code> and <code>#:accessor</code> options
+respectively.
+</li></ul>
+
+<p>The binding of the specified names is done in the environment of the
+<code>define-class</code> expression.  If the names are already bound (in that
+environment) to values that cannot be upgraded to generic functions,
+those values are overwritten when the <code>define-class</code> expression is
+evaluated.  For more detail, see <a href="Generic-Function-Internals.html#Generic-Function-Internals">ensure-generic</a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0023_003aallocation"></a>slot option: <strong>#:allocation</strong> <em>allocation</em></dt>
+<dd><p>The <code>#:allocation</code> option tells GOOPS how to allocate storage for
+the slot.  Possible values for <var>allocation</var> are
+</p>
+<ul>
+<li> <code>#:instance</code>
+
+<a name="index-_0023_003ainstance"></a>
+<p>Indicates that GOOPS should create separate storage for this slot in
+each new instance of the containing class (and its subclasses).  This is
+the default.
+</p>
+</li><li> <code>#:class</code>
+
+<a name="index-_0023_003aclass"></a>
+<p>Indicates that GOOPS should create storage for this slot that is shared
+by all instances of the containing class (and its subclasses).  In other
+words, a slot in class <var>C</var> with allocation <code>#:class</code> is shared
+by all <var>instance</var>s for which <code>(is-a? <var>instance</var> <var>c</var>)</code>.
+This permits defining a kind of global variable which can be accessed
+only by (in)direct instances of the class which defines the slot.
+</p>
+</li><li> <code>#:each-subclass</code>
+
+<a name="index-_0023_003aeach_002dsubclass"></a>
+<p>Indicates that GOOPS should create storage for this slot that is shared
+by all <em>direct</em> instances of the containing class, and that
+whenever a subclass of the containing class is defined, GOOPS should
+create a new storage for the slot that is shared by all <em>direct</em>
+instances of the subclass.  In other words, a slot with allocation
+<code>#:each-subclass</code> is shared by all instances with the same
+<code>class-of</code>.
+</p>
+</li><li> <code>#:virtual</code>
+
+<a name="index-_0023_003aslot_002dset_0021"></a>
+<a name="index-_0023_003aslot_002dref"></a>
+<a name="index-_0023_003avirtual"></a>
+<p>Indicates that GOOPS should not allocate storage for this slot.  The
+slot definition must also include the <code>#:slot-ref</code> and
+<code>#:slot-set!</code> options to specify how to reference and set the value
+for this slot.  See the example below.
+</p></li></ul>
+
+<p>Slot allocation options are processed when defining a new class by the
+generic function <code>compute-get-n-set</code>, which is specialized by the
+class&rsquo;s metaclass.  Hence new types of slot allocation can be
+implemented by defining a new metaclass and a method for
+<code>compute-get-n-set</code> that is specialized for the new metaclass.  For
+an example of how to do this, see <a href="Customizing-Class-Definition.html#Customizing-Class-Definition">Customizing Class Definition</a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0023_003aslot_002dref-1"></a>slot option: <strong>#:slot-ref</strong> <em>getter</em></dt>
+<dt><a name="index-_0023_003aslot_002dset_0021-1"></a>slot option: <strong>#:slot-set!</strong> <em>setter</em></dt>
+<dd><p>The <code>#:slot-ref</code> and <code>#:slot-set!</code> options must be specified
+if the slot allocation is <code>#:virtual</code>, and are ignored otherwise.
+</p>
+<p><var>getter</var> should be a closure taking a single <var>instance</var> parameter
+that returns the current slot value.  <var>setter</var> should be a closure
+taking two parameters - <var>instance</var> and <var>new-val</var> - that sets the
+slot value to <var>new-val</var>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Slot-Description-Example.html#Slot-Description-Example" accesskey="n" rel="next">Slot Description Example</a>, Previous: <a href="Instance-Creation.html#Instance-Creation" accesskey="p" rel="prev">Instance Creation</a>, Up: <a href="GOOPS.html#GOOPS" accesskey="u" rel="up">GOOPS</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

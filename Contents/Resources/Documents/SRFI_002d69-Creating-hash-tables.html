@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-69 Creating hash tables</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-69 Creating hash tables">
+<meta name="keywords" content="Guile Reference Manual: SRFI-69 Creating hash tables">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d69.html#SRFI_002d69" rel="up" title="SRFI-69">
+<link href="SRFI_002d69-Accessing-table-items.html#SRFI_002d69-Accessing-table-items" rel="next" title="SRFI-69 Accessing table items">
+<link href="SRFI_002d69.html#SRFI_002d69" rel="prev" title="SRFI-69">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d69-Creating-hash-tables"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d69-Accessing-table-items.html#SRFI_002d69-Accessing-table-items" accesskey="n" rel="next">SRFI-69 Accessing table items</a>, Up: <a href="SRFI_002d69.html#SRFI_002d69" accesskey="u" rel="up">SRFI-69</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Creating-hash-tables"></a>
+<h4 class="subsubsection">7.5.38.1 Creating hash tables</h4>
+
+<dl>
+<dt><a name="index-make_002dhash_002dtable-1"></a>Scheme Procedure: <strong>make-hash-table</strong> <em>[equal-proc hash-proc #:weak weakness start-size]</em></dt>
+<dd><p>Create and answer a new hash table with <var>equal-proc</var> as the
+equality function and <var>hash-proc</var> as the hashing function.
+</p>
+<p>By default, <var>equal-proc</var> is <code>equal?</code>.  It can be any
+two-argument procedure, and should answer whether two keys are the
+same for this table&rsquo;s purposes.
+</p>
+<p>My default <var>hash-proc</var> assumes that <code>equal-proc</code> is no
+coarser than <code>equal?</code>  unless it is literally <code>string-ci=?</code>.
+If provided, <var>hash-proc</var> should be a two-argument procedure that
+takes a key and the current table size, and answers a reasonably good
+hash integer between 0 (inclusive) and the size (exclusive).
+</p>
+<p><var>weakness</var> should be <code>#f</code> or a symbol indicating how &ldquo;weak&rdquo;
+the hash table is:
+</p>
+<dl compact="compact">
+<dt><code>#f</code></dt>
+<dd><p>An ordinary non-weak hash table.  This is the default.
+</p>
+</dd>
+<dt><code>key</code></dt>
+<dd><p>When the key has no more non-weak references at GC, remove that entry.
+</p>
+</dd>
+<dt><code>value</code></dt>
+<dd><p>When the value has no more non-weak references at GC, remove that
+entry.
+</p>
+</dd>
+<dt><code>key-or-value</code></dt>
+<dd><p>When either has no more non-weak references at GC, remove the
+association.
+</p></dd>
+</dl>
+
+<p>As a legacy of the time when Guile couldn&rsquo;t grow hash tables,
+<var>start-size</var> is an optional integer argument that specifies the
+approximate starting size for the hash table, which will be rounded to
+an algorithmically-sounder number.
+</p></dd></dl>
+
+<p>By <em>coarser</em> than <code>equal?</code>, we mean that for all <var>x</var> and
+<var>y</var> values where <code>(<var>equal-proc</var> <var>x</var> <var>y</var>)</code>,
+<code>(equal? <var>x</var> <var>y</var>)</code> as well.  If that does not hold for
+your <var>equal-proc</var>, you must provide a <var>hash-proc</var>.
+</p>
+<p>In the case of weak tables, remember that <em>references</em> above
+always refers to <code>eq?</code>-wise references.  Just because you have a
+reference to some string <code>&quot;foo&quot;</code> doesn&rsquo;t mean that an association
+with key <code>&quot;foo&quot;</code> in a weak-key table <em>won&rsquo;t</em> be collected;
+it only counts as a reference if the two <code>&quot;foo&quot;</code>s are <code>eq?</code>,
+regardless of <var>equal-proc</var>.  As such, it is usually only sensible
+to use <code>eq?</code> and <code>hashq</code> as the equivalence and hash
+functions for a weak table.  See <a href="Weak-References.html#Weak-References">Weak References</a>, for more
+information on Guile&rsquo;s built-in weak table support.
+</p>
+<dl>
+<dt><a name="index-alist_002d_003ehash_002dtable-1"></a>Scheme Procedure: <strong>alist-&gt;hash-table</strong> <em>alist [equal-proc hash-proc #:weak weakness start-size]</em></dt>
+<dd><p>As with <code>make-hash-table</code>, but initialize it with the
+associations in <var>alist</var>.  Where keys are repeated in <var>alist</var>,
+the leftmost association takes precedence.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d69-Accessing-table-items.html#SRFI_002d69-Accessing-table-items" accesskey="n" rel="next">SRFI-69 Accessing table items</a>, Up: <a href="SRFI_002d69.html#SRFI_002d69" accesskey="u" rel="up">SRFI-69</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

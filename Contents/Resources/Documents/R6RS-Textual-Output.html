@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS Textual Output</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS Textual Output">
+<meta name="keywords" content="Guile Reference Manual: R6RS Textual Output">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" rel="up" title="R6RS I/O Ports">
+<link href="I_002fO-Extensions.html#I_002fO-Extensions" rel="next" title="I/O Extensions">
+<link href="R6RS-Binary-Output.html#R6RS-Binary-Output" rel="prev" title="R6RS Binary Output">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-Textual-Output"></a>
+<div class="header">
+<p>
+Previous: <a href="R6RS-Binary-Output.html#R6RS-Binary-Output" accesskey="p" rel="prev">R6RS Binary Output</a>, Up: <a href="R6RS-I_002fO-Ports.html#R6RS-I_002fO-Ports" accesskey="u" rel="up">R6RS I/O Ports</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Textual-Output"></a>
+<h4 class="subsubsection">6.14.10.12 Textual Output</h4>
+
+<dl>
+<dt><a name="index-put_002dchar"></a>Scheme Procedure: <strong>put-char</strong> <em>port char</em></dt>
+<dd><p>Writes <var>char</var> to the port. The <code>put-char</code> procedure returns
+an unspecified value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-put_002dstring"></a>Scheme Procedure: <strong>put-string</strong> <em>port string</em></dt>
+<dt><a name="index-put_002dstring-1"></a>Scheme Procedure: <strong>put-string</strong> <em>port string start</em></dt>
+<dt><a name="index-put_002dstring-2"></a>Scheme Procedure: <strong>put-string</strong> <em>port string start count</em></dt>
+<dd>
+<p><var>start</var> and <var>count</var> must be non-negative exact integer objects.
+<var>string</var> must have a length of at least <em><var>start</var> +
+<var>count</var></em>.  <var>start</var> defaults to 0.  <var>count</var> defaults to
+<em><code>(string-length <var>string</var>)</code> - <var>start</var></em>$. The
+<code>put-string</code> procedure writes the <var>count</var> characters of
+<var>string</var> starting at index <var>start</var> to the port.  The
+<code>put-string</code> procedure returns an unspecified value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-put_002ddatum"></a>Scheme Procedure: <strong>put-datum</strong> <em>textual-output-port datum</em></dt>
+<dd><p><var>datum</var> should be a datum value.  The <code>put-datum</code> procedure
+writes an external representation of <var>datum</var> to
+<var>textual-output-port</var>.  The specific external representation is
+implementation-dependent.  However, whenever possible, an implementation
+should produce a representation for which <code>get-datum</code>, when reading
+the representation, will return an object equal (in the sense of
+<code>equal?</code>) to <var>datum</var>.
+</p>
+<blockquote>
+<p><b>Note:</b> Not all datums may allow producing an external representation for which
+  <code>get-datum</code> will produce an object that is equal to the
+  original.  Specifically, NaNs contained in <var>datum</var> may make
+  this impossible.
+</p></blockquote>
+
+<blockquote>
+<p><b>Note:</b> The <code>put-datum</code> procedure merely writes the external
+  representation, but no trailing delimiter.  If <code>put-datum</code> is
+  used to write several subsequent external representations to an
+  output port, care should be taken to delimit them properly so they can
+  be read back in by subsequent calls to <code>get-datum</code>.
+</p></blockquote>
+</dd></dl>
+
+
+
+
+</body>
+</html>

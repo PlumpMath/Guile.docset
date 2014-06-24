@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: API Overview</title>
+
+<meta name="description" content="Guile Reference Manual: API Overview">
+<meta name="keywords" content="Guile Reference Manual: API Overview">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="API-Reference.html#API-Reference" rel="up" title="API Reference">
+<link href="Deprecation.html#Deprecation" rel="next" title="Deprecation">
+<link href="API-Reference.html#API-Reference" rel="prev" title="API Reference">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="API-Overview"></a>
+<div class="header">
+<p>
+Next: <a href="Deprecation.html#Deprecation" accesskey="n" rel="next">Deprecation</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Overview-of-the-Guile-API"></a>
+<h3 class="section">6.1 Overview of the Guile API</h3>
+
+<p>Guile&rsquo;s application programming interface (<em>API</em>) makes
+functionality available that an application developer can use in either
+C or Scheme programming.  The interface consists of <em>elements</em> that
+may be macros, functions or variables in C, and procedures, variables,
+syntax or other types of object in Scheme.
+</p>
+<p>Many elements are available to both Scheme and C, in a form that is
+appropriate.  For example, the <code>assq</code> Scheme procedure is also
+available as <code>scm_assq</code> to C code.  These elements are documented
+only once, addressing both the Scheme and C aspects of them.
+</p>
+<p>The Scheme name of an element is related to its C name in a regular
+way.  Also, a C function takes its parameters in a systematic way.
+</p>
+<p>Normally, the name of a C function can be derived given its Scheme name,
+using some simple textual transformations:
+</p>
+<ul>
+<li> Replace <code>-</code> (hyphen) with <code>_</code> (underscore).
+
+</li><li> Replace <code>?</code> (question mark) with <code>_p</code>.
+
+</li><li> Replace <code>!</code> (exclamation point) with <code>_x</code>.
+
+</li><li> Replace internal <code>-&gt;</code> with <code>_to_</code>.
+
+</li><li> Replace <code>&lt;=</code> (less than or equal) with <code>_leq</code>.
+
+</li><li> Replace <code>&gt;=</code> (greater than or equal) with <code>_geq</code>.
+
+</li><li> Replace <code>&lt;</code> (less than) with <code>_less</code>.
+
+</li><li> Replace <code>&gt;</code> (greater than) with <code>_gr</code>.
+
+</li><li> Prefix with <code>scm_</code>.
+
+</li></ul>
+
+
+
+<p>A C function always takes a fixed number of arguments of type
+<code>SCM</code>, even when the corresponding Scheme function takes a
+variable number.
+</p>
+<p>For some Scheme functions, some last arguments are optional; the
+corresponding C function must always be invoked with all optional
+arguments specified.  To get the effect as if an argument has not been
+specified, pass <code>SCM_UNDEFINED</code> as its value.  You can not do
+this for an argument in the middle; when one argument is
+<code>SCM_UNDEFINED</code> all the ones following it must be
+<code>SCM_UNDEFINED</code> as well.
+</p>
+<p>Some Scheme functions take an arbitrary number of <em>rest</em>
+arguments; the corresponding C function must be invoked with a list of
+all these arguments.  This list is always the last argument of the C
+function.
+</p>
+<p>These two variants can also be combined.
+</p>
+<p>The type of the return value of a C function that corresponds to a
+Scheme function is always <code>SCM</code>.  In the descriptions below,
+types are therefore often omitted but for the return value and for the
+arguments.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Deprecation.html#Deprecation" accesskey="n" rel="next">Deprecation</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

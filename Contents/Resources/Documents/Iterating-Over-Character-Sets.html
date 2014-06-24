@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Iterating Over Character Sets</title>
+
+<meta name="description" content="Guile Reference Manual: Iterating Over Character Sets">
+<meta name="keywords" content="Guile Reference Manual: Iterating Over Character Sets">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Character-Sets.html#Character-Sets" rel="up" title="Character Sets">
+<link href="Creating-Character-Sets.html#Creating-Character-Sets" rel="next" title="Creating Character Sets">
+<link href="Character-Set-Predicates_002fComparison.html#Character-Set-Predicates_002fComparison" rel="prev" title="Character Set Predicates/Comparison">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Iterating-Over-Character-Sets"></a>
+<div class="header">
+<p>
+Next: <a href="Creating-Character-Sets.html#Creating-Character-Sets" accesskey="n" rel="next">Creating Character Sets</a>, Previous: <a href="Character-Set-Predicates_002fComparison.html#Character-Set-Predicates_002fComparison" accesskey="p" rel="prev">Character Set Predicates/Comparison</a>, Up: <a href="Character-Sets.html#Character-Sets" accesskey="u" rel="up">Character Sets</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Iterating-Over-Character-Sets-1"></a>
+<h4 class="subsubsection">6.6.4.2 Iterating Over Character Sets</h4>
+
+<p>Character set cursors are a means for iterating over the members of a
+character sets.  After creating a character set cursor with
+<code>char-set-cursor</code>, a cursor can be dereferenced with
+<code>char-set-ref</code>, advanced to the next member with
+<code>char-set-cursor-next</code>.  Whether a cursor has passed past the last
+element of the set can be checked with <code>end-of-char-set?</code>.
+</p>
+<p>Additionally, mapping and (un-)folding procedures for character sets are
+provided.
+</p>
+<dl>
+<dt><a name="index-char_002dset_002dcursor"></a>Scheme Procedure: <strong>char-set-cursor</strong> <em>cs</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005fcursor"></a>C Function: <strong>scm_char_set_cursor</strong> <em>(cs)</em></dt>
+<dd><p>Return a cursor into the character set <var>cs</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dref"></a>Scheme Procedure: <strong>char-set-ref</strong> <em>cs cursor</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005fref"></a>C Function: <strong>scm_char_set_ref</strong> <em>(cs, cursor)</em></dt>
+<dd><p>Return the character at the current cursor position
+<var>cursor</var> in the character set <var>cs</var>.  It is an error to
+pass a cursor for which <code>end-of-char-set?</code> returns true.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dcursor_002dnext"></a>Scheme Procedure: <strong>char-set-cursor-next</strong> <em>cs cursor</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005fcursor_005fnext"></a>C Function: <strong>scm_char_set_cursor_next</strong> <em>(cs, cursor)</em></dt>
+<dd><p>Advance the character set cursor <var>cursor</var> to the next
+character in the character set <var>cs</var>.  It is an error if the
+cursor given satisfies <code>end-of-char-set?</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-end_002dof_002dchar_002dset_003f"></a>Scheme Procedure: <strong>end-of-char-set?</strong> <em>cursor</em></dt>
+<dt><a name="index-scm_005fend_005fof_005fchar_005fset_005fp"></a>C Function: <strong>scm_end_of_char_set_p</strong> <em>(cursor)</em></dt>
+<dd><p>Return <code>#t</code> if <var>cursor</var> has reached the end of a
+character set, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dfold"></a>Scheme Procedure: <strong>char-set-fold</strong> <em>kons knil cs</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005ffold"></a>C Function: <strong>scm_char_set_fold</strong> <em>(kons, knil, cs)</em></dt>
+<dd><p>Fold the procedure <var>kons</var> over the character set <var>cs</var>,
+initializing it with <var>knil</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dunfold"></a>Scheme Procedure: <strong>char-set-unfold</strong> <em>p f g seed [base_cs]</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005funfold"></a>C Function: <strong>scm_char_set_unfold</strong> <em>(p, f, g, seed, base_cs)</em></dt>
+<dd><p>This is a fundamental constructor for character sets.
+</p><ul>
+<li> <var>g</var> is used to generate a series of &ldquo;seed&rdquo; values
+from the initial seed: <var>seed</var>, (<var>g</var> <var>seed</var>),
+(<var>g</var>^2 <var>seed</var>), (<var>g</var>^3 <var>seed</var>), &hellip;
+</li><li> <var>p</var> tells us when to stop &ndash; when it returns true
+when applied to one of the seed values.
+</li><li> <var>f</var> maps each seed value to a character. These
+characters are added to the base character set <var>base_cs</var> to
+form the result; <var>base_cs</var> defaults to the empty set.
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dunfold_0021"></a>Scheme Procedure: <strong>char-set-unfold!</strong> <em>p f g seed base_cs</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005funfold_005fx"></a>C Function: <strong>scm_char_set_unfold_x</strong> <em>(p, f, g, seed, base_cs)</em></dt>
+<dd><p>This is a fundamental constructor for character sets.
+</p><ul>
+<li> <var>g</var> is used to generate a series of &ldquo;seed&rdquo; values
+from the initial seed: <var>seed</var>, (<var>g</var> <var>seed</var>),
+(<var>g</var>^2 <var>seed</var>), (<var>g</var>^3 <var>seed</var>), &hellip;
+</li><li> <var>p</var> tells us when to stop &ndash; when it returns true
+when applied to one of the seed values.
+</li><li> <var>f</var> maps each seed value to a character. These
+characters are added to the base character set <var>base_cs</var> to
+form the result; <var>base_cs</var> defaults to the empty set.
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dfor_002deach"></a>Scheme Procedure: <strong>char-set-for-each</strong> <em>proc cs</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005ffor_005feach"></a>C Function: <strong>scm_char_set_for_each</strong> <em>(proc, cs)</em></dt>
+<dd><p>Apply <var>proc</var> to every character in the character set
+<var>cs</var>.  The return value is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_002dmap"></a>Scheme Procedure: <strong>char-set-map</strong> <em>proc cs</em></dt>
+<dt><a name="index-scm_005fchar_005fset_005fmap"></a>C Function: <strong>scm_char_set_map</strong> <em>(proc, cs)</em></dt>
+<dd><p>Map the procedure <var>proc</var> over every character in <var>cs</var>.
+<var>proc</var> must be a character -&gt; character procedure.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Creating-Character-Sets.html#Creating-Character-Sets" accesskey="n" rel="next">Creating Character Sets</a>, Previous: <a href="Character-Set-Predicates_002fComparison.html#Character-Set-Predicates_002fComparison" accesskey="p" rel="prev">Character Set Predicates/Comparison</a>, Up: <a href="Character-Sets.html#Character-Sets" accesskey="u" rel="up">Character Sets</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

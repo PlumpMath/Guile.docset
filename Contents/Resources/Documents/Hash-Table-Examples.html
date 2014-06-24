@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Hash Table Examples</title>
+
+<meta name="description" content="Guile Reference Manual: Hash Table Examples">
+<meta name="keywords" content="Guile Reference Manual: Hash Table Examples">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Hash-Tables.html#Hash-Tables" rel="up" title="Hash Tables">
+<link href="Hash-Table-Reference.html#Hash-Table-Reference" rel="next" title="Hash Table Reference">
+<link href="Hash-Tables.html#Hash-Tables" rel="prev" title="Hash Tables">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Hash-Table-Examples"></a>
+<div class="header">
+<p>
+Next: <a href="Hash-Table-Reference.html#Hash-Table-Reference" accesskey="n" rel="next">Hash Table Reference</a>, Up: <a href="Hash-Tables.html#Hash-Tables" accesskey="u" rel="up">Hash Tables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Hash-Table-Examples-1"></a>
+<h4 class="subsubsection">6.7.14.1 Hash Table Examples</h4>
+
+<p>For demonstration purposes, this section gives a few usage examples of
+some hash table procedures, together with some explanation what they do.
+</p>
+<p>First we start by creating a new hash table with 31 slots, and
+populate it with two key/value pairs.
+</p>
+<div class="lisp">
+<pre class="lisp">(define h (make-hash-table 31))
+
+;; This is an opaque object
+h
+&rArr;
+#&lt;hash-table 0/31&gt;
+
+;; Inserting into a hash table can be done with hashq-set!
+(hashq-set! h 'foo &quot;bar&quot;)
+&rArr;
+&quot;bar&quot;
+
+(hashq-set! h 'braz &quot;zonk&quot;)
+&rArr;
+&quot;zonk&quot;
+
+;; Or with hash-create-handle!
+(hashq-create-handle! h 'frob #f)
+&rArr;
+(frob . #f)
+</pre></div>
+
+<p>You can get the value for a given key with the procedure
+<code>hashq-ref</code>, but the problem with this procedure is that you
+cannot reliably determine whether a key does exists in the table.  The
+reason is that the procedure returns <code>#f</code> if the key is not in
+the table, but it will return the same value if the key is in the
+table and just happens to have the value <code>#f</code>, as you can see in
+the following examples.
+</p>
+<div class="lisp">
+<pre class="lisp">(hashq-ref h 'foo)
+&rArr;
+&quot;bar&quot;
+
+(hashq-ref h 'frob)
+&rArr;
+#f
+
+(hashq-ref h 'not-there)
+&rArr;
+#f
+</pre></div>
+
+<p>Better is to use the procedure <code>hashq-get-handle</code>, which makes a
+distinction between the two cases.  Just like <code>assq</code>, this
+procedure returns a key/value-pair on success, and <code>#f</code> if the
+key is not found.
+</p>
+<div class="lisp">
+<pre class="lisp">(hashq-get-handle h 'foo)
+&rArr;
+(foo . &quot;bar&quot;)
+
+(hashq-get-handle h 'not-there)
+&rArr;
+#f
+</pre></div>
+
+<p>Interesting results can be computed by using <code>hash-fold</code> to work
+through each element.  This example will count the total number of
+elements:
+</p>
+<div class="lisp">
+<pre class="lisp">(hash-fold (lambda (key value seed) (+ 1 seed)) 0 h)
+&rArr;
+3
+</pre></div>
+
+<p>The same thing can be done with the procedure <code>hash-count</code>, which
+can also count the number of elements matching a particular predicate.
+For example, count the number of elements with string values:
+</p>
+<div class="lisp">
+<pre class="lisp">(hash-count (lambda (key value) (string? value)) h)
+&rArr;
+2
+</pre></div>
+
+<p>Counting all the elements is a simple task using <code>const</code>:
+</p>
+<div class="lisp">
+<pre class="lisp">(hash-count (const #t) h)
+&rArr;
+3
+</pre></div>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Hash-Table-Reference.html#Hash-Table-Reference" accesskey="n" rel="next">Hash Table Reference</a>, Up: <a href="Hash-Tables.html#Hash-Tables" accesskey="u" rel="up">Hash Tables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

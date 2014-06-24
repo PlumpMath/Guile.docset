@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: LALR(1) Parsing</title>
+
+<meta name="description" content="Guile Reference Manual: LALR(1) Parsing">
+<meta name="keywords" content="Guile Reference Manual: LALR(1) Parsing">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="API-Reference.html#API-Reference" rel="up" title="API Reference">
+<link href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" rel="next" title="Read/Load/Eval/Compile">
+<link href="Backslash-Escapes.html#Backslash-Escapes" rel="prev" title="Backslash Escapes">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="LALR_00281_0029-Parsing"></a>
+<div class="header">
+<p>
+Next: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="n" rel="next">Read/Load/Eval/Compile</a>, Previous: <a href="Regular-Expressions.html#Regular-Expressions" accesskey="p" rel="prev">Regular Expressions</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="LALR_00281_0029-Parsing-1"></a>
+<h3 class="section">6.16 LALR(1) Parsing</h3>
+
+<p>The <code>(system base lalr)</code> module provides the
+<a href="http://code.google.com/p/lalr-scm/"><code>lalr-scm</code> LALR(1) parser
+generator by Dominique Boucher</a>.  <code>lalr-scm</code> uses the same algorithm as GNU
+Bison (see <a href="http://www.gnu.org/software/bison/manual/html_node/Introduction.html#Introduction">Introduction to Bison</a> in <cite>Bison, The
+Yacc-compatible Parser Generator</cite>).  Parsers are defined using the
+<code>lalr-parser</code> macro.
+</p>
+<dl>
+<dt><a name="index-lalr_002dparser"></a>Scheme Syntax: <strong>lalr-parser</strong> <em>[<var>options</var>] <var>tokens</var> <var>rules</var>...</em></dt>
+<dd><p>Generate an LALR(1) syntax analyzer.  <var>tokens</var> is a list of symbols
+representing the terminal symbols of the grammar.  <var>rules</var> are the grammar
+production rules.
+</p>
+<p>Each rule has the form <code>(<var>non-terminal</var> (<var>rhs</var> ...) : <var>action</var>
+...)</code>, where <var>non-terminal</var> is the name of the rule, <var>rhs</var> are the
+right-hand sides, i.e., the production rule, and <var>action</var> is a semantic
+action associated with the rule.
+</p>
+<p>The generated parser is a two-argument procedure that takes a
+<em>tokenizer</em> and a <em>syntax error procedure</em>.  The tokenizer
+should be a thunk that returns lexical tokens as produced by
+<code>make-lexical-token</code>.  The syntax error procedure may be called
+with at least an error message (a string), and optionally the lexical
+token that caused the error.
+</p></dd></dl>
+
+<p>Please refer to the <code>lalr-scm</code> documentation for details.
+</p>
+
+
+
+</body>
+</html>

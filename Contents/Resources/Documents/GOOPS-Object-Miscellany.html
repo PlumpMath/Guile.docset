@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: GOOPS Object Miscellany</title>
+
+<meta name="description" content="Guile Reference Manual: GOOPS Object Miscellany">
+<meta name="keywords" content="Guile Reference Manual: GOOPS Object Miscellany">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="GOOPS.html#GOOPS" rel="up" title="GOOPS">
+<link href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" rel="next" title="The Metaobject Protocol">
+<link href="GOOPS-Error-Handling.html#GOOPS-Error-Handling" rel="prev" title="GOOPS Error Handling">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="GOOPS-Object-Miscellany"></a>
+<div class="header">
+<p>
+Next: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="n" rel="next">The Metaobject Protocol</a>, Previous: <a href="GOOPS-Error-Handling.html#GOOPS-Error-Handling" accesskey="p" rel="prev">GOOPS Error Handling</a>, Up: <a href="GOOPS.html#GOOPS" accesskey="u" rel="up">GOOPS</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="GOOPS-Object-Miscellany-1"></a>
+<h3 class="section">8.10 GOOPS Object Miscellany</h3>
+
+<p>Here we cover some points about GOOPS objects that aren&rsquo;t substantial
+enough to merit sections on their own.
+</p>
+<a name="Object-Equality"></a>
+<h4 class="subheading">Object Equality</h4>
+
+<p>When GOOPS is loaded, <code>eqv?</code>, <code>equal?</code> and <code>=</code> become
+generic functions, and you can define methods for them, specialized for
+your own classes, so as to control what the various kinds of equality
+mean for your classes.
+</p>
+<p>For example, the <code>assoc</code> procedure, for looking up an entry in an
+alist, is specified as using <code>equal?</code> to determine when the car of
+an entry in the alist is the same as the key parameter that <code>assoc</code>
+is called with.  Hence, if you had defined a new class, and wanted to
+use instances of that class as the keys in an alist, you could define a
+method for <code>equal?</code>, for your class, to control <code>assoc</code>&rsquo;s
+lookup precisely.
+</p>
+<a name="Cloning-Objects"></a>
+<h4 class="subheading">Cloning Objects</h4>
+
+<dl>
+<dt><a name="index-shallow_002dclone"></a>generic: <strong>shallow-clone</strong></dt>
+<dt><a name="index-shallow_002dclone-1"></a>method: <strong>shallow-clone</strong> <em>(self &lt;object&gt;)</em></dt>
+<dd><p>Return a &ldquo;shallow&rdquo; clone of <var>self</var>.  The default method makes a
+shallow clone by allocating a new instance and copying slot values from
+self to the new instance.  Each slot value is copied either as an
+immediate value or by reference.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-deep_002dclone"></a>generic: <strong>deep-clone</strong></dt>
+<dt><a name="index-deep_002dclone-1"></a>method: <strong>deep-clone</strong> <em>(self &lt;object&gt;)</em></dt>
+<dd><p>Return a &ldquo;deep&rdquo; clone of <var>self</var>.  The default method makes a deep
+clone by allocating a new instance and copying or cloning slot values
+from self to the new instance.  If a slot value is an instance
+(satisfies <code>instance?</code>), it is cloned by calling <code>deep-clone</code>
+on that value.  Other slot values are copied either as immediate values
+or by reference.
+</p></dd></dl>
+
+<a name="Write-and-Display"></a>
+<h4 class="subheading">Write and Display</h4>
+
+<dl>
+<dt><a name="index-write-3"></a>primitive generic: <strong>write</strong> <em>object port</em></dt>
+<dt><a name="index-display-3"></a>primitive generic: <strong>display</strong> <em>object port</em></dt>
+<dd><p>When GOOPS is loaded, <code>write</code> and <code>display</code> become generic
+functions with special methods for printing
+</p>
+<ul>
+<li> objects - instances of the class <code>&lt;object&gt;</code>
+
+</li><li> foreign objects - instances of the class <code>&lt;foreign-object&gt;</code>
+
+</li><li> classes - instances of the class <code>&lt;class&gt;</code>
+
+</li><li> generic functions - instances of the class <code>&lt;generic&gt;</code>
+
+</li><li> methods - instances of the class <code>&lt;method&gt;</code>.
+</li></ul>
+
+<p><code>write</code> and <code>display</code> print non-GOOPS values in the same way
+as the Guile primitive <code>write</code> and <code>display</code> functions.
+</p></dd></dl>
+
+<p>In addition to the cases mentioned, you can of course define
+<code>write</code> and <code>display</code> methods for your own classes, to
+customize how instances of those classes are printed.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="n" rel="next">The Metaobject Protocol</a>, Previous: <a href="GOOPS-Error-Handling.html#GOOPS-Error-Handling" accesskey="p" rel="prev">GOOPS Error Handling</a>, Up: <a href="GOOPS.html#GOOPS" accesskey="u" rel="up">GOOPS</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

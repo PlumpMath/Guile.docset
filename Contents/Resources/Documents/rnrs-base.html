@@ -1,0 +1,560 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs base</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs base">
+<meta name="keywords" content="Guile Reference Manual: rnrs base">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-unicode.html#rnrs-unicode" rel="next" title="rnrs unicode">
+<link href="Library-Usage.html#Library-Usage" rel="prev" title="Library Usage">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-base"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-unicode.html#rnrs-unicode" accesskey="n" rel="next">rnrs unicode</a>, Previous: <a href="Library-Usage.html#Library-Usage" accesskey="p" rel="prev">Library Usage</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-base-1"></a>
+<h4 class="subsubsection">7.6.2.2 rnrs base</h4>
+
+<p>The <code>(rnrs base (6))</code> library exports the procedures and syntactic
+forms described in the main section of the Report 
+(see <a href="../r6rs/Base-library.html#Base-library">R6RS Base library</a> in <cite>The Revised^6 Report on the Algorithmic Language Scheme</cite>).  They are
+grouped below by the existing manual sections to which they correspond.
+</p>
+<dl>
+<dt><a name="index-boolean_003f-1"></a>Scheme Procedure: <strong>boolean?</strong> <em>obj</em></dt>
+<dt><a name="index-not-1"></a>Scheme Procedure: <strong>not</strong> <em>x</em></dt>
+<dd><p>See <a href="Booleans.html#Booleans">Booleans</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_003f-1"></a>Scheme Procedure: <strong>symbol?</strong> <em>obj</em></dt>
+<dt><a name="index-symbol_002d_003estring-1"></a>Scheme Procedure: <strong>symbol-&gt;string</strong> <em>sym</em></dt>
+<dt><a name="index-string_002d_003esymbol-1"></a>Scheme Procedure: <strong>string-&gt;symbol</strong> <em>str</em></dt>
+<dd><p>See <a href="Symbol-Primitives.html#Symbol-Primitives">Symbol Primitives</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_003f-1"></a>Scheme Procedure: <strong>char?</strong> <em>obj</em></dt>
+<dt><a name="index-char_003d_003f-1"></a>Scheme Procedure: <strong>char=?</strong></dt>
+<dt><a name="index-char_003c_003f-1"></a>Scheme Procedure: <strong>char&lt;?</strong></dt>
+<dt><a name="index-char_003e_003f-1"></a>Scheme Procedure: <strong>char&gt;?</strong></dt>
+<dt><a name="index-char_003c_003d_003f-1"></a>Scheme Procedure: <strong>char&lt;=?</strong></dt>
+<dt><a name="index-char_003e_003d_003f-1"></a>Scheme Procedure: <strong>char&gt;=?</strong></dt>
+<dt><a name="index-integer_002d_003echar-1"></a>Scheme Procedure: <strong>integer-&gt;char</strong> <em>n</em></dt>
+<dt><a name="index-char_002d_003einteger-1"></a>Scheme Procedure: <strong>char-&gt;integer</strong> <em>chr</em></dt>
+<dd><p>See <a href="Characters.html#Characters">Characters</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_003f-1"></a>Scheme Procedure: <strong>list?</strong> <em>x</em></dt>
+<dt><a name="index-null_003f-1"></a>Scheme Procedure: <strong>null?</strong> <em>x</em></dt>
+<dd><p>See <a href="List-Predicates.html#List-Predicates">List Predicates</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pair_003f-1"></a>Scheme Procedure: <strong>pair?</strong> <em>x</em></dt>
+<dt><a name="index-cons-1"></a>Scheme Procedure: <strong>cons</strong> <em>x y</em></dt>
+<dt><a name="index-car-1"></a>Scheme Procedure: <strong>car</strong> <em>pair</em></dt>
+<dt><a name="index-cdr-1"></a>Scheme Procedure: <strong>cdr</strong> <em>pair</em></dt>
+<dt><a name="index-caar-1"></a>Scheme Procedure: <strong>caar</strong> <em>pair</em></dt>
+<dt><a name="index-cadr-1"></a>Scheme Procedure: <strong>cadr</strong> <em>pair</em></dt>
+<dt><a name="index-cdar-1"></a>Scheme Procedure: <strong>cdar</strong> <em>pair</em></dt>
+<dt><a name="index-cddr-1"></a>Scheme Procedure: <strong>cddr</strong> <em>pair</em></dt>
+<dt><a name="index-caaar-1"></a>Scheme Procedure: <strong>caaar</strong> <em>pair</em></dt>
+<dt><a name="index-caadr-1"></a>Scheme Procedure: <strong>caadr</strong> <em>pair</em></dt>
+<dt><a name="index-cadar-1"></a>Scheme Procedure: <strong>cadar</strong> <em>pair</em></dt>
+<dt><a name="index-cdaar-1"></a>Scheme Procedure: <strong>cdaar</strong> <em>pair</em></dt>
+<dt><a name="index-caddr-1"></a>Scheme Procedure: <strong>caddr</strong> <em>pair</em></dt>
+<dt><a name="index-cdadr-1"></a>Scheme Procedure: <strong>cdadr</strong> <em>pair</em></dt>
+<dt><a name="index-cddar-1"></a>Scheme Procedure: <strong>cddar</strong> <em>pair</em></dt>
+<dt><a name="index-cdddr-1"></a>Scheme Procedure: <strong>cdddr</strong> <em>pair</em></dt>
+<dt><a name="index-caaaar-1"></a>Scheme Procedure: <strong>caaaar</strong> <em>pair</em></dt>
+<dt><a name="index-caaadr-1"></a>Scheme Procedure: <strong>caaadr</strong> <em>pair</em></dt>
+<dt><a name="index-caadar-1"></a>Scheme Procedure: <strong>caadar</strong> <em>pair</em></dt>
+<dt><a name="index-cadaar-1"></a>Scheme Procedure: <strong>cadaar</strong> <em>pair</em></dt>
+<dt><a name="index-cdaaar-1"></a>Scheme Procedure: <strong>cdaaar</strong> <em>pair</em></dt>
+<dt><a name="index-cddaar-1"></a>Scheme Procedure: <strong>cddaar</strong> <em>pair</em></dt>
+<dt><a name="index-cdadar-1"></a>Scheme Procedure: <strong>cdadar</strong> <em>pair</em></dt>
+<dt><a name="index-cdaadr-1"></a>Scheme Procedure: <strong>cdaadr</strong> <em>pair</em></dt>
+<dt><a name="index-cadadr-1"></a>Scheme Procedure: <strong>cadadr</strong> <em>pair</em></dt>
+<dt><a name="index-caaddr-1"></a>Scheme Procedure: <strong>caaddr</strong> <em>pair</em></dt>
+<dt><a name="index-caddar-1"></a>Scheme Procedure: <strong>caddar</strong> <em>pair</em></dt>
+<dt><a name="index-cadddr-1"></a>Scheme Procedure: <strong>cadddr</strong> <em>pair</em></dt>
+<dt><a name="index-cdaddr-1"></a>Scheme Procedure: <strong>cdaddr</strong> <em>pair</em></dt>
+<dt><a name="index-cddadr-1"></a>Scheme Procedure: <strong>cddadr</strong> <em>pair</em></dt>
+<dt><a name="index-cdddar-1"></a>Scheme Procedure: <strong>cdddar</strong> <em>pair</em></dt>
+<dt><a name="index-cddddr-1"></a>Scheme Procedure: <strong>cddddr</strong> <em>pair</em></dt>
+<dd><p>See <a href="Pairs.html#Pairs">Pairs</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-number_003f-1"></a>Scheme Procedure: <strong>number?</strong> <em>obj</em></dt>
+<dd><p>See <a href="Numerical-Tower.html#Numerical-Tower">Numerical Tower</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_003f-1"></a>Scheme Procedure: <strong>string?</strong> <em>obj</em></dt>
+<dd><p>See <a href="String-Predicates.html#String-Predicates">String Predicates</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-procedure_003f-1"></a>Scheme Procedure: <strong>procedure?</strong> <em>obj</em></dt>
+<dd><p>See <a href="Procedure-Properties.html#Procedure-Properties">Procedure Properties</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-define-1"></a>Scheme Syntax: <strong>define</strong> <em>name value</em></dt>
+<dt><a name="index-set_0021"></a>Scheme Syntax: <strong>set!</strong> <em>variable-name value</em></dt>
+<dd><p>See <a href="Definition.html#Definition">Definition</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-define_002dsyntax-1"></a>Scheme Syntax: <strong>define-syntax</strong> <em>keyword expression</em></dt>
+<dt><a name="index-let_002dsyntax-1"></a>Scheme Syntax: <strong>let-syntax</strong> <em>((keyword transformer) &hellip;) exp1 exp2 &hellip;</em></dt>
+<dt><a name="index-letrec_002dsyntax-1"></a>Scheme Syntax: <strong>letrec-syntax</strong> <em>((keyword transformer) &hellip;) exp1 exp2 &hellip;</em></dt>
+<dd><p>See <a href="Defining-Macros.html#Defining-Macros">Defining Macros</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-identifier_002dsyntax-2"></a>Scheme Syntax: <strong>identifier-syntax</strong> <em>exp</em></dt>
+<dd><p>See <a href="Identifier-Macros.html#Identifier-Macros">Identifier Macros</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-syntax_002drules-1"></a>Scheme Syntax: <strong>syntax-rules</strong> <em>literals (pattern template) ...</em></dt>
+<dd><p>See <a href="Syntax-Rules.html#Syntax-Rules">Syntax Rules</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-lambda-2"></a>Scheme Syntax: <strong>lambda</strong> <em>formals body</em></dt>
+<dd><p>See <a href="Lambda.html#Lambda">Lambda</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-let-2"></a>Scheme Syntax: <strong>let</strong> <em>bindings body</em></dt>
+<dt><a name="index-let_002a-1"></a>Scheme Syntax: <strong>let*</strong> <em>bindings body</em></dt>
+<dt><a name="index-letrec-1"></a>Scheme Syntax: <strong>letrec</strong> <em>bindings body</em></dt>
+<dt><a name="index-letrec_002a-1"></a>Scheme Syntax: <strong>letrec*</strong> <em>bindings body</em></dt>
+<dd><p>See <a href="Local-Bindings.html#Local-Bindings">Local Bindings</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-let_002dvalues-1"></a>Scheme Syntax: <strong>let-values</strong> <em>bindings body</em></dt>
+<dt><a name="index-let_002a_002dvalues-1"></a>Scheme Syntax: <strong>let*-values</strong> <em>bindings body</em></dt>
+<dd><p>See <a href="SRFI_002d11.html#SRFI_002d11">SRFI-11</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-begin-2"></a>Scheme Syntax: <strong>begin</strong> <em>expr1 expr2 ...</em></dt>
+<dd><p>See <a href="begin.html#begin">begin</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-quote-1"></a>Scheme Syntax: <strong>quote</strong> <em>expr</em></dt>
+<dt><a name="index-quasiquote-1"></a>Scheme Syntax: <strong>quasiquote</strong> <em>expr</em></dt>
+<dt><a name="index-unquote-1"></a>Scheme Syntax: <strong>unquote</strong> <em>expr</em></dt>
+<dt><a name="index-unquote_002dsplicing-1"></a>Scheme Syntax: <strong>unquote-splicing</strong> <em>expr</em></dt>
+<dd><p>See <a href="Expression-Syntax.html#Expression-Syntax">Expression Syntax</a>, for documentation.
+</p></dd></dl>
+	 
+<dl>
+<dt><a name="index-if-2"></a>Scheme Syntax: <strong>if</strong> <em>test consequence [alternate]</em></dt>
+<dt><a name="index-cond-2"></a>Scheme Syntax: <strong>cond</strong> <em>clause1 clause2 ...</em></dt>
+<dt><a name="index-case-2"></a>Scheme Syntax: <strong>case</strong> <em>key clause1 clause2 ...</em></dt>
+<dd><p>See <a href="Conditionals.html#Conditionals">Conditionals</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-and-1"></a>Scheme Syntax: <strong>and</strong> <em>expr ...</em></dt>
+<dt><a name="index-or-1"></a>Scheme Syntax: <strong>or</strong> <em>expr ...</em></dt>
+<dd><p>See <a href="and-or.html#and-or">and or</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-eq_003f-1"></a>Scheme Procedure: <strong>eq?</strong> <em>x y</em></dt>
+<dt><a name="index-eqv_003f-1"></a>Scheme Procedure: <strong>eqv?</strong> <em>x y</em></dt>
+<dt><a name="index-equal_003f-1"></a>Scheme Procedure: <strong>equal?</strong> <em>x y</em></dt>
+<dt><a name="index-symbol_003d_003f"></a>Scheme Procedure: <strong>symbol=?</strong> <em>symbol1 symbol2 ...</em></dt>
+<dd><p>See <a href="Equality.html#Equality">Equality</a>, for documentation.
+</p>
+<p><code>symbol=?</code> is identical to <code>eq?</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-complex_003f-1"></a>Scheme Procedure: <strong>complex?</strong> <em>z</em></dt>
+<dd><p>See <a href="Complex-Numbers.html#Complex-Numbers">Complex Numbers</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-real_002dpart-1"></a>Scheme Procedure: <strong>real-part</strong> <em>z</em></dt>
+<dt><a name="index-imag_002dpart-1"></a>Scheme Procedure: <strong>imag-part</strong> <em>z</em></dt>
+<dt><a name="index-make_002drectangular-1"></a>Scheme Procedure: <strong>make-rectangular</strong> <em>real_part imaginary_part</em></dt>
+<dt><a name="index-make_002dpolar-1"></a>Scheme Procedure: <strong>make-polar</strong> <em>x y</em></dt>
+<dt><a name="index-magnitude-1"></a>Scheme Procedure: <strong>magnitude</strong> <em>z</em></dt>
+<dt><a name="index-angle-1"></a>Scheme Procedure: <strong>angle</strong> <em>z</em></dt>
+<dd><p>See <a href="Complex.html#Complex">Complex</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sqrt-1"></a>Scheme Procedure: <strong>sqrt</strong> <em>z</em></dt>
+<dt><a name="index-exp-1"></a>Scheme Procedure: <strong>exp</strong> <em>z</em></dt>
+<dt><a name="index-expt-1"></a>Scheme Procedure: <strong>expt</strong> <em>z1 z2</em></dt>
+<dt><a name="index-log-1"></a>Scheme Procedure: <strong>log</strong> <em>z</em></dt>
+<dt><a name="index-sin-1"></a>Scheme Procedure: <strong>sin</strong> <em>z</em></dt>
+<dt><a name="index-cos-1"></a>Scheme Procedure: <strong>cos</strong> <em>z</em></dt>
+<dt><a name="index-tan-1"></a>Scheme Procedure: <strong>tan</strong> <em>z</em></dt>
+<dt><a name="index-asin-1"></a>Scheme Procedure: <strong>asin</strong> <em>z</em></dt>
+<dt><a name="index-acos-1"></a>Scheme Procedure: <strong>acos</strong> <em>z</em></dt>
+<dt><a name="index-atan-2"></a>Scheme Procedure: <strong>atan</strong> <em>z</em></dt>
+<dd><p>See <a href="Scientific.html#Scientific">Scientific</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-real_003f-1"></a>Scheme Procedure: <strong>real?</strong> <em>x</em></dt>
+<dt><a name="index-rational_003f-1"></a>Scheme Procedure: <strong>rational?</strong> <em>x</em></dt>
+<dt><a name="index-numerator-1"></a>Scheme Procedure: <strong>numerator</strong> <em>x</em></dt>
+<dt><a name="index-denominator-1"></a>Scheme Procedure: <strong>denominator</strong> <em>x</em></dt>
+<dt><a name="index-rationalize-1"></a>Scheme Procedure: <strong>rationalize</strong> <em>x eps</em></dt>
+<dd><p>See <a href="Reals-and-Rationals.html#Reals-and-Rationals">Reals and Rationals</a>, for documentation.
+</p></dd></dl>
+	 
+<dl>
+<dt><a name="index-exact_003f-1"></a>Scheme Procedure: <strong>exact?</strong> <em>x</em></dt>
+<dt><a name="index-inexact_003f-1"></a>Scheme Procedure: <strong>inexact?</strong> <em>x</em></dt>
+<dt><a name="index-exact"></a>Scheme Procedure: <strong>exact</strong> <em>z</em></dt>
+<dt><a name="index-inexact"></a>Scheme Procedure: <strong>inexact</strong> <em>z</em></dt>
+<dd><p>See <a href="Exactness.html#Exactness">Exactness</a>, for documentation.  The <code>exact</code> and 
+<code>inexact</code> procedures are identical to the <code>inexact-&gt;exact</code> and
+<code>exact-&gt;inexact</code> procedures provided by Guile&rsquo;s code library.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-integer_003f-1"></a>Scheme Procedure: <strong>integer?</strong> <em>x</em></dt>
+<dd><p>See <a href="Integers.html#Integers">Integers</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-odd_003f-1"></a>Scheme Procedure: <strong>odd?</strong> <em>n</em></dt>
+<dt><a name="index-even_003f-1"></a>Scheme Procedure: <strong>even?</strong> <em>n</em></dt>
+<dt><a name="index-gcd-1"></a>Scheme Procedure: <strong>gcd</strong> <em>x ...</em></dt>
+<dt><a name="index-lcm-1"></a>Scheme Procedure: <strong>lcm</strong> <em>x ...</em></dt>
+<dt><a name="index-exact_002dinteger_002dsqrt-1"></a>Scheme Procedure: <strong>exact-integer-sqrt</strong> <em>k</em></dt>
+<dd><p>See <a href="Integer-Operations.html#Integer-Operations">Integer Operations</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_003d-1"></a>Scheme Procedure: <strong>=</strong></dt>
+<dt><a name="index-_003c-1"></a>Scheme Procedure: <strong>&lt;</strong></dt>
+<dt><a name="index-_003e-1"></a>Scheme Procedure: <strong>&gt;</strong></dt>
+<dt><a name="index-_003c_003d-1"></a>Scheme Procedure: <strong>&lt;=</strong></dt>
+<dt><a name="index-_003e_003d-1"></a>Scheme Procedure: <strong>&gt;=</strong></dt>
+<dt><a name="index-zero_003f-1"></a>Scheme Procedure: <strong>zero?</strong> <em>x</em></dt>
+<dt><a name="index-positive_003f-1"></a>Scheme Procedure: <strong>positive?</strong> <em>x</em></dt>
+<dt><a name="index-negative_003f-1"></a>Scheme Procedure: <strong>negative?</strong> <em>x</em></dt>
+<dd><p>See <a href="Comparison.html#Comparison">Comparison</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-for_002deach-2"></a>Scheme Procedure: <strong>for-each</strong> <em>f lst1 lst2 ...</em></dt>
+<dd><p>See <a href="SRFI_002d1-Fold-and-Map.html#SRFI_002d1-Fold-and-Map">SRFI-1 Fold and Map</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list-2"></a>Scheme Procedure: <strong>list</strong> <em>elem &hellip;</em></dt>
+<dd><p>See <a href="List-Constructors.html#List-Constructors">List Constructors</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-length-1"></a>Scheme Procedure: <strong>length</strong> <em>lst</em></dt>
+<dt><a name="index-list_002dref-1"></a>Scheme Procedure: <strong>list-ref</strong> <em>lst k</em></dt>
+<dt><a name="index-list_002dtail-1"></a>Scheme Procedure: <strong>list-tail</strong> <em>lst k</em></dt>
+<dd><p>See <a href="List-Selection.html#List-Selection">List Selection</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-append-2"></a>Scheme Procedure: <strong>append</strong> <em>lst &hellip; obj</em></dt>
+<dt><a name="index-append-3"></a>Scheme Procedure: <strong>append</strong></dt>
+<dt><a name="index-reverse-1"></a>Scheme Procedure: <strong>reverse</strong> <em>lst</em></dt>
+<dd><p>See <a href="Append_002fReverse.html#Append_002fReverse">Append/Reverse</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-number_002d_003estring-1"></a>Scheme Procedure: <strong>number-&gt;string</strong> <em>n [radix]</em></dt>
+<dt><a name="index-string_002d_003enumber-1"></a>Scheme Procedure: <strong>string-&gt;number</strong> <em>str [radix]</em></dt>
+<dd><p>See <a href="Conversion.html#Conversion">Conversion</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string-1"></a>Scheme Procedure: <strong>string</strong> <em>char ...</em></dt>
+<dt><a name="index-make_002dstring-1"></a>Scheme Procedure: <strong>make-string</strong> <em>k [chr]</em></dt>
+<dt><a name="index-list_002d_003estring-1"></a>Scheme Procedure: <strong>list-&gt;string</strong> <em>lst</em></dt>
+<dd><p>See <a href="String-Constructors.html#String-Constructors">String Constructors</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002d_003elist-1"></a>Scheme Procedure: <strong>string-&gt;list</strong> <em>str [start [end]]</em></dt>
+<dd><p>See <a href="List_002fString-Conversion.html#List_002fString-Conversion">List/String Conversion</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dlength-1"></a>Scheme Procedure: <strong>string-length</strong> <em>str</em></dt>
+<dt><a name="index-string_002dref-1"></a>Scheme Procedure: <strong>string-ref</strong> <em>str k</em></dt>
+<dt><a name="index-string_002dcopy-1"></a>Scheme Procedure: <strong>string-copy</strong> <em>str [start [end]]</em></dt>
+<dt><a name="index-substring-1"></a>Scheme Procedure: <strong>substring</strong> <em>str start [end]</em></dt>
+<dd><p>See <a href="String-Selection.html#String-Selection">String Selection</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_003d_003f-1"></a>Scheme Procedure: <strong>string=?</strong> <em>s1 s2 s3 &hellip;</em></dt>
+<dt><a name="index-string_003c_003f-1"></a>Scheme Procedure: <strong>string&lt;?</strong> <em>s1 s2 s3 &hellip;</em></dt>
+<dt><a name="index-string_003e_003f-1"></a>Scheme Procedure: <strong>string&gt;?</strong> <em>s1 s2 s3 &hellip;</em></dt>
+<dt><a name="index-string_003c_003d_003f-1"></a>Scheme Procedure: <strong>string&lt;=?</strong> <em>s1 s2 s3 &hellip;</em></dt>
+<dt><a name="index-string_003e_003d_003f-1"></a>Scheme Procedure: <strong>string&gt;=?</strong> <em>s1 s2 s3 &hellip;</em></dt>
+<dd><p>See <a href="String-Comparison.html#String-Comparison">String Comparison</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dappend-1"></a>Scheme Procedure: <strong>string-append</strong> <em>arg &hellip;</em></dt>
+<dd><p>See <a href="Reversing-and-Appending-Strings.html#Reversing-and-Appending-Strings">Reversing and Appending Strings</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dfor_002deach-1"></a>Scheme Procedure: <strong>string-for-each</strong> <em>proc s [start [end]]</em></dt>
+<dd><p>See <a href="Mapping-Folding-and-Unfolding.html#Mapping-Folding-and-Unfolding">Mapping Folding and Unfolding</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_002b-1"></a>Scheme Procedure: <strong>+</strong> <em>z1 ...</em></dt>
+<dt><a name="index-_002d-1"></a>Scheme Procedure: <strong>-</strong> <em>z1 z2 ...</em></dt>
+<dt><a name="index-_002a-1"></a>Scheme Procedure: <strong>*</strong> <em>z1 ...</em></dt>
+<dt><a name="index-_002f-1"></a>Scheme Procedure: <strong>/</strong> <em>z1 z2 ...</em></dt>
+<dt><a name="index-max-1"></a>Scheme Procedure: <strong>max</strong> <em>x1 x2 ...</em></dt>
+<dt><a name="index-min-1"></a>Scheme Procedure: <strong>min</strong> <em>x1 x2 ...</em></dt>
+<dt><a name="index-abs-1"></a>Scheme Procedure: <strong>abs</strong> <em>x</em></dt>
+<dt><a name="index-truncate-2"></a>Scheme Procedure: <strong>truncate</strong> <em>x</em></dt>
+<dt><a name="index-floor-1"></a>Scheme Procedure: <strong>floor</strong> <em>x</em></dt>
+<dt><a name="index-ceiling-1"></a>Scheme Procedure: <strong>ceiling</strong> <em>x</em></dt>
+<dt><a name="index-round-1"></a>Scheme Procedure: <strong>round</strong> <em>x</em></dt>
+<dd><p>See <a href="Arithmetic.html#Arithmetic">Arithmetic</a>, for documentation.
+</p></dd></dl>
+
+<a name="index-div-2"></a>
+<a name="index-mod-2"></a>
+<a name="index-div_002dand_002dmod-1"></a>
+<dl>
+<dt><a name="index-div"></a>Scheme Procedure: <strong>div</strong> <em>x y</em></dt>
+<dt><a name="index-mod"></a>Scheme Procedure: <strong>mod</strong> <em>x y</em></dt>
+<dt><a name="index-div_002dand_002dmod"></a>Scheme Procedure: <strong>div-and-mod</strong> <em>x y</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>div</code> returns the integer <var>q</var>
+and <code>mod</code> returns the real number <var>r</var> such that
+<em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em> and <em>0 &lt;= <var>r</var> &lt; abs(<var>y</var>)</em>.
+<code>div-and-mod</code> returns both <var>q</var> and <var>r</var>, and is more
+efficient than computing each separately.  Note that when <em><var>y</var> &gt; 0</em>,
+<code>div</code> returns <em>floor(<var>x</var>/<var>y</var>)</em>, otherwise
+it returns <em>ceiling(<var>x</var>/<var>y</var>)</em>.
+</p>
+<div class="lisp">
+<pre class="lisp">(div 123 10) &rArr; 12
+(mod 123 10) &rArr; 3
+(div-and-mod 123 10) &rArr; 12 and 3
+(div-and-mod 123 -10) &rArr; -12 and 3
+(div-and-mod -123 10) &rArr; -13 and 7
+(div-and-mod -123 -10) &rArr; 13 and 7
+(div-and-mod -123.2 -63.5) &rArr; 2.0 and 3.8
+(div-and-mod 16/3 -10/7) &rArr; -3 and 22/21
+</pre></div>
+</dd></dl>
+
+<a name="index-div0-1"></a>
+<a name="index-mod0-1"></a>
+<a name="index-div0_002dand_002dmod0-1"></a>
+<dl>
+<dt><a name="index-div0"></a>Scheme Procedure: <strong>div0</strong> <em>x y</em></dt>
+<dt><a name="index-mod0"></a>Scheme Procedure: <strong>mod0</strong> <em>x y</em></dt>
+<dt><a name="index-div0_002dand_002dmod0"></a>Scheme Procedure: <strong>div0-and-mod0</strong> <em>x y</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>div0</code> returns the
+integer <var>q</var> and <code>mod0</code> returns the real number
+<var>r</var> such that <em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em> and
+<em>-abs(<var>y</var>/2) &lt;= <var>r</var> &lt; abs(<var>y</var>/2)</em>.  <code>div0-and-mod0</code>
+returns both <var>q</var> and <var>r</var>, and is more efficient than computing
+each separately.
+</p>
+<p>Note that <code>div0</code> returns <em><var>x</var>/<var>y</var></em> rounded to the
+nearest integer.  When <em><var>x</var>/<var>y</var></em> lies exactly half-way
+between two integers, the tie is broken according to the sign of
+<var>y</var>.  If <em><var>y</var> &gt; 0</em>, ties are rounded toward positive
+infinity, otherwise they are rounded toward negative infinity.
+This is a consequence of the requirement that
+<em>-abs(<var>y</var>/2) &lt;= <var>r</var> &lt; abs(<var>y</var>/2)</em>.
+</p>
+<div class="lisp">
+<pre class="lisp">(div0 123 10) &rArr; 12
+(mod0 123 10) &rArr; 3
+(div0-and-mod0 123 10) &rArr; 12 and 3
+(div0-and-mod0 123 -10) &rArr; -12 and 3
+(div0-and-mod0 -123 10) &rArr; -12 and -3
+(div0-and-mod0 -123 -10) &rArr; 12 and -3
+(div0-and-mod0 -123.2 -63.5) &rArr; 2.0 and 3.8
+(div0-and-mod0 16/3 -10/7) &rArr; -4 and -8/21
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-real_002dvalued_003f"></a>Scheme Procedure: <strong>real-valued?</strong> <em>obj</em></dt>
+<dt><a name="index-rational_002dvalued_003f"></a>Scheme Procedure: <strong>rational-valued?</strong> <em>obj</em></dt>
+<dt><a name="index-integer_002dvalued_003f"></a>Scheme Procedure: <strong>integer-valued?</strong> <em>obj</em></dt>
+<dd><p>These procedures return <code>#t</code> if and only if their arguments can,
+respectively, be coerced to a real, rational, or integer value without a
+loss of numerical precision. 
+</p>
+<p><code>real-valued?</code> will return <code>#t</code> for complex numbers whose 
+imaginary parts are zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-nan_003f-1"></a>Scheme Procedure: <strong>nan?</strong> <em>x</em></dt>
+<dt><a name="index-infinite_003f"></a>Scheme Procedure: <strong>infinite?</strong> <em>x</em></dt>
+<dt><a name="index-finite_003f-1"></a>Scheme Procedure: <strong>finite?</strong> <em>x</em></dt>
+<dd><p><code>nan?</code> returns <code>#t</code> if <var>x</var> is a NaN value, <code>#f</code>
+otherwise.  <code>infinite?</code> returns <code>#t</code> if <var>x</var> is an infinite
+value, <code>#f</code> otherwise.  <code>finite?</code> returns <code>#t</code> if <var>x</var>
+is neither infinite nor a NaN value, otherwise it returns <code>#f</code>.
+Every real number satisfies exactly one of these predicates.  An
+exception is raised if <var>x</var> is not real.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-assert"></a>Scheme Syntax: <strong>assert</strong> <em>expr </em></dt>
+<dd><p>Raises an <code>&amp;assertion</code> condition if <var>expr</var> evaluates to 
+<code>#f</code>; otherwise evaluates to the value of <var>expr</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-error-2"></a>Scheme Procedure: <strong>error</strong> <em>who message irritant1 ...</em></dt>
+<dt><a name="index-assertion_002dviolation"></a>Scheme Procedure: <strong>assertion-violation</strong> <em>who message irritant1 ...</em></dt>
+<dd><p>These procedures raise compound conditions based on their arguments:
+If <var>who</var> is not <code>#f</code>, the condition will include a <code>&amp;who</code>
+condition whose <code>who</code> field is set to <var>who</var>; a <code>&amp;message</code>
+condition will be included with a <code>message</code> field equal to 
+<var>message</var>; an <code>&amp;irritants</code> condition will be included with its
+<code>irritants</code> list given by <code>irritant1 ...</code>.
+</p>
+<p><code>error</code> produces a compound condition with the simple conditions
+described above, as well as an <code>&amp;error</code> condition;
+<code>assertion-violation</code> produces one that includes an 
+<code>&amp;assertion</code> condition.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vector_002dmap-1"></a>Scheme Procedure: <strong>vector-map</strong> <em>proc v</em></dt>
+<dt><a name="index-vector_002dfor_002deach-1"></a>Scheme Procedure: <strong>vector-for-each</strong> <em>proc v</em></dt>
+<dd><p>These procedures implement the <code>map</code> and <code>for-each</code> contracts
+over vectors.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vector-2"></a>Scheme Procedure: <strong>vector</strong> <em>arg &hellip;</em></dt>
+<dt><a name="index-vector_003f-2"></a>Scheme Procedure: <strong>vector?</strong> <em>obj</em></dt>
+<dt><a name="index-make_002dvector-2"></a>Scheme Procedure: <strong>make-vector</strong> <em>len</em></dt>
+<dt><a name="index-make_002dvector-3"></a>Scheme Procedure: <strong>make-vector</strong> <em>len fill</em></dt>
+<dt><a name="index-list_002d_003evector-2"></a>Scheme Procedure: <strong>list-&gt;vector</strong> <em>l</em></dt>
+<dt><a name="index-vector_002d_003elist-2"></a>Scheme Procedure: <strong>vector-&gt;list</strong> <em>v</em></dt>
+<dd><p>See <a href="Vector-Creation.html#Vector-Creation">Vector Creation</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vector_002dlength-2"></a>Scheme Procedure: <strong>vector-length</strong> <em>vector</em></dt>
+<dt><a name="index-vector_002dref-2"></a>Scheme Procedure: <strong>vector-ref</strong> <em>vector k</em></dt>
+<dt><a name="index-vector_002dset_0021-2"></a>Scheme Procedure: <strong>vector-set!</strong> <em>vector k obj</em></dt>
+<dt><a name="index-vector_002dfill_0021-2"></a>Scheme Procedure: <strong>vector-fill!</strong> <em>v fill</em></dt>
+<dd><p>See <a href="Vector-Accessors.html#Vector-Accessors">Vector Accessors</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-call_002dwith_002dcurrent_002dcontinuation-1"></a>Scheme Procedure: <strong>call-with-current-continuation</strong> <em>proc</em></dt>
+<dt><a name="index-call_002fcc-1"></a>Scheme Procedure: <strong>call/cc</strong> <em>proc</em></dt>
+<dd><p>See <a href="Continuations.html#Continuations">Continuations</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-values-1"></a>Scheme Procedure: <strong>values</strong> <em>arg &hellip;</em></dt>
+<dt><a name="index-call_002dwith_002dvalues-1"></a>Scheme Procedure: <strong>call-with-values</strong> <em>producer consumer</em></dt>
+<dd><p>See <a href="Multiple-Values.html#Multiple-Values">Multiple Values</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dynamic_002dwind-1"></a>Scheme Procedure: <strong>dynamic-wind</strong> <em>in_guard thunk out_guard</em></dt>
+<dd><p>See <a href="Dynamic-Wind.html#Dynamic-Wind">Dynamic Wind</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-apply-1"></a>Scheme Procedure: <strong>apply</strong> <em>proc arg &hellip; arglst</em></dt>
+<dd><p>See <a href="Fly-Evaluation.html#Fly-Evaluation">Fly Evaluation</a>, for documentation.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-unicode.html#rnrs-unicode" accesskey="n" rel="next">rnrs unicode</a>, Previous: <a href="Library-Usage.html#Library-Usage" accesskey="p" rel="prev">Library Usage</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

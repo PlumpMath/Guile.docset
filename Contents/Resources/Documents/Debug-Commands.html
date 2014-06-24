@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Debug Commands</title>
+
+<meta name="description" content="Guile Reference Manual: Debug Commands">
+<meta name="keywords" content="Guile Reference Manual: Debug Commands">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="REPL-Commands.html#REPL-Commands" rel="up" title="REPL Commands">
+<link href="Inspect-Commands.html#Inspect-Commands" rel="next" title="Inspect Commands">
+<link href="Profile-Commands.html#Profile-Commands" rel="prev" title="Profile Commands">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Debug-Commands"></a>
+<div class="header">
+<p>
+Next: <a href="Inspect-Commands.html#Inspect-Commands" accesskey="n" rel="next">Inspect Commands</a>, Previous: <a href="Profile-Commands.html#Profile-Commands" accesskey="p" rel="prev">Profile Commands</a>, Up: <a href="REPL-Commands.html#REPL-Commands" accesskey="u" rel="up">REPL Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Debug-Commands-1"></a>
+<h4 class="subsubsection">4.4.4.6 Debug Commands</h4>
+
+<p>These debugging commands are only available within a recursive REPL;
+they do not work at the top level.
+</p>
+<dl>
+<dt><a name="index-backtrace"></a>REPL Command: <strong>backtrace</strong> <em>[count] [#:width w] [#:full? f]</em></dt>
+<dd><p>Print a backtrace.
+</p>
+<p>Print a backtrace of all stack frames, or innermost <var>count</var> frames.
+If <var>count</var> is negative, the last <var>count</var> frames will be shown.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-up"></a>REPL Command: <strong>up</strong> <em>[count]</em></dt>
+<dd><p>Select a calling stack frame.
+</p>
+<p>Select and print stack frames that called this one.
+An argument says how many frames up to go.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-down"></a>REPL Command: <strong>down</strong> <em>[count]</em></dt>
+<dd><p>Select a called stack frame.
+</p>
+<p>Select and print stack frames called by this one.
+An argument says how many frames down to go.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-frame"></a>REPL Command: <strong>frame</strong> <em>[idx]</em></dt>
+<dd><p>Show a frame.
+</p>
+<p>Show the selected frame.  With an argument, select a frame by index,
+then show it.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-procedure"></a>REPL Command: <strong>procedure</strong></dt>
+<dd><p>Print the procedure for the selected frame.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-locals"></a>REPL Command: <strong>locals</strong></dt>
+<dd><p>Show local variables.
+</p>
+<p>Show locally-bound variables in the selected frame.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-error_002dmessage"></a>REPL Command: <strong>error-message</strong></dt>
+<dt><a name="index-error"></a>REPL Command: <strong>error</strong></dt>
+<dd><p>Show error message.
+</p>
+<p>Display the message associated with the error that started the current
+debugging REPL.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-registers"></a>REPL Command: <strong>registers</strong></dt>
+<dd><p>Show the VM registers associated with the current frame.
+</p>
+<p>See <a href="Stack-Layout.html#Stack-Layout">Stack Layout</a>, for more information on VM stack frames.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-width"></a>REPL Command: <strong>width</strong> <em>[cols]</em></dt>
+<dd><p>Sets the number of display columns in the output of <code>,backtrace</code>
+and <code>,locals</code> to <var>cols</var>.  If <var>cols</var> is not given, the width
+of the terminal is used.
+</p></dd></dl>
+
+<p>The next 3 commands work at any REPL.
+</p>
+<dl>
+<dt><a name="index-break"></a>REPL Command: <strong>break</strong> <em>proc</em></dt>
+<dd><p>Set a breakpoint at <var>proc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-break_002dat_002dsource"></a>REPL Command: <strong>break-at-source</strong> <em>file line</em></dt>
+<dd><p>Set a breakpoint at the given source location.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-tracepoint"></a>REPL Command: <strong>tracepoint</strong> <em>proc</em></dt>
+<dd><p>Set a tracepoint on the given procedure. This will cause all calls to
+the procedure to print out a tracing message. See <a href="Tracing-Traps.html#Tracing-Traps">Tracing Traps</a>, for
+more information.
+</p></dd></dl>
+
+<p>The rest of the commands in this subsection all apply only when the
+stack is <em>continuable</em> &mdash; in other words when it makes sense for
+the program that the stack comes from to continue running.  Usually this
+means that the program stopped because of a trap or a breakpoint.
+</p>
+<dl>
+<dt><a name="index-step"></a>REPL Command: <strong>step</strong></dt>
+<dd><p>Tell the debugged program to step to the next source location.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-next"></a>REPL Command: <strong>next</strong></dt>
+<dd><p>Tell the debugged program to step to the next source location in the
+same frame.  (See <a href="Traps.html#Traps">Traps</a> for the details of how this works.)
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-finish"></a>REPL Command: <strong>finish</strong></dt>
+<dd><p>Tell the program being debugged to continue running until the completion
+of the current stack frame, and at that time to print the result and
+reenter the REPL.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Inspect-Commands.html#Inspect-Commands" accesskey="n" rel="next">Inspect Commands</a>, Previous: <a href="Profile-Commands.html#Profile-Commands" accesskey="p" rel="prev">Profile Commands</a>, Up: <a href="REPL-Commands.html#REPL-Commands" accesskey="u" rel="up">REPL Commands</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

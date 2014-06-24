@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-2</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-2">
+<meta name="keywords" content="Guile Reference Manual: SRFI-2">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d4.html#SRFI_002d4" rel="next" title="SRFI-4">
+<link href="SRFI_002d1-Set-Operations.html#SRFI_002d1-Set-Operations" rel="prev" title="SRFI-1 Set Operations">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d2"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d4.html#SRFI_002d4" accesskey="n" rel="next">SRFI-4</a>, Previous: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="p" rel="prev">SRFI-1</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d2-_002d-and_002dlet_002a"></a>
+<h4 class="subsection">7.5.4 SRFI-2 - and-let*</h4>
+<a name="index-SRFI_002d2"></a>
+
+<p>The following syntax can be obtained with
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (srfi srfi-2))
+</pre></div>
+
+<p>or alternatively
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (ice-9 and-let-star))
+</pre></div>
+
+<dl>
+<dt><a name="index-and_002dlet_002a"></a>library syntax: <strong>and-let*</strong> <em>(clause &hellip;) body &hellip;</em></dt>
+<dd><p>A combination of <code>and</code> and <code>let*</code>.
+</p>
+<p>Each <var>clause</var> is evaluated in turn, and if <code>#f</code> is obtained
+then evaluation stops and <code>#f</code> is returned.  If all are
+non-<code>#f</code> then <var>body</var> is evaluated and the last form gives the
+return value, or if <var>body</var> is empty then the result is <code>#t</code>.
+Each <var>clause</var> should be one of the following,
+</p>
+<dl compact="compact">
+<dt><code>(symbol expr)</code></dt>
+<dd><p>Evaluate <var>expr</var>, check for <code>#f</code>, and bind it to <var>symbol</var>.
+Like <code>let*</code>, that binding is available to subsequent clauses.
+</p></dd>
+<dt><code>(expr)</code></dt>
+<dd><p>Evaluate <var>expr</var> and check for <code>#f</code>.
+</p></dd>
+<dt><code>symbol</code></dt>
+<dd><p>Get the value bound to <var>symbol</var> and check for <code>#f</code>.
+</p></dd>
+</dl>
+
+<p>Notice that <code>(expr)</code> has an &ldquo;extra&rdquo; pair of parentheses, for
+instance <code>((eq? x y))</code>.  One way to remember this is to imagine
+the <code>symbol</code> in <code>(symbol expr)</code> is omitted.
+</p>
+<p><code>and-let*</code> is good for calculations where a <code>#f</code> value means
+termination, but where a non-<code>#f</code> value is going to be needed in
+subsequent expressions.
+</p>
+<p>The following illustrates this, it returns text between brackets
+&lsquo;<samp>[...]</samp>&rsquo; in a string, or <code>#f</code> if there are no such brackets
+(ie. either <code>string-index</code> gives <code>#f</code>).
+</p>
+<div class="example">
+<pre class="example">(define (extract-brackets str)
+  (and-let* ((start (string-index str #\[))
+             (end   (string-index str #\] start)))
+    (substring str (1+ start) end)))
+</pre></div>
+
+<p>The following shows plain variables and expressions tested too.
+<code>diagnostic-levels</code> is taken to be an alist associating a
+diagnostic type with a level.  <code>str</code> is printed only if the type
+is known and its level is high enough.
+</p>
+<div class="example">
+<pre class="example">(define (show-diagnostic type str)
+  (and-let* (want-diagnostics
+             (level (assq-ref diagnostic-levels type))
+             ((&gt;= level current-diagnostic-level)))
+    (display str)))
+</pre></div>
+
+<p>The advantage of <code>and-let*</code> is that an extended sequence of
+expressions and tests doesn&rsquo;t require lots of nesting as would arise
+from separate <code>and</code> and <code>let*</code>, or from <code>cond</code> with
+<code>=&gt;</code>.
+</p>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d4.html#SRFI_002d4" accesskey="n" rel="next">SRFI-4</a>, Previous: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="p" rel="prev">SRFI-1</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

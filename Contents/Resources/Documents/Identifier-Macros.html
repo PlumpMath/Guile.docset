@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Identifier Macros</title>
+
+<meta name="description" content="Guile Reference Manual: Identifier Macros">
+<meta name="keywords" content="Guile Reference Manual: Identifier Macros">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Macros.html#Macros" rel="up" title="Macros">
+<link href="Syntax-Parameters.html#Syntax-Parameters" rel="next" title="Syntax Parameters">
+<link href="Defmacros.html#Defmacros" rel="prev" title="Defmacros">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Identifier-Macros"></a>
+<div class="header">
+<p>
+Next: <a href="Syntax-Parameters.html#Syntax-Parameters" accesskey="n" rel="next">Syntax Parameters</a>, Previous: <a href="Defmacros.html#Defmacros" accesskey="p" rel="prev">Defmacros</a>, Up: <a href="Macros.html#Macros" accesskey="u" rel="up">Macros</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Identifier-Macros-1"></a>
+<h4 class="subsection">6.10.6 Identifier Macros</h4>
+
+<p>When the syntax expander sees a form in which the first element is a macro, the
+whole form gets passed to the macro&rsquo;s syntax transformer. One may visualize this
+as:
+</p>
+<div class="example">
+<pre class="example">(define-syntax foo foo-transformer)
+(foo <var>arg</var>...)
+;; expands via
+(foo-transformer #'(foo <var>arg</var>...))
+</pre></div>
+
+<p>If, on the other hand, a macro is referenced in some other part of a form, the
+syntax transformer is invoked with only the macro reference, not the whole form.
+</p>
+<div class="example">
+<pre class="example">(define-syntax foo foo-transformer)
+foo
+;; expands via
+(foo-transformer #'foo)
+</pre></div>
+
+<p>This allows bare identifier references to be replaced programmatically via a
+macro. <code>syntax-rules</code> provides some syntax to effect this transformation
+more easily.
+</p>
+<dl>
+<dt><a name="index-identifier_002dsyntax"></a>Syntax: <strong>identifier-syntax</strong> <em>exp</em></dt>
+<dd><p>Returns a macro transformer that will replace occurrences of the macro with
+<var>exp</var>.
+</p></dd></dl>
+
+<p>For example, if you are importing external code written in terms of <code>fx+</code>,
+the fixnum addition operator, but Guile doesn&rsquo;t have <code>fx+</code>, you may use the
+following to replace <code>fx+</code> with <code>+</code>:
+</p>
+<div class="example">
+<pre class="example">(define-syntax fx+ (identifier-syntax +))
+</pre></div>
+
+<p>There is also special support for recognizing identifiers on the
+left-hand side of a <code>set!</code> expression, as in the following:
+</p>
+<div class="example">
+<pre class="example">(define-syntax foo foo-transformer)
+(set! foo <var>val</var>)
+;; expands via
+(foo-transformer #'(set! foo <var>val</var>))
+;; if foo-transformer is a &quot;variable transformer&quot;
+</pre></div>
+
+<p>As the example notes, the transformer procedure must be explicitly
+marked as being a &ldquo;variable transformer&rdquo;, as most macros aren&rsquo;t
+written to discriminate on the form in the operator position.
+</p>
+<dl>
+<dt><a name="index-make_002dvariable_002dtransformer"></a>Scheme Procedure: <strong>make-variable-transformer</strong> <em>transformer</em></dt>
+<dd><p>Mark the <var>transformer</var> procedure as being a &ldquo;variable
+transformer&rdquo;. In practice this means that, when bound to a syntactic
+keyword, it may detect references to that keyword on the left-hand-side
+of a <code>set!</code>.
+</p>
+<div class="example">
+<pre class="example">(define bar 10)
+(define-syntax bar-alias
+  (make-variable-transformer
+   (lambda (x)
+     (syntax-case x (set!)
+       ((set! var val) #'(set! bar val))
+       ((var arg ...) #'(bar arg ...))
+       (var (identifier? #'var) #'bar)))))
+
+bar-alias &rArr; 10
+(set! bar-alias 20)
+bar &rArr; 20
+(set! bar 30)
+bar-alias &rArr; 30
+</pre></div>
+</dd></dl>
+
+<p>There is an extension to identifier-syntax which allows it to handle the
+<code>set!</code> case as well:
+</p>
+<dl>
+<dt><a name="index-identifier_002dsyntax-1"></a>Syntax: <strong>identifier-syntax</strong> <em>(var exp1) ((set! var val) exp2)</em></dt>
+<dd><p>Create a variable transformer. The first clause is used for references
+to the variable in operator or operand position, and the second for
+appearances of the variable on the left-hand-side of an assignment.
+</p>
+<p>For example, the previous <code>bar-alias</code> example could be expressed
+more succinctly like this:
+</p>
+<div class="example">
+<pre class="example">(define-syntax bar-alias
+  (identifier-syntax
+    (var bar)
+    ((set! var val) (set! bar val))))
+</pre></div>
+
+<p>As before, the templates in <code>identifier-syntax</code> forms do not need
+wrapping in <code>#'</code> syntax forms.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Syntax-Parameters.html#Syntax-Parameters" accesskey="n" rel="next">Syntax Parameters</a>, Previous: <a href="Defmacros.html#Defmacros" accesskey="p" rel="prev">Defmacros</a>, Up: <a href="Macros.html#Macros" accesskey="u" rel="up">Macros</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

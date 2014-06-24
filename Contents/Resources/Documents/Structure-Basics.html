@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Structure Basics</title>
+
+<meta name="description" content="Guile Reference Manual: Structure Basics">
+<meta name="keywords" content="Guile Reference Manual: Structure Basics">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Structures.html#Structures" rel="up" title="Structures">
+<link href="Vtable-Contents.html#Vtable-Contents" rel="next" title="Vtable Contents">
+<link href="Vtables.html#Vtables" rel="prev" title="Vtables">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Structure-Basics"></a>
+<div class="header">
+<p>
+Next: <a href="Vtable-Contents.html#Vtable-Contents" accesskey="n" rel="next">Vtable Contents</a>, Previous: <a href="Vtables.html#Vtables" accesskey="p" rel="prev">Vtables</a>, Up: <a href="Structures.html#Structures" accesskey="u" rel="up">Structures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Structure-Basics-1"></a>
+<h4 class="subsubsection">6.7.10.2 Structure Basics</h4>
+
+<p>This section describes the basic procedures for working with
+structures.  <code>make-struct</code> creates a structure, and
+<code>struct-ref</code> and <code>struct-set!</code> access its fields.
+</p>
+<dl>
+<dt><a name="index-make_002dstruct"></a>Scheme Procedure: <strong>make-struct</strong> <em>vtable tail-size init &hellip;</em></dt>
+<dt><a name="index-make_002dstruct_002fno_002dtail"></a>Scheme Procedure: <strong>make-struct/no-tail</strong> <em>vtable init &hellip;</em></dt>
+<dd><p>Create a new structure, with layout per the given <var>vtable</var>
+(see <a href="Vtables.html#Vtables">Vtables</a>).
+</p>
+<p>The optional <var>init</var>&hellip; arguments are initial values for the
+fields of the structure.  This is the only way to
+put values in read-only fields.  If there are fewer <var>init</var>
+arguments than fields then the defaults are <code>#f</code> for a Scheme
+field (type <code>p</code>) or 0 for an uninterpreted field (type <code>u</code>).
+</p>
+<p>Structures also have the ability to allocate a variable number of
+additional cells at the end, at their tails.  However, this legacy
+<em>tail array</em> facilty is confusing and inefficient, and so we do not
+recommend it.  See <a href="Tail-Arrays.html#Tail-Arrays">Tail Arrays</a>, for more on the legacy tail array
+interface.
+</p>
+<p>Type <code>s</code> self-reference fields, permission <code>o</code> opaque
+fields, and the count field of a tail array are all ignored for the
+<var>init</var> arguments, ie. an argument is not consumed by such a
+field.  An <code>s</code> is always set to the structure itself, an <code>o</code>
+is always set to <code>#f</code> or 0 (with the intention that C code will
+do something to it later), and the tail count is always the given
+<var>tail-size</var>.
+</p>
+<p>For example,
+</p>
+<div class="example">
+<pre class="example">(define v (make-vtable &quot;prpwpw&quot;))
+(define s (make-struct v 0 123 &quot;abc&quot; 456))
+(struct-ref s 0) &rArr; 123
+(struct-ref s 1) &rArr; &quot;abc&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fmake_005fstruct"></a>C Function: <em>SCM</em> <strong>scm_make_struct</strong> <em>(SCM vtable, SCM tail_size, SCM init_list)</em></dt>
+<dt><a name="index-scm_005fc_005fmake_005fstruct"></a>C Function: <em>SCM</em> <strong>scm_c_make_struct</strong> <em>(SCM vtable, SCM tail_size, SCM init, ...)</em></dt>
+<dt><a name="index-scm_005fc_005fmake_005fstructv"></a>C Function: <em>SCM</em> <strong>scm_c_make_structv</strong> <em>(SCM vtable, SCM tail_size, size_t n_inits, scm_t_bits init[])</em></dt>
+<dd><p>There are a few ways to make structures from C.  <code>scm_make_struct</code>
+takes a list, <code>scm_c_make_struct</code> takes variable arguments
+terminated with SCM_UNDEFINED, and <code>scm_c_make_structv</code> takes a
+packed array.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-struct_003f"></a>Scheme Procedure: <strong>struct?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fstruct_005fp"></a>C Function: <strong>scm_struct_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a structure, or <code>#f</code> if not.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-struct_002dref"></a>Scheme Procedure: <strong>struct-ref</strong> <em>struct n</em></dt>
+<dt><a name="index-scm_005fstruct_005fref"></a>C Function: <strong>scm_struct_ref</strong> <em>(struct, n)</em></dt>
+<dd><p>Return the contents of field number <var>n</var> in <var>struct</var>.  The
+first field is number 0.
+</p>
+<p>An error is thrown if <var>n</var> is out of range, or if the field cannot
+be read because it&rsquo;s <code>o</code> opaque.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-struct_002dset_0021"></a>Scheme Procedure: <strong>struct-set!</strong> <em>struct n value</em></dt>
+<dt><a name="index-scm_005fstruct_005fset_005fx"></a>C Function: <strong>scm_struct_set_x</strong> <em>(struct, n, value)</em></dt>
+<dd><p>Set field number <var>n</var> in <var>struct</var> to <var>value</var>.  The first
+field is number 0.
+</p>
+<p>An error is thrown if <var>n</var> is out of range, or if the field cannot
+be written because it&rsquo;s <code>r</code> read-only or <code>o</code> opaque.  
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-struct_002dvtable"></a>Scheme Procedure: <strong>struct-vtable</strong> <em>struct</em></dt>
+<dt><a name="index-scm_005fstruct_005fvtable"></a>C Function: <strong>scm_struct_vtable</strong> <em>(struct)</em></dt>
+<dd><p>Return the vtable that describes <var>struct</var>.
+</p>
+<p>The vtable is effectively the type of the structure.  See <a href="Vtable-Contents.html#Vtable-Contents">Vtable Contents</a>, for more on vtables.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Vtable-Contents.html#Vtable-Contents" accesskey="n" rel="next">Vtable Contents</a>, Previous: <a href="Vtables.html#Vtables" accesskey="p" rel="prev">Vtables</a>, Up: <a href="Structures.html#Structures" accesskey="u" rel="up">Structures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

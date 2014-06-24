@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-37</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-37">
+<meta name="keywords" content="Guile Reference Manual: SRFI-37">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d38.html#SRFI_002d38" rel="next" title="SRFI-38">
+<link href="SRFI_002d35.html#SRFI_002d35" rel="prev" title="SRFI-35">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d37"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d38.html#SRFI_002d38" accesskey="n" rel="next">SRFI-38</a>, Previous: <a href="SRFI_002d35.html#SRFI_002d35" accesskey="p" rel="prev">SRFI-35</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d37-_002d-args_002dfold"></a>
+<h4 class="subsection">7.5.24 SRFI-37 - args-fold</h4>
+<a name="index-SRFI_002d37"></a>
+
+<p>This is a processor for GNU <code>getopt_long</code>-style program
+arguments.  It provides an alternative, less declarative interface
+than <code>getopt-long</code> in <code>(ice-9 getopt-long)</code>
+(see <a href="getopt_002dlong.html#getopt_002dlong">The (ice-9 getopt-long) Module</a>).  Unlike
+<code>getopt-long</code>, it supports repeated options and any number of
+short and long names per option.  Access it with:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (srfi srfi-37))
+</pre></div>
+
+<p><acronym>SRFI</acronym>-37 principally provides an <code>option</code> type and the
+<code>args-fold</code> function.  To use the library, create a set of
+options with <code>option</code> and use it as a specification for invoking
+<code>args-fold</code>.
+</p>
+<p>Here is an example of a simple argument processor for the typical
+&lsquo;<samp>--version</samp>&rsquo; and &lsquo;<samp>--help</samp>&rsquo; options, which returns a backwards
+list of files given on the command line:
+</p>
+<div class="lisp">
+<pre class="lisp">(args-fold (cdr (program-arguments))
+           (let ((display-and-exit-proc
+                  (lambda (msg)
+                    (lambda (opt name arg loads)
+                      (display msg) (quit)))))
+             (list (option '(#\v &quot;version&quot;) #f #f
+                           (display-and-exit-proc &quot;Foo version 42.0\n&quot;))
+                   (option '(#\h &quot;help&quot;) #f #f
+                           (display-and-exit-proc
+                            &quot;Usage: foo scheme-file ...&quot;))))
+           (lambda (opt name arg loads)
+             (error &quot;Unrecognized option `~A'&quot; name))
+           (lambda (op loads) (cons op loads))
+           '())
+</pre></div>
+
+<dl>
+<dt><a name="index-option-1"></a>Scheme Procedure: <strong>option</strong> <em>names required-arg? optional-arg? processor</em></dt>
+<dd><p>Return an object that specifies a single kind of program option.
+</p>
+<p><var>names</var> is a list of command-line option names, and should consist of
+characters for traditional <code>getopt</code> short options and strings for
+<code>getopt_long</code>-style long options.
+</p>
+<p><var>required-arg?</var> and <var>optional-arg?</var> are mutually exclusive;
+one or both must be <code>#f</code>.  If <var>required-arg?</var>, the option
+must be followed by an argument on the command line, such as
+&lsquo;<samp>--opt=value</samp>&rsquo; for long options, or an error will be signalled.
+If <var>optional-arg?</var>, an argument will be taken if available.
+</p>
+<p><var>processor</var> is a procedure that takes at least 3 arguments, called
+when <code>args-fold</code> encounters the option: the containing option
+object, the name used on the command line, and the argument given for
+the option (or <code>#f</code> if none).  The rest of the arguments are
+<code>args-fold</code> &ldquo;seeds&rdquo;, and the <var>processor</var> should return
+seeds as well.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-option_002dnames"></a>Scheme Procedure: <strong>option-names</strong> <em>opt</em></dt>
+<dt><a name="index-option_002drequired_002darg_003f"></a>Scheme Procedure: <strong>option-required-arg?</strong> <em>opt</em></dt>
+<dt><a name="index-option_002doptional_002darg_003f"></a>Scheme Procedure: <strong>option-optional-arg?</strong> <em>opt</em></dt>
+<dt><a name="index-option_002dprocessor"></a>Scheme Procedure: <strong>option-processor</strong> <em>opt</em></dt>
+<dd><p>Return the specified field of <var>opt</var>, an option object, as
+described above for <code>option</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-args_002dfold"></a>Scheme Procedure: <strong>args-fold</strong> <em>args options unrecognized-option-proc operand-proc seed &hellip;</em></dt>
+<dd><p>Process <var>args</var>, a list of program arguments such as that returned by
+<code>(cdr (program-arguments))</code>, in order against <var>options</var>, a list
+of option objects as described above.  All functions called take the
+&ldquo;seeds&rdquo;, or the last multiple-values as multiple arguments, starting
+with <var>seed</var> &hellip;, and must return the new seeds.  Return the
+final seeds.
+</p>
+<p>Call <code>unrecognized-option-proc</code>, which is like an option object&rsquo;s
+processor, for any options not found in <var>options</var>.
+</p>
+<p>Call <code>operand-proc</code> with any items on the command line that are
+not named options.  This includes arguments after &lsquo;<samp>--</samp>&rsquo;.  It is
+called with the argument in question, as well as the seeds.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d38.html#SRFI_002d38" accesskey="n" rel="next">SRFI-38</a>, Previous: <a href="SRFI_002d35.html#SRFI_002d35" accesskey="p" rel="prev">SRFI-35</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

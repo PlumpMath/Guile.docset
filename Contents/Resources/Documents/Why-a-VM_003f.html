@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Why a VM?</title>
+
+<meta name="description" content="Guile Reference Manual: Why a VM?">
+<meta name="keywords" content="Guile Reference Manual: Why a VM?">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" rel="up" title="A Virtual Machine for Guile">
+<link href="VM-Concepts.html#VM-Concepts" rel="next" title="VM Concepts">
+<link href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" rel="prev" title="A Virtual Machine for Guile">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Why-a-VM_003f"></a>
+<div class="header">
+<p>
+Next: <a href="VM-Concepts.html#VM-Concepts" accesskey="n" rel="next">VM Concepts</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Why-a-VM_003f-1"></a>
+<h4 class="subsection">9.3.1 Why a VM?</h4>
+
+<a name="index-interpreter"></a>
+<p>For a long time, Guile only had an interpreter. Guile&rsquo;s interpreter
+operated directly on the S-expression representation of Scheme source
+code.
+</p>
+<p>But while the interpreter was highly optimized and hand-tuned, it still
+performs many needless computations during the course of evaluating an
+expression. For example, application of a function to arguments
+needlessly consed up the arguments in a list. Evaluation of an
+expression always had to figure out what the car of the expression is &ndash;
+a procedure, a memoized form, or something else. All values have to be
+allocated on the heap. Et cetera.
+</p>
+<p>The solution to this problem was to compile the higher-level language,
+Scheme, into a lower-level language for which all of the checks and
+dispatching have already been done&mdash;the code is instead stripped to
+the bare minimum needed to &ldquo;do the job&rdquo;.
+</p>
+<p>The question becomes then, what low-level language to choose? There
+are many options. We could compile to native code directly, but that
+poses portability problems for Guile, as it is a highly cross-platform
+project.
+</p>
+<p>So we want the performance gains that compilation provides, but we
+also want to maintain the portability benefits of a single code path.
+The obvious solution is to compile to a virtual machine that is
+present on all Guile installations.
+</p>
+<p>The easiest (and most fun) way to depend on a virtual machine is to
+implement the virtual machine within Guile itself. This way the
+virtual machine provides what Scheme needs (tail calls, multiple
+values, <code>call/cc</code>) and can provide optimized inline instructions
+for Guile (<code>cons</code>, <code>struct-ref</code>, etc.).
+</p>
+<p>So this is what Guile does. The rest of this section describes that VM
+that Guile implements, and the compiled procedures that run on it.
+</p>
+<p>Before moving on, though, we should note that though we spoke of the
+interpreter in the past tense, Guile still has an interpreter. The
+difference is that before, it was Guile&rsquo;s main evaluator, and so was
+implemented in highly optimized C; now, it is actually implemented in
+Scheme, and compiled down to VM bytecode, just like any other program.
+(There is still a C interpreter around, used to bootstrap the compiler,
+but it is not normally used at runtime.)
+</p>
+<p>The upside of implementing the interpreter in Scheme is that we preserve
+tail calls and multiple-value handling between interpreted and compiled
+code. The downside is that the interpreter in Guile 2.0 is slower than
+the interpreter in 1.8. We hope the that the compiler&rsquo;s speed makes up
+for the loss!
+</p>
+<p>Also note that this decision to implement a bytecode compiler does not
+preclude native compilation. We can compile from bytecode to native
+code at runtime, or even do ahead of time compilation. More
+possibilities are discussed in <a href="Extending-the-Compiler.html#Extending-the-Compiler">Extending the Compiler</a>.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="VM-Concepts.html#VM-Concepts" accesskey="n" rel="next">VM Concepts</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

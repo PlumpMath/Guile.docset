@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: System Identification</title>
+
+<meta name="description" content="Guile Reference Manual: System Identification">
+<meta name="keywords" content="Guile Reference Manual: System Identification">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="POSIX.html#POSIX" rel="up" title="POSIX">
+<link href="Locales.html#Locales" rel="next" title="Locales">
+<link href="Internet-Socket-Examples.html#Internet-Socket-Examples" rel="prev" title="Internet Socket Examples">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="System-Identification"></a>
+<div class="header">
+<p>
+Next: <a href="Locales.html#Locales" accesskey="n" rel="next">Locales</a>, Previous: <a href="Networking.html#Networking" accesskey="p" rel="prev">Networking</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="System-Identification-1"></a>
+<h4 class="subsection">7.2.12 System Identification</h4>
+<a name="index-system-name"></a>
+
+<p>This section lists the various procedures Guile provides for accessing
+information about the system it runs on.
+</p>
+<dl>
+<dt><a name="index-uname"></a>Scheme Procedure: <strong>uname</strong></dt>
+<dt><a name="index-scm_005funame"></a>C Function: <strong>scm_uname</strong> <em>()</em></dt>
+<dd><p>Return an object with some information about the computer
+system the program is running on.
+</p>
+<p>The following procedures accept an object as returned by <code>uname</code>
+and return a selected component (all of which are strings).
+</p>
+<dl>
+<dt><a name="index-utsname_003asysname"></a>Scheme Procedure: <strong>utsname:sysname</strong> <em>un</em></dt>
+<dd><p>The name of the operating system.
+</p></dd></dl>
+<dl>
+<dt><a name="index-utsname_003anodename"></a>Scheme Procedure: <strong>utsname:nodename</strong> <em>un</em></dt>
+<dd><p>The network name of the computer.
+</p></dd></dl>
+<dl>
+<dt><a name="index-utsname_003arelease"></a>Scheme Procedure: <strong>utsname:release</strong> <em>un</em></dt>
+<dd><p>The current release level of the operating system implementation.
+</p></dd></dl>
+<dl>
+<dt><a name="index-utsname_003aversion"></a>Scheme Procedure: <strong>utsname:version</strong> <em>un</em></dt>
+<dd><p>The current version level within the release of the operating system.
+</p></dd></dl>
+<dl>
+<dt><a name="index-utsname_003amachine"></a>Scheme Procedure: <strong>utsname:machine</strong> <em>un</em></dt>
+<dd><p>A description of the hardware.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-gethostname"></a>Scheme Procedure: <strong>gethostname</strong></dt>
+<dt><a name="index-scm_005fgethostname"></a>C Function: <strong>scm_gethostname</strong> <em>()</em></dt>
+<dd><a name="index-host-name"></a>
+<p>Return the host name of the current processor.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sethostname"></a>Scheme Procedure: <strong>sethostname</strong> <em>name</em></dt>
+<dt><a name="index-scm_005fsethostname"></a>C Function: <strong>scm_sethostname</strong> <em>(name)</em></dt>
+<dd><p>Set the host name of the current processor to <var>name</var>. May
+only be used by the superuser.  The return value is not
+specified.
+</p></dd></dl>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Ports and File Descriptors</title>
+
+<meta name="description" content="Guile Reference Manual: Ports and File Descriptors">
+<meta name="keywords" content="Guile Reference Manual: Ports and File Descriptors">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="POSIX.html#POSIX" rel="up" title="POSIX">
+<link href="File-System.html#File-System" rel="next" title="File System">
+<link href="Conventions.html#Conventions" rel="prev" title="Conventions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Ports-and-File-Descriptors"></a>
+<div class="header">
+<p>
+Next: <a href="File-System.html#File-System" accesskey="n" rel="next">File System</a>, Previous: <a href="Conventions.html#Conventions" accesskey="p" rel="prev">Conventions</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Ports-and-File-Descriptors-1"></a>
+<h4 class="subsection">7.2.2 Ports and File Descriptors</h4>
+<a name="index-file-descriptor"></a>
+
+<p>Conventions generally follow those of scsh, <a href="The-Scheme-shell-_0028scsh_0029.html#The-Scheme-shell-_0028scsh_0029">The Scheme shell (scsh)</a>.
+</p>
+<p>File ports are implemented using low-level operating system I/O
+facilities, with optional buffering to improve efficiency; see
+<a href="File-Ports.html#File-Ports">File Ports</a>.
+</p>
+<p>Note that some procedures (e.g., <code>recv!</code>) will accept ports as
+arguments, but will actually operate directly on the file descriptor
+underlying the port.  Any port buffering is ignored, including the
+buffer which implements <code>peek-char</code> and <code>unread-char</code>.
+</p>
+<p>The <code>force-output</code> and <code>drain-input</code> procedures can be used
+to clear the buffers.
+</p>
+<p>Each open file port has an associated operating system file descriptor.
+File descriptors are generally not useful in Scheme programs; however
+they may be needed when interfacing with foreign code and the Unix
+environment.
+</p>
+<p>A file descriptor can be extracted from a port and a new port can be
+created from a file descriptor.  However a file descriptor is just an
+integer and the garbage collector doesn&rsquo;t recognize it as a reference
+to the port.  If all other references to the port were dropped, then
+it&rsquo;s likely that the garbage collector would free the port, with the
+side-effect of closing the file descriptor prematurely.
+</p>
+<p>To assist the programmer in avoiding this problem, each port has an
+associated <em>revealed count</em> which can be used to keep track of how many
+times the underlying file descriptor has been stored in other places.
+If a port&rsquo;s revealed count is greater than zero, the file descriptor
+will not be closed when the port is garbage collected.  A programmer
+can therefore ensure that the revealed count will be greater than
+zero if the file descriptor is needed elsewhere.
+</p>
+<p>For the simple case where a file descriptor is &ldquo;imported&rdquo; once to become
+a port, it does not matter if the file descriptor is closed when the
+port is garbage collected.  There is no need to maintain a revealed
+count.  Likewise when &ldquo;exporting&rdquo; a file descriptor to the external
+environment, setting the revealed count is not required provided the
+port is kept open (i.e., is pointed to by a live Scheme binding) while
+the file descriptor is in use.
+</p>
+<p>To correspond with traditional Unix behaviour, three file descriptors
+(0, 1, and 2) are automatically imported when a program starts up and
+assigned to the initial values of the current/standard input, output,
+and error ports, respectively.  The revealed count for each is
+initially set to one, so that dropping references to one of these
+ports will not result in its garbage collection: it could be retrieved
+with <code>fdopen</code> or <code>fdes-&gt;ports</code>.
+</p>
+<dl>
+<dt><a name="index-port_002drevealed"></a>Scheme Procedure: <strong>port-revealed</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fport_005frevealed"></a>C Function: <strong>scm_port_revealed</strong> <em>(port)</em></dt>
+<dd><p>Return the revealed count for <var>port</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dport_002drevealed_0021"></a>Scheme Procedure: <strong>set-port-revealed!</strong> <em>port rcount</em></dt>
+<dt><a name="index-scm_005fset_005fport_005frevealed_005fx"></a>C Function: <strong>scm_set_port_revealed_x</strong> <em>(port, rcount)</em></dt>
+<dd><p>Sets the revealed count for a <var>port</var> to <var>rcount</var>.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fileno"></a>Scheme Procedure: <strong>fileno</strong> <em>port</em></dt>
+<dt><a name="index-scm_005ffileno"></a>C Function: <strong>scm_fileno</strong> <em>(port)</em></dt>
+<dd><p>Return the integer file descriptor underlying <var>port</var>.  Does
+not change its revealed count.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002d_003efdes"></a>Scheme Procedure: <strong>port-&gt;fdes</strong> <em>port</em></dt>
+<dd><p>Returns the integer file descriptor underlying <var>port</var>.  As a
+side effect the revealed count of <var>port</var> is incremented.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fdopen"></a>Scheme Procedure: <strong>fdopen</strong> <em>fdes modes</em></dt>
+<dt><a name="index-scm_005ffdopen"></a>C Function: <strong>scm_fdopen</strong> <em>(fdes, modes)</em></dt>
+<dd><p>Return a new port based on the file descriptor <var>fdes</var>.  Modes are
+given by the string <var>modes</var>.  The revealed count of the port is
+initialized to zero.  The <var>modes</var> string is the same as that
+accepted by <code>open-file</code> (see <a href="File-Ports.html#File-Ports">open-file</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fdes_002d_003eports"></a>Scheme Procedure: <strong>fdes-&gt;ports</strong> <em>fdes</em></dt>
+<dt><a name="index-scm_005ffdes_005fto_005fports"></a>C Function: <strong>scm_fdes_to_ports</strong> <em>(fdes)</em></dt>
+<dd><p>Return a list of existing ports which have <var>fdes</var> as an
+underlying file descriptor, without changing their revealed
+counts.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fdes_002d_003einport"></a>Scheme Procedure: <strong>fdes-&gt;inport</strong> <em>fdes</em></dt>
+<dd><p>Returns an existing input port which has <var>fdes</var> as its underlying file
+descriptor, if one exists, and increments its revealed count.
+Otherwise, returns a new input port with a revealed count of 1.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fdes_002d_003eoutport"></a>Scheme Procedure: <strong>fdes-&gt;outport</strong> <em>fdes</em></dt>
+<dd><p>Returns an existing output port which has <var>fdes</var> as its underlying file
+descriptor, if one exists, and increments its revealed count.
+Otherwise, returns a new output port with a revealed count of 1.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-primitive_002dmove_002d_003efdes"></a>Scheme Procedure: <strong>primitive-move-&gt;fdes</strong> <em>port fdes</em></dt>
+<dt><a name="index-scm_005fprimitive_005fmove_005fto_005ffdes"></a>C Function: <strong>scm_primitive_move_to_fdes</strong> <em>(port, fdes)</em></dt>
+<dd><p>Moves the underlying file descriptor for <var>port</var> to the integer
+value <var>fdes</var> without changing the revealed count of <var>port</var>.
+Any other ports already using this descriptor will be automatically
+shifted to new descriptors and their revealed counts reset to zero.
+The return value is <code>#f</code> if the file descriptor already had the
+required value or <code>#t</code> if it was moved.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-move_002d_003efdes"></a>Scheme Procedure: <strong>move-&gt;fdes</strong> <em>port fdes</em></dt>
+<dd><p>Moves the underlying file descriptor for <var>port</var> to the integer
+value <var>fdes</var> and sets its revealed count to one.  Any other ports
+already using this descriptor will be automatically
+shifted to new descriptors and their revealed counts reset to zero.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-release_002dport_002dhandle"></a>Scheme Procedure: <strong>release-port-handle</strong> <em>port</em></dt>
+<dd><p>Decrements the revealed count for a port.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fsync"></a>Scheme Procedure: <strong>fsync</strong> <em>port_or_fd</em></dt>
+<dt><a name="index-scm_005ffsync"></a>C Function: <strong>scm_fsync</strong> <em>(port_or_fd)</em></dt>
+<dd><p>Copies any unwritten data for the specified output file descriptor to disk.
+If <var>port_or_fd</var> is a port, its buffer is flushed before the underlying
+file descriptor is fsync&rsquo;d.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-open"></a>Scheme Procedure: <strong>open</strong> <em>path flags [mode]</em></dt>
+<dt><a name="index-scm_005fopen"></a>C Function: <strong>scm_open</strong> <em>(path, flags, mode)</em></dt>
+<dd><p>Open the file named by <var>path</var> for reading and/or writing.
+<var>flags</var> is an integer specifying how the file should be opened.
+<var>mode</var> is an integer specifying the permission bits of the file,
+if it needs to be created, before the umask (see <a href="Processes.html#Processes">Processes</a>) is
+applied.  The default is 666 (Unix itself has no default).
+</p>
+<p><var>flags</var> can be constructed by combining variables using <code>logior</code>.
+Basic flags are:
+</p>
+<dl>
+<dt><a name="index-O_005fRDONLY"></a>Variable: <strong>O_RDONLY</strong></dt>
+<dd><p>Open the file read-only.
+</p></dd></dl>
+<dl>
+<dt><a name="index-O_005fWRONLY"></a>Variable: <strong>O_WRONLY</strong></dt>
+<dd><p>Open the file write-only.
+</p></dd></dl>
+<dl>
+<dt><a name="index-O_005fRDWR"></a>Variable: <strong>O_RDWR</strong></dt>
+<dd><p>Open the file read/write.
+</p></dd></dl>
+<dl>
+<dt><a name="index-O_005fAPPEND"></a>Variable: <strong>O_APPEND</strong></dt>
+<dd><p>Append to the file instead of truncating.
+</p></dd></dl>
+<dl>
+<dt><a name="index-O_005fCREAT"></a>Variable: <strong>O_CREAT</strong></dt>
+<dd><p>Create the file if it does not already exist.
+</p></dd></dl>
+
+<p>See <a href="http://www.gnu.org/software/libc/manual/html_node/File-Status-Flags.html#File-Status-Flags">File Status Flags</a> in <cite>The GNU C Library Reference Manual</cite>,
+for additional flags.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-open_002dfdes"></a>Scheme Procedure: <strong>open-fdes</strong> <em>path flags [mode]</em></dt>
+<dt><a name="index-scm_005fopen_005ffdes"></a>C Function: <strong>scm_open_fdes</strong> <em>(path, flags, mode)</em></dt>
+<dd><p>Similar to <code>open</code> but return a file descriptor instead of
+a port.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-close"></a>Scheme Procedure: <strong>close</strong> <em>fd_or_port</em></dt>
+<dt><a name="index-scm_005fclose"></a>C Function: <strong>scm_close</strong> <em>(fd_or_port)</em></dt>
+<dd><p>Similar to <code>close-port</code> (see <a href="Closing.html#Closing">close-port</a>),
+but also works on file descriptors.  A side
+effect of closing a file descriptor is that any ports using that file
+descriptor are moved to a different file descriptor and have
+their revealed counts set to zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-close_002dfdes"></a>Scheme Procedure: <strong>close-fdes</strong> <em>fd</em></dt>
+<dt><a name="index-scm_005fclose_005ffdes"></a>C Function: <strong>scm_close_fdes</strong> <em>(fd)</em></dt>
+<dd><p>A simple wrapper for the <code>close</code> system call.  Close file
+descriptor <var>fd</var>, which must be an integer.  Unlike <code>close</code>,
+the file descriptor will be closed even if a port is using it.  The
+return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unread_002dchar-1"></a>Scheme Procedure: <strong>unread-char</strong> <em>char [port]</em></dt>
+<dt><a name="index-scm_005funread_005fchar-1"></a>C Function: <strong>scm_unread_char</strong> <em>(char, port)</em></dt>
+<dd><p>Place <var>char</var> in <var>port</var> so that it will be read by the next
+read operation on that port.  If called multiple times, the unread
+characters will be read again in &ldquo;last-in, first-out&rdquo; order (i.e.
+a stack).  If <var>port</var> is not supplied, the current input port is
+used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unread_002dstring-1"></a>Scheme Procedure: <strong>unread-string</strong> <em>str port</em></dt>
+<dd><p>Place the string <var>str</var> in <var>port</var> so that its characters will be
+read in subsequent read operations.  If called multiple times, the
+unread characters will be read again in last-in first-out order.  If
+<var>port</var> is not supplied, the current-input-port is used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pipe-2"></a>Scheme Procedure: <strong>pipe</strong></dt>
+<dt><a name="index-scm_005fpipe"></a>C Function: <strong>scm_pipe</strong> <em>()</em></dt>
+<dd><a name="index-pipe"></a>
+<p>Return a newly created pipe: a pair of ports which are linked
+together on the local machine.  The <acronym>CAR</acronym> is the input
+port and the <acronym>CDR</acronym> is the output port.  Data written (and
+flushed) to the output port can be read from the input port.
+Pipes are commonly used for communication with a newly forked
+child process.  The need to flush the output port can be
+avoided by making it unbuffered using <code>setvbuf</code>.
+</p>
+<dl>
+<dt><a name="index-PIPE_005fBUF"></a>Variable: <strong>PIPE_BUF</strong></dt>
+<dd><p>A write of up to <code>PIPE_BUF</code> many bytes to a pipe is atomic,
+meaning when done it goes into the pipe instantaneously and as a
+contiguous block (see <a href="http://www.gnu.org/software/libc/manual/html_node/Pipe-Atomicity.html#Pipe-Atomicity">Atomicity of Pipe I/O</a> in <cite>The GNU C Library Reference Manual</cite>).
+</p></dd></dl>
+
+<p>Note that the output port is likely to block if too much data has been
+written but not yet read from the input port.  Typically the capacity
+is <code>PIPE_BUF</code> bytes.
+</p></dd></dl>
+
+<p>The next group of procedures perform a <code>dup2</code>
+system call, if <var>newfd</var> (an
+integer) is supplied, otherwise a <code>dup</code>.  The file descriptor to be
+duplicated can be supplied as an integer or contained in a port.  The
+type of value returned varies depending on which procedure is used.
+</p>
+<p>All procedures also have the side effect when performing <code>dup2</code> that any
+ports using <var>newfd</var> are moved to a different file descriptor and have
+their revealed counts set to zero.
+</p>
+<dl>
+<dt><a name="index-dup_002d_003efdes"></a>Scheme Procedure: <strong>dup-&gt;fdes</strong> <em>fd_or_port [fd]</em></dt>
+<dt><a name="index-scm_005fdup_005fto_005ffdes"></a>C Function: <strong>scm_dup_to_fdes</strong> <em>(fd_or_port, fd)</em></dt>
+<dd><p>Return a new integer file descriptor referring to the open file
+designated by <var>fd_or_port</var>, which must be either an open
+file port or a file descriptor.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dup_002d_003einport"></a>Scheme Procedure: <strong>dup-&gt;inport</strong> <em>port/fd [newfd]</em></dt>
+<dd><p>Returns a new input port using the new file descriptor.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dup_002d_003eoutport"></a>Scheme Procedure: <strong>dup-&gt;outport</strong> <em>port/fd [newfd]</em></dt>
+<dd><p>Returns a new output port using the new file descriptor.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dup"></a>Scheme Procedure: <strong>dup</strong> <em>port/fd [newfd]</em></dt>
+<dd><p>Returns a new port if <var>port/fd</var> is a port, with the same mode as the
+supplied port, otherwise returns an integer file descriptor.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dup_002d_003eport"></a>Scheme Procedure: <strong>dup-&gt;port</strong> <em>port/fd mode [newfd]</em></dt>
+<dd><p>Returns a new port using the new file descriptor.  <var>mode</var> supplies a
+mode string for the port (see <a href="File-Ports.html#File-Ports">open-file</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-duplicate_002dport"></a>Scheme Procedure: <strong>duplicate-port</strong> <em>port modes</em></dt>
+<dd><p>Returns a new port which is opened on a duplicate of the file
+descriptor underlying <var>port</var>, with mode string <var>modes</var>
+as for <a href="File-Ports.html#File-Ports">open-file</a>.  The two ports
+will share a file position and file status flags.
+</p>
+<p>Unexpected behaviour can result if both ports are subsequently used
+and the original and/or duplicate ports are buffered.
+The mode string can include <code>0</code> to obtain an unbuffered duplicate
+port.
+</p>
+<p>This procedure is equivalent to <code>(dup-&gt;port <var>port</var> <var>modes</var>)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-redirect_002dport"></a>Scheme Procedure: <strong>redirect-port</strong> <em>old_port new_port</em></dt>
+<dt><a name="index-scm_005fredirect_005fport"></a>C Function: <strong>scm_redirect_port</strong> <em>(old_port, new_port)</em></dt>
+<dd><p>This procedure takes two ports and duplicates the underlying file
+descriptor from <var>old_port</var> into <var>new_port</var>.  The
+current file descriptor in <var>new_port</var> will be closed.
+After the redirection the two ports will share a file position
+and file status flags.
+</p>
+<p>The return value is unspecified.
+</p>
+<p>Unexpected behaviour can result if both ports are subsequently used
+and the original and/or duplicate ports are buffered.
+</p>
+<p>This procedure does not have any side effects on other ports or
+revealed counts.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dup2"></a>Scheme Procedure: <strong>dup2</strong> <em>oldfd newfd</em></dt>
+<dt><a name="index-scm_005fdup2"></a>C Function: <strong>scm_dup2</strong> <em>(oldfd, newfd)</em></dt>
+<dd><p>A simple wrapper for the <code>dup2</code> system call.
+Copies the file descriptor <var>oldfd</var> to descriptor
+number <var>newfd</var>, replacing the previous meaning
+of <var>newfd</var>.  Both <var>oldfd</var> and <var>newfd</var> must
+be integers.
+Unlike for <code>dup-&gt;fdes</code> or <code>primitive-move-&gt;fdes</code>, no attempt
+is made to move away ports which are using <var>newfd</var>.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002dmode-1"></a>Scheme Procedure: <strong>port-mode</strong> <em>port</em></dt>
+<dd><p>Return the port modes associated with the open port <var>port</var>.
+These will not necessarily be identical to the modes used when
+the port was opened, since modes such as &ldquo;append&rdquo; which are
+used only during port creation are not retained.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002dfor_002deach"></a>Scheme Procedure: <strong>port-for-each</strong> <em>proc</em></dt>
+<dt><a name="index-scm_005fport_005ffor_005feach"></a>C Function: <strong>scm_port_for_each</strong> <em>(SCM proc)</em></dt>
+<dt><a name="index-scm_005fc_005fport_005ffor_005feach"></a>C Function: <strong>scm_c_port_for_each</strong> <em>(void (*proc)(void *, SCM), void *data)</em></dt>
+<dd><p>Apply <var>proc</var> to each port in the Guile port table
+(FIXME: what is the Guile port table?)
+in turn.  The return value is unspecified.  More specifically,
+<var>proc</var> is applied exactly once to every port that exists in the
+system at the time <code>port-for-each</code> is invoked.  Changes to the
+port table while <code>port-for-each</code> is running have no effect as far
+as <code>port-for-each</code> is concerned.
+</p>
+<p>The C function <code>scm_port_for_each</code> takes a Scheme procedure
+encoded as a <code>SCM</code> value, while <code>scm_c_port_for_each</code> takes
+a pointer to a C function and passes along a arbitrary <var>data</var>
+cookie.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-setvbuf"></a>Scheme Procedure: <strong>setvbuf</strong> <em>port mode [size]</em></dt>
+<dt><a name="index-scm_005fsetvbuf"></a>C Function: <strong>scm_setvbuf</strong> <em>(port, mode, size)</em></dt>
+<dd><a name="index-port-buffering"></a>
+<p>Set the buffering mode for <var>port</var>.  <var>mode</var> can be:
+</p>
+<dl>
+<dt><a name="index-_005fIONBF"></a>Variable: <strong>_IONBF</strong></dt>
+<dd><p>non-buffered
+</p></dd></dl>
+<dl>
+<dt><a name="index-_005fIOLBF"></a>Variable: <strong>_IOLBF</strong></dt>
+<dd><p>line buffered
+</p></dd></dl>
+<dl>
+<dt><a name="index-_005fIOFBF"></a>Variable: <strong>_IOFBF</strong></dt>
+<dd><p>block buffered, using a newly allocated buffer of <var>size</var> bytes.
+If <var>size</var> is omitted, a default size will be used.
+</p></dd></dl>
+
+<p>Only certain types of ports are supported, most importantly
+file ports.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fcntl"></a>Scheme Procedure: <strong>fcntl</strong> <em>port/fd cmd [value]</em></dt>
+<dt><a name="index-scm_005ffcntl"></a>C Function: <strong>scm_fcntl</strong> <em>(object, cmd, value)</em></dt>
+<dd><p>Apply <var>cmd</var> on <var>port/fd</var>, either a port or file descriptor.
+The <var>value</var> argument is used by the <code>SET</code> commands described
+below, it&rsquo;s an integer value.
+</p>
+<p>Values for <var>cmd</var> are:
+</p>
+<dl>
+<dt><a name="index-F_005fDUPFD"></a>Variable: <strong>F_DUPFD</strong></dt>
+<dd><p>Duplicate the file descriptor, the same as <code>dup-&gt;fdes</code> above
+does.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-F_005fGETFD"></a>Variable: <strong>F_GETFD</strong></dt>
+<dt><a name="index-F_005fSETFD"></a>Variable: <strong>F_SETFD</strong></dt>
+<dd><p>Get or set flags associated with the file descriptor.  The only flag
+is the following,
+</p>
+<dl>
+<dt><a name="index-FD_005fCLOEXEC"></a>Variable: <strong>FD_CLOEXEC</strong></dt>
+<dd><p>&ldquo;Close on exec&rdquo;, meaning the file descriptor will be closed on an
+<code>exec</code> call (a successful such call).  For example to set that
+flag,
+</p>
+<div class="example">
+<pre class="example">(fcntl port F_SETFD FD_CLOEXEC)
+</pre></div>
+
+<p>Or better, set it but leave any other possible future flags unchanged,
+</p>
+<div class="example">
+<pre class="example">(fcntl port F_SETFD (logior FD_CLOEXEC
+                            (fcntl port F_GETFD)))
+</pre></div>
+</dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-F_005fGETFL"></a>Variable: <strong>F_GETFL</strong></dt>
+<dt><a name="index-F_005fSETFL"></a>Variable: <strong>F_SETFL</strong></dt>
+<dd><p>Get or set flags associated with the open file.  These flags are
+<code>O_RDONLY</code> etc described under <code>open</code> above.
+</p>
+<p>A common use is to set <code>O_NONBLOCK</code> on a network socket.  The
+following sets that flag, and leaves other flags unchanged.
+</p>
+<div class="example">
+<pre class="example">(fcntl sock F_SETFL (logior O_NONBLOCK
+                            (fcntl sock F_GETFL)))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-F_005fGETOWN"></a>Variable: <strong>F_GETOWN</strong></dt>
+<dt><a name="index-F_005fSETOWN"></a>Variable: <strong>F_SETOWN</strong></dt>
+<dd><p>Get or set the process ID of a socket&rsquo;s owner, for <code>SIGIO</code> signals.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-flock"></a>Scheme Procedure: <strong>flock</strong> <em>file operation</em></dt>
+<dt><a name="index-scm_005fflock"></a>C Function: <strong>scm_flock</strong> <em>(file, operation)</em></dt>
+<dd><a name="index-file-locking"></a>
+<p>Apply or remove an advisory lock on an open file.
+<var>operation</var> specifies the action to be done:
+</p>
+<dl>
+<dt><a name="index-LOCK_005fSH"></a>Variable: <strong>LOCK_SH</strong></dt>
+<dd><p>Shared lock.  More than one process may hold a shared lock
+for a given file at a given time.
+</p></dd></dl>
+<dl>
+<dt><a name="index-LOCK_005fEX"></a>Variable: <strong>LOCK_EX</strong></dt>
+<dd><p>Exclusive lock.  Only one process may hold an exclusive lock
+for a given file at a given time.
+</p></dd></dl>
+<dl>
+<dt><a name="index-LOCK_005fUN"></a>Variable: <strong>LOCK_UN</strong></dt>
+<dd><p>Unlock the file.
+</p></dd></dl>
+<dl>
+<dt><a name="index-LOCK_005fNB"></a>Variable: <strong>LOCK_NB</strong></dt>
+<dd><p>Don&rsquo;t block when locking.  This is combined with one of the other
+operations using <code>logior</code> (see <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>).  If
+<code>flock</code> would block an <code>EWOULDBLOCK</code> error is thrown
+(see <a href="Conventions.html#Conventions">Conventions</a>).
+</p></dd></dl>
+
+<p>The return value is not specified. <var>file</var> may be an open
+file descriptor or an open file descriptor port.
+</p>
+<p>Note that <code>flock</code> does not lock files across NFS.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-select"></a>Scheme Procedure: <strong>select</strong> <em>reads writes excepts [secs [usecs]]</em></dt>
+<dt><a name="index-scm_005fselect"></a>C Function: <strong>scm_select</strong> <em>(reads, writes, excepts, secs, usecs)</em></dt>
+<dd><p>This procedure has a variety of uses: waiting for the ability
+to provide input, accept output, or the existence of
+exceptional conditions on a collection of ports or file
+descriptors, or waiting for a timeout to occur.
+It also returns if interrupted by a signal.
+</p>
+<p><var>reads</var>, <var>writes</var> and <var>excepts</var> can be lists or
+vectors, with each member a port or a file descriptor.
+The value returned is a list of three corresponding
+lists or vectors containing only the members which meet the
+specified requirement.  The ability of port buffers to
+provide input or accept output is taken into account.
+Ordering of the input lists or vectors is not preserved.
+</p>
+<p>The optional arguments <var>secs</var> and <var>usecs</var> specify the
+timeout.  Either <var>secs</var> can be specified alone, as
+either an integer or a real number, or both <var>secs</var> and
+<var>usecs</var> can be specified as integers, in which case
+<var>usecs</var> is an additional timeout expressed in
+microseconds.  If <var>secs</var> is omitted or is <code>#f</code> then
+select will wait for as long as it takes for one of the other
+conditions to be satisfied.
+</p>
+<p>The scsh version of <code>select</code> differs as follows:
+Only vectors are accepted for the first three arguments.
+The <var>usecs</var> argument is not supported.
+Multiple values are returned instead of a list.
+Duplicates in the input vectors appear only once in output.
+An additional <code>select!</code> interface is provided.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="File-System.html#File-System" accesskey="n" rel="next">File System</a>, Previous: <a href="Conventions.html#Conventions" accesskey="p" rel="prev">Conventions</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

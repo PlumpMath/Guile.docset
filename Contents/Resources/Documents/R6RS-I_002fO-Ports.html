@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: R6RS I/O Ports</title>
+
+<meta name="description" content="Guile Reference Manual: R6RS I/O Ports">
+<meta name="keywords" content="Guile Reference Manual: R6RS I/O Ports">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="R6RS-File-Names.html#R6RS-File-Names" rel="next" title="R6RS File Names">
+<link href="Void-Ports.html#Void-Ports" rel="prev" title="Void Ports">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="R6RS-I_002fO-Ports"></a>
+<div class="header">
+<p>
+Next: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="n" rel="next">I/O Extensions</a>, Previous: <a href="Port-Types.html#Port-Types" accesskey="p" rel="prev">Port Types</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="R6RS-I_002fO-Ports-1"></a>
+<h4 class="subsection">6.14.10 R6RS I/O Ports</h4>
+
+<a name="index-R6RS-1"></a>
+<a name="index-R6RS-ports"></a>
+
+<p>The I/O port API of the <a href="http://www.r6rs.org/">Revised Report^6 on
+the Algorithmic Language Scheme (R6RS)</a> is provided by the <code>(rnrs
+io ports)</code> module.  It provides features, such as binary I/O and Unicode
+string I/O, that complement or refine Guile&rsquo;s historical port API
+presented above (see <a href="Input-and-Output.html#Input-and-Output">Input and Output</a>). Note that R6RS ports are not
+disjoint from Guile&rsquo;s native ports, so Guile-specific procedures will
+work on ports created using the R6RS API, and vice versa.
+</p>
+<p>The text in this section is taken from the R6RS standard libraries
+document, with only minor adaptions for inclusion in this manual.  The
+Guile developers offer their thanks to the R6RS editors for having
+provided the report&rsquo;s text under permissive conditions making this
+possible.
+</p>
+<p><em>Note</em>: The implementation of this R6RS API is not complete yet.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="R6RS-File-Names.html#R6RS-File-Names" accesskey="1">R6RS File Names</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">File names.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-File-Options.html#R6RS-File-Options" accesskey="2">R6RS File Options</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Options for opening files.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Buffer-Modes.html#R6RS-Buffer-Modes" accesskey="3">R6RS Buffer Modes</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Influencing buffering behavior.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Transcoders.html#R6RS-Transcoders" accesskey="4">R6RS Transcoders</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Influencing port encoding.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-End_002dof_002dFile.html#R6RS-End_002dof_002dFile" accesskey="5">R6RS End-of-File</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The end-of-file object.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Port-Manipulation.html#R6RS-Port-Manipulation" accesskey="6">R6RS Port Manipulation</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Manipulating R6RS ports.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Input-Ports.html#R6RS-Input-Ports" accesskey="7">R6RS Input Ports</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Input Ports.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Binary-Input.html#R6RS-Binary-Input" accesskey="8">R6RS Binary Input</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Binary input.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Textual-Input.html#R6RS-Textual-Input" accesskey="9">R6RS Textual Input</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Textual input.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Output-Ports.html#R6RS-Output-Ports">R6RS Output Ports</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Output Ports.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Binary-Output.html#R6RS-Binary-Output">R6RS Binary Output</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Binary output.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="R6RS-Textual-Output.html#R6RS-Textual-Output">R6RS Textual Output</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Textual output.
+</td></tr>
+</table>
+
+<p>A subset of the <code>(rnrs io ports)</code> module, plus one non-standard
+procedure <code>unget-bytevector</code> (see <a href="R6RS-Binary-Input.html#R6RS-Binary-Input">R6RS Binary Input</a>), is
+provided by the <code>(ice-9 binary-ports)</code> module.  It contains binary
+input/output procedures and does not rely on R6RS support.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="n" rel="next">I/O Extensions</a>, Previous: <a href="Port-Types.html#Port-Types" accesskey="p" rel="prev">Port Types</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

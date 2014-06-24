@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-4 API</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-4 API">
+<meta name="keywords" content="Guile Reference Manual: SRFI-4 API">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d4.html#SRFI_002d4" rel="up" title="SRFI-4">
+<link href="SRFI_002d4-and-Bytevectors.html#SRFI_002d4-and-Bytevectors" rel="next" title="SRFI-4 and Bytevectors">
+<link href="SRFI_002d4-Overview.html#SRFI_002d4-Overview" rel="prev" title="SRFI-4 Overview">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d4-API"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d4-and-Bytevectors.html#SRFI_002d4-and-Bytevectors" accesskey="n" rel="next">SRFI-4 and Bytevectors</a>, Previous: <a href="SRFI_002d4-Overview.html#SRFI_002d4-Overview" accesskey="p" rel="prev">SRFI-4 Overview</a>, Up: <a href="SRFI_002d4.html#SRFI_002d4" accesskey="u" rel="up">SRFI-4</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d4-_002d-API"></a>
+<h4 class="subsubsection">7.5.5.2 SRFI-4 - API</h4>
+
+<p>Note that the <code>c32</code> and <code>c64</code> functions are only available from
+<code>(srfi srfi-4 gnu)</code>.
+</p>
+<dl>
+<dt><a name="index-u8vector_003f"></a>Scheme Procedure: <strong>u8vector?</strong> <em>obj</em></dt>
+<dt><a name="index-s8vector_003f"></a>Scheme Procedure: <strong>s8vector?</strong> <em>obj</em></dt>
+<dt><a name="index-u16vector_003f"></a>Scheme Procedure: <strong>u16vector?</strong> <em>obj</em></dt>
+<dt><a name="index-s16vector_003f"></a>Scheme Procedure: <strong>s16vector?</strong> <em>obj</em></dt>
+<dt><a name="index-u32vector_003f"></a>Scheme Procedure: <strong>u32vector?</strong> <em>obj</em></dt>
+<dt><a name="index-s32vector_003f"></a>Scheme Procedure: <strong>s32vector?</strong> <em>obj</em></dt>
+<dt><a name="index-u64vector_003f"></a>Scheme Procedure: <strong>u64vector?</strong> <em>obj</em></dt>
+<dt><a name="index-s64vector_003f"></a>Scheme Procedure: <strong>s64vector?</strong> <em>obj</em></dt>
+<dt><a name="index-f32vector_003f"></a>Scheme Procedure: <strong>f32vector?</strong> <em>obj</em></dt>
+<dt><a name="index-f64vector_003f"></a>Scheme Procedure: <strong>f64vector?</strong> <em>obj</em></dt>
+<dt><a name="index-c32vector_003f"></a>Scheme Procedure: <strong>c32vector?</strong> <em>obj</em></dt>
+<dt><a name="index-c64vector_003f"></a>Scheme Procedure: <strong>c64vector?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fu8vector_005fp"></a>C Function: <strong>scm_u8vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fs8vector_005fp"></a>C Function: <strong>scm_s8vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fu16vector_005fp"></a>C Function: <strong>scm_u16vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fs16vector_005fp"></a>C Function: <strong>scm_s16vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fu32vector_005fp"></a>C Function: <strong>scm_u32vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fs32vector_005fp"></a>C Function: <strong>scm_s32vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fu64vector_005fp"></a>C Function: <strong>scm_u64vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fs64vector_005fp"></a>C Function: <strong>scm_s64vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005ff32vector_005fp"></a>C Function: <strong>scm_f32vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005ff64vector_005fp"></a>C Function: <strong>scm_f64vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fc32vector_005fp"></a>C Function: <strong>scm_c32vector_p</strong> <em>(obj)</em></dt>
+<dt><a name="index-scm_005fc64vector_005fp"></a>C Function: <strong>scm_c64vector_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a homogeneous numeric vector of the
+indicated type.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002du8vector"></a>Scheme Procedure: <strong>make-u8vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002ds8vector"></a>Scheme Procedure: <strong>make-s8vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002du16vector"></a>Scheme Procedure: <strong>make-u16vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002ds16vector"></a>Scheme Procedure: <strong>make-s16vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002du32vector"></a>Scheme Procedure: <strong>make-u32vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002ds32vector"></a>Scheme Procedure: <strong>make-s32vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002du64vector"></a>Scheme Procedure: <strong>make-u64vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002ds64vector"></a>Scheme Procedure: <strong>make-s64vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002df32vector"></a>Scheme Procedure: <strong>make-f32vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002df64vector"></a>Scheme Procedure: <strong>make-f64vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002dc32vector"></a>Scheme Procedure: <strong>make-c32vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-make_002dc64vector"></a>Scheme Procedure: <strong>make-c64vector</strong> <em>n [value]</em></dt>
+<dt><a name="index-scm_005fmake_005fu8vector"></a>C Function: <strong>scm_make_u8vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fs8vector"></a>C Function: <strong>scm_make_s8vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fu16vector"></a>C Function: <strong>scm_make_u16vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fs16vector"></a>C Function: <strong>scm_make_s16vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fu32vector"></a>C Function: <strong>scm_make_u32vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fs32vector"></a>C Function: <strong>scm_make_s32vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fu64vector"></a>C Function: <strong>scm_make_u64vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fs64vector"></a>C Function: <strong>scm_make_s64vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005ff32vector"></a>C Function: <strong>scm_make_f32vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005ff64vector"></a>C Function: <strong>scm_make_f64vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fc32vector"></a>C Function: <strong>scm_make_c32vector</strong> <em>(n, value)</em></dt>
+<dt><a name="index-scm_005fmake_005fc64vector"></a>C Function: <strong>scm_make_c64vector</strong> <em>(n, value)</em></dt>
+<dd><p>Return a newly allocated homogeneous numeric vector holding <var>n</var>
+elements of the indicated type.  If <var>value</var> is given, the vector
+is initialized with that value, otherwise the contents are
+unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-u8vector"></a>Scheme Procedure: <strong>u8vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-s8vector"></a>Scheme Procedure: <strong>s8vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-u16vector"></a>Scheme Procedure: <strong>u16vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-s16vector"></a>Scheme Procedure: <strong>s16vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-u32vector"></a>Scheme Procedure: <strong>u32vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-s32vector"></a>Scheme Procedure: <strong>s32vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-u64vector"></a>Scheme Procedure: <strong>u64vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-s64vector"></a>Scheme Procedure: <strong>s64vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-f32vector"></a>Scheme Procedure: <strong>f32vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-f64vector"></a>Scheme Procedure: <strong>f64vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-c32vector"></a>Scheme Procedure: <strong>c32vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-c64vector"></a>Scheme Procedure: <strong>c64vector</strong> <em>value &hellip;</em></dt>
+<dt><a name="index-scm_005fu8vector"></a>C Function: <strong>scm_u8vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fs8vector"></a>C Function: <strong>scm_s8vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fu16vector"></a>C Function: <strong>scm_u16vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fs16vector"></a>C Function: <strong>scm_s16vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fu32vector"></a>C Function: <strong>scm_u32vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fs32vector"></a>C Function: <strong>scm_s32vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fu64vector"></a>C Function: <strong>scm_u64vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fs64vector"></a>C Function: <strong>scm_s64vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005ff32vector"></a>C Function: <strong>scm_f32vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005ff64vector"></a>C Function: <strong>scm_f64vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fc32vector"></a>C Function: <strong>scm_c32vector</strong> <em>(values)</em></dt>
+<dt><a name="index-scm_005fc64vector"></a>C Function: <strong>scm_c64vector</strong> <em>(values)</em></dt>
+<dd><p>Return a newly allocated homogeneous numeric vector of the indicated
+type, holding the given parameter <var>value</var>s.  The vector length is
+the number of parameters given.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-u8vector_002dlength"></a>Scheme Procedure: <strong>u8vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-s8vector_002dlength"></a>Scheme Procedure: <strong>s8vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-u16vector_002dlength"></a>Scheme Procedure: <strong>u16vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-s16vector_002dlength"></a>Scheme Procedure: <strong>s16vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-u32vector_002dlength"></a>Scheme Procedure: <strong>u32vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-s32vector_002dlength"></a>Scheme Procedure: <strong>s32vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-u64vector_002dlength"></a>Scheme Procedure: <strong>u64vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-s64vector_002dlength"></a>Scheme Procedure: <strong>s64vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-f32vector_002dlength"></a>Scheme Procedure: <strong>f32vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-f64vector_002dlength"></a>Scheme Procedure: <strong>f64vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-c32vector_002dlength"></a>Scheme Procedure: <strong>c32vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-c64vector_002dlength"></a>Scheme Procedure: <strong>c64vector-length</strong> <em>vec</em></dt>
+<dt><a name="index-scm_005fu8vector_005flength"></a>C Function: <strong>scm_u8vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs8vector_005flength"></a>C Function: <strong>scm_s8vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fu16vector_005flength"></a>C Function: <strong>scm_u16vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs16vector_005flength"></a>C Function: <strong>scm_s16vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fu32vector_005flength"></a>C Function: <strong>scm_u32vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs32vector_005flength"></a>C Function: <strong>scm_s32vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fu64vector_005flength"></a>C Function: <strong>scm_u64vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs64vector_005flength"></a>C Function: <strong>scm_s64vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005ff32vector_005flength"></a>C Function: <strong>scm_f32vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005ff64vector_005flength"></a>C Function: <strong>scm_f64vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fc32vector_005flength"></a>C Function: <strong>scm_c32vector_length</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fc64vector_005flength"></a>C Function: <strong>scm_c64vector_length</strong> <em>(vec)</em></dt>
+<dd><p>Return the number of elements in <var>vec</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-u8vector_002dref"></a>Scheme Procedure: <strong>u8vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-s8vector_002dref"></a>Scheme Procedure: <strong>s8vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-u16vector_002dref"></a>Scheme Procedure: <strong>u16vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-s16vector_002dref"></a>Scheme Procedure: <strong>s16vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-u32vector_002dref"></a>Scheme Procedure: <strong>u32vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-s32vector_002dref"></a>Scheme Procedure: <strong>s32vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-u64vector_002dref"></a>Scheme Procedure: <strong>u64vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-s64vector_002dref"></a>Scheme Procedure: <strong>s64vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-f32vector_002dref"></a>Scheme Procedure: <strong>f32vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-f64vector_002dref"></a>Scheme Procedure: <strong>f64vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-c32vector_002dref"></a>Scheme Procedure: <strong>c32vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-c64vector_002dref"></a>Scheme Procedure: <strong>c64vector-ref</strong> <em>vec i</em></dt>
+<dt><a name="index-scm_005fu8vector_005fref"></a>C Function: <strong>scm_u8vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fs8vector_005fref"></a>C Function: <strong>scm_s8vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fu16vector_005fref"></a>C Function: <strong>scm_u16vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fs16vector_005fref"></a>C Function: <strong>scm_s16vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fu32vector_005fref"></a>C Function: <strong>scm_u32vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fs32vector_005fref"></a>C Function: <strong>scm_s32vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fu64vector_005fref"></a>C Function: <strong>scm_u64vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fs64vector_005fref"></a>C Function: <strong>scm_s64vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005ff32vector_005fref"></a>C Function: <strong>scm_f32vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005ff64vector_005fref"></a>C Function: <strong>scm_f64vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fc32vector_005fref"></a>C Function: <strong>scm_c32vector_ref</strong> <em>(vec, i)</em></dt>
+<dt><a name="index-scm_005fc64vector_005fref"></a>C Function: <strong>scm_c64vector_ref</strong> <em>(vec, i)</em></dt>
+<dd><p>Return the element at index <var>i</var> in <var>vec</var>.  The first element
+in <var>vec</var> is index 0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-u8vector_002dset_0021"></a>Scheme Procedure: <strong>u8vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-s8vector_002dset_0021"></a>Scheme Procedure: <strong>s8vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-u16vector_002dset_0021"></a>Scheme Procedure: <strong>u16vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-s16vector_002dset_0021"></a>Scheme Procedure: <strong>s16vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-u32vector_002dset_0021"></a>Scheme Procedure: <strong>u32vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-s32vector_002dset_0021"></a>Scheme Procedure: <strong>s32vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-u64vector_002dset_0021"></a>Scheme Procedure: <strong>u64vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-s64vector_002dset_0021"></a>Scheme Procedure: <strong>s64vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-f32vector_002dset_0021"></a>Scheme Procedure: <strong>f32vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-f64vector_002dset_0021"></a>Scheme Procedure: <strong>f64vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-c32vector_002dset_0021"></a>Scheme Procedure: <strong>c32vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-c64vector_002dset_0021"></a>Scheme Procedure: <strong>c64vector-set!</strong> <em>vec i value</em></dt>
+<dt><a name="index-scm_005fu8vector_005fset_005fx"></a>C Function: <strong>scm_u8vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fs8vector_005fset_005fx"></a>C Function: <strong>scm_s8vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fu16vector_005fset_005fx"></a>C Function: <strong>scm_u16vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fs16vector_005fset_005fx"></a>C Function: <strong>scm_s16vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fu32vector_005fset_005fx"></a>C Function: <strong>scm_u32vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fs32vector_005fset_005fx"></a>C Function: <strong>scm_s32vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fu64vector_005fset_005fx"></a>C Function: <strong>scm_u64vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fs64vector_005fset_005fx"></a>C Function: <strong>scm_s64vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005ff32vector_005fset_005fx"></a>C Function: <strong>scm_f32vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005ff64vector_005fset_005fx"></a>C Function: <strong>scm_f64vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fc32vector_005fset_005fx"></a>C Function: <strong>scm_c32vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dt><a name="index-scm_005fc64vector_005fset_005fx"></a>C Function: <strong>scm_c64vector_set_x</strong> <em>(vec, i, value)</em></dt>
+<dd><p>Set the element at index <var>i</var> in <var>vec</var> to <var>value</var>.  The
+first element in <var>vec</var> is index 0.  The return value is
+unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-u8vector_002d_003elist"></a>Scheme Procedure: <strong>u8vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-s8vector_002d_003elist"></a>Scheme Procedure: <strong>s8vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-u16vector_002d_003elist"></a>Scheme Procedure: <strong>u16vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-s16vector_002d_003elist"></a>Scheme Procedure: <strong>s16vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-u32vector_002d_003elist"></a>Scheme Procedure: <strong>u32vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-s32vector_002d_003elist"></a>Scheme Procedure: <strong>s32vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-u64vector_002d_003elist"></a>Scheme Procedure: <strong>u64vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-s64vector_002d_003elist"></a>Scheme Procedure: <strong>s64vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-f32vector_002d_003elist"></a>Scheme Procedure: <strong>f32vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-f64vector_002d_003elist"></a>Scheme Procedure: <strong>f64vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-c32vector_002d_003elist"></a>Scheme Procedure: <strong>c32vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-c64vector_002d_003elist"></a>Scheme Procedure: <strong>c64vector-&gt;list</strong> <em>vec</em></dt>
+<dt><a name="index-scm_005fu8vector_005fto_005flist"></a>C Function: <strong>scm_u8vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs8vector_005fto_005flist"></a>C Function: <strong>scm_s8vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fu16vector_005fto_005flist"></a>C Function: <strong>scm_u16vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs16vector_005fto_005flist"></a>C Function: <strong>scm_s16vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fu32vector_005fto_005flist"></a>C Function: <strong>scm_u32vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs32vector_005fto_005flist"></a>C Function: <strong>scm_s32vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fu64vector_005fto_005flist"></a>C Function: <strong>scm_u64vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fs64vector_005fto_005flist"></a>C Function: <strong>scm_s64vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005ff32vector_005fto_005flist"></a>C Function: <strong>scm_f32vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005ff64vector_005fto_005flist"></a>C Function: <strong>scm_f64vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fc32vector_005fto_005flist"></a>C Function: <strong>scm_c32vector_to_list</strong> <em>(vec)</em></dt>
+<dt><a name="index-scm_005fc64vector_005fto_005flist"></a>C Function: <strong>scm_c64vector_to_list</strong> <em>(vec)</em></dt>
+<dd><p>Return a newly allocated list holding all elements of <var>vec</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_002d_003eu8vector"></a>Scheme Procedure: <strong>list-&gt;u8vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003es8vector"></a>Scheme Procedure: <strong>list-&gt;s8vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003eu16vector"></a>Scheme Procedure: <strong>list-&gt;u16vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003es16vector"></a>Scheme Procedure: <strong>list-&gt;s16vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003eu32vector"></a>Scheme Procedure: <strong>list-&gt;u32vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003es32vector"></a>Scheme Procedure: <strong>list-&gt;s32vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003eu64vector"></a>Scheme Procedure: <strong>list-&gt;u64vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003es64vector"></a>Scheme Procedure: <strong>list-&gt;s64vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003ef32vector"></a>Scheme Procedure: <strong>list-&gt;f32vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003ef64vector"></a>Scheme Procedure: <strong>list-&gt;f64vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003ec32vector"></a>Scheme Procedure: <strong>list-&gt;c32vector</strong> <em>lst</em></dt>
+<dt><a name="index-list_002d_003ec64vector"></a>Scheme Procedure: <strong>list-&gt;c64vector</strong> <em>lst</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fu8vector"></a>C Function: <strong>scm_list_to_u8vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fs8vector"></a>C Function: <strong>scm_list_to_s8vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fu16vector"></a>C Function: <strong>scm_list_to_u16vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fs16vector"></a>C Function: <strong>scm_list_to_s16vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fu32vector"></a>C Function: <strong>scm_list_to_u32vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fs32vector"></a>C Function: <strong>scm_list_to_s32vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fu64vector"></a>C Function: <strong>scm_list_to_u64vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fs64vector"></a>C Function: <strong>scm_list_to_s64vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005ff32vector"></a>C Function: <strong>scm_list_to_f32vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005ff64vector"></a>C Function: <strong>scm_list_to_f64vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fc32vector"></a>C Function: <strong>scm_list_to_c32vector</strong> <em>(lst)</em></dt>
+<dt><a name="index-scm_005flist_005fto_005fc64vector"></a>C Function: <strong>scm_list_to_c64vector</strong> <em>(lst)</em></dt>
+<dd><p>Return a newly allocated homogeneous numeric vector of the indicated type,
+initialized with the elements of the list <var>lst</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005ftake_005fu8vector"></a>C Function: <em>SCM</em> <strong>scm_take_u8vector</strong> <em>(const scm_t_uint8 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fs8vector"></a>C Function: <em>SCM</em> <strong>scm_take_s8vector</strong> <em>(const scm_t_int8 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fu16vector"></a>C Function: <em>SCM</em> <strong>scm_take_u16vector</strong> <em>(const scm_t_uint16 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fs16vector"></a>C Function: <em>SCM</em> <strong>scm_take_s16vector</strong> <em>(const scm_t_int16 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fu32vector"></a>C Function: <em>SCM</em> <strong>scm_take_u32vector</strong> <em>(const scm_t_uint32 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fs32vector"></a>C Function: <em>SCM</em> <strong>scm_take_s32vector</strong> <em>(const scm_t_int32 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fu64vector"></a>C Function: <em>SCM</em> <strong>scm_take_u64vector</strong> <em>(const scm_t_uint64 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fs64vector"></a>C Function: <em>SCM</em> <strong>scm_take_s64vector</strong> <em>(const scm_t_int64 *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005ff32vector"></a>C Function: <em>SCM</em> <strong>scm_take_f32vector</strong> <em>(const float *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005ff64vector"></a>C Function: <em>SCM</em> <strong>scm_take_f64vector</strong> <em>(const double *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fc32vector"></a>C Function: <em>SCM</em> <strong>scm_take_c32vector</strong> <em>(const float *data, size_t len)</em></dt>
+<dt><a name="index-scm_005ftake_005fc64vector"></a>C Function: <em>SCM</em> <strong>scm_take_c64vector</strong> <em>(const double *data, size_t len)</em></dt>
+<dd><p>Return a new uniform numeric vector of the indicated type and length
+that uses the memory pointed to by <var>data</var> to store its elements.
+This memory will eventually be freed with <code>free</code>.  The argument
+<var>len</var> specifies the number of elements in <var>data</var>, not its size
+in bytes.
+</p>
+<p>The <code>c32</code> and <code>c64</code> variants take a pointer to a C array of
+<code>float</code>s or <code>double</code>s.  The real parts of the complex numbers
+are at even indices in that array, the corresponding imaginary parts are
+at the following odd index.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fu8vector_005felements"></a>C Function: <em>const scm_t_uint8 *</em> <strong>scm_u8vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs8vector_005felements"></a>C Function: <em>const scm_t_int8 *</em> <strong>scm_s8vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fu16vector_005felements"></a>C Function: <em>const scm_t_uint16 *</em> <strong>scm_u16vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs16vector_005felements"></a>C Function: <em>const scm_t_int16 *</em> <strong>scm_s16vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fu32vector_005felements"></a>C Function: <em>const scm_t_uint32 *</em> <strong>scm_u32vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs32vector_005felements"></a>C Function: <em>const scm_t_int32 *</em> <strong>scm_s32vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fu64vector_005felements"></a>C Function: <em>const scm_t_uint64 *</em> <strong>scm_u64vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs64vector_005felements"></a>C Function: <em>const scm_t_int64 *</em> <strong>scm_s64vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005ff32vector_005felements"></a>C Function: <em>const float *</em> <strong>scm_f32vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005ff64vector_005felements"></a>C Function: <em>const double *</em> <strong>scm_f64vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fc32vector_005felements"></a>C Function: <em>const float *</em> <strong>scm_c32vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fc64vector_005felements"></a>C Function: <em>const double *</em> <strong>scm_c64vector_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dd><p>Like <code>scm_vector_elements</code> (see <a href="Vector-Accessing-from-C.html#Vector-Accessing-from-C">Vector Accessing from C</a>), but
+returns a pointer to the elements of a uniform numeric vector of the
+indicated kind.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fu8vector_005fwritable_005felements"></a>C Function: <em>scm_t_uint8 *</em> <strong>scm_u8vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs8vector_005fwritable_005felements"></a>C Function: <em>scm_t_int8 *</em> <strong>scm_s8vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fu16vector_005fwritable_005felements"></a>C Function: <em>scm_t_uint16 *</em> <strong>scm_u16vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs16vector_005fwritable_005felements"></a>C Function: <em>scm_t_int16 *</em> <strong>scm_s16vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fu32vector_005fwritable_005felements"></a>C Function: <em>scm_t_uint32 *</em> <strong>scm_u32vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs32vector_005fwritable_005felements"></a>C Function: <em>scm_t_int32 *</em> <strong>scm_s32vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fu64vector_005fwritable_005felements"></a>C Function: <em>scm_t_uint64 *</em> <strong>scm_u64vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fs64vector_005fwritable_005felements"></a>C Function: <em>scm_t_int64 *</em> <strong>scm_s64vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005ff32vector_005fwritable_005felements"></a>C Function: <em>float *</em> <strong>scm_f32vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005ff64vector_005fwritable_005felements"></a>C Function: <em>double *</em> <strong>scm_f64vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fc32vector_005fwritable_005felements"></a>C Function: <em>float *</em> <strong>scm_c32vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dt><a name="index-scm_005fc64vector_005fwritable_005felements"></a>C Function: <em>double *</em> <strong>scm_c64vector_writable_elements</strong> <em>(SCM vec, scm_t_array_handle *handle, size_t *lenp, ssize_t *incp)</em></dt>
+<dd><p>Like <code>scm_vector_writable_elements</code> (see <a href="Vector-Accessing-from-C.html#Vector-Accessing-from-C">Vector Accessing from C</a>), but returns a pointer to the elements of a uniform numeric vector
+of the indicated kind.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d4-and-Bytevectors.html#SRFI_002d4-and-Bytevectors" accesskey="n" rel="next">SRFI-4 and Bytevectors</a>, Previous: <a href="SRFI_002d4-Overview.html#SRFI_002d4-Overview" accesskey="p" rel="prev">SRFI-4 Overview</a>, Up: <a href="SRFI_002d4.html#SRFI_002d4" accesskey="u" rel="up">SRFI-4</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

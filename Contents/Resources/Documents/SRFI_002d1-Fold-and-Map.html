@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-1 Fold and Map</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-1 Fold and Map">
+<meta name="keywords" content="Guile Reference Manual: SRFI-1 Fold and Map">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d1.html#SRFI_002d1" rel="up" title="SRFI-1">
+<link href="SRFI_002d1-Filtering-and-Partitioning.html#SRFI_002d1-Filtering-and-Partitioning" rel="next" title="SRFI-1 Filtering and Partitioning">
+<link href="SRFI_002d1-Length-Append-etc.html#SRFI_002d1-Length-Append-etc" rel="prev" title="SRFI-1 Length Append etc">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d1-Fold-and-Map"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d1-Filtering-and-Partitioning.html#SRFI_002d1-Filtering-and-Partitioning" accesskey="n" rel="next">SRFI-1 Filtering and Partitioning</a>, Previous: <a href="SRFI_002d1-Length-Append-etc.html#SRFI_002d1-Length-Append-etc" accesskey="p" rel="prev">SRFI-1 Length Append etc</a>, Up: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="u" rel="up">SRFI-1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Fold_002c-Unfold-_0026-Map"></a>
+<h4 class="subsubsection">7.5.3.5 Fold, Unfold &amp; Map</h4>
+<a name="index-list-fold"></a>
+<a name="index-list-map"></a>
+
+
+<dl>
+<dt><a name="index-fold"></a>Scheme Procedure: <strong>fold</strong> <em>proc init lst1 lst2 &hellip;</em></dt>
+<dt><a name="index-fold_002dright"></a>Scheme Procedure: <strong>fold-right</strong> <em>proc init lst1 lst2 &hellip;</em></dt>
+<dd><p>Apply <var>proc</var> to the elements of <var>lst1</var> <var>lst2</var> &hellip; to
+build a result, and return that result.
+</p>
+<p>Each <var>proc</var> call is <code>(<var>proc</var> <var>elem1</var> <var>elem2</var>
+&hellip;  <var>previous</var>)</code>, where <var>elem1</var> is from <var>lst1</var>,
+<var>elem2</var> is from <var>lst2</var>, and so on.  <var>previous</var> is the return
+from the previous call to <var>proc</var>, or the given <var>init</var> for the
+first call.  If any list is empty, just <var>init</var> is returned.
+</p>
+<p><code>fold</code> works through the list elements from first to last.  The
+following shows a list reversal and the calls it makes,
+</p>
+<div class="example">
+<pre class="example">(fold cons '() '(1 2 3))
+
+(cons 1 '())
+(cons 2 '(1))
+(cons 3 '(2 1)
+&rArr; (3 2 1)
+</pre></div>
+
+<p><code>fold-right</code> works through the list elements from last to first,
+ie. from the right.  So for example the following finds the longest
+string, and the last among equal longest,
+</p>
+<div class="example">
+<pre class="example">(fold-right (lambda (str prev)
+              (if (&gt; (string-length str) (string-length prev))
+                  str
+                  prev))
+            &quot;&quot;
+            '(&quot;x&quot; &quot;abc&quot; &quot;xyz&quot; &quot;jk&quot;))
+&rArr; &quot;xyz&quot;
+</pre></div>
+
+<p>If <var>lst1</var> <var>lst2</var> &hellip; have different lengths, <code>fold</code>
+stops when the end of the shortest is reached; <code>fold-right</code>
+commences at the last element of the shortest.  Ie. elements past the
+length of the shortest are ignored in the other <var>lst</var>s.  At least
+one <var>lst</var> must be non-circular.
+</p>
+<p><code>fold</code> should be preferred over <code>fold-right</code> if the order of
+processing doesn&rsquo;t matter, or can be arranged either way, since
+<code>fold</code> is a little more efficient.
+</p>
+<p>The way <code>fold</code> builds a result from iterating is quite general,
+it can do more than other iterations like say <code>map</code> or
+<code>filter</code>.  The following for example removes adjacent duplicate
+elements from a list,
+</p>
+<div class="example">
+<pre class="example">(define (delete-adjacent-duplicates lst)
+  (fold-right (lambda (elem ret)
+                (if (equal? elem (first ret))
+                    ret
+                    (cons elem ret)))
+              (list (last lst))
+              lst))
+(delete-adjacent-duplicates '(1 2 3 3 4 4 4 5))
+&rArr; (1 2 3 4 5)
+</pre></div>
+
+<p>Clearly the same sort of thing can be done with a <code>for-each</code> and
+a variable in which to build the result, but a self-contained
+<var>proc</var> can be re-used in multiple contexts, where a
+<code>for-each</code> would have to be written out each time.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pair_002dfold"></a>Scheme Procedure: <strong>pair-fold</strong> <em>proc init lst1 lst2 &hellip;</em></dt>
+<dt><a name="index-pair_002dfold_002dright"></a>Scheme Procedure: <strong>pair-fold-right</strong> <em>proc init lst1 lst2 &hellip;</em></dt>
+<dd><p>The same as <code>fold</code> and <code>fold-right</code>, but apply <var>proc</var> to
+the pairs of the lists instead of the list elements.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-reduce"></a>Scheme Procedure: <strong>reduce</strong> <em>proc default lst</em></dt>
+<dt><a name="index-reduce_002dright"></a>Scheme Procedure: <strong>reduce-right</strong> <em>proc default lst</em></dt>
+<dd><p><code>reduce</code> is a variant of <code>fold</code>, where the first call to
+<var>proc</var> is on two elements from <var>lst</var>, rather than one element
+and a given initial value.
+</p>
+<p>If <var>lst</var> is empty, <code>reduce</code> returns <var>default</var> (this is
+the only use for <var>default</var>).  If <var>lst</var> has just one element
+then that&rsquo;s the return value.  Otherwise <var>proc</var> is called on the
+elements of <var>lst</var>.
+</p>
+<p>Each <var>proc</var> call is <code>(<var>proc</var> <var>elem</var> <var>previous</var>)</code>,
+where <var>elem</var> is from <var>lst</var> (the second and subsequent elements
+of <var>lst</var>), and <var>previous</var> is the return from the previous call
+to <var>proc</var>.  The first element of <var>lst</var> is the <var>previous</var>
+for the first call to <var>proc</var>.
+</p>
+<p>For example, the following adds a list of numbers, the calls made to
+<code>+</code> are shown.  (Of course <code>+</code> accepts multiple arguments
+and can add a list directly, with <code>apply</code>.)
+</p>
+<div class="example">
+<pre class="example">(reduce + 0 '(5 6 7)) &rArr; 18
+
+(+ 6 5)  &rArr; 11
+(+ 7 11) &rArr; 18
+</pre></div>
+
+<p><code>reduce</code> can be used instead of <code>fold</code> where the <var>init</var>
+value is an &ldquo;identity&rdquo;, meaning a value which under <var>proc</var>
+doesn&rsquo;t change the result, in this case 0 is an identity since
+<code>(+ 5 0)</code> is just 5.  <code>reduce</code> avoids that unnecessary call.
+</p>
+<p><code>reduce-right</code> is a similar variation on <code>fold-right</code>,
+working from the end (ie. the right) of <var>lst</var>.  The last element
+of <var>lst</var> is the <var>previous</var> for the first call to <var>proc</var>,
+and the <var>elem</var> values go from the second last.
+</p>
+<p><code>reduce</code> should be preferred over <code>reduce-right</code> if the
+order of processing doesn&rsquo;t matter, or can be arranged either way,
+since <code>reduce</code> is a little more efficient.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unfold"></a>Scheme Procedure: <strong>unfold</strong> <em>p f g seed [tail-gen]</em></dt>
+<dd><p><code>unfold</code> is defined as follows:
+</p>
+<div class="lisp">
+<pre class="lisp">(unfold p f g seed) =
+   (if (p seed) (tail-gen seed)
+       (cons (f seed)
+             (unfold p f g (g seed))))
+</pre></div>
+
+<dl compact="compact">
+<dt><var>p</var></dt>
+<dd><p>Determines when to stop unfolding.
+</p>
+</dd>
+<dt><var>f</var></dt>
+<dd><p>Maps each seed value to the corresponding list element.
+</p>
+</dd>
+<dt><var>g</var></dt>
+<dd><p>Maps each seed value to next seed value.
+</p>
+</dd>
+<dt><var>seed</var></dt>
+<dd><p>The state value for the unfold.
+</p>
+</dd>
+<dt><var>tail-gen</var></dt>
+<dd><p>Creates the tail of the list; defaults to <code>(lambda (x) '())</code>.
+</p></dd>
+</dl>
+
+<p><var>g</var> produces a series of seed values, which are mapped to list
+elements by <var>f</var>.  These elements are put into a list in
+left-to-right order, and <var>p</var> tells when to stop unfolding.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unfold_002dright"></a>Scheme Procedure: <strong>unfold-right</strong> <em>p f g seed [tail]</em></dt>
+<dd><p>Construct a list with the following loop.
+</p>
+<div class="lisp">
+<pre class="lisp">(let lp ((seed seed) (lis tail))
+   (if (p seed) lis
+       (lp (g seed)
+           (cons (f seed) lis))))
+</pre></div>
+
+<dl compact="compact">
+<dt><var>p</var></dt>
+<dd><p>Determines when to stop unfolding.
+</p>
+</dd>
+<dt><var>f</var></dt>
+<dd><p>Maps each seed value to the corresponding list element.
+</p>
+</dd>
+<dt><var>g</var></dt>
+<dd><p>Maps each seed value to next seed value.
+</p>
+</dd>
+<dt><var>seed</var></dt>
+<dd><p>The state value for the unfold.
+</p>
+</dd>
+<dt><var>tail</var></dt>
+<dd><p>The tail of the list; defaults to <code>'()</code>.
+</p></dd>
+</dl>
+
+</dd></dl>
+
+<dl>
+<dt><a name="index-map-1"></a>Scheme Procedure: <strong>map</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dd><p>Map the procedure over the list(s) <var>lst1</var>, <var>lst2</var>, &hellip; and
+return a list containing the results of the procedure applications.
+This procedure is extended with respect to R5RS, because the argument
+lists may have different lengths.  The result list will have the same
+length as the shortest argument lists.  The order in which <var>f</var>
+will be applied to the list element(s) is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-for_002deach-1"></a>Scheme Procedure: <strong>for-each</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dd><p>Apply the procedure <var>f</var> to each pair of corresponding elements of
+the list(s) <var>lst1</var>, <var>lst2</var>, &hellip;.  The return value is not
+specified.  This procedure is extended with respect to R5RS, because
+the argument lists may have different lengths.  The shortest argument
+list determines the number of times <var>f</var> is called.  <var>f</var> will
+be applied to the list elements in left-to-right order.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-append_002dmap"></a>Scheme Procedure: <strong>append-map</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dt><a name="index-append_002dmap_0021"></a>Scheme Procedure: <strong>append-map!</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dd><p>Equivalent to
+</p>
+<div class="lisp">
+<pre class="lisp">(apply append (map f clist1 clist2 ...))
+</pre></div>
+
+<p>and
+</p>
+<div class="lisp">
+<pre class="lisp">(apply append! (map f clist1 clist2 ...))
+</pre></div>
+
+<p>Map <var>f</var> over the elements of the lists, just as in the <code>map</code>
+function. However, the results of the applications are appended
+together to make the final result. <code>append-map</code> uses
+<code>append</code> to append the results together; <code>append-map!</code> uses
+<code>append!</code>.
+</p>
+<p>The dynamic order in which the various applications of <var>f</var> are
+made is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-map_0021"></a>Scheme Procedure: <strong>map!</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dd><p>Linear-update variant of <code>map</code> &ndash; <code>map!</code> is allowed, but not
+required, to alter the cons cells of <var>lst1</var> to construct the
+result list.
+</p>
+<p>The dynamic order in which the various applications of <var>f</var> are
+made is not specified. In the n-ary case, <var>lst2</var>, <var>lst3</var>,
+&hellip; must have at least as many elements as <var>lst1</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pair_002dfor_002deach"></a>Scheme Procedure: <strong>pair-for-each</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dd><p>Like <code>for-each</code>, but applies the procedure <var>f</var> to the pairs
+from which the argument lists are constructed, instead of the list
+elements.  The return value is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-filter_002dmap"></a>Scheme Procedure: <strong>filter-map</strong> <em>f lst1 lst2 &hellip;</em></dt>
+<dd><p>Like <code>map</code>, but only results from the applications of <var>f</var>
+which are true are saved in the result list.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d1-Filtering-and-Partitioning.html#SRFI_002d1-Filtering-and-Partitioning" accesskey="n" rel="next">SRFI-1 Filtering and Partitioning</a>, Previous: <a href="SRFI_002d1-Length-Append-etc.html#SRFI_002d1-Length-Append-etc" accesskey="p" rel="prev">SRFI-1 Length Append etc</a>, Up: <a href="SRFI_002d1.html#SRFI_002d1" accesskey="u" rel="up">SRFI-1</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

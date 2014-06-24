@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs arithmetic fixnums</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs arithmetic fixnums">
+<meta name="keywords" content="Guile Reference Manual: rnrs arithmetic fixnums">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums" rel="next" title="rnrs arithmetic flonums">
+<link href="rnrs-programs.html#rnrs-programs" rel="prev" title="rnrs programs">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-arithmetic-fixnums"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums" accesskey="n" rel="next">rnrs arithmetic flonums</a>, Previous: <a href="rnrs-programs.html#rnrs-programs" accesskey="p" rel="prev">rnrs programs</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-arithmetic-fixnums-1"></a>
+<h4 class="subsubsection">7.6.2.19 rnrs arithmetic fixnums</h4>
+
+<p>The <code>(rnrs arithmetic fixnums (6))</code> library provides procedures for
+performing arithmetic operations on an implementation-dependent range of
+exact integer values, which R6RS refers to as <em>fixnums</em>.  In Guile,
+the size of a fixnum is determined by the size of the <code>SCM</code> type; a
+single SCM struct is guaranteed to be able to hold an entire fixnum, 
+making fixnum computations particularly 
+efficient&mdash;(see <a href="The-SCM-Type.html#The-SCM-Type">The SCM Type</a>).  On 32-bit systems, the most 
+negative and most positive fixnum values are, respectively, -536870912 
+and 536870911.
+</p>
+<p>Unless otherwise specified, all of the procedures below take fixnums as
+arguments, and will raise an <code>&amp;assertion</code> condition if passed a 
+non-fixnum argument or an <code>&amp;implementation-restriction</code> condition 
+if their result is not itself a fixnum.
+</p>
+<dl>
+<dt><a name="index-fixnum_003f"></a>Scheme Procedure: <strong>fixnum?</strong> <em>obj</em></dt>
+<dd><p>Returns <code>#t</code> if <var>obj</var> is a fixnum, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fixnum_002dwidth"></a>Scheme Procedure: <strong>fixnum-width</strong></dt>
+<dt><a name="index-least_002dfixnum"></a>Scheme Procedure: <strong>least-fixnum</strong></dt>
+<dt><a name="index-greatest_002dfixnum"></a>Scheme Procedure: <strong>greatest-fixnum</strong></dt>
+<dd><p>These procedures return, respectively, the maximum number of bits 
+necessary to represent a fixnum value in Guile, the minimum fixnum
+value, and the maximum fixnum value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fx_003d_003f"></a>Scheme Procedure: <strong>fx=?</strong> <em>fx1 fx2 fx3 ...</em></dt>
+<dt><a name="index-fx_003e_003f"></a>Scheme Procedure: <strong>fx&gt;?</strong> <em>fx1 fx2 fx3 ...</em></dt>
+<dt><a name="index-fx_003c_003f"></a>Scheme Procedure: <strong>fx&lt;?</strong> <em>fx1 fx2 fx3 ...</em></dt>
+<dt><a name="index-fx_003e_003d_003f"></a>Scheme Procedure: <strong>fx&gt;=?</strong> <em>fx1 fx2 fx3 ...</em></dt>
+<dt><a name="index-fx_003c_003d_003f"></a>Scheme Procedure: <strong>fx&lt;=?</strong> <em>fx1 fx2 fx3 ...</em></dt>
+<dd><p>These procedures return <code>#t</code> if their fixnum arguments are
+(respectively): equal, monotonically increasing, monotonically
+decreasing, monotonically nondecreasing, or monotonically nonincreasing;
+<code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxzero_003f"></a>Scheme Procedure: <strong>fxzero?</strong> <em>fx</em></dt>
+<dt><a name="index-fxpositive_003f"></a>Scheme Procedure: <strong>fxpositive?</strong> <em>fx</em></dt>
+<dt><a name="index-fxnegative_003f"></a>Scheme Procedure: <strong>fxnegative?</strong> <em>fx</em></dt>
+<dt><a name="index-fxodd_003f"></a>Scheme Procedure: <strong>fxodd?</strong> <em>fx</em></dt>
+<dt><a name="index-fxeven_003f"></a>Scheme Procedure: <strong>fxeven?</strong> <em>fx</em></dt>
+<dd><p>These numerical predicates return <code>#t</code> if <var>fx</var> is,
+respectively, zero, greater than zero, less than zero, odd, or even;
+<code>#f</code> otherwise. 
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxmax"></a>Scheme Procedure: <strong>fxmax</strong> <em>fx1 fx2 ...</em></dt>
+<dt><a name="index-fxmin"></a>Scheme Procedure: <strong>fxmin</strong> <em>fx1 fx2 ...</em></dt>
+<dd><p>These procedures return the maximum or minimum of their arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fx_002b"></a>Scheme Procedure: <strong>fx+</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fx_002a"></a>Scheme Procedure: <strong>fx*</strong> <em>fx1 fx2</em></dt>
+<dd><p>These procedures return the sum or product of their arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fx_002d"></a>Scheme Procedure: <strong>fx-</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fx_002d-1"></a>Scheme Procedure: <strong>fx-</strong> <em>fx</em></dt>
+<dd><p>Returns the difference of <var>fx1</var> and <var>fx2</var>, or the negation of
+<var>fx</var>, if called with a single argument.
+</p>
+<p>An <code>&amp;assertion</code> condition is raised if the result is not itself a
+fixnum.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxdiv_002dand_002dmod"></a>Scheme Procedure: <strong>fxdiv-and-mod</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxdiv"></a>Scheme Procedure: <strong>fxdiv</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxmod"></a>Scheme Procedure: <strong>fxmod</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxdiv0_002dand_002dmod0"></a>Scheme Procedure: <strong>fxdiv0-and-mod0</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxdiv0"></a>Scheme Procedure: <strong>fxdiv0</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxmod0"></a>Scheme Procedure: <strong>fxmod0</strong> <em>fx1 fx2</em></dt>
+<dd><p>These procedures implement number-theoretic division on fixnums;
+See <a href="../rnrs base/index.html">(rnrs base)</a>, for a description of their semantics.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fx_002b_002fcarry"></a>Scheme Procedure: <strong>fx+/carry</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><p>Returns the two fixnum results of the following computation:
+</p><div class="lisp">
+<pre class="lisp">(let* ((s (+ fx1 fx2 fx3))
+       (s0 (mod0 s (expt 2 (fixnum-width))))
+       (s1 (div0 s (expt 2 (fixnum-width)))))
+  (values s0 s1))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-fx_002d_002fcarry"></a>Scheme Procedure: <strong>fx-/carry</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><p>Returns the two fixnum results of the following computation:
+</p><div class="lisp">
+<pre class="lisp">(let* ((d (- fx1 fx2 fx3))
+       (d0 (mod0 d (expt 2 (fixnum-width))))
+       (d1 (div0 d (expt 2 (fixnum-width)))))
+  (values d0 d1))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-fx_002a_002fcarry"></a>Scheme Procedure: <strong>fx*/carry</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><div class="lisp">
+<pre class="lisp">Returns the two fixnum results of the following computation:
+(let* ((s (+ (* fx1 fx2) fx3))
+       (s0 (mod0 s (expt 2 (fixnum-width))))
+       (s1 (div0 s (expt 2 (fixnum-width)))))
+  (values s0 s1))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-fxnot"></a>Scheme Procedure: <strong>fxnot</strong> <em>fx</em></dt>
+<dt><a name="index-fxand"></a>Scheme Procedure: <strong>fxand</strong> <em>fx1 ...</em></dt>
+<dt><a name="index-fxior"></a>Scheme Procedure: <strong>fxior</strong> <em>fx1 ...</em></dt>
+<dt><a name="index-fxxor"></a>Scheme Procedure: <strong>fxxor</strong> <em>fx1 ...</em></dt>
+<dd><p>These procedures are identical to the <code>lognot</code>, <code>logand</code>,
+<code>logior</code>, and <code>logxor</code> procedures provided by Guile&rsquo;s core
+library.  See <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>, for documentation.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxif"></a>Scheme Procedure: <strong>fxif</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><p>Returns the bitwise &ldquo;if&rdquo; of its fixnum arguments.  The bit at position
+<code>i</code> in the return value will be the <code>i</code>th bit from <var>fx2</var>
+if the <code>i</code>th bit of <var>fx1</var> is 1, the <code>i</code>th bit from 
+<var>fx3</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxbit_002dcount"></a>Scheme Procedure: <strong>fxbit-count</strong> <em>fx</em></dt>
+<dd><p>Returns the number of 1 bits in the two&rsquo;s complement representation of
+<var>fx</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxlength"></a>Scheme Procedure: <strong>fxlength</strong> <em>fx</em></dt>
+<dd><p>Returns the number of bits necessary to represent <var>fx</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxfirst_002dbit_002dset"></a>Scheme Procedure: <strong>fxfirst-bit-set</strong> <em>fx</em></dt>
+<dd><p>Returns the index of the least significant 1 bit in the two&rsquo;s complement
+representation of <var>fx</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxbit_002dset_003f"></a>Scheme Procedure: <strong>fxbit-set?</strong> <em>fx1 fx2</em></dt>
+<dd><p>Returns <code>#t</code> if the <var>fx2</var>th bit in the two&rsquo;s complement
+representation of <var>fx1</var> is 1, <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxcopy_002dbit"></a>Scheme Procedure: <strong>fxcopy-bit</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><p>Returns the result of setting the <var>fx2</var>th bit of <var>fx1</var> to the
+<var>fx2</var>th bit of <var>fx3</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxbit_002dfield"></a>Scheme Procedure: <strong>fxbit-field</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><p>Returns the integer representation of the contiguous sequence of bits in
+<var>fx1</var> that starts at position <var>fx2</var> (inclusive) and ends at
+position <var>fx3</var> (exclusive).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxcopy_002dbit_002dfield"></a>Scheme Procedure: <strong>fxcopy-bit-field</strong> <em>fx1 fx2 fx3 fx4</em></dt>
+<dd><p>Returns the result of replacing the bit field in <var>fx1</var> with start
+and end positions <var>fx2</var> and <var>fx3</var> with the corresponding bit
+field from <var>fx4</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxarithmetic_002dshift"></a>Scheme Procedure: <strong>fxarithmetic-shift</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxarithmetic_002dshift_002dleft"></a>Scheme Procedure: <strong>fxarithmetic-shift-left</strong> <em>fx1 fx2</em></dt>
+<dt><a name="index-fxarithmetic_002dshift_002dright"></a>Scheme Procedure: <strong>fxarithmetic-shift-right</strong> <em>fx1 fx2</em></dt>
+<dd><p>Returns the result of shifting the bits of <var>fx1</var> right or left by
+the <var>fx2</var> positions.  <code>fxarithmetic-shift</code> is identical
+to <code>fxarithmetic-shift-left</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxrotate_002dbit_002dfield"></a>Scheme Procedure: <strong>fxrotate-bit-field</strong> <em>fx1 fx2 fx3 fx4</em></dt>
+<dd><p>Returns the result of cyclically permuting the bit field in <var>fx1</var>
+with start and end positions <var>fx2</var> and <var>fx3</var> by <var>fx4</var> bits
+in the direction of more significant bits.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-fxreverse_002dbit_002dfield"></a>Scheme Procedure: <strong>fxreverse-bit-field</strong> <em>fx1 fx2 fx3</em></dt>
+<dd><p>Returns the result of reversing the order of the bits of <var>fx1</var> 
+between position <var>fx2</var> (inclusive) and position <var>fx3</var> 
+(exclusive).
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs-arithmetic-flonums.html#rnrs-arithmetic-flonums" accesskey="n" rel="next">rnrs arithmetic flonums</a>, Previous: <a href="rnrs-programs.html#rnrs-programs" accesskey="p" rel="prev">rnrs programs</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

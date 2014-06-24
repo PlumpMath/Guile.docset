@@ -1,0 +1,390 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Array Procedures</title>
+
+<meta name="description" content="Guile Reference Manual: Array Procedures">
+<meta name="keywords" content="Guile Reference Manual: Array Procedures">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Arrays.html#Arrays" rel="up" title="Arrays">
+<link href="Shared-Arrays.html#Shared-Arrays" rel="next" title="Shared Arrays">
+<link href="Array-Syntax.html#Array-Syntax" rel="prev" title="Array Syntax">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Array-Procedures"></a>
+<div class="header">
+<p>
+Next: <a href="Shared-Arrays.html#Shared-Arrays" accesskey="n" rel="next">Shared Arrays</a>, Previous: <a href="Array-Syntax.html#Array-Syntax" accesskey="p" rel="prev">Array Syntax</a>, Up: <a href="Arrays.html#Arrays" accesskey="u" rel="up">Arrays</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Array-Procedures-1"></a>
+<h4 class="subsubsection">6.7.5.2 Array Procedures</h4>
+
+<p>When an array is created, the range of each dimension must be
+specified, e.g., to create a 2x3 array with a zero-based index:
+</p>
+<div class="example">
+<pre class="example">(make-array 'ho 2 3) &rArr; #2((ho ho ho) (ho ho ho))
+</pre></div>
+
+<p>The range of each dimension can also be given explicitly, e.g., another
+way to create the same array:
+</p>
+<div class="example">
+<pre class="example">(make-array 'ho '(0 1) '(0 2)) &rArr; #2((ho ho ho) (ho ho ho))
+</pre></div>
+
+<p>The following procedures can be used with arrays (or vectors).  An
+argument shown as <var>idx</var>&hellip; means one parameter for each
+dimension in the array.  A <var>idxlist</var> argument means a list of such
+values, one for each dimension.
+</p>
+
+<dl>
+<dt><a name="index-array_003f"></a>Scheme Procedure: <strong>array?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005farray_005fp"></a>C Function: <strong>scm_array_p</strong> <em>(obj, unused)</em></dt>
+<dd><p>Return <code>#t</code> if the <var>obj</var> is an array, and <code>#f</code> if
+not.
+</p>
+<p>The second argument to scm_array_p is there for historical reasons,
+but it is not used.  You should always pass <code>SCM_UNDEFINED</code> as
+its value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-typed_002darray_003f"></a>Scheme Procedure: <strong>typed-array?</strong> <em>obj type</em></dt>
+<dt><a name="index-scm_005ftyped_005farray_005fp"></a>C Function: <strong>scm_typed_array_p</strong> <em>(obj, type)</em></dt>
+<dd><p>Return <code>#t</code> if the <var>obj</var> is an array of type <var>type</var>, and
+<code>#f</code> if not.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005farray"></a>C Function: <em>int</em> <strong>scm_is_array</strong> <em>(SCM obj)</em></dt>
+<dd><p>Return <code>1</code> if the <var>obj</var> is an array and <code>0</code> if not.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fis_005ftyped_005farray"></a>C Function: <em>int</em> <strong>scm_is_typed_array</strong> <em>(SCM obj, SCM type)</em></dt>
+<dd><p>Return <code>0</code> if the <var>obj</var> is an array of type <var>type</var>, and
+<code>1</code> if not.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002darray"></a>Scheme Procedure: <strong>make-array</strong> <em>fill bound &hellip;</em></dt>
+<dt><a name="index-scm_005fmake_005farray"></a>C Function: <strong>scm_make_array</strong> <em>(fill, bounds)</em></dt>
+<dd><p>Equivalent to <code>(make-typed-array #t <var>fill</var> <var>bound</var> ...)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dtyped_002darray"></a>Scheme Procedure: <strong>make-typed-array</strong> <em>type fill bound &hellip;</em></dt>
+<dt><a name="index-scm_005fmake_005ftyped_005farray"></a>C Function: <strong>scm_make_typed_array</strong> <em>(type, fill, bounds)</em></dt>
+<dd><p>Create and return an array that has as many dimensions as there are
+<var>bound</var>s and (maybe) fill it with <var>fill</var>.
+</p>
+<p>The underlying storage vector is created according to <var>type</var>,
+which must be a symbol whose name is the &lsquo;vectag&rsquo; of the array as
+explained above, or <code>#t</code> for ordinary, non-specialized arrays.
+</p>
+<p>For example, using the symbol <code>f64</code> for <var>type</var> will create an
+array that uses a <code>f64vector</code> for storing its elements, and
+<code>a</code> will use a string.
+</p>
+<p>When <var>fill</var> is not the special <em>unspecified</em> value, the new
+array is filled with <var>fill</var>.  Otherwise, the initial contents of
+the array is unspecified.  The special <em>unspecified</em> value is
+stored in the variable <code>*unspecified*</code> so that for example
+<code>(make-typed-array 'u32 *unspecified* 4)</code> creates a uninitialized
+<code>u32</code> vector of length 4.
+</p>
+<p>Each <var>bound</var> may be a positive non-zero integer <var>n</var>, in which
+case the index for that dimension can range from 0 through <var>n</var>-1; or
+an explicit index range specifier in the form <code>(LOWER UPPER)</code>,
+where both <var>lower</var> and <var>upper</var> are integers, possibly less than
+zero, and possibly the same number (however, <var>lower</var> cannot be
+greater than <var>upper</var>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_002d_003earray"></a>Scheme Procedure: <strong>list-&gt;array</strong> <em>dimspec list</em></dt>
+<dd><p>Equivalent to <code>(list-&gt;typed-array #t <var>dimspec</var>
+<var>list</var>)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_002d_003etyped_002darray"></a>Scheme Procedure: <strong>list-&gt;typed-array</strong> <em>type dimspec list</em></dt>
+<dt><a name="index-scm_005flist_005fto_005ftyped_005farray"></a>C Function: <strong>scm_list_to_typed_array</strong> <em>(type, dimspec, list)</em></dt>
+<dd><p>Return an array of the type indicated by <var>type</var> with elements the
+same as those of <var>list</var>.
+</p>
+<p>The argument <var>dimspec</var> determines the number of dimensions of the
+array and their lower bounds.  When <var>dimspec</var> is an exact integer,
+it gives the number of dimensions directly and all lower bounds are
+zero.  When it is a list of exact integers, then each element is the
+lower index bound of a dimension, and there will be as many dimensions
+as elements in the list.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dtype"></a>Scheme Procedure: <strong>array-type</strong> <em>array</em></dt>
+<dt><a name="index-scm_005farray_005ftype"></a>C Function: <strong>scm_array_type</strong> <em>(array)</em></dt>
+<dd><p>Return the type of <var>array</var>.  This is the &lsquo;vectag&rsquo; used for
+printing <var>array</var> (or <code>#t</code> for ordinary arrays) and can be
+used with <code>make-typed-array</code> to create an array of the same kind
+as <var>array</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dref"></a>Scheme Procedure: <strong>array-ref</strong> <em>array idx &hellip;</em></dt>
+<dt><a name="index-scm_005farray_005fref"></a>C Function: <strong>scm_array_ref</strong> <em>(array, idxlist)</em></dt>
+<dd><p>Return the element at <code>(idx &hellip;)</code> in <var>array</var>.
+</p>
+<div class="example">
+<pre class="example">(define a (make-array 999 '(1 2) '(3 4)))
+(array-ref a 2 4) &rArr; 999
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-array_002din_002dbounds_003f"></a>Scheme Procedure: <strong>array-in-bounds?</strong> <em>array idx &hellip;</em></dt>
+<dt><a name="index-scm_005farray_005fin_005fbounds_005fp"></a>C Function: <strong>scm_array_in_bounds_p</strong> <em>(array, idxlist)</em></dt>
+<dd><p>Return <code>#t</code> if the given indices would be acceptable to
+<code>array-ref</code>.
+</p>
+<div class="example">
+<pre class="example">(define a (make-array #f '(1 2) '(3 4)))
+(array-in-bounds? a 2 3) &rArr; #t
+(array-in-bounds? a 0 0) &rArr; #f
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-array_002dset_0021"></a>Scheme Procedure: <strong>array-set!</strong> <em>array obj idx &hellip;</em></dt>
+<dt><a name="index-scm_005farray_005fset_005fx"></a>C Function: <strong>scm_array_set_x</strong> <em>(array, obj, idxlist)</em></dt>
+<dd><p>Set the element at <code>(idx &hellip;)</code> in <var>array</var> to <var>obj</var>.
+The return value is unspecified.
+</p>
+<div class="example">
+<pre class="example">(define a (make-array #f '(0 1) '(0 1)))
+(array-set! a #t 1 1)
+a &rArr; #2((#f #f) (#f #t))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-array_002dshape"></a>Scheme Procedure: <strong>array-shape</strong> <em>array</em></dt>
+<dt><a name="index-array_002ddimensions"></a>Scheme Procedure: <strong>array-dimensions</strong> <em>array</em></dt>
+<dt><a name="index-scm_005farray_005fdimensions"></a>C Function: <strong>scm_array_dimensions</strong> <em>(array)</em></dt>
+<dd><p>Return a list of the bounds for each dimension of <var>array</var>.
+</p>
+<p><code>array-shape</code> gives <code>(<var>lower</var> <var>upper</var>)</code> for each
+dimension.  <code>array-dimensions</code> instead returns just
+<em><var>upper</var>+1</em> for dimensions with a 0 lower bound.  Both are
+suitable as input to <code>make-array</code>.
+</p>
+<p>For example,
+</p>
+<div class="example">
+<pre class="example">(define a (make-array 'foo '(-1 3) 5))
+(array-shape a)      &rArr; ((-1 3) (0 4))
+(array-dimensions a) &rArr; ((-1 3) 5)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-array_002dlength"></a>Scheme Procedure: <strong>array-length</strong> <em>array</em></dt>
+<dt><a name="index-scm_005farray_005flength"></a>C Function: <strong>scm_array_length</strong> <em>(array)</em></dt>
+<dt><a name="index-size_005ft"></a>C Function: <strong>size_t</strong> <em>scm_c_array_length (array)</em></dt>
+<dd><p>Return the length of an array: its first dimension. It is an error to
+ask for the length of an array of rank 0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002drank"></a>Scheme Procedure: <strong>array-rank</strong> <em>array</em></dt>
+<dt><a name="index-scm_005farray_005frank"></a>C Function: <strong>scm_array_rank</strong> <em>(array)</em></dt>
+<dd><p>Return the rank of <var>array</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005farray_005frank"></a>C Function: <em>size_t</em> <strong>scm_c_array_rank</strong> <em>(SCM array)</em></dt>
+<dd><p>Return the rank of <var>array</var> as a <code>size_t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002d_003elist"></a>Scheme Procedure: <strong>array-&gt;list</strong> <em>array</em></dt>
+<dt><a name="index-scm_005farray_005fto_005flist"></a>C Function: <strong>scm_array_to_list</strong> <em>(array)</em></dt>
+<dd><p>Return a list consisting of all the elements, in order, of
+<var>array</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dcopy_0021"></a>Scheme Procedure: <strong>array-copy!</strong> <em>src dst</em></dt>
+<dt><a name="index-array_002dcopy_002din_002dorder_0021"></a>Scheme Procedure: <strong>array-copy-in-order!</strong> <em>src dst</em></dt>
+<dt><a name="index-scm_005farray_005fcopy_005fx"></a>C Function: <strong>scm_array_copy_x</strong> <em>(src, dst)</em></dt>
+<dd><p>Copy every element from vector or array <var>src</var> to the corresponding
+element of <var>dst</var>.  <var>dst</var> must have the same rank as <var>src</var>,
+and be at least as large in each dimension.  The return value is
+unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dfill_0021"></a>Scheme Procedure: <strong>array-fill!</strong> <em>array fill</em></dt>
+<dt><a name="index-scm_005farray_005ffill_005fx"></a>C Function: <strong>scm_array_fill_x</strong> <em>(array, fill)</em></dt>
+<dd><p>Store <var>fill</var> in every element of <var>array</var>.  The value returned
+is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dequal_003f"></a>Scheme Procedure: <strong>array-equal?</strong> <em>array &hellip;</em></dt>
+<dd><p>Return <code>#t</code> if all arguments are arrays with the same shape, the
+same type, and have corresponding elements which are either
+<code>equal?</code> or <code>array-equal?</code>.  This function differs from
+<code>equal?</code> (see <a href="Equality.html#Equality">Equality</a>) in that all arguments must be arrays.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-array_002dmap_0021"></a>Scheme Procedure: <strong>array-map!</strong> <em>dst proc src &hellip;</em></dt>
+<dt><a name="index-array_002dmap_002din_002dorder_0021"></a>Scheme Procedure: <strong>array-map-in-order!</strong> <em>dst proc src1 &hellip; srcN</em></dt>
+<dt><a name="index-scm_005farray_005fmap_005fx"></a>C Function: <strong>scm_array_map_x</strong> <em>(dst, proc, srclist)</em></dt>
+<dd><p>Set each element of the <var>dst</var> array to values obtained from calls
+to <var>proc</var>.  The value returned is unspecified.
+</p>
+<p>Each call is <code>(<var>proc</var> <var>elem1</var> &hellip; <var>elemN</var>)</code>,
+where each <var>elem</var> is from the corresponding <var>src</var> array, at
+the <var>dst</var> index.  <code>array-map-in-order!</code> makes the calls in
+row-major order, <code>array-map!</code> makes them in an unspecified order.
+</p>
+<p>The <var>src</var> arrays must have the same number of dimensions as
+<var>dst</var>, and must have a range for each dimension which covers the
+range in <var>dst</var>.  This ensures all <var>dst</var> indices are valid in
+each <var>src</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dfor_002deach"></a>Scheme Procedure: <strong>array-for-each</strong> <em>proc src1 src2 &hellip;</em></dt>
+<dt><a name="index-scm_005farray_005ffor_005feach"></a>C Function: <strong>scm_array_for_each</strong> <em>(proc, src1, srclist)</em></dt>
+<dd><p>Apply <var>proc</var> to each tuple of elements of <var>src1</var> <var>src2</var>
+&hellip;, in row-major order.  The value returned is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-array_002dindex_002dmap_0021"></a>Scheme Procedure: <strong>array-index-map!</strong> <em>dst proc</em></dt>
+<dt><a name="index-scm_005farray_005findex_005fmap_005fx"></a>C Function: <strong>scm_array_index_map_x</strong> <em>(dst, proc)</em></dt>
+<dd><p>Set each element of the <var>dst</var> array to values returned by calls to
+<var>proc</var>.  The value returned is unspecified.
+</p>
+<p>Each call is <code>(<var>proc</var> <var>i1</var> &hellip; <var>iN</var>)</code>, where
+<var>i1</var>&hellip;<var>iN</var> is the destination index, one parameter for
+each dimension.  The order in which the calls are made is unspecified.
+</p>
+<p>For example, to create a <em>4x4</em> matrix representing a
+cyclic group,
+</p>
+<div class="example">
+<pre class="example">    / 0 1 2 3 \
+    | 1 2 3 0 |
+    | 2 3 0 1 |
+    \ 3 0 1 2 /
+</pre></div>
+
+<div class="example">
+<pre class="example">(define a (make-array #f 4 4))
+(array-index-map! a (lambda (i j)
+                      (modulo (+ i j) 4)))
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-uniform_002darray_002dread_0021"></a>Scheme Procedure: <strong>uniform-array-read!</strong> <em>ra [port_or_fd [start [end]]]</em></dt>
+<dt><a name="index-scm_005funiform_005farray_005fread_005fx"></a>C Function: <strong>scm_uniform_array_read_x</strong> <em>(ra, port_or_fd, start, end)</em></dt>
+<dd><p>Attempt to read all elements of array <var>ra</var>, in lexicographic order, as
+binary objects from <var>port_or_fd</var>.
+If an end of file is encountered,
+the objects up to that point are put into <var>ra</var>
+(starting at the beginning) and the remainder of the array is
+unchanged.
+</p>
+<p>The optional arguments <var>start</var> and <var>end</var> allow
+a specified region of a vector (or linearized array) to be read,
+leaving the remainder of the vector unchanged.
+</p>
+<p><code>uniform-array-read!</code> returns the number of objects read.
+<var>port_or_fd</var> may be omitted, in which case it defaults to the value
+returned by <code>(current-input-port)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-uniform_002darray_002dwrite"></a>Scheme Procedure: <strong>uniform-array-write</strong> <em>ra [port_or_fd [start [end]]]</em></dt>
+<dt><a name="index-scm_005funiform_005farray_005fwrite"></a>C Function: <strong>scm_uniform_array_write</strong> <em>(ra, port_or_fd, start, end)</em></dt>
+<dd><p>Writes all elements of <var>ra</var> as binary objects to
+<var>port_or_fd</var>.
+</p>
+<p>The optional arguments <var>start</var>
+and <var>end</var> allow
+a specified region of a vector (or linearized array) to be written.
+</p>
+<p>The number of objects actually written is returned.
+<var>port_or_fd</var> may be
+omitted, in which case it defaults to the value returned by
+<code>(current-output-port)</code>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Shared-Arrays.html#Shared-Arrays" accesskey="n" rel="next">Shared Arrays</a>, Previous: <a href="Array-Syntax.html#Array-Syntax" accesskey="p" rel="prev">Array Syntax</a>, Up: <a href="Arrays.html#Arrays" accesskey="u" rel="up">Arrays</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

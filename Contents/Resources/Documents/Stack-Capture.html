@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Stack Capture</title>
+
+<meta name="description" content="Guile Reference Manual: Stack Capture">
+<meta name="keywords" content="Guile Reference Manual: Stack Capture">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Evaluation-Model.html#Evaluation-Model" rel="up" title="Evaluation Model">
+<link href="Stacks.html#Stacks" rel="next" title="Stacks">
+<link href="Evaluation-Model.html#Evaluation-Model" rel="prev" title="Evaluation Model">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Stack-Capture"></a>
+<div class="header">
+<p>
+Next: <a href="Stacks.html#Stacks" accesskey="n" rel="next">Stacks</a>, Up: <a href="Evaluation-Model.html#Evaluation-Model" accesskey="u" rel="up">Evaluation Model</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Stack-Capture-1"></a>
+<h4 class="subsubsection">6.25.1.1 Stack Capture</h4>
+
+<p>A Scheme program can use the <code>make-stack</code> primitive anywhere in its
+code, with first arg <code>#t</code>, to construct a Scheme value that
+describes the Scheme stack at that point.
+</p>
+<div class="lisp">
+<pre class="lisp">(make-stack #t)
+&rArr;
+#&lt;stack 25205a0&gt;
+</pre></div>
+
+<p>Use <code>start-stack</code> to limit the stack extent captured by future
+<code>make-stack</code> calls.
+</p>
+<dl>
+<dt><a name="index-make_002dstack"></a>Scheme Procedure: <strong>make-stack</strong> <em>obj arg &hellip;</em></dt>
+<dt><a name="index-scm_005fmake_005fstack"></a>C Function: <strong>scm_make_stack</strong> <em>(obj, args)</em></dt>
+<dd><p>Create a new stack. If <var>obj</var> is <code>#t</code>, the current
+evaluation stack is used for creating the stack frames,
+otherwise the frames are taken from <var>obj</var> (which must be
+a continuation or a frame object).
+</p>
+<p><var>arg</var> &hellip; can be any combination of integer, procedure, prompt
+tag and <code>#t</code> values.
+</p>
+<p>These values specify various ways of cutting away uninteresting
+stack frames from the top and bottom of the stack that
+<code>make-stack</code> returns.  They come in pairs like this:
+<code>(<var>inner_cut_1</var> <var>outer_cut_1</var> <var>inner_cut_2</var>
+<var>outer_cut_2</var> &hellip;)</code>.
+</p>
+<p>Each <var>inner_cut_i</var> can be <code>#t</code>, an integer, a prompt
+tag, or a procedure.  <code>#t</code> means to cut away all frames up
+to but excluding the first user module frame.  An integer means
+to cut away exactly that number of frames.  A prompt tag means
+to cut away all frames that are inside a prompt with the given
+tag. A procedure means to cut away all frames up to but
+excluding the application frame whose procedure matches the
+specified one.
+</p>
+<p>Each <var>outer_cut_i</var> can be an integer, a prompt tag, or a
+procedure.  An integer means to cut away that number of frames.
+A prompt tag means to cut away all frames that are outside a
+prompt with the given tag. A procedure means to cut away
+frames down to but excluding the application frame whose
+procedure matches the specified one.
+</p>
+<p>If the <var>outer_cut_i</var> of the last pair is missing, it is
+taken as 0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-start_002dstack"></a>Scheme Syntax: <strong>start-stack</strong> <em>id exp</em></dt>
+<dd><p>Evaluate <var>exp</var> on a new calling stack with identity <var>id</var>.  If
+<var>exp</var> is interrupted during evaluation, backtraces will not display
+frames farther back than <var>exp</var>&rsquo;s top-level form.  This macro is a
+way of artificially limiting backtraces and stack procedures, largely as
+a convenience to the user.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Stacks.html#Stacks" accesskey="n" rel="next">Stacks</a>, Up: <a href="Evaluation-Model.html#Evaluation-Model" accesskey="u" rel="up">Evaluation Model</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

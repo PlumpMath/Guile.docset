@@ -1,0 +1,382 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Regexp Functions</title>
+
+<meta name="description" content="Guile Reference Manual: Regexp Functions">
+<meta name="keywords" content="Guile Reference Manual: Regexp Functions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Regular-Expressions.html#Regular-Expressions" rel="up" title="Regular Expressions">
+<link href="Match-Structures.html#Match-Structures" rel="next" title="Match Structures">
+<link href="Regular-Expressions.html#Regular-Expressions" rel="prev" title="Regular Expressions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Regexp-Functions"></a>
+<div class="header">
+<p>
+Next: <a href="Match-Structures.html#Match-Structures" accesskey="n" rel="next">Match Structures</a>, Up: <a href="Regular-Expressions.html#Regular-Expressions" accesskey="u" rel="up">Regular Expressions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Regexp-Functions-1"></a>
+<h4 class="subsection">6.15.1 Regexp Functions</h4>
+
+<p>By default, Guile supports POSIX extended regular expressions.
+That means that the characters &lsquo;<samp>(</samp>&rsquo;, &lsquo;<samp>)</samp>&rsquo;, &lsquo;<samp>+</samp>&rsquo; and
+&lsquo;<samp>?</samp>&rsquo; are special, and must be escaped if you wish to match the
+literal characters.
+</p>
+<p>This regular expression interface was modeled after that
+implemented by SCSH, the Scheme Shell.  It is intended to be
+upwardly compatible with SCSH regular expressions.
+</p>
+<p>Zero bytes (<code>#\nul</code>) cannot be used in regex patterns or input
+strings, since the underlying C functions treat that as the end of
+string.  If there&rsquo;s a zero byte an error is thrown.
+</p>
+<p>Internally, patterns and input strings are converted to the current
+locale&rsquo;s encoding, and then passed to the C library&rsquo;s regular expression
+routines (see <a href="http://www.gnu.org/software/libc/manual/html_node/Regular-Expressions.html#Regular-Expressions">Regular Expressions</a> in <cite>The GNU C Library
+Reference Manual</cite>).  The returned match structures always point to
+characters in the strings, not to individual bytes, even in the case of
+multi-byte encodings.
+</p>
+<dl>
+<dt><a name="index-string_002dmatch"></a>Scheme Procedure: <strong>string-match</strong> <em>pattern str [start]</em></dt>
+<dd><p>Compile the string <var>pattern</var> into a regular expression and compare
+it with <var>str</var>.  The optional numeric argument <var>start</var> specifies
+the position of <var>str</var> at which to begin matching.
+</p>
+<p><code>string-match</code> returns a <em>match structure</em> which
+describes what, if anything, was matched by the regular
+expression.  See <a href="Match-Structures.html#Match-Structures">Match Structures</a>.  If <var>str</var> does not match
+<var>pattern</var> at all, <code>string-match</code> returns <code>#f</code>.
+</p></dd></dl>
+
+<p>Two examples of a match follow.  In the first example, the pattern
+matches the four digits in the match string.  In the second, the pattern
+matches nothing.
+</p>
+<div class="example">
+<pre class="example">(string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002&quot;)
+&rArr; #(&quot;blah2002&quot; (4 . 8))
+
+(string-match &quot;[A-Za-z]&quot; &quot;123456&quot;)
+&rArr; #f
+</pre></div>
+
+<p>Each time <code>string-match</code> is called, it must compile its
+<var>pattern</var> argument into a regular expression structure.  This
+operation is expensive, which makes <code>string-match</code> inefficient if
+the same regular expression is used several times (for example, in a
+loop).  For better performance, you can compile a regular expression in
+advance and then match strings against the compiled regexp.
+</p>
+<dl>
+<dt><a name="index-make_002dregexp"></a>Scheme Procedure: <strong>make-regexp</strong> <em>pat flag&hellip;</em></dt>
+<dt><a name="index-scm_005fmake_005fregexp"></a>C Function: <strong>scm_make_regexp</strong> <em>(pat, flaglst)</em></dt>
+<dd><p>Compile the regular expression described by <var>pat</var>, and
+return the compiled regexp structure.  If <var>pat</var> does not
+describe a legal regular expression, <code>make-regexp</code> throws
+a <code>regular-expression-syntax</code> error.
+</p>
+<p>The <var>flag</var> arguments change the behavior of the compiled
+regular expression.  The following values may be supplied:
+</p>
+<dl>
+<dt><a name="index-regexp_002ficase"></a>Variable: <strong>regexp/icase</strong></dt>
+<dd><p>Consider uppercase and lowercase letters to be the same when
+matching.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-regexp_002fnewline"></a>Variable: <strong>regexp/newline</strong></dt>
+<dd><p>If a newline appears in the target string, then permit the
+&lsquo;<samp>^</samp>&rsquo; and &lsquo;<samp>$</samp>&rsquo; operators to match immediately after or
+immediately before the newline, respectively.  Also, the
+&lsquo;<samp>.</samp>&rsquo; and &lsquo;<samp>[^...]</samp>&rsquo; operators will never match a newline
+character.  The intent of this flag is to treat the target
+string as a buffer containing many lines of text, and the
+regular expression as a pattern that may match a single one of
+those lines.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-regexp_002fbasic"></a>Variable: <strong>regexp/basic</strong></dt>
+<dd><p>Compile a basic (&ldquo;obsolete&rdquo;) regexp instead of the extended
+(&ldquo;modern&rdquo;) regexps that are the default.  Basic regexps do
+not consider &lsquo;<samp>|</samp>&rsquo;, &lsquo;<samp>+</samp>&rsquo; or &lsquo;<samp>?</samp>&rsquo; to be special
+characters, and require the &lsquo;<samp>{...}</samp>&rsquo; and &lsquo;<samp>(...)</samp>&rsquo;
+metacharacters to be backslash-escaped (see <a href="Backslash-Escapes.html#Backslash-Escapes">Backslash Escapes</a>).  There are several other differences between basic
+and extended regular expressions, but these are the most
+significant.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-regexp_002fextended"></a>Variable: <strong>regexp/extended</strong></dt>
+<dd><p>Compile an extended regular expression rather than a basic
+regexp.  This is the default behavior; this flag will not
+usually be needed.  If a call to <code>make-regexp</code> includes
+both <code>regexp/basic</code> and <code>regexp/extended</code> flags, the
+one which comes last will override the earlier one.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-regexp_002dexec"></a>Scheme Procedure: <strong>regexp-exec</strong> <em>rx str [start [flags]]</em></dt>
+<dt><a name="index-scm_005fregexp_005fexec"></a>C Function: <strong>scm_regexp_exec</strong> <em>(rx, str, start, flags)</em></dt>
+<dd><p>Match the compiled regular expression <var>rx</var> against
+<code>str</code>.  If the optional integer <var>start</var> argument is
+provided, begin matching from that position in the string.
+Return a match structure describing the results of the match,
+or <code>#f</code> if no match could be found.
+</p>
+<p>The <var>flags</var> argument changes the matching behavior.  The following
+flag values may be supplied, use <code>logior</code> (see <a href="Bitwise-Operations.html#Bitwise-Operations">Bitwise Operations</a>) to combine them,
+</p>
+<dl>
+<dt><a name="index-regexp_002fnotbol"></a>Variable: <strong>regexp/notbol</strong></dt>
+<dd><p>Consider that the <var>start</var> offset into <var>str</var> is not the
+beginning of a line and should not match operator &lsquo;<samp>^</samp>&rsquo;.
+</p>
+<p>If <var>rx</var> was created with the <code>regexp/newline</code> option above,
+&lsquo;<samp>^</samp>&rsquo; will still match after a newline in <var>str</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-regexp_002fnoteol"></a>Variable: <strong>regexp/noteol</strong></dt>
+<dd><p>Consider that the end of <var>str</var> is not the end of a line and should
+not match operator &lsquo;<samp>$</samp>&rsquo;.
+</p>
+<p>If <var>rx</var> was created with the <code>regexp/newline</code> option above,
+&lsquo;<samp>$</samp>&rsquo; will still match before a newline in <var>str</var>.
+</p></dd></dl>
+</dd></dl>
+
+<div class="lisp">
+<pre class="lisp">;; Regexp to match uppercase letters
+(define r (make-regexp &quot;[A-Z]*&quot;))
+
+;; Regexp to match letters, ignoring case
+(define ri (make-regexp &quot;[A-Z]*&quot; regexp/icase))
+
+;; Search for bob using regexp r
+(match:substring (regexp-exec r &quot;bob&quot;))
+&rArr; &quot;&quot;                  ; no match
+
+;; Search for bob using regexp ri
+(match:substring (regexp-exec ri &quot;Bob&quot;))
+&rArr; &quot;Bob&quot;               ; matched case insensitive
+</pre></div>
+
+<dl>
+<dt><a name="index-regexp_003f"></a>Scheme Procedure: <strong>regexp?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fregexp_005fp"></a>C Function: <strong>scm_regexp_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a compiled regular expression,
+or <code>#f</code> otherwise.
+</p></dd></dl>
+
+<br>
+<dl>
+<dt><a name="index-list_002dmatches"></a>Scheme Procedure: <strong>list-matches</strong> <em>regexp str [flags]</em></dt>
+<dd><p>Return a list of match structures which are the non-overlapping
+matches of <var>regexp</var> in <var>str</var>.  <var>regexp</var> can be either a
+pattern string or a compiled regexp.  The <var>flags</var> argument is as
+per <code>regexp-exec</code> above.
+</p>
+<div class="example">
+<pre class="example">(map match:substring (list-matches &quot;[a-z]+&quot; &quot;abc 42 def 78&quot;))
+&rArr; (&quot;abc&quot; &quot;def&quot;)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-fold_002dmatches"></a>Scheme Procedure: <strong>fold-matches</strong> <em>regexp str init proc [flags]</em></dt>
+<dd><p>Apply <var>proc</var> to the non-overlapping matches of <var>regexp</var> in
+<var>str</var>, to build a result.  <var>regexp</var> can be either a pattern
+string or a compiled regexp.  The <var>flags</var> argument is as per
+<code>regexp-exec</code> above.
+</p>
+<p><var>proc</var> is called as <code>(<var>proc</var> match prev)</code> where
+<var>match</var> is a match structure and <var>prev</var> is the previous return
+from <var>proc</var>.  For the first call <var>prev</var> is the given
+<var>init</var> parameter.  <code>fold-matches</code> returns the final value
+from <var>proc</var>.
+</p>
+<p>For example to count matches,
+</p>
+<div class="example">
+<pre class="example">(fold-matches &quot;[a-z][0-9]&quot; &quot;abc x1 def y2&quot; 0
+              (lambda (match count)
+                (1+ count)))
+&rArr; 2
+</pre></div>
+</dd></dl>
+
+<br>
+<p>Regular expressions are commonly used to find patterns in one string
+and replace them with the contents of another string.  The following
+functions are convenient ways to do this.
+</p>
+<dl>
+<dt><a name="index-regexp_002dsubstitute"></a>Scheme Procedure: <strong>regexp-substitute</strong> <em>port match item &hellip;</em></dt>
+<dd><p>Write to <var>port</var> selected parts of the match structure <var>match</var>.
+Or if <var>port</var> is <code>#f</code> then form a string from those parts and
+return that.
+</p>
+<p>Each <var>item</var> specifies a part to be written, and may be one of the
+following,
+</p>
+<ul>
+<li> A string.  String arguments are written out verbatim.
+
+</li><li> An integer.  The submatch with that number is written
+(<code>match:substring</code>).  Zero is the entire match.
+
+</li><li> The symbol &lsquo;<samp>pre</samp>&rsquo;.  The portion of the matched string preceding
+the regexp match is written (<code>match:prefix</code>).
+
+</li><li> The symbol &lsquo;<samp>post</samp>&rsquo;.  The portion of the matched string following
+the regexp match is written (<code>match:suffix</code>).
+</li></ul>
+
+<p>For example, changing a match and retaining the text before and after,
+</p>
+<div class="example">
+<pre class="example">(regexp-substitute #f (string-match &quot;[0-9]+&quot; &quot;number 25 is good&quot;)
+                   'pre &quot;37&quot; 'post)
+&rArr; &quot;number 37 is good&quot;
+</pre></div>
+
+<p>Or matching a <small>YYYYMMDD</small> format date such as &lsquo;<samp>20020828</samp>&rsquo; and
+re-ordering and hyphenating the fields.
+</p>
+<div class="lisp">
+<pre class="lisp">(define date-regex
+   &quot;([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])&quot;)
+(define s &quot;Date 20020429 12am.&quot;)
+(regexp-substitute #f (string-match date-regex s)
+                   'pre 2 &quot;-&quot; 3 &quot;-&quot; 1 'post &quot; (&quot; 0 &quot;)&quot;)
+&rArr; &quot;Date 04-29-2002 12am. (20020429)&quot;
+</pre></div>
+</dd></dl>
+
+
+<dl>
+<dt><a name="index-regexp_002dsubstitute_002fglobal"></a>Scheme Procedure: <strong>regexp-substitute/global</strong> <em>port regexp target item&hellip;</em></dt>
+<dd><a name="index-search-and-replace"></a>
+<p>Write to <var>port</var> selected parts of matches of <var>regexp</var> in
+<var>target</var>.  If <var>port</var> is <code>#f</code> then form a string from
+those parts and return that.  <var>regexp</var> can be a string or a
+compiled regex.
+</p>
+<p>This is similar to <code>regexp-substitute</code>, but allows global
+substitutions on <var>target</var>.  Each <var>item</var> behaves as per
+<code>regexp-substitute</code>, with the following differences,
+</p>
+<ul>
+<li> A function.  Called as <code>(<var>item</var> match)</code> with the match
+structure for the <var>regexp</var> match, it should return a string to be
+written to <var>port</var>.
+
+</li><li> The symbol &lsquo;<samp>post</samp>&rsquo;.  This doesn&rsquo;t output anything, but instead
+causes <code>regexp-substitute/global</code> to recurse on the unmatched
+portion of <var>target</var>.
+
+<p>This <em>must</em> be supplied to perform a global search and replace on
+<var>target</var>; without it <code>regexp-substitute/global</code> returns after
+a single match and output.
+</p></li></ul>
+
+<p>For example, to collapse runs of tabs and spaces to a single hyphen
+each,
+</p>
+<div class="example">
+<pre class="example">(regexp-substitute/global #f &quot;[ \t]+&quot;  &quot;this   is   the text&quot;
+                          'pre &quot;-&quot; 'post)
+&rArr; &quot;this-is-the-text&quot;
+</pre></div>
+
+<p>Or using a function to reverse the letters in each word,
+</p>
+<div class="example">
+<pre class="example">(regexp-substitute/global #f &quot;[a-z]+&quot;  &quot;to do and not-do&quot;
+  'pre (lambda (m) (string-reverse (match:substring m))) 'post)
+&rArr; &quot;ot od dna ton-od&quot;
+</pre></div>
+
+<p>Without the <code>post</code> symbol, just one regexp match is made.  For
+example the following is the date example from
+<code>regexp-substitute</code> above, without the need for the separate
+<code>string-match</code> call.
+</p>
+<div class="lisp">
+<pre class="lisp">(define date-regex 
+   &quot;([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])&quot;)
+(define s &quot;Date 20020429 12am.&quot;)
+(regexp-substitute/global #f date-regex s
+                          'pre 2 &quot;-&quot; 3 &quot;-&quot; 1 'post &quot; (&quot; 0 &quot;)&quot;)
+
+&rArr; &quot;Date 04-29-2002 12am. (20020429)&quot;
+</pre></div>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Match-Structures.html#Match-Structures" accesskey="n" rel="next">Match Structures</a>, Up: <a href="Regular-Expressions.html#Regular-Expressions" accesskey="u" rel="up">Regular Expressions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

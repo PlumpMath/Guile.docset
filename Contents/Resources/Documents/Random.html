@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Random</title>
+
+<meta name="description" content="Guile Reference Manual: Random">
+<meta name="keywords" content="Guile Reference Manual: Random">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Numbers.html#Numbers" rel="up" title="Numbers">
+<link href="Characters.html#Characters" rel="next" title="Characters">
+<link href="Bitwise-Operations.html#Bitwise-Operations" rel="prev" title="Bitwise Operations">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Random"></a>
+<div class="header">
+<p>
+Previous: <a href="Bitwise-Operations.html#Bitwise-Operations" accesskey="p" rel="prev">Bitwise Operations</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Random-Number-Generation"></a>
+<h4 class="subsubsection">6.6.2.14 Random Number Generation</h4>
+
+<p>Pseudo-random numbers are generated from a random state object, which
+can be created with <code>seed-&gt;random-state</code> or
+<code>datum-&gt;random-state</code>.  An external representation (i.e. one
+which can written with <code>write</code> and read with <code>read</code>) of a
+random state object can be obtained via
+<code>random-state-&gt;datum</code>.  The <var>state</var> parameter to the
+various functions below is optional, it defaults to the state object
+in the <code>*random-state*</code> variable.
+</p>
+<dl>
+<dt><a name="index-copy_002drandom_002dstate"></a>Scheme Procedure: <strong>copy-random-state</strong> <em>[state]</em></dt>
+<dt><a name="index-scm_005fcopy_005frandom_005fstate"></a>C Function: <strong>scm_copy_random_state</strong> <em>(state)</em></dt>
+<dd><p>Return a copy of the random state <var>state</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random"></a>Scheme Procedure: <strong>random</strong> <em>n [state]</em></dt>
+<dt><a name="index-scm_005frandom"></a>C Function: <strong>scm_random</strong> <em>(n, state)</em></dt>
+<dd><p>Return a number in [0, <var>n</var>).
+</p>
+<p>Accepts a positive integer or real n and returns a
+number of the same type between zero (inclusive) and
+<var>n</var> (exclusive). The values returned have a uniform
+distribution.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_003aexp"></a>Scheme Procedure: <strong>random:exp</strong> <em>[state]</em></dt>
+<dt><a name="index-scm_005frandom_005fexp"></a>C Function: <strong>scm_random_exp</strong> <em>(state)</em></dt>
+<dd><p>Return an inexact real in an exponential distribution with mean
+1.  For an exponential distribution with mean <var>u</var> use <code>(*
+<var>u</var> (random:exp))</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_003ahollow_002dsphere_0021"></a>Scheme Procedure: <strong>random:hollow-sphere!</strong> <em>vect [state]</em></dt>
+<dt><a name="index-scm_005frandom_005fhollow_005fsphere_005fx"></a>C Function: <strong>scm_random_hollow_sphere_x</strong> <em>(vect, state)</em></dt>
+<dd><p>Fills <var>vect</var> with inexact real random numbers the sum of whose
+squares is equal to 1.0.  Thinking of <var>vect</var> as coordinates in
+space of dimension <var>n</var> <em>=</em> <code>(vector-length <var>vect</var>)</code>,
+the coordinates are uniformly distributed over the surface of the unit
+n-sphere.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_003anormal"></a>Scheme Procedure: <strong>random:normal</strong> <em>[state]</em></dt>
+<dt><a name="index-scm_005frandom_005fnormal"></a>C Function: <strong>scm_random_normal</strong> <em>(state)</em></dt>
+<dd><p>Return an inexact real in a normal distribution.  The distribution
+used has mean 0 and standard deviation 1.  For a normal distribution
+with mean <var>m</var> and standard deviation <var>d</var> use <code>(+ <var>m</var>
+(* <var>d</var> (random:normal)))</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_003anormal_002dvector_0021"></a>Scheme Procedure: <strong>random:normal-vector!</strong> <em>vect [state]</em></dt>
+<dt><a name="index-scm_005frandom_005fnormal_005fvector_005fx"></a>C Function: <strong>scm_random_normal_vector_x</strong> <em>(vect, state)</em></dt>
+<dd><p>Fills <var>vect</var> with inexact real random numbers that are
+independent and standard normally distributed
+(i.e., with mean 0 and variance 1).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_003asolid_002dsphere_0021"></a>Scheme Procedure: <strong>random:solid-sphere!</strong> <em>vect [state]</em></dt>
+<dt><a name="index-scm_005frandom_005fsolid_005fsphere_005fx"></a>C Function: <strong>scm_random_solid_sphere_x</strong> <em>(vect, state)</em></dt>
+<dd><p>Fills <var>vect</var> with inexact real random numbers the sum of whose
+squares is less than 1.0.  Thinking of <var>vect</var> as coordinates in
+space of dimension <var>n</var> <em>=</em> <code>(vector-length <var>vect</var>)</code>,
+the coordinates are uniformly distributed within the unit
+<var>n</var>-sphere.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_003auniform"></a>Scheme Procedure: <strong>random:uniform</strong> <em>[state]</em></dt>
+<dt><a name="index-scm_005frandom_005funiform"></a>C Function: <strong>scm_random_uniform</strong> <em>(state)</em></dt>
+<dd><p>Return a uniformly distributed inexact real random number in
+[0,1).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-seed_002d_003erandom_002dstate"></a>Scheme Procedure: <strong>seed-&gt;random-state</strong> <em>seed</em></dt>
+<dt><a name="index-scm_005fseed_005fto_005frandom_005fstate"></a>C Function: <strong>scm_seed_to_random_state</strong> <em>(seed)</em></dt>
+<dd><p>Return a new random state using <var>seed</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-datum_002d_003erandom_002dstate"></a>Scheme Procedure: <strong>datum-&gt;random-state</strong> <em>datum</em></dt>
+<dt><a name="index-scm_005fdatum_005fto_005frandom_005fstate"></a>C Function: <strong>scm_datum_to_random_state</strong> <em>(datum)</em></dt>
+<dd><p>Return a new random state from <var>datum</var>, which should have been
+obtained by <code>random-state-&gt;datum</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_002dstate_002d_003edatum"></a>Scheme Procedure: <strong>random-state-&gt;datum</strong> <em>state</em></dt>
+<dt><a name="index-scm_005frandom_005fstate_005fto_005fdatum"></a>C Function: <strong>scm_random_state_to_datum</strong> <em>(state)</em></dt>
+<dd><p>Return a datum representation of <var>state</var> that may be written out and
+read back with the Scheme reader.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-random_002dstate_002dfrom_002dplatform"></a>Scheme Procedure: <strong>random-state-from-platform</strong></dt>
+<dt><a name="index-scm_005frandom_005fstate_005ffrom_005fplatform"></a>C Function: <strong>scm_random_state_from_platform</strong> <em>()</em></dt>
+<dd><p>Construct a new random state seeded from a platform-specific source of
+entropy, appropriate for use in non-security-critical applications.
+Currently <samp>/dev/urandom</samp> is tried first, or else the seed is based
+on the time, date, process ID, an address from a freshly allocated heap
+cell, an address from the local stack frame, and a high-resolution timer
+if available.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_002arandom_002dstate_002a"></a>Variable: <strong>*random-state*</strong></dt>
+<dd><p>The global random state used by the above functions when the
+<var>state</var> parameter is not given.
+</p></dd></dl>
+
+<p>Note that the initial value of <code>*random-state*</code> is the same every
+time Guile starts up.  Therefore, if you don&rsquo;t pass a <var>state</var>
+parameter to the above procedures, and you don&rsquo;t set
+<code>*random-state*</code> to <code>(seed-&gt;random-state your-seed)</code>, where
+<code>your-seed</code> is something that <em>isn&rsquo;t</em> the same every time,
+you&rsquo;ll get the same sequence of &ldquo;random&rdquo; numbers on every run.
+</p>
+<p>For example, unless the relevant source code has changed, <code>(map
+random (cdr (iota 30)))</code>, if the first use of random numbers since
+Guile started up, will always give:
+</p>
+<div class="lisp">
+<pre class="lisp">(map random (cdr (iota 19)))
+&rArr;
+(0 1 1 2 2 2 1 2 6 7 10 0 5 3 12 5 5 12)
+</pre></div>
+
+<p>To seed the random state in a sensible way for non-security-critical
+applications, do this during initialization of your program:
+</p>
+<div class="lisp">
+<pre class="lisp">(set! *random-state* (random-state-from-platform))
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Bitwise-Operations.html#Bitwise-Operations" accesskey="p" rel="prev">Bitwise Operations</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

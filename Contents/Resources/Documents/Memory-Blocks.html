@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Memory Blocks</title>
+
+<meta name="description" content="Guile Reference Manual: Memory Blocks">
+<meta name="keywords" content="Guile Reference Manual: Memory Blocks">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Memory-Management.html#Memory-Management" rel="up" title="Memory Management">
+<link href="Weak-References.html#Weak-References" rel="next" title="Weak References">
+<link href="Garbage-Collection-Functions.html#Garbage-Collection-Functions" rel="prev" title="Garbage Collection Functions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Memory-Blocks"></a>
+<div class="header">
+<p>
+Next: <a href="Weak-References.html#Weak-References" accesskey="n" rel="next">Weak References</a>, Previous: <a href="Garbage-Collection-Functions.html#Garbage-Collection-Functions" accesskey="p" rel="prev">Garbage Collection Functions</a>, Up: <a href="Memory-Management.html#Memory-Management" accesskey="u" rel="up">Memory Management</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Memory-Blocks-1"></a>
+<h4 class="subsection">6.18.2 Memory Blocks</h4>
+
+<a name="index-automatically_002dmanaged-memory"></a>
+<a name="index-GC_002dmanaged-memory"></a>
+<a name="index-conservative-garbage-collection"></a>
+
+<p>In C programs, dynamic management of memory blocks is normally done
+with the functions malloc, realloc, and free.  Guile has additional
+functions for dynamic memory allocation that are integrated into the
+garbage collector and the error reporting system.
+</p>
+<p>Memory blocks that are associated with Scheme objects (for example a
+smob) should be allocated with <code>scm_gc_malloc</code> or
+<code>scm_gc_malloc_pointerless</code>.  These two functions will either
+return a valid pointer or signal an error.  Memory blocks allocated this
+way can be freed with <code>scm_gc_free</code>; however, this is not strictly
+needed: memory allocated with <code>scm_gc_malloc</code> or
+<code>scm_gc_malloc_pointerless</code> is automatically reclaimed when the
+garbage collector no longer sees any live reference to it<a name="DOCF16" href="#FOOT16"><sup>16</sup></a>.
+</p>
+<p>Memory allocated with <code>scm_gc_malloc</code> is scanned for live pointers.
+This means that if <code>scm_gc_malloc</code>-allocated memory contains a
+pointer to some other part of the memory, the garbage collector notices
+it and prevents it from being reclaimed<a name="DOCF17" href="#FOOT17"><sup>17</sup></a>.  Conversely, memory
+allocated with <code>scm_gc_malloc_pointerless</code> is assumed to be
+&ldquo;pointer-less&rdquo; and is not scanned.
+</p>
+<p>For memory that is not associated with a Scheme object, you can use
+<code>scm_malloc</code> instead of <code>malloc</code>.  Like
+<code>scm_gc_malloc</code>, it will either return a valid pointer or signal
+an error.  However, it will not assume that the new memory block can
+be freed by a garbage collection.  The memory must be explicitly freed
+with <code>free</code>.
+</p>
+<p>There is also <code>scm_gc_realloc</code> and <code>scm_realloc</code>, to be used
+in place of <code>realloc</code> when appropriate, and <code>scm_gc_calloc</code>
+and <code>scm_calloc</code>, to be used in place of <code>calloc</code> when
+appropriate.
+</p>
+<p>The function <code>scm_dynwind_free</code> can be useful when memory should be
+freed with libc&rsquo;s <code>free</code> when leaving a dynwind context,
+See <a href="Dynamic-Wind.html#Dynamic-Wind">Dynamic Wind</a>.
+</p>
+<dl>
+<dt><a name="index-scm_005fmalloc"></a>C Function: <em>void *</em> <strong>scm_malloc</strong> <em>(size_t <var>size</var>)</em></dt>
+<dt><a name="index-scm_005fcalloc"></a>C Function: <em>void *</em> <strong>scm_calloc</strong> <em>(size_t <var>size</var>)</em></dt>
+<dd><p>Allocate <var>size</var> bytes of memory and return a pointer to it.  When
+<var>size</var> is 0, return <code>NULL</code>.  When not enough memory is
+available, signal an error.  This function runs the GC to free up some
+memory when it deems it appropriate.
+</p>
+<p>The memory is allocated by the libc <code>malloc</code> function and can be
+freed with <code>free</code>.  There is no <code>scm_free</code> function to go
+with <code>scm_malloc</code> to make it easier to pass memory back and forth
+between different modules.  
+</p>
+<p>The function <code>scm_calloc</code> is similar to <code>scm_malloc</code>, but
+initializes the block of memory to zero as well.
+</p>
+<p>These functions will (indirectly) call
+<code>scm_gc_register_allocation</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005frealloc"></a>C Function: <em>void *</em> <strong>scm_realloc</strong> <em>(void *<var>mem</var>, size_t <var>new_size</var>)</em></dt>
+<dd><p>Change the size of the memory block at <var>mem</var> to <var>new_size</var> and
+return its new location.  When <var>new_size</var> is 0, this is the same
+as calling <code>free</code> on <var>mem</var> and <code>NULL</code> is returned.  When
+<var>mem</var> is <code>NULL</code>, this function behaves like <code>scm_malloc</code>
+and allocates a new block of size <var>new_size</var>.
+</p>
+<p>When not enough memory is available, signal an error.  This function
+runs the GC to free up some memory when it deems it appropriate.
+</p>
+<p>This function will call <code>scm_gc_register_allocation</code>.
+</p></dd></dl>
+
+
+
+
+<dl>
+<dt><a name="index-scm_005fgc_005fmalloc"></a>C Function: <em>void *</em> <strong>scm_gc_malloc</strong> <em>(size_t <var>size</var>, const char *<var>what</var>)</em></dt>
+<dt><a name="index-scm_005fgc_005fmalloc_005fpointerless"></a>C Function: <em>void *</em> <strong>scm_gc_malloc_pointerless</strong> <em>(size_t <var>size</var>, const char *<var>what</var>)</em></dt>
+<dt><a name="index-scm_005fgc_005frealloc"></a>C Function: <em>void *</em> <strong>scm_gc_realloc</strong> <em>(void *<var>mem</var>, size_t <var>old_size</var>, size_t <var>new_size</var>, const char *<var>what</var>);</em></dt>
+<dt><a name="index-scm_005fgc_005fcalloc"></a>C Function: <em>void *</em> <strong>scm_gc_calloc</strong> <em>(size_t <var>size</var>, const char *<var>what</var>)</em></dt>
+<dd><p>Allocate <var>size</var> bytes of automatically-managed memory.  The memory
+is automatically freed when no longer referenced from any live memory
+block.
+</p>
+<p>Memory allocated with <code>scm_gc_malloc</code> or <code>scm_gc_calloc</code> is
+scanned for pointers.  Memory allocated by
+<code>scm_gc_malloc_pointerless</code> is not scanned.
+</p>
+<p>The <code>scm_gc_realloc</code> call preserves the &ldquo;pointerlessness&rdquo; of the
+memory area pointed to by <var>mem</var>.  Note that you need to pass the old
+size of a reallocated memory block as well.  See below for a motivation.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-scm_005fgc_005ffree"></a>C Function: <em>void</em> <strong>scm_gc_free</strong> <em>(void *<var>mem</var>, size_t <var>size</var>, const char *<var>what</var>)</em></dt>
+<dd><p>Explicitly free the memory block pointed to by <var>mem</var>, which was
+previously allocated by one of the above <code>scm_gc</code> functions.
+</p>
+<p>Note that you need to explicitly pass the <var>size</var> parameter.  This
+is done since it should normally be easy to provide this parameter
+(for memory that is associated with GC controlled objects) and help keep
+the memory management overhead very low.  However, in Guile 2.x,
+<var>size</var> is always ignored.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-scm_005fgc_005fregister_005fallocation"></a>C Function: <em>void</em> <strong>scm_gc_register_allocation</strong> <em>(size_t <var>size</var>)</em></dt>
+<dd><p>Informs the garbage collector that <var>size</var> bytes have been allocated,
+which the collector would otherwise not have known about.
+</p>
+<p>In general, Scheme will decide to collect garbage only after some amount
+of memory has been allocated.  Calling this function will make the
+Scheme garbage collector know about more allocation, and thus run more
+often (as appropriate).
+</p>
+<p>It is especially important to call this function when large unmanaged
+allocations, like images, may be freed by small Scheme allocations, like
+SMOBs.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-scm_005fdynwind_005ffree-1"></a>C Function: <em>void</em> <strong>scm_dynwind_free</strong> <em>(void *mem)</em></dt>
+<dd><p>Equivalent to <code>scm_dynwind_unwind_handler (free, <var>mem</var>,
+SCM_F_WIND_EXPLICITLY)</code>.  That is, the memory block at <var>mem</var> will be
+freed (using <code>free</code> from the C library) when the current dynwind is
+left.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-malloc_002dstats"></a>Scheme Procedure: <strong>malloc-stats</strong></dt>
+<dd><p>Return an alist ((<var>what</var> . <var>n</var>) ...) describing number
+of malloced objects.
+<var>what</var> is the second argument to <code>scm_gc_malloc</code>,
+<var>n</var> is the number of objects of that type currently
+allocated.
+</p>
+<p>This function is only available if the <code>GUILE_DEBUG_MALLOC</code>
+preprocessor macro was defined when Guile was compiled.
+</p></dd></dl>
+
+
+<a name="Upgrading-from-scm_005fmust_005fmalloc-et-al_002e"></a>
+<h4 class="subsubsection">6.18.2.1 Upgrading from scm_must_malloc et al.</h4>
+
+<p>Version 1.6 of Guile and earlier did not have the functions from the
+previous section.  In their place, it had the functions
+<code>scm_must_malloc</code>, <code>scm_must_realloc</code> and
+<code>scm_must_free</code>.  This section explains why we want you to stop
+using them, and how to do this.
+</p>
+<a name="index-scm_005fmust_005fmalloc"></a>
+<a name="index-scm_005fmust_005frealloc"></a>
+<a name="index-scm_005fmust_005fcalloc"></a>
+<a name="index-scm_005fmust_005ffree"></a>
+<p>The functions <code>scm_must_malloc</code> and <code>scm_must_realloc</code>
+behaved like <code>scm_gc_malloc</code> and <code>scm_gc_realloc</code> do now,
+respectively.  They would inform the GC about the newly allocated
+memory via the internal equivalent of
+<code>scm_gc_register_allocation</code>.  However,
+<code>scm_must_free</code> did not unregister the memory it was about to
+free.  The usual way to unregister memory was to return its size from
+a smob free function.
+</p>
+<p>This disconnectedness of the actual freeing of memory and reporting
+this to the GC proved to be bad in practice.  It was easy to make
+mistakes and report the wrong size because allocating and freeing was
+not done with symmetric code, and because it is cumbersome to compute
+the total size of nested data structures that were freed with multiple
+calls to <code>scm_must_free</code>.  Additionally, there was no equivalent
+to <code>scm_malloc</code>, and it was tempting to just use
+<code>scm_must_malloc</code> and never to tell the GC that the memory has
+been freed.
+</p>
+<p>The effect was that the internal statistics kept by the GC drifted out
+of sync with reality and could even overflow in long running programs.
+When this happened, the result was a dramatic increase in (senseless)
+GC activity which would effectively stop the program dead.
+</p>
+<a name="index-scm_005fdone_005fmalloc"></a>
+<a name="index-scm_005fdone_005ffree"></a>
+<p>The functions <code>scm_done_malloc</code> and <code>scm_done_free</code> were
+introduced to help restore balance to the force, but existing bugs did
+not magically disappear, of course.
+</p>
+<p>Therefore we decided to force everybody to review their code by
+deprecating the existing functions and introducing new ones in their
+place that are hopefully easier to use correctly.
+</p>
+<p>For every use of <code>scm_must_malloc</code> you need to decide whether to
+use <code>scm_malloc</code> or <code>scm_gc_malloc</code> in its place.  When the
+memory block is not part of a smob or some other Scheme object whose
+lifetime is ultimately managed by the garbage collector, use
+<code>scm_malloc</code> and <code>free</code>.  When it is part of a smob, use
+<code>scm_gc_malloc</code> and change the smob free function to use
+<code>scm_gc_free</code> instead of <code>scm_must_free</code> or <code>free</code> and
+make it return zero.
+</p>
+<p>The important thing is to always pair <code>scm_malloc</code> with
+<code>free</code>; and to always pair <code>scm_gc_malloc</code> with
+<code>scm_gc_free</code>.
+</p>
+<p>The same reasoning applies to <code>scm_must_realloc</code> and
+<code>scm_realloc</code> versus <code>scm_gc_realloc</code>.
+</p>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT16" href="#DOCF16">(16)</a></h3>
+<p>In
+Guile up to version 1.8, memory allocated with <code>scm_gc_malloc</code>
+<em>had</em> to be freed with <code>scm_gc_free</code>.</p>
+<h3><a name="FOOT17" href="#DOCF17">(17)</a></h3>
+<p>In Guile up to 1.8,
+memory allocated with <code>scm_gc_malloc</code> was <em>not</em> scanned.
+Consequently, the GC had to be told explicitly about pointers to live
+objects contained in the memory block, e.g., <i>via</i> SMOB mark functions
+(see <a href="Smobs.html#Smobs"><code>scm_set_smob_mark</code></a>)</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Weak-References.html#Weak-References" accesskey="n" rel="next">Weak References</a>, Previous: <a href="Garbage-Collection-Functions.html#Garbage-Collection-Functions" accesskey="p" rel="prev">Garbage Collection Functions</a>, Up: <a href="Memory-Management.html#Memory-Management" accesskey="u" rel="up">Memory Management</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

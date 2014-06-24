@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Variables</title>
+
+<meta name="description" content="Guile Reference Manual: Variables">
+<meta name="keywords" content="Guile Reference Manual: Variables">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Modules.html#Modules" rel="up" title="Modules">
+<link href="Module-System-Reflection.html#Module-System-Reflection" rel="next" title="Module System Reflection">
+<link href="R6RS-Libraries.html#R6RS-Libraries" rel="prev" title="R6RS Libraries">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Variables"></a>
+<div class="header">
+<p>
+Next: <a href="Module-System-Reflection.html#Module-System-Reflection" accesskey="n" rel="next">Module System Reflection</a>, Previous: <a href="R6RS-Libraries.html#R6RS-Libraries" accesskey="p" rel="prev">R6RS Libraries</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Variables-1"></a>
+<h4 class="subsection">6.19.7 Variables</h4>
+<a name="index-Variables"></a>
+
+<p>Each module has its own hash table, sometimes known as an <em>obarray</em>,
+that maps the names defined in that module to their corresponding
+variable objects.
+</p>
+<p>A variable is a box-like object that can hold any Scheme value.  It is
+said to be <em>undefined</em> if its box holds a special Scheme value that
+denotes undefined-ness (which is different from all other Scheme values,
+including for example <code>#f</code>); otherwise the variable is
+<em>defined</em>.
+</p>
+<p>On its own, a variable object is anonymous.  A variable is said to be
+<em>bound</em> when it is associated with a name in some way, usually a
+symbol in a module obarray.  When this happens, the name is said to be
+bound to the variable, in that module.
+</p>
+<p>(That&rsquo;s the theory, anyway.  In practice, defined-ness and bound-ness
+sometimes get confused, because Lisp and Scheme implementations have
+often conflated &mdash; or deliberately drawn no distinction between &mdash; a
+name that is unbound and a name that is bound to a variable whose value
+is undefined.  We will try to be clear about the difference and explain
+any confusion where it is unavoidable.)
+</p>
+<p>Variables do not have a read syntax.  Most commonly they are created and
+bound implicitly by <code>define</code> expressions: a top-level <code>define</code>
+expression of the form
+</p>
+<div class="lisp">
+<pre class="lisp">(define <var>name</var> <var>value</var>)
+</pre></div>
+
+<p>creates a variable with initial value <var>value</var> and binds it to the
+name <var>name</var> in the current module.  But they can also be created
+dynamically by calling one of the constructor procedures
+<code>make-variable</code> and <code>make-undefined-variable</code>.
+</p>
+<dl>
+<dt><a name="index-make_002dundefined_002dvariable"></a>Scheme Procedure: <strong>make-undefined-variable</strong></dt>
+<dt><a name="index-scm_005fmake_005fundefined_005fvariable"></a>C Function: <strong>scm_make_undefined_variable</strong> <em>()</em></dt>
+<dd><p>Return a variable that is initially unbound.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-make_002dvariable"></a>Scheme Procedure: <strong>make-variable</strong> <em>init</em></dt>
+<dt><a name="index-scm_005fmake_005fvariable"></a>C Function: <strong>scm_make_variable</strong> <em>(init)</em></dt>
+<dd><p>Return a variable initialized to value <var>init</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-variable_002dbound_003f"></a>Scheme Procedure: <strong>variable-bound?</strong> <em>var</em></dt>
+<dt><a name="index-scm_005fvariable_005fbound_005fp"></a>C Function: <strong>scm_variable_bound_p</strong> <em>(var)</em></dt>
+<dd><p>Return <code>#t</code> if <var>var</var> is bound to a value, or <code>#f</code>
+otherwise.  Throws an error if <var>var</var> is not a variable object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-variable_002dref"></a>Scheme Procedure: <strong>variable-ref</strong> <em>var</em></dt>
+<dt><a name="index-scm_005fvariable_005fref"></a>C Function: <strong>scm_variable_ref</strong> <em>(var)</em></dt>
+<dd><p>Dereference <var>var</var> and return its value.
+<var>var</var> must be a variable object; see <code>make-variable</code>
+and <code>make-undefined-variable</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-variable_002dset_0021"></a>Scheme Procedure: <strong>variable-set!</strong> <em>var val</em></dt>
+<dt><a name="index-scm_005fvariable_005fset_005fx"></a>C Function: <strong>scm_variable_set_x</strong> <em>(var, val)</em></dt>
+<dd><p>Set the value of the variable <var>var</var> to <var>val</var>.
+<var>var</var> must be a variable object, <var>val</var> can be any
+value. Return an unspecified value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-variable_002dunset_0021"></a>Scheme Procedure: <strong>variable-unset!</strong> <em>var</em></dt>
+<dt><a name="index-scm_005fvariable_005funset_005fx"></a>C Function: <strong>scm_variable_unset_x</strong> <em>(var)</em></dt>
+<dd><p>Unset the value of the variable <var>var</var>, leaving <var>var</var> unbound.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-variable_003f"></a>Scheme Procedure: <strong>variable?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fvariable_005fp"></a>C Function: <strong>scm_variable_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a variable object, else return
+<code>#f</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Module-System-Reflection.html#Module-System-Reflection" accesskey="n" rel="next">Module System Reflection</a>, Previous: <a href="R6RS-Libraries.html#R6RS-Libraries" accesskey="p" rel="prev">R6RS Libraries</a>, Up: <a href="Modules.html#Modules" accesskey="u" rel="up">Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

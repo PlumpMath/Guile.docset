@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Describing a New Type</title>
+
+<meta name="description" content="Guile Reference Manual: Describing a New Type">
+<meta name="keywords" content="Guile Reference Manual: Describing a New Type">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" rel="up" title="Defining New Types (Smobs)">
+<link href="Creating-Smob-Instances.html#Creating-Smob-Instances" rel="next" title="Creating Smob Instances">
+<link href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" rel="prev" title="Defining New Types (Smobs)">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Describing-a-New-Type"></a>
+<div class="header">
+<p>
+Next: <a href="Creating-Smob-Instances.html#Creating-Smob-Instances" accesskey="n" rel="next">Creating Smob Instances</a>, Up: <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" accesskey="u" rel="up">Defining New Types (Smobs)</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Describing-a-New-Type-1"></a>
+<h4 class="subsection">5.5.1 Describing a New Type</h4>
+
+<p>To define a new type, the programmer must write two functions to
+manage instances of the type:
+</p>
+<dl compact="compact">
+<dt><code>print</code></dt>
+<dd><p>Guile will apply this function to each instance of the new type to print
+the value, as for <code>display</code> or <code>write</code>.  The default print
+function prints <code>#&lt;NAME ADDRESS&gt;</code> where <code>NAME</code> is the first
+argument passed to <code>scm_make_smob_type</code>.
+</p>
+</dd>
+<dt><code>equalp</code></dt>
+<dd><p>If Scheme code asks the <code>equal?</code> function to compare two instances
+of the same smob type, Guile calls this function.  It should return
+<code>SCM_BOOL_T</code> if <var>a</var> and <var>b</var> should be considered
+<code>equal?</code>, or <code>SCM_BOOL_F</code> otherwise.  If <code>equalp</code> is
+<code>NULL</code>, <code>equal?</code> will assume that two instances of this type are
+never <code>equal?</code> unless they are <code>eq?</code>.
+</p>
+</dd>
+</dl>
+
+<p>When the only resource associated with a smob is memory managed by the
+garbage collector&mdash;i.e., memory allocated with the <code>scm_gc_malloc</code>
+functions&mdash;this is sufficient.  However, when a smob is associated with
+other kinds of resources, it may be necessary to define one of the
+following functions, or both:
+</p>
+<dl compact="compact">
+<dt><code>mark</code></dt>
+<dd><p>Guile will apply this function to each instance of the new type it
+encounters during garbage collection.  This function is responsible for
+telling the collector about any other <code>SCM</code> values that the object
+has stored, and that are in memory regions not already scanned by the
+garbage collector.  See <a href="Garbage-Collecting-Smobs.html#Garbage-Collecting-Smobs">Garbage Collecting Smobs</a>, for more details.
+</p>
+</dd>
+<dt><code>free</code></dt>
+<dd><p>Guile will apply this function to each instance of the new type that is
+to be deallocated.  The function should release all resources held by
+the object.  This is analogous to the Java finalization method&mdash;it is
+invoked at an unspecified time (when garbage collection occurs) after
+the object is dead.  See <a href="Garbage-Collecting-Smobs.html#Garbage-Collecting-Smobs">Garbage Collecting Smobs</a>, for more details.
+</p>
+<p>This function operates while the heap is in an inconsistent state and
+must therefore be careful.  See <a href="Smobs.html#Smobs">Smobs</a>, for details about what this
+function is allowed to do.
+</p></dd>
+</dl>
+
+<p>To actually register the new smob type, call <code>scm_make_smob_type</code>.
+It returns a value of type <code>scm_t_bits</code> which identifies the new
+smob type.
+</p>
+<p>The four special functions described above are registered by calling
+one of <code>scm_set_smob_mark</code>, <code>scm_set_smob_free</code>,
+<code>scm_set_smob_print</code>, or <code>scm_set_smob_equalp</code>, as
+appropriate.  Each function is intended to be used at most once per
+type, and the call should be placed immediately following the call to
+<code>scm_make_smob_type</code>.
+</p>
+<p>There can only be at most 256 different smob types in the system.
+Instead of registering a huge number of smob types (for example, one
+for each relevant C struct in your application), it is sometimes
+better to register just one and implement a second layer of type
+dispatching on top of it.  This second layer might use the 16 extra
+bits to extend its type, for example.
+</p>
+<p>Here is how one might declare and register a new type representing
+eight-bit gray-scale images:
+</p>
+<div class="example">
+<pre class="example">#include &lt;libguile.h&gt;
+
+struct image {
+  int width, height;
+  char *pixels;
+
+  /* The name of this image */
+  SCM name;
+
+  /* A function to call when this image is
+     modified, e.g., to update the screen,
+     or SCM_BOOL_F if no action necessary */
+  SCM update_func;
+};
+
+static scm_t_bits image_tag;
+
+void
+init_image_type (void)
+{
+  image_tag = scm_make_smob_type (&quot;image&quot;, sizeof (struct image));
+  scm_set_smob_mark (image_tag, mark_image);
+  scm_set_smob_free (image_tag, free_image);
+  scm_set_smob_print (image_tag, print_image);
+}
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Creating-Smob-Instances.html#Creating-Smob-Instances" accesskey="n" rel="next">Creating Smob Instances</a>, Up: <a href="Defining-New-Types-_0028Smobs_0029.html#Defining-New-Types-_0028Smobs_0029" accesskey="u" rel="up">Defining New Types (Smobs)</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

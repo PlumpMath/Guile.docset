@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Vtables</title>
+
+<meta name="description" content="Guile Reference Manual: Vtables">
+<meta name="keywords" content="Guile Reference Manual: Vtables">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Structures.html#Structures" rel="up" title="Structures">
+<link href="Structure-Basics.html#Structure-Basics" rel="next" title="Structure Basics">
+<link href="Structures.html#Structures" rel="prev" title="Structures">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Vtables"></a>
+<div class="header">
+<p>
+Next: <a href="Structure-Basics.html#Structure-Basics" accesskey="n" rel="next">Structure Basics</a>, Up: <a href="Structures.html#Structures" accesskey="u" rel="up">Structures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Vtables-1"></a>
+<h4 class="subsubsection">6.7.10.1 Vtables</h4>
+
+<p>A vtable is a structure type, specifying its layout, and other
+information.  A vtable is actually itself a structure, but there&rsquo;s no
+need to worry about that initially (see <a href="Vtable-Contents.html#Vtable-Contents">Vtable Contents</a>.)
+</p>
+<dl>
+<dt><a name="index-make_002dvtable"></a>Scheme Procedure: <strong>make-vtable</strong> <em>fields [print]</em></dt>
+<dd><p>Create a new vtable.
+</p>
+<p><var>fields</var> is a string describing the fields in the structures to be
+created.  Each field is represented by two characters, a type letter
+and a permissions letter, for example <code>&quot;pw&quot;</code>.  The types are as
+follows.
+</p>
+<ul>
+<li> <code>p</code> &ndash; a Scheme value.  &ldquo;p&rdquo; stands for &ldquo;protected&rdquo; meaning
+it&rsquo;s protected against garbage collection.
+
+</li><li> <code>u</code> &ndash; an arbitrary word of data (an <code>scm_t_bits</code>).  At the
+Scheme level it&rsquo;s read and written as an unsigned integer.  &ldquo;u&rdquo;
+stands for &ldquo;uninterpreted&rdquo; (it&rsquo;s not treated as a Scheme value), or
+&ldquo;unprotected&rdquo; (it&rsquo;s not marked during GC), or &ldquo;unsigned long&rdquo; (its
+size), or all of these things.
+
+</li><li> <code>s</code> &ndash; a self-reference.  Such a field holds the <code>SCM</code> value
+of the structure itself (a circular reference).  This can be useful in
+C code where you might have a pointer to the data array, and want to
+get the Scheme <code>SCM</code> handle for the structure.  In Scheme code it
+has no use.
+</li></ul>
+
+<p>The second letter for each field is a permission code,
+</p>
+<ul>
+<li> <code>w</code> &ndash; writable, the field can be read and written.
+</li><li> <code>r</code> &ndash; read-only, the field can be read but not written.
+</li><li> <code>o</code> &ndash; opaque, the field can be neither read nor written at the
+Scheme level.  This can be used for fields which should only be used
+from C code.
+</li></ul>
+
+<p>Here are some examples.  See <a href="Tail-Arrays.html#Tail-Arrays">Tail Arrays</a>, for information on the
+legacy tail array facility.
+</p>
+<div class="example">
+<pre class="example">(make-vtable &quot;pw&quot;)      ;; one writable field
+(make-vtable &quot;prpw&quot;)    ;; one read-only and one writable
+(make-vtable &quot;pwuwuw&quot;)  ;; one scheme and two uninterpreted
+</pre></div>
+
+<p>The optional <var>print</var> argument is a function called by
+<code>display</code> and <code>write</code> (etc) to give a printed representation
+of a structure created from this vtable.  It&rsquo;s called
+<code>(<var>print</var> struct port)</code> and should look at <var>struct</var> and
+write to <var>port</var>.  The default print merely gives a form like
+&lsquo;<samp>#&lt;struct ADDR:ADDR&gt;</samp>&rsquo; with a pair of machine addresses.
+</p>
+<p>The following print function for example shows the two fields of its
+structure.
+</p>
+<div class="example">
+<pre class="example">(make-vtable &quot;prpw&quot;
+             (lambda (struct port)
+               (format port &quot;#&lt;~a and ~a&gt;&quot;
+                       (struct-ref struct 0)
+                       (struct-ref struct 1))))
+</pre></div>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Structure-Basics.html#Structure-Basics" accesskey="n" rel="next">Structure Basics</a>, Up: <a href="Structures.html#Structures" accesskey="u" rel="up">Structures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

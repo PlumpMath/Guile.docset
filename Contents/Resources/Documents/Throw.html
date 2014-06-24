@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Throw</title>
+
+<meta name="description" content="Guile Reference Manual: Throw">
+<meta name="keywords" content="Guile Reference Manual: Throw">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Exceptions.html#Exceptions" rel="up" title="Exceptions">
+<link href="Exception-Implementation.html#Exception-Implementation" rel="next" title="Exception Implementation">
+<link href="Throw-Handlers.html#Throw-Handlers" rel="prev" title="Throw Handlers">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Throw"></a>
+<div class="header">
+<p>
+Next: <a href="Exception-Implementation.html#Exception-Implementation" accesskey="n" rel="next">Exception Implementation</a>, Previous: <a href="Throw-Handlers.html#Throw-Handlers" accesskey="p" rel="prev">Throw Handlers</a>, Up: <a href="Exceptions.html#Exceptions" accesskey="u" rel="up">Exceptions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Throwing-Exceptions"></a>
+<h4 class="subsubsection">6.13.8.4 Throwing Exceptions</h4>
+
+<p>The <code>throw</code> primitive is used to throw an exception.  One argument,
+the <var>key</var>, is mandatory, and must be a symbol; it indicates the type
+of exception that is being thrown.  Following the <var>key</var>,
+<code>throw</code> accepts any number of additional arguments, whose meaning
+depends on the exception type.  The documentation for each possible type
+of exception should specify the additional arguments that are expected
+for that kind of exception.
+</p>
+<dl>
+<dt><a name="index-throw"></a>Scheme Procedure: <strong>throw</strong> <em>key arg &hellip;</em></dt>
+<dt><a name="index-scm_005fthrow"></a>C Function: <strong>scm_throw</strong> <em>(key, args)</em></dt>
+<dd><p>Invoke the catch form matching <var>key</var>, passing <var>arg</var> &hellip; to
+the <var>handler</var>.
+</p>
+<p><var>key</var> is a symbol.  It will match catches of the same symbol or of
+<code>#t</code>.
+</p>
+<p>If there is no handler at all, Guile prints an error and then exits.
+</p></dd></dl>
+
+<p>When an exception is thrown, it will be caught by the innermost
+<code>catch</code> or throw handler that applies to the type of the thrown
+exception; in other words, whose <var>key</var> is either <code>#t</code> or the
+same symbol as that used in the <code>throw</code> expression.  Once Guile has
+identified the appropriate <code>catch</code> or throw handler, it handles the
+exception by applying the relevant handler procedure(s) to the arguments
+of the <code>throw</code>.
+</p>
+<p>If there is no appropriate <code>catch</code> or throw handler for a thrown
+exception, Guile prints an error to the current error port indicating an
+uncaught exception, and then exits.  In practice, it is quite difficult
+to observe this behaviour, because Guile when used interactively
+installs a top level <code>catch</code> handler that will catch all exceptions
+and print an appropriate error message <em>without</em> exiting.  For
+example, this is what happens if you try to throw an unhandled exception
+in the standard Guile REPL; note that Guile&rsquo;s command loop continues
+after the error message:
+</p>
+<div class="lisp">
+<pre class="lisp">guile&gt; (throw 'badex)
+&lt;unnamed port&gt;:3:1: In procedure gsubr-apply &hellip;
+&lt;unnamed port&gt;:3:1: unhandled-exception: badex
+ABORT: (misc-error)
+guile&gt; 
+</pre></div>
+
+<p>The default uncaught exception behaviour can be observed by evaluating a
+<code>throw</code> expression from the shell command line:
+</p>
+<div class="example">
+<pre class="example">$ guile -c &quot;(begin (throw 'badex) (display \&quot;here\\n\&quot;))&quot;
+guile: uncaught throw to badex: ()
+$ 
+</pre></div>
+
+<p>That Guile exits immediately following the uncaught exception
+is shown by the absence of any output from the <code>display</code>
+expression, because Guile never gets to the point of evaluating that
+expression.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Exception-Implementation.html#Exception-Implementation" accesskey="n" rel="next">Exception Implementation</a>, Previous: <a href="Throw-Handlers.html#Throw-Handlers" accesskey="p" rel="prev">Throw Handlers</a>, Up: <a href="Exceptions.html#Exceptions" accesskey="u" rel="up">Exceptions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

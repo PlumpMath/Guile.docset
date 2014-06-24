@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: VM Concepts</title>
+
+<meta name="description" content="Guile Reference Manual: VM Concepts">
+<meta name="keywords" content="Guile Reference Manual: VM Concepts">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" rel="up" title="A Virtual Machine for Guile">
+<link href="Stack-Layout.html#Stack-Layout" rel="next" title="Stack Layout">
+<link href="Why-a-VM_003f.html#Why-a-VM_003f" rel="prev" title="Why a VM?">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="VM-Concepts"></a>
+<div class="header">
+<p>
+Next: <a href="Stack-Layout.html#Stack-Layout" accesskey="n" rel="next">Stack Layout</a>, Previous: <a href="Why-a-VM_003f.html#Why-a-VM_003f" accesskey="p" rel="prev">Why a VM?</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="VM-Concepts-1"></a>
+<h4 class="subsection">9.3.2 VM Concepts</h4>
+
+<p>Compiled code is run by a virtual machine (VM). Each thread has its own
+VM. When a compiled procedure is run, Guile looks up the virtual machine
+for the current thread and executes the procedure using that VM.
+</p>
+<p>Guile&rsquo;s virtual machine is a stack machine&mdash;that is, it has few
+registers, and the instructions defined in the VM operate by pushing
+and popping values from a stack.
+</p>
+<p>Stack memory is exclusive to the virtual machine that owns it. In
+addition to their stacks, virtual machines also have access to the
+global memory (modules, global bindings, etc) that is shared among
+other parts of Guile, including other VMs.
+</p>
+<p>A VM has generic instructions, such as those to reference local
+variables, and instructions designed to support Guile&rsquo;s languages &ndash;
+mathematical instructions that support the entire numerical tower, an
+inlined implementation of <code>cons</code>, etc.
+</p>
+<p>The registers that a VM has are as follows:
+</p>
+<ul>
+<li> ip - Instruction pointer
+</li><li> sp - Stack pointer
+</li><li> fp - Frame pointer
+</li></ul>
+
+<p>In other architectures, the instruction pointer is sometimes called
+the &ldquo;program counter&rdquo; (pc). This set of registers is pretty typical
+for stack machines; their exact meanings in the context of Guile&rsquo;s VM
+are described in the next section.
+</p>
+
+
+
+
+
+
+</body>
+</html>

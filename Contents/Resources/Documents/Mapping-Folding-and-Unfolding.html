@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Mapping Folding and Unfolding</title>
+
+<meta name="description" content="Guile Reference Manual: Mapping Folding and Unfolding">
+<meta name="keywords" content="Guile Reference Manual: Mapping Folding and Unfolding">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Strings.html#Strings" rel="up" title="Strings">
+<link href="Miscellaneous-String-Operations.html#Miscellaneous-String-Operations" rel="next" title="Miscellaneous String Operations">
+<link href="Reversing-and-Appending-Strings.html#Reversing-and-Appending-Strings" rel="prev" title="Reversing and Appending Strings">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Mapping-Folding-and-Unfolding"></a>
+<div class="header">
+<p>
+Next: <a href="Miscellaneous-String-Operations.html#Miscellaneous-String-Operations" accesskey="n" rel="next">Miscellaneous String Operations</a>, Previous: <a href="Reversing-and-Appending-Strings.html#Reversing-and-Appending-Strings" accesskey="p" rel="prev">Reversing and Appending Strings</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Mapping_002c-Folding_002c-and-Unfolding"></a>
+<h4 class="subsubsection">6.6.5.11 Mapping, Folding, and Unfolding</h4>
+
+<dl>
+<dt><a name="index-string_002dmap"></a>Scheme Procedure: <strong>string-map</strong> <em>proc s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005fmap"></a>C Function: <strong>scm_string_map</strong> <em>(proc, s, start, end)</em></dt>
+<dd><p><var>proc</var> is a char-&gt;char procedure, it is mapped over
+<var>s</var>.  The order in which the procedure is applied to the
+string elements is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dmap_0021"></a>Scheme Procedure: <strong>string-map!</strong> <em>proc s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005fmap_005fx"></a>C Function: <strong>scm_string_map_x</strong> <em>(proc, s, start, end)</em></dt>
+<dd><p><var>proc</var> is a char-&gt;char procedure, it is mapped over
+<var>s</var>.  The order in which the procedure is applied to the
+string elements is not specified.  The string <var>s</var> is
+modified in-place, the return value is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dfor_002deach"></a>Scheme Procedure: <strong>string-for-each</strong> <em>proc s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005ffor_005feach"></a>C Function: <strong>scm_string_for_each</strong> <em>(proc, s, start, end)</em></dt>
+<dd><p><var>proc</var> is mapped over <var>s</var> in left-to-right order.  The
+return value is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dfor_002deach_002dindex"></a>Scheme Procedure: <strong>string-for-each-index</strong> <em>proc s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005ffor_005feach_005findex"></a>C Function: <strong>scm_string_for_each_index</strong> <em>(proc, s, start, end)</em></dt>
+<dd><p>Call <code>(<var>proc</var> i)</code> for each index i in <var>s</var>, from left to
+right.
+</p>
+<p>For example, to change characters to alternately upper and lower case,
+</p>
+<div class="example">
+<pre class="example">(define str (string-copy &quot;studly&quot;))
+(string-for-each-index
+    (lambda (i)
+      (string-set! str i
+        ((if (even? i) char-upcase char-downcase)
+         (string-ref str i))))
+    str)
+str &rArr; &quot;StUdLy&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-string_002dfold"></a>Scheme Procedure: <strong>string-fold</strong> <em>kons knil s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005ffold"></a>C Function: <strong>scm_string_fold</strong> <em>(kons, knil, s, start, end)</em></dt>
+<dd><p>Fold <var>kons</var> over the characters of <var>s</var>, with <var>knil</var>
+as the terminating element, from left to right.  <var>kons</var>
+must expect two arguments: The actual character and the last
+result of <var>kons</var>&rsquo; application.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dfold_002dright"></a>Scheme Procedure: <strong>string-fold-right</strong> <em>kons knil s [start [end]]</em></dt>
+<dt><a name="index-scm_005fstring_005ffold_005fright"></a>C Function: <strong>scm_string_fold_right</strong> <em>(kons, knil, s, start, end)</em></dt>
+<dd><p>Fold <var>kons</var> over the characters of <var>s</var>, with <var>knil</var>
+as the terminating element, from right to left.  <var>kons</var>
+must expect two arguments: The actual character and the last
+result of <var>kons</var>&rsquo; application.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dunfold"></a>Scheme Procedure: <strong>string-unfold</strong> <em>p f g seed [base [make_final]]</em></dt>
+<dt><a name="index-scm_005fstring_005funfold"></a>C Function: <strong>scm_string_unfold</strong> <em>(p, f, g, seed, base, make_final)</em></dt>
+<dd><ul>
+<li> <var>g</var> is used to generate a series of <em>seed</em>
+values from the initial <var>seed</var>: <var>seed</var>, (<var>g</var>
+<var>seed</var>), (<var>g</var>^2 <var>seed</var>), (<var>g</var>^3 <var>seed</var>),
+&hellip;
+</li><li> <var>p</var> tells us when to stop &ndash; when it returns true
+when applied to one of these seed values.
+</li><li> <var>f</var> maps each seed value to the corresponding
+character in the result string.  These chars are assembled
+into the string in a left-to-right order.
+</li><li> <var>base</var> is the optional initial/leftmost portion
+of the constructed string; it default to the empty
+string.
+</li><li> <var>make_final</var> is applied to the terminal seed
+value (on which <var>p</var> returns true) to produce
+the final/rightmost portion of the constructed string.
+The default is nothing extra.
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-string_002dunfold_002dright"></a>Scheme Procedure: <strong>string-unfold-right</strong> <em>p f g seed [base [make_final]]</em></dt>
+<dt><a name="index-scm_005fstring_005funfold_005fright"></a>C Function: <strong>scm_string_unfold_right</strong> <em>(p, f, g, seed, base, make_final)</em></dt>
+<dd><ul>
+<li> <var>g</var> is used to generate a series of <em>seed</em>
+values from the initial <var>seed</var>: <var>seed</var>, (<var>g</var>
+<var>seed</var>), (<var>g</var>^2 <var>seed</var>), (<var>g</var>^3 <var>seed</var>),
+&hellip;
+</li><li> <var>p</var> tells us when to stop &ndash; when it returns true
+when applied to one of these seed values.
+</li><li> <var>f</var> maps each seed value to the corresponding
+character in the result string.  These chars are assembled
+into the string in a right-to-left order.
+</li><li> <var>base</var> is the optional initial/rightmost portion
+of the constructed string; it default to the empty
+string.
+</li><li> <var>make_final</var> is applied to the terminal seed
+value (on which <var>p</var> returns true) to produce
+the final/leftmost portion of the constructed string.
+It defaults to <code>(lambda (x) )</code>.
+</li></ul>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Miscellaneous-String-Operations.html#Miscellaneous-String-Operations" accesskey="n" rel="next">Miscellaneous String Operations</a>, Previous: <a href="Reversing-and-Appending-Strings.html#Reversing-and-Appending-Strings" accesskey="p" rel="prev">Reversing and Appending Strings</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

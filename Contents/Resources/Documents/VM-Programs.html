@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: VM Programs</title>
+
+<meta name="description" content="Guile Reference Manual: VM Programs">
+<meta name="keywords" content="Guile Reference Manual: VM Programs">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" rel="up" title="A Virtual Machine for Guile">
+<link href="Instruction-Set.html#Instruction-Set" rel="next" title="Instruction Set">
+<link href="Variables-and-the-VM.html#Variables-and-the-VM" rel="prev" title="Variables and the VM">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="VM-Programs"></a>
+<div class="header">
+<p>
+Next: <a href="Instruction-Set.html#Instruction-Set" accesskey="n" rel="next">Instruction Set</a>, Previous: <a href="Variables-and-the-VM.html#Variables-and-the-VM" accesskey="p" rel="prev">Variables and the VM</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Compiled-Procedures-are-VM-Programs"></a>
+<h4 class="subsection">9.3.5 Compiled Procedures are VM Programs</h4>
+
+<p>By default, when you enter in expressions at Guile&rsquo;s REPL, they are
+first compiled to VM object code, then that VM object code is executed
+to produce a value. If the expression evaluates to a procedure, the
+result of this process is a compiled procedure.
+</p>
+<p>A compiled procedure is a compound object, consisting of its bytecode,
+a reference to any captured lexical variables, an object array, and
+some metadata such as the procedure&rsquo;s arity, name, and documentation.
+You can pick apart these pieces with the accessors in <code>(system vm
+program)</code>. See <a href="Compiled-Procedures.html#Compiled-Procedures">Compiled Procedures</a>, for a full API reference.
+</p>
+<a name="index-object-table"></a>
+<a name="index-object-array"></a>
+<p>The object array of a compiled procedure, also known as the
+<em>object table</em>, holds all Scheme objects whose values are known
+not to change across invocations of the procedure: constant strings,
+symbols, etc. The object table of a program is initialized right
+before a program is loaded with <code>load-program</code>.
+See <a href="Loading-Instructions.html#Loading-Instructions">Loading Instructions</a>, for more information.
+</p>
+<p>Variable objects are one such type of constant object: when a global
+binding is defined, a variable object is associated to it and that
+object will remain constant over time, even if the value bound to it
+changes. Therefore, toplevel bindings only need to be looked up once.
+Thereafter, references to the corresponding toplevel variables from
+within the program are then performed via the <code>toplevel-ref</code>
+instruction, which uses the object vector, and are almost as fast as
+local variable references.
+</p>
+<p>We can see how these concepts tie together by disassembling the
+<code>foo</code> function we defined earlier to see what is going on:
+</p>
+<div class="smallexample">
+<pre class="smallexample">scheme@(guile-user)&gt; (define (foo a) (lambda (b) (list foo a b)))
+scheme@(guile-user)&gt; ,x foo
+   0    (assert-nargs-ee/locals 1)      
+   2    (object-ref 1)                  ;; #&lt;procedure 8ebec20 at &lt;current input&gt;:0:17 (b)&gt;
+   4    (local-ref 0)                   ;; `a'
+   6    (make-closure 0 1)              
+   9    (return)                        
+
+----------------------------------------
+Disassembly of #&lt;procedure 8ebec20 at &lt;current input&gt;:0:17 (b)&gt;:
+
+   0    (assert-nargs-ee/locals 1)      
+   2    (toplevel-ref 1)                ;; `foo'
+   4    (free-ref 0)                    ;; (closure variable)
+   6    (local-ref 0)                   ;; `b'
+   8    (list 0 3)                      ;; 3 elements         at (unknown file):0:29
+  11    (return)                        
+</pre></div>
+
+<p>First there&rsquo;s some prelude, where <code>foo</code> checks that it was called with only
+1 argument. Then at <code>ip</code> 2, we load up the compiled lambda. <code>Ip</code> 4
+loads up &lsquo;a&rsquo;, so that it can be captured into a closure by at <code>ip</code>
+6&mdash;binding code (from the compiled lambda) with data (the free-variable
+vector). Finally we return the closure.
+</p>
+<p>The second stanza disassembles the compiled lambda. After the prelude, we note
+that toplevel variables are resolved relative to the module that was current
+when the procedure was created. This lookup occurs lazily, at the first time the
+variable is actually referenced, and the location of the lookup is cached so
+that future references are very cheap. See <a href="Top_002dLevel-Environment-Instructions.html#Top_002dLevel-Environment-Instructions">Top-Level Environment Instructions</a>,
+for more details.
+</p>
+<p>Then we see a reference to a free variable, corresponding to <code>a</code>. The
+disassembler doesn&rsquo;t have enough information to give a name to that variable, so
+it just marks it as being a &ldquo;closure variable&rdquo;. Finally we see the reference
+to <code>b</code>, then the <code>list</code> opcode, an inline implementation of the
+<code>list</code> scheme routine.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Instruction-Set.html#Instruction-Set" accesskey="n" rel="next">Instruction Set</a>, Previous: <a href="Variables-and-the-VM.html#Variables-and-the-VM" accesskey="p" rel="prev">Variables and the VM</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

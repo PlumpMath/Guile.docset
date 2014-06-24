@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Ports</title>
+
+<meta name="description" content="Guile Reference Manual: Ports">
+<meta name="keywords" content="Guile Reference Manual: Ports">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Reading.html#Reading" rel="next" title="Reading">
+<link href="Input-and-Output.html#Input-and-Output" rel="prev" title="Input and Output">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Ports"></a>
+<div class="header">
+<p>
+Next: <a href="Reading.html#Reading" accesskey="n" rel="next">Reading</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Ports-1"></a>
+<h4 class="subsection">6.14.1 Ports</h4>
+<a name="index-Port"></a>
+
+<p>Sequential input/output in Scheme is represented by operations on a
+<em>port</em>.  This chapter explains the operations that Guile provides
+for working with ports.
+</p>
+<p>Ports are created by opening, for instance <code>open-file</code> for a file
+(see <a href="File-Ports.html#File-Ports">File Ports</a>).  Characters can be read from an input port and
+written to an output port, or both on an input/output port.  A port
+can be closed (see <a href="Closing.html#Closing">Closing</a>) when no longer required, after which
+any attempt to read or write is an error.
+</p>
+<p>The formal definition of a port is very generic: an input port is
+simply &ldquo;an object which can deliver characters on demand,&rdquo; and an
+output port is &ldquo;an object which can accept characters.&rdquo;  Because
+this definition is so loose, it is easy to write functions that
+simulate ports in software.  <em>Soft ports</em> and <em>string ports</em>
+are two interesting and powerful examples of this technique.
+(see <a href="Soft-Ports.html#Soft-Ports">Soft Ports</a>, and <a href="String-Ports.html#String-Ports">String Ports</a>.)
+</p>
+<p>Ports are garbage collected in the usual way (see <a href="Memory-Management.html#Memory-Management">Memory Management</a>), and will be closed at that time if not already closed.
+In this case any errors occurring in the close will not be reported.
+Usually a program will want to explicitly close so as to be sure all
+its operations have been successful.  Of course if a program has
+abandoned something due to an error or other condition then closing
+problems are probably not of interest.
+</p>
+<p>It is strongly recommended that file ports be closed explicitly when
+no longer required.  Most systems have limits on how many files can be
+open, both on a per-process and a system-wide basis.  A program that
+uses many files should take care not to hit those limits.  The same
+applies to similar system resources such as pipes and sockets.
+</p>
+<p>Note that automatic garbage collection is triggered only by memory
+consumption, not by file or other resource usage, so a program cannot
+rely on that to keep it away from system limits.  An explicit call to
+<code>gc</code> can of course be relied on to pick up unreferenced ports.
+If program flow makes it hard to be certain when to close then this
+may be an acceptable way to control resource usage.
+</p>
+<p>All file access uses the &ldquo;LFS&rdquo; large file support functions when
+available, so files bigger than 2 Gbytes (<em>2^31</em> bytes) can be
+read and written on a 32-bit system.
+</p>
+<p>Each port has an associated character encoding that controls how bytes
+read from the port are converted to characters and string and controls
+how characters and strings written to the port are converted to bytes.
+When ports are created, they inherit their character encoding from the
+current locale, but, that can be modified after the port is created.
+</p>
+<p>Currently, the ports only work with <em>non-modal</em> encodings.  Most
+encodings are non-modal, meaning that the conversion of bytes to a
+string doesn&rsquo;t depend on its context: the same byte sequence will always
+return the same string.  A couple of modal encodings are in common use,
+like ISO-2022-JP and ISO-2022-KR, and they are not yet supported.
+</p>
+<p>Each port also has an associated conversion strategy: what to do when
+a Guile character can&rsquo;t be converted to the port&rsquo;s encoded character
+representation for output. There are three possible strategies: to
+raise an error, to replace the character with a hex escape, or to
+replace the character with a substitute character.
+</p>
+<a name="index-input_002dport_003f-3"></a>
+<dl>
+<dt><a name="index-input_002dport_003f"></a>Scheme Procedure: <strong>input-port?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005finput_005fport_005fp"></a>C Function: <strong>scm_input_port_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is an input port, otherwise return
+<code>#f</code>.  Any object satisfying this predicate also satisfies
+<code>port?</code>.
+</p></dd></dl>
+
+<a name="index-output_002dport_003f-3"></a>
+<dl>
+<dt><a name="index-output_002dport_003f"></a>Scheme Procedure: <strong>output-port?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005foutput_005fport_005fp"></a>C Function: <strong>scm_output_port_p</strong> <em>(x)</em></dt>
+<dd><p>Return <code>#t</code> if <var>x</var> is an output port, otherwise return
+<code>#f</code>.  Any object satisfying this predicate also satisfies
+<code>port?</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_003f"></a>Scheme Procedure: <strong>port?</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fport_005fp"></a>C Function: <strong>scm_port_p</strong> <em>(x)</em></dt>
+<dd><p>Return a boolean indicating whether <var>x</var> is a port.
+Equivalent to <code>(or (input-port? <var>x</var>) (output-port?
+<var>x</var>))</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dport_002dencoding_0021"></a>Scheme Procedure: <strong>set-port-encoding!</strong> <em>port enc</em></dt>
+<dt><a name="index-scm_005fset_005fport_005fencoding_005fx"></a>C Function: <strong>scm_set_port_encoding_x</strong> <em>(port, enc)</em></dt>
+<dd><p>Sets the character encoding that will be used to interpret all port I/O.
+<var>enc</var> is a string containing the name of an encoding.  Valid
+encoding names are those
+<a href="http://www.iana.org/assignments/character-sets">defined by IANA</a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0025default_002dport_002dencoding"></a>Scheme Variable: <strong>%default-port-encoding</strong></dt>
+<dd><p>A fluid containing <code>#f</code> or the name of the encoding to
+be used by default for newly created ports (see <a href="Fluids-and-Dynamic-States.html#Fluids-and-Dynamic-States">Fluids and Dynamic States</a>).  The value <code>#f</code> is equivalent to <code>&quot;ISO-8859-1&quot;</code>.
+</p>
+<p>New ports are created with the encoding appropriate for the current
+locale if <code>setlocale</code> has been called or the value specified by
+this fluid otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002dencoding"></a>Scheme Procedure: <strong>port-encoding</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fport_005fencoding"></a>C Function: <strong>scm_port_encoding</strong> <em>(port)</em></dt>
+<dd><p>Returns, as a string, the character encoding that <var>port</var> uses to interpret
+its input and output.  The value <code>#f</code> is equivalent to <code>&quot;ISO-8859-1&quot;</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dport_002dconversion_002dstrategy_0021"></a>Scheme Procedure: <strong>set-port-conversion-strategy!</strong> <em>port sym</em></dt>
+<dt><a name="index-scm_005fset_005fport_005fconversion_005fstrategy_005fx"></a>C Function: <strong>scm_set_port_conversion_strategy_x</strong> <em>(port, sym)</em></dt>
+<dd><p>Sets the behavior of the interpreter when outputting a character that
+is not representable in the port&rsquo;s current encoding.  <var>sym</var> can be
+either <code>'error</code>, <code>'substitute</code>, or <code>'escape</code>.  If it is
+<code>'error</code>, an error will be thrown when an nonconvertible character
+is encountered.  If it is <code>'substitute</code>, then nonconvertible
+characters will be replaced with approximate characters, or with
+question marks if no approximately correct character is available.  If
+it is <code>'escape</code>, it will appear as a hex escape when output.
+</p>
+<p>If <var>port</var> is an open port, the conversion error behavior
+is set for that port.  If it is <code>#f</code>, it is set as the
+default behavior for any future ports that get created in
+this thread.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-port_002dconversion_002dstrategy"></a>Scheme Procedure: <strong>port-conversion-strategy</strong> <em>port</em></dt>
+<dt><a name="index-scm_005fport_005fconversion_005fstrategy"></a>C Function: <strong>scm_port_conversion_strategy</strong> <em>(port)</em></dt>
+<dd><p>Returns the behavior of the port when outputting a character that is
+not representable in the port&rsquo;s current encoding.  It returns the
+symbol <code>error</code> if unrepresentable characters should cause
+exceptions, <code>substitute</code> if the port should try to replace
+unrepresentable characters with question marks or approximate
+characters, or <code>escape</code> if unrepresentable characters should be
+converted to string escapes.
+</p>
+<p>If <var>port</var> is <code>#f</code>, then the current default behavior will be
+returned.  New ports will have this default behavior when they are
+created.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0025default_002dport_002dconversion_002dstrategy"></a>Scheme Variable: <strong>%default-port-conversion-strategy</strong></dt>
+<dd><p>The fluid that defines the conversion strategy for newly created ports,
+and for other conversion routines such as <code>scm_to_stringn</code>,
+<code>scm_from_stringn</code>, <code>string-&gt;pointer</code>, and
+<code>pointer-&gt;string</code>.
+</p>
+<p>Its value must be one of the symbols described above, with the same
+semantics: <code>'error</code>, <code>'substitute</code>, or <code>'escape</code>.
+</p>
+<p>When Guile starts, its value is <code>'substitute</code>.
+</p>
+<p>Note that <code>(set-port-conversion-strategy! #f <var>sym</var>)</code> is
+equivalent to <code>(fluid-set! %default-port-conversion-strategy
+<var>sym</var>)</code>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Reading.html#Reading" accesskey="n" rel="next">Reading</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Guardians</title>
+
+<meta name="description" content="Guile Reference Manual: Guardians">
+<meta name="keywords" content="Guile Reference Manual: Guardians">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Memory-Management.html#Memory-Management" rel="up" title="Memory Management">
+<link href="Modules.html#Modules" rel="next" title="Modules">
+<link href="Weak-vectors.html#Weak-vectors" rel="prev" title="Weak vectors">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Guardians"></a>
+<div class="header">
+<p>
+Previous: <a href="Weak-References.html#Weak-References" accesskey="p" rel="prev">Weak References</a>, Up: <a href="Memory-Management.html#Memory-Management" accesskey="u" rel="up">Memory Management</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Guardians-1"></a>
+<h4 class="subsection">6.18.4 Guardians</h4>
+
+<p>Guardians provide a way to be notified about objects that would
+otherwise be collected as garbage.  Guarding them prevents the objects
+from being collected and cleanup actions can be performed on them, for
+example.
+</p>
+<p>See R. Kent Dybvig, Carl Bruggeman, and David Eby (1993) &quot;Guardians in
+a Generation-Based Garbage Collector&quot;.  ACM SIGPLAN Conference on
+Programming Language Design and Implementation, June 1993.
+</p>
+<dl>
+<dt><a name="index-make_002dguardian"></a>Scheme Procedure: <strong>make-guardian</strong></dt>
+<dt><a name="index-scm_005fmake_005fguardian"></a>C Function: <strong>scm_make_guardian</strong> <em>()</em></dt>
+<dd><p>Create a new guardian.  A guardian protects a set of objects from
+garbage collection, allowing a program to apply cleanup or other
+actions.
+</p>
+<p><code>make-guardian</code> returns a procedure representing the guardian.
+Calling the guardian procedure with an argument adds the argument to
+the guardian&rsquo;s set of protected objects.  Calling the guardian
+procedure without an argument returns one of the protected objects
+which are ready for garbage collection, or <code>#f</code> if no such object
+is available.  Objects which are returned in this way are removed from
+the guardian.
+</p>
+<p>You can put a single object into a guardian more than once and you can
+put a single object into more than one guardian.  The object will then
+be returned multiple times by the guardian procedures.
+</p>
+<p>An object is eligible to be returned from a guardian when it is no
+longer referenced from outside any guardian.
+</p>
+<p>There is no guarantee about the order in which objects are returned
+from a guardian.  If you want to impose an order on finalization
+actions, for example, you can do that by keeping objects alive in some
+global data structure until they are no longer needed for finalizing
+other objects.
+</p>
+<p>Being an element in a weak vector, a key in a hash table with weak
+keys, or a value in a hash table with weak values does not prevent an
+object from being returned by a guardian.  But as long as an object
+can be returned from a guardian it will not be removed from such a
+weak vector or hash table.  In other words, a weak link does not
+prevent an object from being considered collectable, but being inside
+a guardian prevents a weak link from being broken.
+</p>
+<p>A key in a weak key hash table can be thought of as having a strong
+reference to its associated value as long as the key is accessible.
+Consequently, when the key is only accessible from within a guardian,
+the reference from the key to the value is also considered to be
+coming from within a guardian.  Thus, if there is no other reference
+to the value, it is eligible to be returned from a guardian.
+</p></dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Weak-References.html#Weak-References" accesskey="p" rel="prev">Weak References</a>, Up: <a href="Memory-Management.html#Memory-Management" accesskey="u" rel="up">Memory Management</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

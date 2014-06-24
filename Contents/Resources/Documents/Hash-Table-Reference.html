@@ -1,0 +1,347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Hash Table Reference</title>
+
+<meta name="description" content="Guile Reference Manual: Hash Table Reference">
+<meta name="keywords" content="Guile Reference Manual: Hash Table Reference">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Hash-Tables.html#Hash-Tables" rel="up" title="Hash Tables">
+<link href="Smobs.html#Smobs" rel="next" title="Smobs">
+<link href="Hash-Table-Examples.html#Hash-Table-Examples" rel="prev" title="Hash Table Examples">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Hash-Table-Reference"></a>
+<div class="header">
+<p>
+Previous: <a href="Hash-Table-Examples.html#Hash-Table-Examples" accesskey="p" rel="prev">Hash Table Examples</a>, Up: <a href="Hash-Tables.html#Hash-Tables" accesskey="u" rel="up">Hash Tables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Hash-Table-Reference-1"></a>
+<h4 class="subsubsection">6.7.14.2 Hash Table Reference</h4>
+
+
+<p>Like the association list functions, the hash table functions come in
+several varieties, according to the equality test used for the keys.
+Plain <code>hash-</code> functions use <code>equal?</code>, <code>hashq-</code>
+functions use <code>eq?</code>, <code>hashv-</code> functions use <code>eqv?</code>, and
+the <code>hashx-</code> functions use an application supplied test.
+</p>
+<p>A single <code>make-hash-table</code> creates a hash table suitable for use
+with any set of functions, but it&rsquo;s imperative that just one set is
+then used consistently, or results will be unpredictable.
+</p>
+<p>Hash tables are implemented as a vector indexed by a hash value formed
+from the key, with an association list of key/value pairs for each
+bucket in case distinct keys hash together.  Direct access to the
+pairs in those lists is provided by the <code>-handle-</code> functions.
+</p>
+<p>When the number of entries in a hash table goes above a threshold, the
+vector is made larger and the entries are rehashed, to prevent the
+bucket lists from becoming too long and slowing down accesses.  When the
+number of entries goes below a threshold, the vector is shrunk to save
+space.
+</p>
+<p>For the <code>hashx-</code> &ldquo;extended&rdquo; routines, an application supplies a
+<var>hash</var> function producing an integer index like <code>hashq</code> etc
+below, and an <var>assoc</var> alist search function like <code>assq</code> etc
+(see <a href="Retrieving-Alist-Entries.html#Retrieving-Alist-Entries">Retrieving Alist Entries</a>).  Here&rsquo;s an example of such
+functions implementing case-insensitive hashing of string keys,
+</p>
+<div class="example">
+<pre class="example">(use-modules (srfi srfi-1)
+             (srfi srfi-13))
+
+(define (my-hash str size)
+  (remainder (string-hash-ci str) size))
+(define (my-assoc str alist)
+  (find (lambda (pair) (string-ci=? str (car pair))) alist))
+
+(define my-table (make-hash-table))
+(hashx-set! my-hash my-assoc my-table &quot;foo&quot; 123)
+
+(hashx-ref my-hash my-assoc my-table &quot;FOO&quot;)
+&rArr; 123
+</pre></div>
+
+<p>In a <code>hashx-</code> <var>hash</var> function the aim is to spread keys
+across the vector, so bucket lists don&rsquo;t become long.  But the actual
+values are arbitrary as long as they&rsquo;re in the range 0 to
+<em><var>size</var>-1</em>.  Helpful functions for forming a hash value, in
+addition to <code>hashq</code> etc below, include <code>symbol-hash</code>
+(see <a href="Symbol-Keys.html#Symbol-Keys">Symbol Keys</a>), <code>string-hash</code> and <code>string-hash-ci</code>
+(see <a href="String-Comparison.html#String-Comparison">String Comparison</a>), and <code>char-set-hash</code>
+(see <a href="Character-Set-Predicates_002fComparison.html#Character-Set-Predicates_002fComparison">Character Set Predicates/Comparison</a>).
+</p>
+<br>
+<dl>
+<dt><a name="index-make_002dhash_002dtable"></a>Scheme Procedure: <strong>make-hash-table</strong> <em>[size]</em></dt>
+<dd><p>Create a new hash table object, with an optional minimum
+vector <var>size</var>.
+</p>
+<p>When <var>size</var> is given, the table vector will still grow and shrink
+automatically, as described above, but with <var>size</var> as a minimum.
+If an application knows roughly how many entries the table will hold
+then it can use <var>size</var> to avoid rehashing when initial entries are
+added.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-alist_002d_003ehash_002dtable"></a>Scheme Procedure: <strong>alist-&gt;hash-table</strong> <em>alist</em></dt>
+<dt><a name="index-alist_002d_003ehashq_002dtable"></a>Scheme Procedure: <strong>alist-&gt;hashq-table</strong> <em>alist</em></dt>
+<dt><a name="index-alist_002d_003ehashv_002dtable"></a>Scheme Procedure: <strong>alist-&gt;hashv-table</strong> <em>alist</em></dt>
+<dt><a name="index-alist_002d_003ehashx_002dtable"></a>Scheme Procedure: <strong>alist-&gt;hashx-table</strong> <em>hash assoc alist</em></dt>
+<dd><p>Convert <var>alist</var> into a hash table. When keys are repeated in
+<var>alist</var>, the leftmost association takes precedence.
+</p>
+<div class="example">
+<pre class="example">(use-modules (ice-9 hash-table))
+(alist-&gt;hash-table '((foo . 1) (bar . 2)))
+</pre></div>
+
+<p>When converting to an extended hash table, custom <var>hash</var> and
+<var>assoc</var> procedures must be provided.
+</p>
+<div class="example">
+<pre class="example">(alist-&gt;hashx-table hash assoc '((foo . 1) (bar . 2)))
+</pre></div>
+
+</dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dtable_003f"></a>Scheme Procedure: <strong>hash-table?</strong> <em>obj</em></dt>
+<dt><a name="index-scm_005fhash_005ftable_005fp"></a>C Function: <strong>scm_hash_table_p</strong> <em>(obj)</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a abstract hash table object.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dclear_0021"></a>Scheme Procedure: <strong>hash-clear!</strong> <em>table</em></dt>
+<dt><a name="index-scm_005fhash_005fclear_005fx"></a>C Function: <strong>scm_hash_clear_x</strong> <em>(table)</em></dt>
+<dd><p>Remove all items from <var>table</var> (without triggering a resize).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dref"></a>Scheme Procedure: <strong>hash-ref</strong> <em>table key [dflt]</em></dt>
+<dt><a name="index-hashq_002dref"></a>Scheme Procedure: <strong>hashq-ref</strong> <em>table key [dflt]</em></dt>
+<dt><a name="index-hashv_002dref"></a>Scheme Procedure: <strong>hashv-ref</strong> <em>table key [dflt]</em></dt>
+<dt><a name="index-hashx_002dref"></a>Scheme Procedure: <strong>hashx-ref</strong> <em>hash assoc table key [dflt]</em></dt>
+<dt><a name="index-scm_005fhash_005fref"></a>C Function: <strong>scm_hash_ref</strong> <em>(table, key, dflt)</em></dt>
+<dt><a name="index-scm_005fhashq_005fref"></a>C Function: <strong>scm_hashq_ref</strong> <em>(table, key, dflt)</em></dt>
+<dt><a name="index-scm_005fhashv_005fref"></a>C Function: <strong>scm_hashv_ref</strong> <em>(table, key, dflt)</em></dt>
+<dt><a name="index-scm_005fhashx_005fref"></a>C Function: <strong>scm_hashx_ref</strong> <em>(hash, assoc, table, key, dflt)</em></dt>
+<dd><p>Lookup <var>key</var> in the given hash <var>table</var>, and return the
+associated value.  If <var>key</var> is not found, return <var>dflt</var>, or
+<code>#f</code> if <var>dflt</var> is not given.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dset_0021"></a>Scheme Procedure: <strong>hash-set!</strong> <em>table key val</em></dt>
+<dt><a name="index-hashq_002dset_0021"></a>Scheme Procedure: <strong>hashq-set!</strong> <em>table key val</em></dt>
+<dt><a name="index-hashv_002dset_0021"></a>Scheme Procedure: <strong>hashv-set!</strong> <em>table key val</em></dt>
+<dt><a name="index-hashx_002dset_0021"></a>Scheme Procedure: <strong>hashx-set!</strong> <em>hash assoc table key val</em></dt>
+<dt><a name="index-scm_005fhash_005fset_005fx"></a>C Function: <strong>scm_hash_set_x</strong> <em>(table, key, val)</em></dt>
+<dt><a name="index-scm_005fhashq_005fset_005fx"></a>C Function: <strong>scm_hashq_set_x</strong> <em>(table, key, val)</em></dt>
+<dt><a name="index-scm_005fhashv_005fset_005fx"></a>C Function: <strong>scm_hashv_set_x</strong> <em>(table, key, val)</em></dt>
+<dt><a name="index-scm_005fhashx_005fset_005fx"></a>C Function: <strong>scm_hashx_set_x</strong> <em>(hash, assoc, table, key, val)</em></dt>
+<dd><p>Associate <var>val</var> with <var>key</var> in the given hash <var>table</var>.  If
+<var>key</var> is already present then it&rsquo;s associated value is changed.
+If it&rsquo;s not present then a new entry is created.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dremove_0021"></a>Scheme Procedure: <strong>hash-remove!</strong> <em>table key</em></dt>
+<dt><a name="index-hashq_002dremove_0021"></a>Scheme Procedure: <strong>hashq-remove!</strong> <em>table key</em></dt>
+<dt><a name="index-hashv_002dremove_0021"></a>Scheme Procedure: <strong>hashv-remove!</strong> <em>table key</em></dt>
+<dt><a name="index-hashx_002dremove_0021"></a>Scheme Procedure: <strong>hashx-remove!</strong> <em>hash assoc table key</em></dt>
+<dt><a name="index-scm_005fhash_005fremove_005fx"></a>C Function: <strong>scm_hash_remove_x</strong> <em>(table, key)</em></dt>
+<dt><a name="index-scm_005fhashq_005fremove_005fx"></a>C Function: <strong>scm_hashq_remove_x</strong> <em>(table, key)</em></dt>
+<dt><a name="index-scm_005fhashv_005fremove_005fx"></a>C Function: <strong>scm_hashv_remove_x</strong> <em>(table, key)</em></dt>
+<dt><a name="index-scm_005fhashx_005fremove_005fx"></a>C Function: <strong>scm_hashx_remove_x</strong> <em>(hash, assoc, table, key)</em></dt>
+<dd><p>Remove any association for <var>key</var> in the given hash <var>table</var>.
+If <var>key</var> is not in <var>table</var> then nothing is done.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash"></a>Scheme Procedure: <strong>hash</strong> <em>key size</em></dt>
+<dt><a name="index-hashq"></a>Scheme Procedure: <strong>hashq</strong> <em>key size</em></dt>
+<dt><a name="index-hashv"></a>Scheme Procedure: <strong>hashv</strong> <em>key size</em></dt>
+<dt><a name="index-scm_005fhash"></a>C Function: <strong>scm_hash</strong> <em>(key, size)</em></dt>
+<dt><a name="index-scm_005fhashq"></a>C Function: <strong>scm_hashq</strong> <em>(key, size)</em></dt>
+<dt><a name="index-scm_005fhashv"></a>C Function: <strong>scm_hashv</strong> <em>(key, size)</em></dt>
+<dd><p>Return a hash value for <var>key</var>.  This is a number in the range
+<em>0</em> to <em><var>size</var>-1</em>, which is suitable for use in a hash
+table of the given <var>size</var>.
+</p>
+<p>Note that <code>hashq</code> and <code>hashv</code> may use internal addresses of
+objects, so if an object is garbage collected and re-created it can
+have a different hash value, even when the two are notionally
+<code>eq?</code>.  For instance with symbols,
+</p>
+<div class="example">
+<pre class="example">(hashq 'something 123)   &rArr; 19
+(gc)
+(hashq 'something 123)   &rArr; 62
+</pre></div>
+
+<p>In normal use this is not a problem, since an object entered into a
+hash table won&rsquo;t be garbage collected until removed.  It&rsquo;s only if
+hashing calculations are somehow separated from normal references that
+its lifetime needs to be considered.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dget_002dhandle"></a>Scheme Procedure: <strong>hash-get-handle</strong> <em>table key</em></dt>
+<dt><a name="index-hashq_002dget_002dhandle"></a>Scheme Procedure: <strong>hashq-get-handle</strong> <em>table key</em></dt>
+<dt><a name="index-hashv_002dget_002dhandle"></a>Scheme Procedure: <strong>hashv-get-handle</strong> <em>table key</em></dt>
+<dt><a name="index-hashx_002dget_002dhandle"></a>Scheme Procedure: <strong>hashx-get-handle</strong> <em>hash assoc table key</em></dt>
+<dt><a name="index-scm_005fhash_005fget_005fhandle"></a>C Function: <strong>scm_hash_get_handle</strong> <em>(table, key)</em></dt>
+<dt><a name="index-scm_005fhashq_005fget_005fhandle"></a>C Function: <strong>scm_hashq_get_handle</strong> <em>(table, key)</em></dt>
+<dt><a name="index-scm_005fhashv_005fget_005fhandle"></a>C Function: <strong>scm_hashv_get_handle</strong> <em>(table, key)</em></dt>
+<dt><a name="index-scm_005fhashx_005fget_005fhandle"></a>C Function: <strong>scm_hashx_get_handle</strong> <em>(hash, assoc, table, key)</em></dt>
+<dd><p>Return the <code>(<var>key</var> . <var>value</var>)</code> pair for <var>key</var> in the
+given hash <var>table</var>, or <code>#f</code> if <var>key</var> is not in
+<var>table</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dcreate_002dhandle_0021"></a>Scheme Procedure: <strong>hash-create-handle!</strong> <em>table key init</em></dt>
+<dt><a name="index-hashq_002dcreate_002dhandle_0021"></a>Scheme Procedure: <strong>hashq-create-handle!</strong> <em>table key init</em></dt>
+<dt><a name="index-hashv_002dcreate_002dhandle_0021"></a>Scheme Procedure: <strong>hashv-create-handle!</strong> <em>table key init</em></dt>
+<dt><a name="index-hashx_002dcreate_002dhandle_0021"></a>Scheme Procedure: <strong>hashx-create-handle!</strong> <em>hash assoc table key init</em></dt>
+<dt><a name="index-scm_005fhash_005fcreate_005fhandle_005fx"></a>C Function: <strong>scm_hash_create_handle_x</strong> <em>(table, key, init)</em></dt>
+<dt><a name="index-scm_005fhashq_005fcreate_005fhandle_005fx"></a>C Function: <strong>scm_hashq_create_handle_x</strong> <em>(table, key, init)</em></dt>
+<dt><a name="index-scm_005fhashv_005fcreate_005fhandle_005fx"></a>C Function: <strong>scm_hashv_create_handle_x</strong> <em>(table, key, init)</em></dt>
+<dt><a name="index-scm_005fhashx_005fcreate_005fhandle_005fx"></a>C Function: <strong>scm_hashx_create_handle_x</strong> <em>(hash, assoc, table, key, init)</em></dt>
+<dd><p>Return the <code>(<var>key</var> . <var>value</var>)</code> pair for <var>key</var> in the
+given hash <var>table</var>.  If <var>key</var> is not in <var>table</var> then
+create an entry for it with <var>init</var> as the value, and return that
+pair.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dmap_002d_003elist"></a>Scheme Procedure: <strong>hash-map-&gt;list</strong> <em>proc table</em></dt>
+<dt><a name="index-hash_002dfor_002deach"></a>Scheme Procedure: <strong>hash-for-each</strong> <em>proc table</em></dt>
+<dt><a name="index-scm_005fhash_005fmap_005fto_005flist"></a>C Function: <strong>scm_hash_map_to_list</strong> <em>(proc, table)</em></dt>
+<dt><a name="index-scm_005fhash_005ffor_005feach"></a>C Function: <strong>scm_hash_for_each</strong> <em>(proc, table)</em></dt>
+<dd><p>Apply <var>proc</var> to the entries in the given hash <var>table</var>.  Each
+call is <code>(<var>proc</var> <var>key</var> <var>value</var>)</code>.  <code>hash-map-&gt;list</code>
+returns a list of the results from these calls, <code>hash-for-each</code>
+discards the results and returns an unspecified value.
+</p>
+<p>Calls are made over the table entries in an unspecified order, and for
+<code>hash-map-&gt;list</code> the order of the values in the returned list is
+unspecified.  Results will be unpredictable if <var>table</var> is modified
+while iterating.
+</p>
+<p>For example the following returns a new alist comprising all the
+entries from <code>mytable</code>, in no particular order.
+</p>
+<div class="example">
+<pre class="example">(hash-map-&gt;list cons mytable)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dfor_002deach_002dhandle"></a>Scheme Procedure: <strong>hash-for-each-handle</strong> <em>proc table</em></dt>
+<dt><a name="index-scm_005fhash_005ffor_005feach_005fhandle"></a>C Function: <strong>scm_hash_for_each_handle</strong> <em>(proc, table)</em></dt>
+<dd><p>Apply <var>proc</var> to the entries in the given hash <var>table</var>.  Each
+call is <code>(<var>proc</var> <var>handle</var>)</code>, where <var>handle</var> is a
+<code>(<var>key</var> . <var>value</var>)</code> pair. Return an unspecified value.
+</p>
+<p><code>hash-for-each-handle</code> differs from <code>hash-for-each</code> only in
+the argument list of <var>proc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dfold"></a>Scheme Procedure: <strong>hash-fold</strong> <em>proc init table</em></dt>
+<dt><a name="index-scm_005fhash_005ffold"></a>C Function: <strong>scm_hash_fold</strong> <em>(proc, init, table)</em></dt>
+<dd><p>Accumulate a result by applying <var>proc</var> to the elements of the
+given hash <var>table</var>.  Each call is <code>(<var>proc</var> <var>key</var>
+<var>value</var> <var>prior-result</var>)</code>, where <var>key</var> and <var>value</var> are
+from the <var>table</var> and <var>prior-result</var> is the return from the
+previous <var>proc</var> call.  For the first call, <var>prior-result</var> is
+the given <var>init</var> value.
+</p>
+<p>Calls are made over the table entries in an unspecified order.
+Results will be unpredictable if <var>table</var> is modified while
+<code>hash-fold</code> is running.
+</p>
+<p>For example, the following returns a count of how many keys in
+<code>mytable</code> are strings.
+</p>
+<div class="example">
+<pre class="example">(hash-fold (lambda (key value prior)
+             (if (string? key) (1+ prior) prior))
+           0 mytable)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-hash_002dcount"></a>Scheme Procedure: <strong>hash-count</strong> <em>pred table</em></dt>
+<dt><a name="index-scm_005fhash_005fcount"></a>C Function: <strong>scm_hash_count</strong> <em>(pred, table)</em></dt>
+<dd><p>Return the number of elements in the given hash <var>table</var> that cause
+<code>(<var>pred</var> <var>key</var> <var>value</var>)</code> to return true.  To quickly
+determine the total number of elements, use <code>(const #t)</code> for
+<var>pred</var>.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Hash-Table-Examples.html#Hash-Table-Examples" accesskey="p" rel="prev">Hash Table Examples</a>, Up: <a href="Hash-Tables.html#Hash-Tables" accesskey="u" rel="up">Hash Tables</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

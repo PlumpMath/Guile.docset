@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: File System</title>
+
+<meta name="description" content="Guile Reference Manual: File System">
+<meta name="keywords" content="Guile Reference Manual: File System">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="POSIX.html#POSIX" rel="up" title="POSIX">
+<link href="User-Information.html#User-Information" rel="next" title="User Information">
+<link href="Ports-and-File-Descriptors.html#Ports-and-File-Descriptors" rel="prev" title="Ports and File Descriptors">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="File-System"></a>
+<div class="header">
+<p>
+Next: <a href="User-Information.html#User-Information" accesskey="n" rel="next">User Information</a>, Previous: <a href="Ports-and-File-Descriptors.html#Ports-and-File-Descriptors" accesskey="p" rel="prev">Ports and File Descriptors</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="File-System-1"></a>
+<h4 class="subsection">7.2.3 File System</h4>
+<a name="index-file-system"></a>
+
+<p>These procedures allow querying and setting file system attributes
+(such as owner,
+permissions, sizes and types of files); deleting, copying, renaming and
+linking files; creating and removing directories and querying their
+contents; syncing the file system and creating special files.
+</p>
+<dl>
+<dt><a name="index-access_003f"></a>Scheme Procedure: <strong>access?</strong> <em>path how</em></dt>
+<dt><a name="index-scm_005faccess"></a>C Function: <strong>scm_access</strong> <em>(path, how)</em></dt>
+<dd><p>Test accessibility of a file under the real UID and GID of the calling
+process.  The return is <code>#t</code> if <var>path</var> exists and the
+permissions requested by <var>how</var> are all allowed, or <code>#f</code> if
+not.
+</p>
+<p><var>how</var> is an integer which is one of the following values, or a
+bitwise-OR (<code>logior</code>) of multiple values.
+</p>
+<dl>
+<dt><a name="index-R_005fOK"></a>Variable: <strong>R_OK</strong></dt>
+<dd><p>Test for read permission.
+</p></dd></dl>
+<dl>
+<dt><a name="index-W_005fOK"></a>Variable: <strong>W_OK</strong></dt>
+<dd><p>Test for write permission.
+</p></dd></dl>
+<dl>
+<dt><a name="index-X_005fOK"></a>Variable: <strong>X_OK</strong></dt>
+<dd><p>Test for execute permission.
+</p></dd></dl>
+<dl>
+<dt><a name="index-F_005fOK"></a>Variable: <strong>F_OK</strong></dt>
+<dd><p>Test for existence of the file.  This is implied by each of the other
+tests, so there&rsquo;s no need to combine it with them.
+</p></dd></dl>
+
+<p>It&rsquo;s important to note that <code>access?</code> does not simply indicate
+what will happen on attempting to read or write a file.  In normal
+circumstances it does, but in a set-UID or set-GID program it doesn&rsquo;t
+because <code>access?</code> tests the real ID, whereas an open or execute
+attempt uses the effective ID.
+</p>
+<p>A program which will never run set-UID/GID can ignore the difference
+between real and effective IDs, but for maximum generality, especially
+in library functions, it&rsquo;s best not to use <code>access?</code> to predict
+the result of an open or execute, instead simply attempt that and
+catch any exception.
+</p>
+<p>The main use for <code>access?</code> is to let a set-UID/GID program
+determine what the invoking user would have been allowed to do,
+without the greater (or perhaps lesser) privileges afforded by the
+effective ID.  For more on this, see <a href="http://www.gnu.org/software/libc/manual/html_node/Testing-File-Access.html#Testing-File-Access">Testing File Access</a> in <cite>The GNU C Library Reference Manual</cite>.
+</p></dd></dl>
+
+<a name="index-fstat"></a>
+<dl>
+<dt><a name="index-stat"></a>Scheme Procedure: <strong>stat</strong> <em>object</em></dt>
+<dt><a name="index-scm_005fstat"></a>C Function: <strong>scm_stat</strong> <em>(object)</em></dt>
+<dd><p>Return an object containing various information about the file
+determined by <var>object</var>.  <var>object</var> can be a string containing
+a file name or a port or integer file descriptor which is open
+on a file (in which case <code>fstat</code> is used as the underlying
+system call).
+</p>
+<p>The object returned by <code>stat</code> can be passed as a single
+parameter to the following procedures, all of which return
+integers:
+</p>
+<dl>
+<dt><a name="index-stat_003adev"></a>Scheme Procedure: <strong>stat:dev</strong> <em>st</em></dt>
+<dd><p>The device number containing the file.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003aino"></a>Scheme Procedure: <strong>stat:ino</strong> <em>st</em></dt>
+<dd><p>The file serial number, which distinguishes this file from all
+other files on the same device.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003amode"></a>Scheme Procedure: <strong>stat:mode</strong> <em>st</em></dt>
+<dd><p>The mode of the file.  This is an integer which incorporates file type
+information and file permission bits.  See also <code>stat:type</code> and
+<code>stat:perms</code> below.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003anlink"></a>Scheme Procedure: <strong>stat:nlink</strong> <em>st</em></dt>
+<dd><p>The number of hard links to the file.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003auid"></a>Scheme Procedure: <strong>stat:uid</strong> <em>st</em></dt>
+<dd><p>The user ID of the file&rsquo;s owner.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003agid"></a>Scheme Procedure: <strong>stat:gid</strong> <em>st</em></dt>
+<dd><p>The group ID of the file.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003ardev"></a>Scheme Procedure: <strong>stat:rdev</strong> <em>st</em></dt>
+<dd><p>Device ID; this entry is defined only for character or block special
+files.  On some systems this field is not available at all, in which
+case <code>stat:rdev</code> returns <code>#f</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003asize"></a>Scheme Procedure: <strong>stat:size</strong> <em>st</em></dt>
+<dd><p>The size of a regular file in bytes.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003aatime"></a>Scheme Procedure: <strong>stat:atime</strong> <em>st</em></dt>
+<dd><p>The last access time for the file, in seconds.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003amtime"></a>Scheme Procedure: <strong>stat:mtime</strong> <em>st</em></dt>
+<dd><p>The last modification time for the file, in seconds.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003actime"></a>Scheme Procedure: <strong>stat:ctime</strong> <em>st</em></dt>
+<dd><p>The last modification time for the attributes of the file, in seconds.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003aatimensec"></a>Scheme Procedure: <strong>stat:atimensec</strong> <em>st</em></dt>
+<dt><a name="index-stat_003amtimensec"></a>Scheme Procedure: <strong>stat:mtimensec</strong> <em>st</em></dt>
+<dt><a name="index-stat_003actimensec"></a>Scheme Procedure: <strong>stat:ctimensec</strong> <em>st</em></dt>
+<dd><p>The fractional part of a file&rsquo;s access, modification, or attribute modification
+time, in nanoseconds. Nanosecond timestamps are only available on some operating
+systems and file systems. If Guile cannot retrieve nanosecond-level timestamps
+for a file, these fields will be set to 0.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003ablksize"></a>Scheme Procedure: <strong>stat:blksize</strong> <em>st</em></dt>
+<dd><p>The optimal block size for reading or writing the file, in bytes.  On
+some systems this field is not available, in which case
+<code>stat:blksize</code> returns a sensible suggested block size.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003ablocks"></a>Scheme Procedure: <strong>stat:blocks</strong> <em>st</em></dt>
+<dd><p>The amount of disk space that the file occupies measured in units of
+512 byte blocks.  On some systems this field is not available, in
+which case <code>stat:blocks</code> returns <code>#f</code>.
+</p></dd></dl>
+
+<p>In addition, the following procedures return the information
+from <code>stat:mode</code> in a more convenient form:
+</p>
+<dl>
+<dt><a name="index-stat_003atype"></a>Scheme Procedure: <strong>stat:type</strong> <em>st</em></dt>
+<dd><p>A symbol representing the type of file.  Possible values are
+&lsquo;<samp>regular</samp>&rsquo;, &lsquo;<samp>directory</samp>&rsquo;, &lsquo;<samp>symlink</samp>&rsquo;,
+&lsquo;<samp>block-special</samp>&rsquo;, &lsquo;<samp>char-special</samp>&rsquo;, &lsquo;<samp>fifo</samp>&rsquo;, &lsquo;<samp>socket</samp>&rsquo;,
+and &lsquo;<samp>unknown</samp>&rsquo;.
+</p></dd></dl>
+<dl>
+<dt><a name="index-stat_003aperms"></a>Scheme Procedure: <strong>stat:perms</strong> <em>st</em></dt>
+<dd><p>An integer representing the access permission bits.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-lstat"></a>Scheme Procedure: <strong>lstat</strong> <em>path</em></dt>
+<dt><a name="index-scm_005flstat"></a>C Function: <strong>scm_lstat</strong> <em>(path)</em></dt>
+<dd><p>Similar to <code>stat</code>, but does not follow symbolic links, i.e.,
+it will return information about a symbolic link itself, not the
+file it points to.  <var>path</var> must be a string.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-readlink"></a>Scheme Procedure: <strong>readlink</strong> <em>path</em></dt>
+<dt><a name="index-scm_005freadlink"></a>C Function: <strong>scm_readlink</strong> <em>(path)</em></dt>
+<dd><p>Return the value of the symbolic link named by <var>path</var> (a
+string), i.e., the file that the link points to.
+</p></dd></dl>
+
+<a name="index-fchown"></a>
+<a name="index-lchown"></a>
+<dl>
+<dt><a name="index-chown"></a>Scheme Procedure: <strong>chown</strong> <em>object owner group</em></dt>
+<dt><a name="index-scm_005fchown"></a>C Function: <strong>scm_chown</strong> <em>(object, owner, group)</em></dt>
+<dd><p>Change the ownership and group of the file referred to by <var>object</var>
+to the integer values <var>owner</var> and <var>group</var>.  <var>object</var> can
+be a string containing a file name or, if the platform supports
+<code>fchown</code> (see <a href="http://www.gnu.org/software/libc/manual/html_node/File-Owner.html#File-Owner">File Owner</a> in <cite>The GNU C Library Reference
+Manual</cite>), a port or integer file descriptor which is open on the file.
+The return value is unspecified.
+</p>
+<p>If <var>object</var> is a symbolic link, either the
+ownership of the link or the ownership of the referenced file will be
+changed depending on the operating system (lchown is
+unsupported at present).  If <var>owner</var> or <var>group</var> is specified
+as <code>-1</code>, then that ID is not changed.
+</p></dd></dl>
+
+<a name="index-fchmod"></a>
+<dl>
+<dt><a name="index-chmod"></a>Scheme Procedure: <strong>chmod</strong> <em>object mode</em></dt>
+<dt><a name="index-scm_005fchmod"></a>C Function: <strong>scm_chmod</strong> <em>(object, mode)</em></dt>
+<dd><p>Changes the permissions of the file referred to by <var>object</var>.
+<var>object</var> can be a string containing a file name or a port or integer file
+descriptor which is open on a file (in which case <code>fchmod</code> is used
+as the underlying system call).
+<var>mode</var> specifies
+the new permissions as a decimal number, e.g., <code>(chmod &quot;foo&quot; #o755)</code>.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-utime"></a>Scheme Procedure: <strong>utime</strong> <em>pathname [actime [modtime [actimens [modtimens [flags]]]]]</em></dt>
+<dt><a name="index-scm_005futime"></a>C Function: <strong>scm_utime</strong> <em>(pathname, actime, modtime, actimens, modtimens, flags)</em></dt>
+<dd><p><code>utime</code> sets the access and modification times for the
+file named by <var>pathname</var>.  If <var>actime</var> or <var>modtime</var> is
+not supplied, then the current time is used.  <var>actime</var> and
+<var>modtime</var> must be integer time values as returned by the
+<code>current-time</code> procedure.
+</p>
+<p>The optional <var>actimens</var> and <var>modtimens</var> are nanoseconds
+to add <var>actime</var> and <var>modtime</var>. Nanosecond precision is
+only supported on some combinations of file systems and operating
+systems.
+</p><div class="lisp">
+<pre class="lisp">(utime &quot;foo&quot; (- (current-time) 3600))
+</pre></div>
+<p>will set the access time to one hour in the past and the
+modification time to the current time.
+</p></dd></dl>
+
+<a name="index-unlink"></a>
+<dl>
+<dt><a name="index-delete_002dfile"></a>Scheme Procedure: <strong>delete-file</strong> <em>str</em></dt>
+<dt><a name="index-scm_005fdelete_005ffile"></a>C Function: <strong>scm_delete_file</strong> <em>(str)</em></dt>
+<dd><p>Deletes (or &ldquo;unlinks&rdquo;) the file whose path is specified by
+<var>str</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-copy_002dfile"></a>Scheme Procedure: <strong>copy-file</strong> <em>oldfile newfile</em></dt>
+<dt><a name="index-scm_005fcopy_005ffile"></a>C Function: <strong>scm_copy_file</strong> <em>(oldfile, newfile)</em></dt>
+<dd><p>Copy the file specified by <var>oldfile</var> to <var>newfile</var>.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-sendfile"></a>Scheme Procedure: <strong>sendfile</strong> <em>out in count [offset]</em></dt>
+<dt><a name="index-scm_005fsendfile"></a>C Function: <strong>scm_sendfile</strong> <em>(out, in, count, offset)</em></dt>
+<dd><p>Send <var>count</var> bytes from <var>in</var> to <var>out</var>, both of which
+must be either open file ports or file descriptors.  When
+<var>offset</var> is omitted, start reading from <var>in</var>&rsquo;s current
+position; otherwise, start reading at <var>offset</var>.  Return
+the number of bytes actually sent.
+</p>
+<p>When <var>in</var> is a port, it is often preferable to specify <var>offset</var>,
+because <var>in</var>&rsquo;s offset as a port may be different from the offset of
+its underlying file descriptor.
+</p>
+<p>On systems that support it, such as GNU/Linux, this procedure uses the
+<code>sendfile</code> libc function, which usually corresponds to a system
+call.  This is faster than doing a series of <code>read</code> and
+<code>write</code> system calls.  A typical application is to send a file over
+a socket.
+</p>
+<p>In some cases, the <code>sendfile</code> libc function may return
+<code>EINVAL</code> or <code>ENOSYS</code>.  In that case, Guile&rsquo;s <code>sendfile</code>
+procedure automatically falls back to doing a series of <code>read</code> and
+<code>write</code> calls.
+</p>
+<p>In other cases, the libc function may send fewer bytes than
+<var>count</var>&mdash;for instance because <var>out</var> is a slow or limited
+device, such as a pipe.  When that happens, Guile&rsquo;s <code>sendfile</code>
+automatically retries until exactly <var>count</var> bytes were sent or an
+error occurs.
+</p></dd></dl>
+
+<a name="index-rename"></a>
+<dl>
+<dt><a name="index-rename_002dfile"></a>Scheme Procedure: <strong>rename-file</strong> <em>oldname newname</em></dt>
+<dt><a name="index-scm_005frename"></a>C Function: <strong>scm_rename</strong> <em>(oldname, newname)</em></dt>
+<dd><p>Renames the file specified by <var>oldname</var> to <var>newname</var>.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-link"></a>Scheme Procedure: <strong>link</strong> <em>oldpath newpath</em></dt>
+<dt><a name="index-scm_005flink"></a>C Function: <strong>scm_link</strong> <em>(oldpath, newpath)</em></dt>
+<dd><p>Creates a new name <var>newpath</var> in the file system for the
+file named by <var>oldpath</var>.  If <var>oldpath</var> is a symbolic
+link, the link may or may not be followed depending on the
+system.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symlink"></a>Scheme Procedure: <strong>symlink</strong> <em>oldpath newpath</em></dt>
+<dt><a name="index-scm_005fsymlink"></a>C Function: <strong>scm_symlink</strong> <em>(oldpath, newpath)</em></dt>
+<dd><p>Create a symbolic link named <var>newpath</var> with the value (i.e., pointing to)
+<var>oldpath</var>.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-mkdir"></a>Scheme Procedure: <strong>mkdir</strong> <em>path [mode]</em></dt>
+<dt><a name="index-scm_005fmkdir"></a>C Function: <strong>scm_mkdir</strong> <em>(path, mode)</em></dt>
+<dd><p>Create a new directory named by <var>path</var>.  If <var>mode</var> is omitted
+then the permissions of the directory file are set using the current
+umask (see <a href="Processes.html#Processes">Processes</a>).  Otherwise they are set to the decimal
+value specified with <var>mode</var>.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-rmdir"></a>Scheme Procedure: <strong>rmdir</strong> <em>path</em></dt>
+<dt><a name="index-scm_005frmdir"></a>C Function: <strong>scm_rmdir</strong> <em>(path)</em></dt>
+<dd><p>Remove the existing directory named by <var>path</var>.  The directory must
+be empty for this to succeed.  The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-opendir"></a>Scheme Procedure: <strong>opendir</strong> <em>dirname</em></dt>
+<dt><a name="index-scm_005fopendir"></a>C Function: <strong>scm_opendir</strong> <em>(dirname)</em></dt>
+<dd><a name="index-directory-contents"></a>
+<p>Open the directory specified by <var>dirname</var> and return a directory
+stream.
+</p>
+<p>Before using this and the procedures below, make sure to see the
+higher-level procedures for directory traversal that are available
+(see <a href="File-Tree-Walk.html#File-Tree-Walk">File Tree Walk</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-directory_002dstream_003f"></a>Scheme Procedure: <strong>directory-stream?</strong> <em>object</em></dt>
+<dt><a name="index-scm_005fdirectory_005fstream_005fp"></a>C Function: <strong>scm_directory_stream_p</strong> <em>(object)</em></dt>
+<dd><p>Return a boolean indicating whether <var>object</var> is a directory
+stream as returned by <code>opendir</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-readdir"></a>Scheme Procedure: <strong>readdir</strong> <em>stream</em></dt>
+<dt><a name="index-scm_005freaddir"></a>C Function: <strong>scm_readdir</strong> <em>(stream)</em></dt>
+<dd><p>Return (as a string) the next directory entry from the directory stream
+<var>stream</var>.  If there is no remaining entry to be read then the
+end of file object is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-rewinddir"></a>Scheme Procedure: <strong>rewinddir</strong> <em>stream</em></dt>
+<dt><a name="index-scm_005frewinddir"></a>C Function: <strong>scm_rewinddir</strong> <em>(stream)</em></dt>
+<dd><p>Reset the directory port <var>stream</var> so that the next call to
+<code>readdir</code> will return the first directory entry.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-closedir"></a>Scheme Procedure: <strong>closedir</strong> <em>stream</em></dt>
+<dt><a name="index-scm_005fclosedir"></a>C Function: <strong>scm_closedir</strong> <em>(stream)</em></dt>
+<dd><p>Close the directory stream <var>stream</var>.
+The return value is unspecified.
+</p></dd></dl>
+
+<p>Here is an example showing how to display all the entries in a
+directory:
+</p>
+<div class="lisp">
+<pre class="lisp">(define dir (opendir &quot;/usr/lib&quot;))
+(do ((entry (readdir dir) (readdir dir)))
+    ((eof-object? entry))
+  (display entry)(newline))
+(closedir dir)
+</pre></div>
+
+<dl>
+<dt><a name="index-sync"></a>Scheme Procedure: <strong>sync</strong></dt>
+<dt><a name="index-scm_005fsync"></a>C Function: <strong>scm_sync</strong> <em>()</em></dt>
+<dd><p>Flush the operating system disk buffers.
+The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-mknod"></a>Scheme Procedure: <strong>mknod</strong> <em>path type perms dev</em></dt>
+<dt><a name="index-scm_005fmknod"></a>C Function: <strong>scm_mknod</strong> <em>(path, type, perms, dev)</em></dt>
+<dd><a name="index-device-file"></a>
+<p>Creates a new special file, such as a file corresponding to a device.
+<var>path</var> specifies the name of the file.  <var>type</var> should be one
+of the following symbols: &lsquo;<samp>regular</samp>&rsquo;, &lsquo;<samp>directory</samp>&rsquo;,
+&lsquo;<samp>symlink</samp>&rsquo;, &lsquo;<samp>block-special</samp>&rsquo;, &lsquo;<samp>char-special</samp>&rsquo;,
+&lsquo;<samp>fifo</samp>&rsquo;, or &lsquo;<samp>socket</samp>&rsquo;.  <var>perms</var> (an integer) specifies the
+file permissions.  <var>dev</var> (an integer) specifies which device the
+special file refers to.  Its exact interpretation depends on the kind
+of special file being created.
+</p>
+<p>E.g.,
+</p><div class="lisp">
+<pre class="lisp">(mknod &quot;/dev/fd0&quot; 'block-special #o660 (+ (* 2 256) 2))
+</pre></div>
+
+<p>The return value is unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-tmpnam"></a>Scheme Procedure: <strong>tmpnam</strong></dt>
+<dt><a name="index-scm_005ftmpnam"></a>C Function: <strong>scm_tmpnam</strong> <em>()</em></dt>
+<dd><a name="index-temporary-file"></a>
+<p>Return an auto-generated name of a temporary file, a file which
+doesn&rsquo;t already exist.  The name includes a path, it&rsquo;s usually in
+<samp>/tmp</samp> but that&rsquo;s system dependent.
+</p>
+<p>Care must be taken when using <code>tmpnam</code>.  In between choosing the
+name and creating the file another program might use that name, or an
+attacker might even make it a symlink pointing at something important
+and causing you to overwrite that.
+</p>
+<p>The safe way is to create the file using <code>open</code> with
+<code>O_EXCL</code> to avoid any overwriting.  A loop can try again with
+another name if the file exists (error <code>EEXIST</code>).
+<code>mkstemp!</code> below does that.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-mkstemp_0021"></a>Scheme Procedure: <strong>mkstemp!</strong> <em>tmpl</em></dt>
+<dt><a name="index-scm_005fmkstemp"></a>C Function: <strong>scm_mkstemp</strong> <em>(tmpl)</em></dt>
+<dd><a name="index-temporary-file-1"></a>
+<p>Create a new unique file in the file system and return a new buffered
+port open for reading and writing to the file.
+</p>
+<p><var>tmpl</var> is a string specifying where the file should be created: it
+must end with &lsquo;<samp>XXXXXX</samp>&rsquo; and those &lsquo;<samp>X</samp>&rsquo;s will be changed in the
+string to return the name of the file.  (<code>port-filename</code> on the
+port also gives the name.)
+</p>
+<p>POSIX doesn&rsquo;t specify the permissions mode of the file, on GNU and
+most systems it&rsquo;s <code>#o600</code>.  An application can use <code>chmod</code>
+to relax that if desired.  For example <code>#o666</code> less <code>umask</code>,
+which is usual for ordinary file creation,
+</p>
+<div class="example">
+<pre class="example">(let ((port (mkstemp! (string-copy &quot;/tmp/myfile-XXXXXX&quot;))))
+  (chmod port (logand #o666 (lognot (umask))))
+  ...)
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-tmpfile"></a>Scheme Procedure: <strong>tmpfile</strong></dt>
+<dt><a name="index-scm_005ftmpfile"></a>C Function: <strong>scm_tmpfile</strong> <em>()</em></dt>
+<dd><p>Return an input/output port to a unique temporary file
+named using the path prefix <code>P_tmpdir</code> defined in
+<samp>stdio.h</samp>.
+The file is automatically deleted when the port is closed
+or the program terminates.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-dirname"></a>Scheme Procedure: <strong>dirname</strong> <em>filename</em></dt>
+<dt><a name="index-scm_005fdirname"></a>C Function: <strong>scm_dirname</strong> <em>(filename)</em></dt>
+<dd><p>Return the directory name component of the file name
+<var>filename</var>. If <var>filename</var> does not contain a directory
+component, <code>.</code> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-basename"></a>Scheme Procedure: <strong>basename</strong> <em>filename [suffix]</em></dt>
+<dt><a name="index-scm_005fbasename"></a>C Function: <strong>scm_basename</strong> <em>(filename, suffix)</em></dt>
+<dd><p>Return the base name of the file name <var>filename</var>. The
+base name is the file name without any directory components.
+If <var>suffix</var> is provided, and is equal to the end of
+<var>basename</var>, it is removed also.
+</p>
+<div class="lisp">
+<pre class="lisp">(basename &quot;/tmp/test.xml&quot; &quot;.xml&quot;)
+&rArr; &quot;test&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-file_002dexists_003f"></a>Scheme Procedure: <strong>file-exists?</strong> <em>filename</em></dt>
+<dd><p>Return <code>#t</code> if the file named <var>filename</var> exists, <code>#f</code> if
+not.
+</p></dd></dl>
+
+<a name="index-file-name-separator"></a>
+<a name="index-absolute-file-name"></a>
+
+<p>Many operating systems, such as GNU, use <code>/</code> (forward slash) to
+separate the components of a file name; any file name starting with
+<code>/</code> is considered an <em>absolute file name</em>.  These conventions
+are specified by the POSIX Base Definitions, which refer to conforming
+file names as &ldquo;pathnames&rdquo;.  Some operating systems use a different
+convention; in particular, Windows uses <code>\</code> (backslash) as the file
+name separator, and also has the notion of <em>volume names</em> like
+<code>C:\</code> for absolute file names.  The following procedures and
+variables provide support for portable file name manipulations.
+</p>
+<dl>
+<dt><a name="index-system_002dfile_002dname_002dconvention"></a>Scheme Procedure: <strong>system-file-name-convention</strong></dt>
+<dd><p>Return either <code>posix</code> or <code>windows</code>, depending on
+what kind of system this Guile is running on.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-file_002dname_002dseparator_003f"></a>Scheme Procedure: <strong>file-name-separator?</strong> <em>c</em></dt>
+<dd><p>Return true if character <var>c</var> is a file name separator on the host
+platform.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-absolute_002dfile_002dname_003f"></a>Scheme Procedure: <strong>absolute-file-name?</strong> <em>file-name</em></dt>
+<dd><p>Return true if <var>file-name</var> denotes an absolute file name on the host
+platform.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-file_002dname_002dseparator_002dstring"></a>Scheme Variable: <strong>file-name-separator-string</strong></dt>
+<dd><p>The preferred file name separator.
+</p>
+<p>Note that on MinGW builds for Windows, both <code>/</code> and <code>\</code> are
+valid separators.  Thus, programs should not assume that
+<code>file-name-separator-string</code> is the <em>only</em> file name
+separator&mdash;e.g., when extracting the components of a file name.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="User-Information.html#User-Information" accesskey="n" rel="next">User Information</a>, Previous: <a href="Ports-and-File-Descriptors.html#Ports-and-File-Descriptors" accesskey="p" rel="prev">Ports and File Descriptors</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-19 Date to string</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-19 Date to string">
+<meta name="keywords" content="Guile Reference Manual: SRFI-19 Date to string">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI_002d19.html#SRFI_002d19" rel="up" title="SRFI-19">
+<link href="SRFI_002d19-String-to-date.html#SRFI_002d19-String-to-date" rel="next" title="SRFI-19 String to date">
+<link href="SRFI_002d19-Time_002fDate-conversions.html#SRFI_002d19-Time_002fDate-conversions" rel="prev" title="SRFI-19 Time/Date conversions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d19-Date-to-string"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d19-String-to-date.html#SRFI_002d19-String-to-date" accesskey="n" rel="next">SRFI-19 String to date</a>, Previous: <a href="SRFI_002d19-Time_002fDate-conversions.html#SRFI_002d19-Time_002fDate-conversions" accesskey="p" rel="prev">SRFI-19 Time/Date conversions</a>, Up: <a href="SRFI_002d19.html#SRFI_002d19" accesskey="u" rel="up">SRFI-19</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d19-Date-to-string-1"></a>
+<h4 class="subsubsection">7.5.16.5 SRFI-19 Date to string</h4>
+<a name="index-date-to-string"></a>
+<a name="index-string_002c-from-date"></a>
+
+<dl>
+<dt><a name="index-date_002d_003estring"></a>Function: <strong>date-&gt;string</strong> <em>date [format]</em></dt>
+<dd><p>Convert a date to a string under the control of a format.
+<var>format</var> should be a string containing &lsquo;<samp>~</samp>&rsquo; escapes, which
+will be expanded as per the following conversion table.  The default
+<var>format</var> is &lsquo;<samp>~c</samp>&rsquo;, a locale-dependent date and time.
+</p>
+<p>Many of these conversion characters are the same as POSIX
+<code>strftime</code> (see <a href="Time.html#Time">Time</a>), but there are some extras and some
+variations.
+</p>
+<table>
+<tr><td><code>~~</code></td><td>literal ~</td></tr>
+<tr><td><code>~a</code></td><td>locale abbreviated weekday, eg. &lsquo;<samp>Sun</samp>&rsquo;</td></tr>
+<tr><td><code>~A</code></td><td>locale full weekday, eg. &lsquo;<samp>Sunday</samp>&rsquo;</td></tr>
+<tr><td><code>~b</code></td><td>locale abbreviated month, eg. &lsquo;<samp>Jan</samp>&rsquo;</td></tr>
+<tr><td><code>~B</code></td><td>locale full month, eg. &lsquo;<samp>January</samp>&rsquo;</td></tr>
+<tr><td><code>~c</code></td><td>locale date and time, eg. <br>
+&lsquo;<samp>Fri Jul 14 20:28:42-0400 2000</samp>&rsquo;</td></tr>
+<tr><td><code>~d</code></td><td>day of month, zero padded, &lsquo;<samp>01</samp>&rsquo; to &lsquo;<samp>31</samp>&rsquo;</td></tr>
+<tr><td><code>~e</code></td><td>day of month, blank padded, &lsquo;<samp> 1</samp>&rsquo; to &lsquo;<samp>31</samp>&rsquo;</td></tr>
+<tr><td><code>~f</code></td><td>seconds and fractional seconds,
+with locale decimal point, eg. &lsquo;<samp>5.2</samp>&rsquo;</td></tr>
+<tr><td><code>~h</code></td><td>same as <code>~b</code></td></tr>
+<tr><td><code>~H</code></td><td>hour, 24-hour clock, zero padded, &lsquo;<samp>00</samp>&rsquo; to &lsquo;<samp>23</samp>&rsquo;</td></tr>
+<tr><td><code>~I</code></td><td>hour, 12-hour clock, zero padded, &lsquo;<samp>01</samp>&rsquo; to &lsquo;<samp>12</samp>&rsquo;</td></tr>
+<tr><td><code>~j</code></td><td>day of year, zero padded, &lsquo;<samp>001</samp>&rsquo; to &lsquo;<samp>366</samp>&rsquo;</td></tr>
+<tr><td><code>~k</code></td><td>hour, 24-hour clock, blank padded, &lsquo;<samp> 0</samp>&rsquo; to &lsquo;<samp>23</samp>&rsquo;</td></tr>
+<tr><td><code>~l</code></td><td>hour, 12-hour clock, blank padded, &lsquo;<samp> 1</samp>&rsquo; to &lsquo;<samp>12</samp>&rsquo;</td></tr>
+<tr><td><code>~m</code></td><td>month, zero padded, &lsquo;<samp>01</samp>&rsquo; to &lsquo;<samp>12</samp>&rsquo;</td></tr>
+<tr><td><code>~M</code></td><td>minute, zero padded, &lsquo;<samp>00</samp>&rsquo; to &lsquo;<samp>59</samp>&rsquo;</td></tr>
+<tr><td><code>~n</code></td><td>newline</td></tr>
+<tr><td><code>~N</code></td><td>nanosecond, zero padded, &lsquo;<samp>000000000</samp>&rsquo; to &lsquo;<samp>999999999</samp>&rsquo;</td></tr>
+<tr><td><code>~p</code></td><td>locale AM or PM</td></tr>
+<tr><td><code>~r</code></td><td>time, 12 hour clock, &lsquo;<samp>~I:~M:~S ~p</samp>&rsquo;</td></tr>
+<tr><td><code>~s</code></td><td>number of full seconds since &ldquo;the epoch&rdquo; in UTC</td></tr>
+<tr><td><code>~S</code></td><td>second, zero padded &lsquo;<samp>00</samp>&rsquo; to &lsquo;<samp>60</samp>&rsquo; <br>
+(usual limit is 59, 60 is a leap second)</td></tr>
+<tr><td><code>~t</code></td><td>horizontal tab character</td></tr>
+<tr><td><code>~T</code></td><td>time, 24 hour clock, &lsquo;<samp>~H:~M:~S</samp>&rsquo;</td></tr>
+<tr><td><code>~U</code></td><td>week of year, Sunday first day of week,
+&lsquo;<samp>00</samp>&rsquo; to &lsquo;<samp>52</samp>&rsquo;</td></tr>
+<tr><td><code>~V</code></td><td>week of year, Monday first day of week,
+&lsquo;<samp>01</samp>&rsquo; to &lsquo;<samp>53</samp>&rsquo;</td></tr>
+<tr><td><code>~w</code></td><td>day of week, 0 for Sunday, &lsquo;<samp>0</samp>&rsquo; to &lsquo;<samp>6</samp>&rsquo;</td></tr>
+<tr><td><code>~W</code></td><td>week of year, Monday first day of week,
+&lsquo;<samp>00</samp>&rsquo; to &lsquo;<samp>52</samp>&rsquo;</td></tr>
+<tr><td><code>~y</code></td><td>year, two digits, &lsquo;<samp>00</samp>&rsquo; to &lsquo;<samp>99</samp>&rsquo;</td></tr>
+<tr><td><code>~Y</code></td><td>year, full, eg. &lsquo;<samp>2003</samp>&rsquo;</td></tr>
+<tr><td><code>~z</code></td><td>time zone, RFC-822 style</td></tr>
+<tr><td><code>~Z</code></td><td>time zone symbol (not currently implemented)</td></tr>
+<tr><td><code>~1</code></td><td>ISO-8601 date, &lsquo;<samp>~Y-~m-~d</samp>&rsquo;</td></tr>
+<tr><td><code>~2</code></td><td>ISO-8601 time+zone, &lsquo;<samp>~H:~M:~S~z</samp>&rsquo;</td></tr>
+<tr><td><code>~3</code></td><td>ISO-8601 time, &lsquo;<samp>~H:~M:~S</samp>&rsquo;</td></tr>
+<tr><td><code>~4</code></td><td>ISO-8601 date/time+zone, &lsquo;<samp>~Y-~m-~dT~H:~M:~S~z</samp>&rsquo;</td></tr>
+<tr><td><code>~5</code></td><td>ISO-8601 date/time, &lsquo;<samp>~Y-~m-~dT~H:~M:~S</samp>&rsquo;</td></tr>
+</table>
+</dd></dl>
+
+<p>Conversions &lsquo;<samp>~D</samp>&rsquo;, &lsquo;<samp>~x</samp>&rsquo; and &lsquo;<samp>~X</samp>&rsquo; are not currently
+described here, since the specification and reference implementation
+differ.
+</p>
+<p>Conversion is locale-dependent on systems that support it
+(see <a href="Accessing-Locale-Information.html#Accessing-Locale-Information">Accessing Locale Information</a>).  See <a href="Locales.html#Locales"><code>setlocale</code></a>, for information on how to change the current
+locale.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d19-String-to-date.html#SRFI_002d19-String-to-date" accesskey="n" rel="next">SRFI-19 String to date</a>, Previous: <a href="SRFI_002d19-Time_002fDate-conversions.html#SRFI_002d19-Time_002fDate-conversions" accesskey="p" rel="prev">SRFI-19 Time/Date conversions</a>, Up: <a href="SRFI_002d19.html#SRFI_002d19" accesskey="u" rel="up">SRFI-19</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

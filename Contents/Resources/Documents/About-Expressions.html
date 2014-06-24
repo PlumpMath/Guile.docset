@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: About Expressions</title>
+
+<meta name="description" content="Guile Reference Manual: About Expressions">
+<meta name="keywords" content="Guile Reference Manual: About Expressions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Hello-Scheme_0021.html#Hello-Scheme_0021" rel="up" title="Hello Scheme!">
+<link href="Evaluating.html#Evaluating" rel="next" title="Evaluating">
+<link href="Lambda-Alternatives.html#Lambda-Alternatives" rel="prev" title="Lambda Alternatives">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="About-Expressions"></a>
+<div class="header">
+<p>
+Next: <a href="About-Closure.html#About-Closure" accesskey="n" rel="next">About Closure</a>, Previous: <a href="About-Procedures.html#About-Procedures" accesskey="p" rel="prev">About Procedures</a>, Up: <a href="Hello-Scheme_0021.html#Hello-Scheme_0021" accesskey="u" rel="up">Hello Scheme!</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Expressions-and-Evaluation"></a>
+<h3 class="section">3.3 Expressions and Evaluation</h3>
+
+<p>So far, we have met expressions that <em>do</em> things, such as the
+<code>define</code> expressions that create and initialize new variables, and
+we have also talked about expressions that have <em>values</em>, for
+example the value of the procedure invocation expression:
+</p>
+<div class="lisp">
+<pre class="lisp">(string-append &quot;/home&quot; &quot;/&quot; &quot;andrew&quot;)
+</pre></div>
+
+<p>but we haven&rsquo;t yet been precise about what causes an expression like
+this procedure invocation to be reduced to its &ldquo;value&rdquo;, or how the
+processing of such expressions relates to the execution of a Scheme
+program as a whole.
+</p>
+<p>This section clarifies what we mean by an expression&rsquo;s value, by
+introducing the idea of <em>evaluation</em>.  It discusses the side effects
+that evaluation can have, explains how each of the various types of
+Scheme expression is evaluated, and describes the behaviour and use of
+the Guile REPL as a mechanism for exploring evaluation.  The section
+concludes with a very brief summary of Scheme&rsquo;s common syntactic
+expressions.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Evaluating.html#Evaluating" accesskey="1">Evaluating</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How a Scheme program is executed.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Tail-Calls.html#Tail-Calls" accesskey="2">Tail Calls</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Space-safe recursion.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="The-REPL.html#The-REPL" accesskey="3">The REPL</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Interacting with the Guile interpreter.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Syntax-Summary.html#Syntax-Summary" accesskey="4">Syntax Summary</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Common syntactic expressions &ndash; in brief.
+</td></tr>
+</table>
+
+
+
+
+
+</body>
+</html>

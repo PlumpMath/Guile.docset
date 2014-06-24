@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: List Modification</title>
+
+<meta name="description" content="Guile Reference Manual: List Modification">
+<meta name="keywords" content="Guile Reference Manual: List Modification">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Lists.html#Lists" rel="up" title="Lists">
+<link href="List-Searching.html#List-Searching" rel="next" title="List Searching">
+<link href="Append_002fReverse.html#Append_002fReverse" rel="prev" title="Append/Reverse">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="List-Modification"></a>
+<div class="header">
+<p>
+Next: <a href="List-Searching.html#List-Searching" accesskey="n" rel="next">List Searching</a>, Previous: <a href="Append_002fReverse.html#Append_002fReverse" accesskey="p" rel="prev">Append/Reverse</a>, Up: <a href="Lists.html#Lists" accesskey="u" rel="up">Lists</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="List-Modification-1"></a>
+<h4 class="subsubsection">6.7.2.6 List Modification</h4>
+
+<p>The following procedures modify an existing list, either by changing
+elements of the list, or by changing the list structure itself.
+</p>
+<dl>
+<dt><a name="index-list_002dset_0021"></a>Scheme Procedure: <strong>list-set!</strong> <em>list k val</em></dt>
+<dt><a name="index-scm_005flist_005fset_005fx"></a>C Function: <strong>scm_list_set_x</strong> <em>(list, k, val)</em></dt>
+<dd><p>Set the <var>k</var>th element of <var>list</var> to <var>val</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-list_002dcdr_002dset_0021"></a>Scheme Procedure: <strong>list-cdr-set!</strong> <em>list k val</em></dt>
+<dt><a name="index-scm_005flist_005fcdr_005fset_005fx"></a>C Function: <strong>scm_list_cdr_set_x</strong> <em>(list, k, val)</em></dt>
+<dd><p>Set the <var>k</var>th cdr of <var>list</var> to <var>val</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delq"></a>Scheme Procedure: <strong>delq</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelq"></a>C Function: <strong>scm_delq</strong> <em>(item, lst)</em></dt>
+<dd><p>Return a newly-created copy of <var>lst</var> with elements
+<code>eq?</code> to <var>item</var> removed.  This procedure mirrors
+<code>memq</code>: <code>delq</code> compares elements of <var>lst</var> against
+<var>item</var> with <code>eq?</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delv"></a>Scheme Procedure: <strong>delv</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelv"></a>C Function: <strong>scm_delv</strong> <em>(item, lst)</em></dt>
+<dd><p>Return a newly-created copy of <var>lst</var> with elements
+<code>eqv?</code> to <var>item</var> removed.  This procedure mirrors
+<code>memv</code>: <code>delv</code> compares elements of <var>lst</var> against
+<var>item</var> with <code>eqv?</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delete"></a>Scheme Procedure: <strong>delete</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelete"></a>C Function: <strong>scm_delete</strong> <em>(item, lst)</em></dt>
+<dd><p>Return a newly-created copy of <var>lst</var> with elements
+<code>equal?</code> to <var>item</var> removed.  This procedure mirrors
+<code>member</code>: <code>delete</code> compares elements of <var>lst</var>
+against <var>item</var> with <code>equal?</code>.
+</p>
+<p>See also SRFI-1 which has an extended <code>delete</code> (<a href="SRFI_002d1-Deleting.html#SRFI_002d1-Deleting">SRFI-1 Deleting</a>), and also an <code>lset-difference</code> which can delete
+multiple <var>item</var>s in one call (<a href="SRFI_002d1-Set-Operations.html#SRFI_002d1-Set-Operations">SRFI-1 Set Operations</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delq_0021"></a>Scheme Procedure: <strong>delq!</strong> <em>item lst</em></dt>
+<dt><a name="index-delv_0021"></a>Scheme Procedure: <strong>delv!</strong> <em>item lst</em></dt>
+<dt><a name="index-delete_0021"></a>Scheme Procedure: <strong>delete!</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelq_005fx"></a>C Function: <strong>scm_delq_x</strong> <em>(item, lst)</em></dt>
+<dt><a name="index-scm_005fdelv_005fx"></a>C Function: <strong>scm_delv_x</strong> <em>(item, lst)</em></dt>
+<dt><a name="index-scm_005fdelete_005fx"></a>C Function: <strong>scm_delete_x</strong> <em>(item, lst)</em></dt>
+<dd><p>These procedures are destructive versions of <code>delq</code>, <code>delv</code>
+and <code>delete</code>: they modify the pointers in the existing <var>lst</var>
+rather than creating a new list.  Caveat evaluator: Like other
+destructive list functions, these functions cannot modify the binding of
+<var>lst</var>, and so cannot be used to delete the first element of
+<var>lst</var> destructively.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delq1_0021"></a>Scheme Procedure: <strong>delq1!</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelq1_005fx"></a>C Function: <strong>scm_delq1_x</strong> <em>(item, lst)</em></dt>
+<dd><p>Like <code>delq!</code>, but only deletes the first occurrence of
+<var>item</var> from <var>lst</var>.  Tests for equality using
+<code>eq?</code>.  See also <code>delv1!</code> and <code>delete1!</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delv1_0021"></a>Scheme Procedure: <strong>delv1!</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelv1_005fx"></a>C Function: <strong>scm_delv1_x</strong> <em>(item, lst)</em></dt>
+<dd><p>Like <code>delv!</code>, but only deletes the first occurrence of
+<var>item</var> from <var>lst</var>.  Tests for equality using
+<code>eqv?</code>.  See also <code>delq1!</code> and <code>delete1!</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-delete1_0021"></a>Scheme Procedure: <strong>delete1!</strong> <em>item lst</em></dt>
+<dt><a name="index-scm_005fdelete1_005fx"></a>C Function: <strong>scm_delete1_x</strong> <em>(item, lst)</em></dt>
+<dd><p>Like <code>delete!</code>, but only deletes the first occurrence of
+<var>item</var> from <var>lst</var>.  Tests for equality using
+<code>equal?</code>.  See also <code>delq1!</code> and <code>delv1!</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-filter"></a>Scheme Procedure: <strong>filter</strong> <em>pred lst</em></dt>
+<dt><a name="index-filter_0021"></a>Scheme Procedure: <strong>filter!</strong> <em>pred lst</em></dt>
+<dd><p>Return a list containing all elements from <var>lst</var> which satisfy the
+predicate <var>pred</var>.  The elements in the result list have the same
+order as in <var>lst</var>.  The order in which <var>pred</var> is applied to
+the list elements is not specified.
+</p>
+<p><code>filter</code> does not change <var>lst</var>, but the result may share a
+tail with it.  <code>filter!</code> may modify <var>lst</var> to construct its
+return.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="List-Searching.html#List-Searching" accesskey="n" rel="next">List Searching</a>, Previous: <a href="Append_002fReverse.html#Append_002fReverse" accesskey="p" rel="prev">Append/Reverse</a>, Up: <a href="Lists.html#Lists" accesskey="u" rel="up">Lists</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

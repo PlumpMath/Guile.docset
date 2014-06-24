@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-9 Records</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-9 Records">
+<meta name="keywords" content="Guile Reference Manual: SRFI-9 Records">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Compound-Data-Types.html#Compound-Data-Types" rel="up" title="Compound Data Types">
+<link href="Records.html#Records" rel="next" title="Records">
+<link href="Record-Overview.html#Record-Overview" rel="prev" title="Record Overview">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d9-Records"></a>
+<div class="header">
+<p>
+Next: <a href="Records.html#Records" accesskey="n" rel="next">Records</a>, Previous: <a href="Record-Overview.html#Record-Overview" accesskey="p" rel="prev">Record Overview</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d9-Records-1"></a>
+<h4 class="subsection">6.7.8 SRFI-9 Records</h4>
+
+<a name="index-SRFI_002d9"></a>
+<a name="index-record-1"></a>
+
+<p>SRFI-9 standardizes a syntax for defining new record types and creating
+predicate, constructor, and field getter and setter functions.  In Guile
+this is the recommended option to create new record types (see <a href="Record-Overview.html#Record-Overview">Record Overview</a>).  It can be used with:
+</p>
+<div class="example">
+<pre class="example">(use-modules (srfi srfi-9))
+</pre></div>
+
+<dl>
+<dt><a name="index-define_002drecord_002dtype"></a>Scheme Syntax: <strong>define-record-type</strong> <em>type <br> (constructor fieldname &hellip;) <br> predicate <br> (fieldname accessor [modifier]) &hellip;</em></dt>
+<dd><br>
+<p>Create a new record type, and make various <code>define</code>s for using
+it.  This syntax can only occur at the top-level, not nested within
+some other form.
+</p>
+<p><var>type</var> is bound to the record type, which is as per the return
+from the core <code>make-record-type</code>.  <var>type</var> also provides the
+name for the record, as per <code>record-type-name</code>.
+</p>
+<p><var>constructor</var> is bound to a function to be called as
+<code>(<var>constructor</var> fieldval &hellip;)</code> to create a new record of
+this type.  The arguments are initial values for the fields, one
+argument for each field, in the order they appear in the
+<code>define-record-type</code> form.
+</p>
+<p>The <var>fieldname</var>s provide the names for the record fields, as per
+the core <code>record-type-fields</code> etc, and are referred to in the
+subsequent accessor/modifier forms.
+</p>
+<p><var>predicate</var> is bound to a function to be called as
+<code>(<var>predicate</var> obj)</code>.  It returns <code>#t</code> or <code>#f</code>
+according to whether <var>obj</var> is a record of this type.
+</p>
+<p>Each <var>accessor</var> is bound to a function to be called
+<code>(<var>accessor</var> record)</code> to retrieve the respective field from a
+<var>record</var>.  Similarly each <var>modifier</var> is bound to a function to
+be called <code>(<var>modifier</var> record val)</code> to set the respective
+field in a <var>record</var>.
+</p></dd></dl>
+
+<p>An example will illustrate typical usage,
+</p>
+<div class="example">
+<pre class="example">(define-record-type &lt;employee&gt;
+  (make-employee name age salary)
+  employee?
+  (name    employee-name)
+  (age     employee-age    set-employee-age!)
+  (salary  employee-salary set-employee-salary!))
+</pre></div>
+
+<p>This creates a new employee data type, with name, age and salary
+fields.  Accessor functions are created for each field, but no
+modifier function for the name (the intention in this example being
+that it&rsquo;s established only when an employee object is created).  These
+can all then be used as for example,
+</p>
+<div class="example">
+<pre class="example">&lt;employee&gt; &rArr; #&lt;record-type &lt;employee&gt;&gt;
+
+(define fred (make-employee &quot;Fred&quot; 45 20000.00))
+
+(employee? fred)        &rArr; #t
+(employee-age fred)     &rArr; 45
+(set-employee-salary! fred 25000.00)  ;; pay rise
+</pre></div>
+
+<p>The functions created by <code>define-record-type</code> are ordinary
+top-level <code>define</code>s.  They can be redefined or <code>set!</code> as
+desired, exported from a module, etc.
+</p>
+<a name="Non_002dtoplevel-Record-Definitions"></a>
+<h4 class="unnumberedsubsubsec">Non-toplevel Record Definitions</h4>
+
+<p>The SRFI-9 specification explicitly disallows record definitions in a
+non-toplevel context, such as inside <code>lambda</code> body or inside a
+<var>let</var> block.  However, Guile&rsquo;s implementation does not enforce that
+restriction.
+</p>
+<a name="Custom-Printers"></a>
+<h4 class="unnumberedsubsubsec">Custom Printers</h4>
+
+<p>You may use <code>set-record-type-printer!</code> to customize the default printing
+behavior of records.  This is a Guile extension and is not part of SRFI-9.  It
+is located in the <code>(srfi srfi-9 gnu)</code> module.
+</p>
+<dl>
+<dt><a name="index-set_002drecord_002dtype_002dprinter_0021"></a>Scheme Syntax: <strong>set-record-type-printer!</strong> <em>name proc</em></dt>
+<dd><p>Where <var>type</var> corresponds to the first argument of <code>define-record-type</code>,
+and <var>proc</var> is a procedure accepting two arguments, the record to print, and
+an output port.
+</p></dd></dl>
+
+<p>This example prints the employee&rsquo;s name in brackets, for instance <code>[Fred]</code>.
+</p>
+<div class="example">
+<pre class="example">(set-record-type-printer! &lt;employee&gt;
+  (lambda (record port)
+    (write-char #\[ port)
+    (display (employee-name record) port)
+    (write-char #\] port)))
+</pre></div>
+
+<a name="Functional-_0060_0060Setters_0027_0027"></a>
+<h4 class="unnumberedsubsubsec">Functional &ldquo;Setters&rdquo;</h4>
+
+<a name="index-functional-setters"></a>
+
+<p>When writing code in a functional style, it is desirable to never alter
+the contents of records.  For such code, a simple way to return new
+record instances based on existing ones is highly desirable.
+</p>
+<p>The <code>(srfi srfi-9 gnu)</code> module extends SRFI-9 with facilities to
+return new record instances based on existing ones, only with one or
+more field values changed&mdash;<em>functional setters</em>.  First, the
+<code>define-immutable-record-type</code> works like
+<code>define-record-type</code>, except that fields are immutable and setters
+are defined as functional setters.
+</p>
+<dl>
+<dt><a name="index-define_002dimmutable_002drecord_002dtype"></a>Scheme Syntax: <strong>define-immutable-record-type</strong> <em>type <br> (constructor fieldname &hellip;) <br> predicate <br> (fieldname accessor [modifier]) &hellip;</em></dt>
+<dd><p>Define <var>type</var> as a new record type, like <code>define-record-type</code>.
+However, the record type is made <em>immutable</em> (records may not be
+mutated, even with <code>struct-set!</code>), and any <var>modifier</var> is
+defined to be a functional setter&mdash;a procedure that returns a new
+record instance with the specified field changed, and leaves the
+original unchanged (see example below.)
+</p></dd></dl>
+
+<p>In addition, the generic <code>set-field</code> and <code>set-fields</code> macros
+may be applied to any SRFI-9 record.
+</p>
+<dl>
+<dt><a name="index-set_002dfield"></a>Scheme Syntax: <strong>set-field</strong> <em>record (field sub-fields ...) value</em></dt>
+<dd><p>Return a new record of <var>record</var>&rsquo;s type whose fields are equal to
+the corresponding fields of <var>record</var> except for the one specified by
+<var>field</var>.
+</p>
+<p><var>field</var> must be the name of the getter corresponding to the field of
+<var>record</var> being &ldquo;set&rdquo;.  Subsequent <var>sub-fields</var> must be record
+getters designating sub-fields within that field value to be set (see
+example below.)
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dfields"></a>Scheme Syntax: <strong>set-fields</strong> <em>record ((field sub-fields ...) value) ...</em></dt>
+<dd><p>Like <code>set-field</code>, but can be used to set more than one field at a
+time.  This expands to code that is more efficient than a series of
+single <code>set-field</code> calls.
+</p></dd></dl>
+
+<p>To illustrate the use of functional setters, let&rsquo;s assume these two
+record type definitions:
+</p>
+<div class="example">
+<pre class="example">(define-record-type &lt;address&gt;
+  (address street city country)
+  address?
+  (street  address-street)
+  (city    address-city)
+  (country address-country))
+
+(define-immutable-record-type &lt;person&gt;
+  (person age email address)
+  person?
+  (age     person-age set-person-age)
+  (email   person-email set-person-email)
+  (address person-address set-person-address))
+</pre></div>
+
+<p>First, note that the <code>&lt;person&gt;</code> record type definition introduces
+named functional setters.  These may be used like this:
+</p>
+<div class="example">
+<pre class="example">(define fsf-address
+  (address &quot;Franklin Street&quot; &quot;Boston&quot; &quot;USA&quot;))
+
+(define rms
+  (person 30 &quot;rms@gnu.org&quot; fsf-address))
+
+(and (equal? (set-person-age rms 60)
+             (person 60 &quot;rms@gnu.org&quot; fsf-address))
+     (= (person-age rms) 30))
+&rArr; #t
+</pre></div>
+
+<p>Here, the original <code>&lt;person&gt;</code> record, to which <var>rms</var> is bound,
+is left unchanged.
+</p>
+<p>Now, suppose we want to change both the street and age of <var>rms</var>.
+This can be achieved using <code>set-fields</code>:
+</p>
+<div class="example">
+<pre class="example">(set-fields rms
+  ((person-age) 60)
+  ((person-address address-street) &quot;Temple Place&quot;))
+&rArr; #&lt;&lt;person&gt; age: 60 email: &quot;rms@gnu.org&quot;
+  address: #&lt;&lt;address&gt; street: &quot;Temple Place&quot; city: &quot;Boston&quot; country: &quot;USA&quot;&gt;&gt;
+</pre></div>
+
+<p>Notice how the above changed two fields of <var>rms</var>, including the
+<code>street</code> field of its <code>address</code> field, in a concise way.  Also
+note that <code>set-fields</code> works equally well for types defined with
+just <code>define-record-type</code>.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Records.html#Records" accesskey="n" rel="next">Records</a>, Previous: <a href="Record-Overview.html#Record-Overview" accesskey="p" rel="prev">Record Overview</a>, Up: <a href="Compound-Data-Types.html#Compound-Data-Types" accesskey="u" rel="up">Compound Data Types</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

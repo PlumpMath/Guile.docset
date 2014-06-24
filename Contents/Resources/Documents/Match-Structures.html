@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Match Structures</title>
+
+<meta name="description" content="Guile Reference Manual: Match Structures">
+<meta name="keywords" content="Guile Reference Manual: Match Structures">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Regular-Expressions.html#Regular-Expressions" rel="up" title="Regular Expressions">
+<link href="Backslash-Escapes.html#Backslash-Escapes" rel="next" title="Backslash Escapes">
+<link href="Regexp-Functions.html#Regexp-Functions" rel="prev" title="Regexp Functions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Match-Structures"></a>
+<div class="header">
+<p>
+Next: <a href="Backslash-Escapes.html#Backslash-Escapes" accesskey="n" rel="next">Backslash Escapes</a>, Previous: <a href="Regexp-Functions.html#Regexp-Functions" accesskey="p" rel="prev">Regexp Functions</a>, Up: <a href="Regular-Expressions.html#Regular-Expressions" accesskey="u" rel="up">Regular Expressions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Match-Structures-1"></a>
+<h4 class="subsection">6.15.2 Match Structures</h4>
+
+<a name="index-match-structures"></a>
+
+<p>A <em>match structure</em> is the object returned by <code>string-match</code> and
+<code>regexp-exec</code>.  It describes which portion of a string, if any,
+matched the given regular expression.  Match structures include: a
+reference to the string that was checked for matches; the starting and
+ending positions of the regexp match; and, if the regexp included any
+parenthesized subexpressions, the starting and ending positions of each
+submatch.
+</p>
+<p>In each of the regexp match functions described below, the <code>match</code>
+argument must be a match structure returned by a previous call to
+<code>string-match</code> or <code>regexp-exec</code>.  Most of these functions
+return some information about the original target string that was
+matched against a regular expression; we will call that string
+<var>target</var> for easy reference.
+</p>
+<dl>
+<dt><a name="index-regexp_002dmatch_003f"></a>Scheme Procedure: <strong>regexp-match?</strong> <em>obj</em></dt>
+<dd><p>Return <code>#t</code> if <var>obj</var> is a match structure returned by a
+previous call to <code>regexp-exec</code>, or <code>#f</code> otherwise.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-match_003asubstring"></a>Scheme Procedure: <strong>match:substring</strong> <em>match [n]</em></dt>
+<dd><p>Return the portion of <var>target</var> matched by subexpression number
+<var>n</var>.  Submatch 0 (the default) represents the entire regexp match.
+If the regular expression as a whole matched, but the subexpression
+number <var>n</var> did not match, return <code>#f</code>.
+</p></dd></dl>
+
+<div class="lisp">
+<pre class="lisp">(define s (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002foo&quot;))
+(match:substring s)
+&rArr; &quot;2002&quot;
+
+;; match starting at offset 6 in the string
+(match:substring
+  (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah987654&quot; 6))
+&rArr; &quot;7654&quot;
+</pre></div>
+
+<dl>
+<dt><a name="index-match_003astart"></a>Scheme Procedure: <strong>match:start</strong> <em>match [n]</em></dt>
+<dd><p>Return the starting position of submatch number <var>n</var>.
+</p></dd></dl>
+
+<p>In the following example, the result is 4, since the match starts at
+character index 4:
+</p>
+<div class="lisp">
+<pre class="lisp">(define s (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002foo&quot;))
+(match:start s)
+&rArr; 4
+</pre></div>
+
+<dl>
+<dt><a name="index-match_003aend"></a>Scheme Procedure: <strong>match:end</strong> <em>match [n]</em></dt>
+<dd><p>Return the ending position of submatch number <var>n</var>.
+</p></dd></dl>
+
+<p>In the following example, the result is 8, since the match runs between
+characters 4 and 8 (i.e. the &ldquo;2002&rdquo;).
+</p>
+<div class="lisp">
+<pre class="lisp">(define s (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002foo&quot;))
+(match:end s)
+&rArr; 8
+</pre></div>
+
+<dl>
+<dt><a name="index-match_003aprefix"></a>Scheme Procedure: <strong>match:prefix</strong> <em>match</em></dt>
+<dd><p>Return the unmatched portion of <var>target</var> preceding the regexp match.
+</p>
+<div class="lisp">
+<pre class="lisp">(define s (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002foo&quot;))
+(match:prefix s)
+&rArr; &quot;blah&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-match_003asuffix"></a>Scheme Procedure: <strong>match:suffix</strong> <em>match</em></dt>
+<dd><p>Return the unmatched portion of <var>target</var> following the regexp match.
+</p></dd></dl>
+
+<div class="lisp">
+<pre class="lisp">(define s (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002foo&quot;))
+(match:suffix s)
+&rArr; &quot;foo&quot;
+</pre></div>
+
+<dl>
+<dt><a name="index-match_003acount"></a>Scheme Procedure: <strong>match:count</strong> <em>match</em></dt>
+<dd><p>Return the number of parenthesized subexpressions from <var>match</var>.
+Note that the entire regular expression match itself counts as a
+subexpression, and failed submatches are included in the count.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-match_003astring"></a>Scheme Procedure: <strong>match:string</strong> <em>match</em></dt>
+<dd><p>Return the original <var>target</var> string.
+</p></dd></dl>
+
+<div class="lisp">
+<pre class="lisp">(define s (string-match &quot;[0-9][0-9][0-9][0-9]&quot; &quot;blah2002foo&quot;))
+(match:string s)
+&rArr; &quot;blah2002foo&quot;
+</pre></div>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Backslash-Escapes.html#Backslash-Escapes" accesskey="n" rel="next">Backslash Escapes</a>, Previous: <a href="Regexp-Functions.html#Regexp-Functions" accesskey="p" rel="prev">Regexp Functions</a>, Up: <a href="Regular-Expressions.html#Regular-Expressions" accesskey="u" rel="up">Regular Expressions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

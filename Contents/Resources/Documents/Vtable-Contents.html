@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Vtable Contents</title>
+
+<meta name="description" content="Guile Reference Manual: Vtable Contents">
+<meta name="keywords" content="Guile Reference Manual: Vtable Contents">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Structures.html#Structures" rel="up" title="Structures">
+<link href="Meta_002dVtables.html#Meta_002dVtables" rel="next" title="Meta-Vtables">
+<link href="Structure-Basics.html#Structure-Basics" rel="prev" title="Structure Basics">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Vtable-Contents"></a>
+<div class="header">
+<p>
+Next: <a href="Meta_002dVtables.html#Meta_002dVtables" accesskey="n" rel="next">Meta-Vtables</a>, Previous: <a href="Structure-Basics.html#Structure-Basics" accesskey="p" rel="prev">Structure Basics</a>, Up: <a href="Structures.html#Structures" accesskey="u" rel="up">Structures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Vtable-Contents-1"></a>
+<h4 class="subsubsection">6.7.10.3 Vtable Contents</h4>
+
+<p>A vtable is itself a structure.  It has a specific set of fields
+describing various aspects of its <em>instances</em>: the structures
+created from a vtable.  Some of the fields are internal to Guile, some
+of them are part of the public interface, and there may be additional
+fields added on by the user.
+</p>
+<p>Every vtable has a field for the layout of their instances, a field for
+the procedure used to print its instances, and a field for the name of
+the vtable itself.  Access to the layout and printer is exposed directly
+via field indexes.  Access to the vtable name is exposed via accessor
+procedures.
+</p>
+<dl>
+<dt><a name="index-vtable_002dindex_002dlayout"></a>Scheme Variable: <strong>vtable-index-layout</strong></dt>
+<dt><a name="index-scm_005fvtable_005findex_005flayout"></a>C Macro: <strong>scm_vtable_index_layout</strong></dt>
+<dd><p>The field number of the layout specification in a vtable.  The layout
+specification is a symbol like <code>pwpw</code> formed from the fields
+string passed to <code>make-vtable</code>, or created by
+<code>make-struct-layout</code> (see <a href="Meta_002dVtables.html#Meta_002dVtables">Meta-Vtables</a>).
+</p>
+<div class="example">
+<pre class="example">(define v (make-vtable &quot;pwpw&quot; 0))
+(struct-ref v vtable-index-layout) &rArr; pwpw
+</pre></div>
+
+<p>This field is read-only, since the layout of structures using a vtable
+cannot be changed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vtable_002dindex_002dprinter"></a>Scheme Variable: <strong>vtable-index-printer</strong></dt>
+<dt><a name="index-scm_005fvtable_005findex_005fprinter"></a>C Macro: <strong>scm_vtable_index_printer</strong></dt>
+<dd><p>The field number of the printer function.  This field contains <code>#f</code>
+if the default print function should be used.
+</p>
+<div class="example">
+<pre class="example">(define (my-print-func struct port)
+  ...)
+(define v (make-vtable &quot;pwpw&quot; my-print-func))
+(struct-ref v vtable-index-printer) &rArr; my-print-func
+</pre></div>
+
+<p>This field is writable, allowing the print function to be changed
+dynamically.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-struct_002dvtable_002dname"></a>Scheme Procedure: <strong>struct-vtable-name</strong> <em>vtable</em></dt>
+<dt><a name="index-set_002dstruct_002dvtable_002dname_0021"></a>Scheme Procedure: <strong>set-struct-vtable-name!</strong> <em>vtable name</em></dt>
+<dt><a name="index-scm_005fstruct_005fvtable_005fname"></a>C Function: <strong>scm_struct_vtable_name</strong> <em>(vtable)</em></dt>
+<dt><a name="index-scm_005fset_005fstruct_005fvtable_005fname_005fx"></a>C Function: <strong>scm_set_struct_vtable_name_x</strong> <em>(vtable, name)</em></dt>
+<dd><p>Get or set the name of <var>vtable</var>.  <var>name</var> is a symbol and is
+used in the default print function when printing structures created
+from <var>vtable</var>.
+</p>
+<div class="example">
+<pre class="example">(define v (make-vtable &quot;pw&quot;))
+(set-struct-vtable-name! v 'my-name)
+
+(define s (make-struct v 0))
+(display s) -| #&lt;my-name b7ab3ae0:b7ab3730&gt;
+</pre></div>
+</dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Meta_002dVtables.html#Meta_002dVtables" accesskey="n" rel="next">Meta-Vtables</a>, Previous: <a href="Structure-Basics.html#Structure-Basics" accesskey="p" rel="prev">Structure Basics</a>, Up: <a href="Structures.html#Structures" accesskey="u" rel="up">Structures</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

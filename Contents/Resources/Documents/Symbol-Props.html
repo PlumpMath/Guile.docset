@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Symbol Props</title>
+
+<meta name="description" content="Guile Reference Manual: Symbol Props">
+<meta name="keywords" content="Guile Reference Manual: Symbol Props">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Symbols.html#Symbols" rel="up" title="Symbols">
+<link href="Symbol-Read-Syntax.html#Symbol-Read-Syntax" rel="next" title="Symbol Read Syntax">
+<link href="Symbol-Primitives.html#Symbol-Primitives" rel="prev" title="Symbol Primitives">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Symbol-Props"></a>
+<div class="header">
+<p>
+Next: <a href="Symbol-Read-Syntax.html#Symbol-Read-Syntax" accesskey="n" rel="next">Symbol Read Syntax</a>, Previous: <a href="Symbol-Primitives.html#Symbol-Primitives" accesskey="p" rel="prev">Symbol Primitives</a>, Up: <a href="Symbols.html#Symbols" accesskey="u" rel="up">Symbols</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Function-Slots-and-Property-Lists"></a>
+<h4 class="subsubsection">6.6.7.5 Function Slots and Property Lists</h4>
+
+<p>In traditional Lisp dialects, symbols are often understood as having
+three kinds of value at once:
+</p>
+<ul>
+<li> a <em>variable</em> value, which is used when the symbol appears in
+code in a variable reference context
+
+</li><li> a <em>function</em> value, which is used when the symbol appears in
+code in a function name position (i.e. as the first element in an
+unquoted list)
+
+</li><li> a <em>property list</em> value, which is used when the symbol is given as
+the first argument to Lisp&rsquo;s <code>put</code> or <code>get</code> functions.
+</li></ul>
+
+<p>Although Scheme (as one of its simplifications with respect to Lisp)
+does away with the distinction between variable and function namespaces,
+Guile currently retains some elements of the traditional structure in
+case they turn out to be useful when implementing translators for other
+languages, in particular Emacs Lisp.
+</p>
+<p>Specifically, Guile symbols have two extra slots, one for a symbol&rsquo;s
+property list, and one for its &ldquo;function value.&rdquo;  The following procedures
+are provided to access these slots.
+</p>
+<dl>
+<dt><a name="index-symbol_002dfref"></a>Scheme Procedure: <strong>symbol-fref</strong> <em>symbol</em></dt>
+<dt><a name="index-scm_005fsymbol_005ffref"></a>C Function: <strong>scm_symbol_fref</strong> <em>(symbol)</em></dt>
+<dd><p>Return the contents of <var>symbol</var>&rsquo;s <em>function slot</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_002dfset_0021"></a>Scheme Procedure: <strong>symbol-fset!</strong> <em>symbol value</em></dt>
+<dt><a name="index-scm_005fsymbol_005ffset_005fx"></a>C Function: <strong>scm_symbol_fset_x</strong> <em>(symbol, value)</em></dt>
+<dd><p>Set the contents of <var>symbol</var>&rsquo;s function slot to <var>value</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_002dpref"></a>Scheme Procedure: <strong>symbol-pref</strong> <em>symbol</em></dt>
+<dt><a name="index-scm_005fsymbol_005fpref"></a>C Function: <strong>scm_symbol_pref</strong> <em>(symbol)</em></dt>
+<dd><p>Return the <em>property list</em> currently associated with <var>symbol</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_002dpset_0021"></a>Scheme Procedure: <strong>symbol-pset!</strong> <em>symbol value</em></dt>
+<dt><a name="index-scm_005fsymbol_005fpset_005fx"></a>C Function: <strong>scm_symbol_pset_x</strong> <em>(symbol, value)</em></dt>
+<dd><p>Set <var>symbol</var>&rsquo;s property list to <var>value</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_002dproperty"></a>Scheme Procedure: <strong>symbol-property</strong> <em>sym prop</em></dt>
+<dd><p>From <var>sym</var>&rsquo;s property list, return the value for property
+<var>prop</var>.  The assumption is that <var>sym</var>&rsquo;s property list is an
+association list whose keys are distinguished from each other using
+<code>equal?</code>; <var>prop</var> should be one of the keys in that list.  If
+the property list has no entry for <var>prop</var>, <code>symbol-property</code>
+returns <code>#f</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dsymbol_002dproperty_0021"></a>Scheme Procedure: <strong>set-symbol-property!</strong> <em>sym prop val</em></dt>
+<dd><p>In <var>sym</var>&rsquo;s property list, set the value for property <var>prop</var> to
+<var>val</var>, or add a new entry for <var>prop</var>, with value <var>val</var>, if
+none already exists.  For the structure of the property list, see
+<code>symbol-property</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-symbol_002dproperty_002dremove_0021"></a>Scheme Procedure: <strong>symbol-property-remove!</strong> <em>sym prop</em></dt>
+<dd><p>From <var>sym</var>&rsquo;s property list, remove the entry for property
+<var>prop</var>, if there is one.  For the structure of the property list,
+see <code>symbol-property</code>.
+</p></dd></dl>
+
+<p>Support for these extra slots may be removed in a future release, and it
+is probably better to avoid using them.  For a more modern and Schemely
+approach to properties, see <a href="Object-Properties.html#Object-Properties">Object Properties</a>.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Symbol-Read-Syntax.html#Symbol-Read-Syntax" accesskey="n" rel="next">Symbol Read Syntax</a>, Previous: <a href="Symbol-Primitives.html#Symbol-Primitives" accesskey="p" rel="prev">Symbol Primitives</a>, Up: <a href="Symbols.html#Symbols" accesskey="u" rel="up">Symbols</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

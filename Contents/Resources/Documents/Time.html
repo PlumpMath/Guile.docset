@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Time</title>
+
+<meta name="description" content="Guile Reference Manual: Time">
+<meta name="keywords" content="Guile Reference Manual: Time">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="POSIX.html#POSIX" rel="up" title="POSIX">
+<link href="Runtime-Environment.html#Runtime-Environment" rel="next" title="Runtime Environment">
+<link href="User-Information.html#User-Information" rel="prev" title="User Information">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Time"></a>
+<div class="header">
+<p>
+Next: <a href="Runtime-Environment.html#Runtime-Environment" accesskey="n" rel="next">Runtime Environment</a>, Previous: <a href="User-Information.html#User-Information" accesskey="p" rel="prev">User Information</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Time-1"></a>
+<h4 class="subsection">7.2.5 Time</h4>
+<a name="index-time"></a>
+
+<dl>
+<dt><a name="index-current_002dtime"></a>Scheme Procedure: <strong>current-time</strong></dt>
+<dt><a name="index-scm_005fcurrent_005ftime"></a>C Function: <strong>scm_current_time</strong> <em>()</em></dt>
+<dd><p>Return the number of seconds since 1970-01-01 00:00:00 <acronym>UTC</acronym>,
+excluding leap seconds.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gettimeofday"></a>Scheme Procedure: <strong>gettimeofday</strong></dt>
+<dt><a name="index-scm_005fgettimeofday"></a>C Function: <strong>scm_gettimeofday</strong> <em>()</em></dt>
+<dd><p>Return a pair containing the number of seconds and microseconds
+since 1970-01-01 00:00:00 <acronym>UTC</acronym>, excluding leap seconds.  Note:
+whether true microsecond resolution is available depends on the
+operating system.
+</p></dd></dl>
+
+<p>The following procedures either accept an object representing a broken down
+time and return a selected component, or accept an object representing
+a broken down time and a value and set the component to the value.
+The numbers in parentheses give the usual range.
+</p>
+<dl>
+<dt><a name="index-tm_003asec"></a>Scheme Procedure: <strong>tm:sec</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003asec"></a>Scheme Procedure: <strong>set-tm:sec</strong> <em>tm val</em></dt>
+<dd><p>Seconds (0-59).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003amin"></a>Scheme Procedure: <strong>tm:min</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003amin"></a>Scheme Procedure: <strong>set-tm:min</strong> <em>tm val</em></dt>
+<dd><p>Minutes (0-59).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003ahour"></a>Scheme Procedure: <strong>tm:hour</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003ahour"></a>Scheme Procedure: <strong>set-tm:hour</strong> <em>tm val</em></dt>
+<dd><p>Hours (0-23).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003amday"></a>Scheme Procedure: <strong>tm:mday</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003amday"></a>Scheme Procedure: <strong>set-tm:mday</strong> <em>tm val</em></dt>
+<dd><p>Day of the month (1-31).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003amon"></a>Scheme Procedure: <strong>tm:mon</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003amon"></a>Scheme Procedure: <strong>set-tm:mon</strong> <em>tm val</em></dt>
+<dd><p>Month (0-11).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003ayear"></a>Scheme Procedure: <strong>tm:year</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003ayear"></a>Scheme Procedure: <strong>set-tm:year</strong> <em>tm val</em></dt>
+<dd><p>Year (70-), the year minus 1900.
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003awday"></a>Scheme Procedure: <strong>tm:wday</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003awday"></a>Scheme Procedure: <strong>set-tm:wday</strong> <em>tm val</em></dt>
+<dd><p>Day of the week (0-6) with Sunday represented as 0.
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003ayday"></a>Scheme Procedure: <strong>tm:yday</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003ayday"></a>Scheme Procedure: <strong>set-tm:yday</strong> <em>tm val</em></dt>
+<dd><p>Day of the year (0-364, 365 in leap years).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003aisdst"></a>Scheme Procedure: <strong>tm:isdst</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003aisdst"></a>Scheme Procedure: <strong>set-tm:isdst</strong> <em>tm val</em></dt>
+<dd><p>Daylight saving indicator (0 for &ldquo;no&rdquo;, greater than 0 for &ldquo;yes&rdquo;, less than
+0 for &ldquo;unknown&rdquo;).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003agmtoff"></a>Scheme Procedure: <strong>tm:gmtoff</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003agmtoff"></a>Scheme Procedure: <strong>set-tm:gmtoff</strong> <em>tm val</em></dt>
+<dd><p>Time zone offset in seconds west of <acronym>UTC</acronym> (-46800 to 43200).
+For example on East coast USA (zone &lsquo;<samp>EST+5</samp>&rsquo;) this would be 18000
+(ie. <em>5*60*60</em>) in winter, or 14400
+(ie. <em>4*60*60</em>) during daylight savings.
+</p>
+<p>Note <code>tm:gmtoff</code> is not the same as <code>tm_gmtoff</code> in the C
+<code>tm</code> structure.  <code>tm_gmtoff</code> is seconds east and hence the
+negative of the value here.
+</p></dd></dl>
+<dl>
+<dt><a name="index-tm_003azone"></a>Scheme Procedure: <strong>tm:zone</strong> <em>tm</em></dt>
+<dt><a name="index-set_002dtm_003azone"></a>Scheme Procedure: <strong>set-tm:zone</strong> <em>tm val</em></dt>
+<dd><p>Time zone label (a string), not necessarily unique.
+</p></dd></dl>
+<br>
+
+<dl>
+<dt><a name="index-localtime"></a>Scheme Procedure: <strong>localtime</strong> <em>time [zone]</em></dt>
+<dt><a name="index-scm_005flocaltime"></a>C Function: <strong>scm_localtime</strong> <em>(time, zone)</em></dt>
+<dd><a name="index-local-time"></a>
+<p>Return an object representing the broken down components of
+<var>time</var>, an integer like the one returned by
+<code>current-time</code>.  The time zone for the calculation is
+optionally specified by <var>zone</var> (a string), otherwise the
+<code>TZ</code> environment variable or the system default is used.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-gmtime"></a>Scheme Procedure: <strong>gmtime</strong> <em>time</em></dt>
+<dt><a name="index-scm_005fgmtime"></a>C Function: <strong>scm_gmtime</strong> <em>(time)</em></dt>
+<dd><p>Return an object representing the broken down components of
+<var>time</var>, an integer like the one returned by
+<code>current-time</code>.  The values are calculated for <acronym>UTC</acronym>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-mktime"></a>Scheme Procedure: <strong>mktime</strong> <em>sbd-time [zone]</em></dt>
+<dt><a name="index-scm_005fmktime"></a>C Function: <strong>scm_mktime</strong> <em>(sbd_time, zone)</em></dt>
+<dd><p>For a broken down time object <var>sbd-time</var>, return a pair the
+<code>car</code> of which is an integer time like <code>current-time</code>, and
+the <code>cdr</code> of which is a new broken down time with normalized
+fields.
+</p>
+<p><var>zone</var> is a timezone string, or the default is the <code>TZ</code>
+environment variable or the system default (see <a href="http://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html#TZ-Variable">Specifying the Time Zone with <code>TZ</code></a> in <cite>GNU C Library Reference
+Manual</cite>).  <var>sbd-time</var> is taken to be in that <var>zone</var>.
+</p>
+<p>The following fields of <var>sbd-time</var> are used: <code>tm:year</code>,
+<code>tm:mon</code>, <code>tm:mday</code>, <code>tm:hour</code>, <code>tm:min</code>,
+<code>tm:sec</code>, <code>tm:isdst</code>.  The values can be outside their usual
+ranges.  For example <code>tm:hour</code> normally goes up to 23, but a
+value say 33 would mean 9 the following day.
+</p>
+<p><code>tm:isdst</code> in <var>sbd-time</var> says whether the time given is with
+daylight savings or not.  This is ignored if <var>zone</var> doesn&rsquo;t have
+any daylight savings adjustment amount.
+</p>
+<p>The broken down time in the return normalizes the values of
+<var>sbd-time</var> by bringing them into their usual ranges, and using the
+actual daylight savings rule for that time in <var>zone</var> (which may
+differ from what <var>sbd-time</var> had).  The easiest way to think of
+this is that <var>sbd-time</var> plus <var>zone</var> converts to the integer
+UTC time, then a <code>localtime</code> is applied to get the normal
+presentation of that time, in <var>zone</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-tzset"></a>Scheme Procedure: <strong>tzset</strong></dt>
+<dt><a name="index-scm_005ftzset"></a>C Function: <strong>scm_tzset</strong> <em>()</em></dt>
+<dd><p>Initialize the timezone from the <code>TZ</code> environment variable
+or the system default.  It&rsquo;s not usually necessary to call this procedure
+since it&rsquo;s done automatically by other procedures that depend on the
+timezone.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-strftime"></a>Scheme Procedure: <strong>strftime</strong> <em>format tm</em></dt>
+<dt><a name="index-scm_005fstrftime"></a>C Function: <strong>scm_strftime</strong> <em>(format, tm)</em></dt>
+<dd><a name="index-time-formatting"></a>
+<p>Return a string which is broken-down time structure <var>tm</var> formatted
+according to the given <var>format</var> string.
+</p>
+<p><var>format</var> contains field specifications introduced by a &lsquo;<samp>%</samp>&rsquo;
+character.  See <a href="http://www.gnu.org/software/libc/manual/html_node/Formatting-Calendar-Time.html#Formatting-Calendar-Time">Formatting Calendar Time</a> in <cite>The GNU C
+Library Reference Manual</cite>, or &lsquo;<samp>man 3 strftime</samp>&rsquo;, for the available
+formatting.
+</p>
+<div class="lisp">
+<pre class="lisp">(strftime &quot;%c&quot; (localtime (current-time)))
+&rArr; &quot;Mon Mar 11 20:17:43 2002&quot;
+</pre></div>
+
+<p>If <code>setlocale</code> has been called (see <a href="Locales.html#Locales">Locales</a>), month and day
+names are from the current locale and in the locale character set.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-strptime"></a>Scheme Procedure: <strong>strptime</strong> <em>format string</em></dt>
+<dt><a name="index-scm_005fstrptime"></a>C Function: <strong>scm_strptime</strong> <em>(format, string)</em></dt>
+<dd><a name="index-time-parsing"></a>
+<p>Performs the reverse action to <code>strftime</code>, parsing
+<var>string</var> according to the specification supplied in
+<var>format</var>.  The interpretation of month and day names is
+dependent on the current locale.  The value returned is a pair.
+The <acronym>CAR</acronym> has an object with time components
+in the form returned by <code>localtime</code> or <code>gmtime</code>,
+but the time zone components
+are not usefully set.
+The <acronym>CDR</acronym> reports the number of characters from <var>string</var>
+which were used for the conversion.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-internal_002dtime_002dunits_002dper_002dsecond"></a>Variable: <strong>internal-time-units-per-second</strong></dt>
+<dd><p>The value of this variable is the number of time units per second
+reported by the following procedures.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-times"></a>Scheme Procedure: <strong>times</strong></dt>
+<dt><a name="index-scm_005ftimes"></a>C Function: <strong>scm_times</strong> <em>()</em></dt>
+<dd><p>Return an object with information about real and processor
+time.  The following procedures accept such an object as an
+argument and return a selected component:
+</p>
+<dl>
+<dt><a name="index-tms_003aclock"></a>Scheme Procedure: <strong>tms:clock</strong> <em>tms</em></dt>
+<dd><p>The current real time, expressed as time units relative to an
+arbitrary base.
+</p></dd></dl>
+<dl>
+<dt><a name="index-tms_003autime"></a>Scheme Procedure: <strong>tms:utime</strong> <em>tms</em></dt>
+<dd><p>The CPU time units used by the calling process.
+</p></dd></dl>
+<dl>
+<dt><a name="index-tms_003astime"></a>Scheme Procedure: <strong>tms:stime</strong> <em>tms</em></dt>
+<dd><p>The CPU time units used by the system on behalf of the calling
+process.
+</p></dd></dl>
+<dl>
+<dt><a name="index-tms_003acutime"></a>Scheme Procedure: <strong>tms:cutime</strong> <em>tms</em></dt>
+<dd><p>The CPU time units used by terminated child processes of the
+calling process, whose status has been collected (e.g., using
+<code>waitpid</code>).
+</p></dd></dl>
+<dl>
+<dt><a name="index-tms_003acstime"></a>Scheme Procedure: <strong>tms:cstime</strong> <em>tms</em></dt>
+<dd><p>Similarly, the CPU times units used by the system on behalf of
+terminated child processes.
+</p></dd></dl>
+</dd></dl>
+
+<dl>
+<dt><a name="index-get_002dinternal_002dreal_002dtime"></a>Scheme Procedure: <strong>get-internal-real-time</strong></dt>
+<dt><a name="index-scm_005fget_005finternal_005freal_005ftime"></a>C Function: <strong>scm_get_internal_real_time</strong> <em>()</em></dt>
+<dd><p>Return the number of time units since the interpreter was
+started.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-get_002dinternal_002drun_002dtime"></a>Scheme Procedure: <strong>get-internal-run-time</strong></dt>
+<dt><a name="index-scm_005fget_005finternal_005frun_005ftime"></a>C Function: <strong>scm_get_internal_run_time</strong> <em>()</em></dt>
+<dd><p>Return the number of time units of processor time used by the
+interpreter.  Both <em>system</em> and <em>user</em> time are
+included but subprocesses are not.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Runtime-Environment.html#Runtime-Environment" accesskey="n" rel="next">Runtime Environment</a>, Previous: <a href="User-Information.html#User-Information" accesskey="p" rel="prev">User Information</a>, Up: <a href="POSIX.html#POSIX" accesskey="u" rel="up">POSIX</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

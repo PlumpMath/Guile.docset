@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: rnrs enums</title>
+
+<meta name="description" content="Guile Reference Manual: rnrs enums">
+<meta name="keywords" content="Guile Reference Manual: rnrs enums">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" rel="up" title="R6RS Standard Libraries">
+<link href="rnrs.html#rnrs" rel="next" title="rnrs">
+<link href="rnrs-hashtables.html#rnrs-hashtables" rel="prev" title="rnrs hashtables">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="rnrs-enums"></a>
+<div class="header">
+<p>
+Next: <a href="rnrs.html#rnrs" accesskey="n" rel="next">rnrs</a>, Previous: <a href="rnrs-hashtables.html#rnrs-hashtables" accesskey="p" rel="prev">rnrs hashtables</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="rnrs-enums-1"></a>
+<h4 class="subsubsection">7.6.2.24 rnrs enums</h4>
+
+<p>The <code>(rnrs enums (6))</code> library provides structures and procedures
+for working with enumerable sets of symbols.  Guile&rsquo;s implementation 
+defines an <em>enum-set</em> record type that encapsulates a finite set of
+distinct symbols, the <em>universe</em>, and a subset of these symbols, 
+which define the enumeration set.
+</p>
+<p>The SRFI-1 list library provides a number of procedures for performing
+set operations on lists; Guile&rsquo;s <code>(rnrs enums)</code> implementation 
+makes use of several of them.  See <a href="SRFI_002d1-Set-Operations.html#SRFI_002d1-Set-Operations">SRFI-1 Set Operations</a>, for
+more information.
+</p>
+<dl>
+<dt><a name="index-make_002denumeration"></a>Scheme Procedure: <strong>make-enumeration</strong> <em>symbol-list</em></dt>
+<dd><p>Returns a new enum-set whose universe and enumeration set are both equal
+to <var>symbol-list</var>, a list of symbols.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002duniverse"></a>Scheme Procedure: <strong>enum-set-universe</strong> <em>enum-set</em></dt>
+<dd><p>Returns an enum-set representing the universe of <var>enum-set</var>,
+an enum-set.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002dindexer"></a>Scheme Procedure: <strong>enum-set-indexer</strong> <em>enum-set</em></dt>
+<dd><p>Returns a procedure that takes a single argument and returns the
+zero-indexed position of that argument in the universe of 
+<var>enum-set</var>, or <code>#f</code> if its argument is not a member of that
+universe.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002dconstructor"></a>Scheme Procedure: <strong>enum-set-constructor</strong> <em>enum-set</em></dt>
+<dd><p>Returns a procedure that takes a single argument, a list of symbols
+from the universe of <var>enum-set</var>, an enum-set, and returns a new
+enum-set with the same universe that represents a subset containing the
+specified symbols.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002d_003elist"></a>Scheme Procedure: <strong>enum-set-&gt;list</strong> <em>enum-set</em></dt>
+<dd><p>Returns a list containing the symbols of the set represented by
+<var>enum-set</var>, an enum-set, in the order that they appear in the 
+universe of <var>enum-set</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002dmember_003f"></a>Scheme Procedure: <strong>enum-set-member?</strong> <em>symbol enum-set</em></dt>
+<dt><a name="index-enum_002dset_002dsubset_003f"></a>Scheme Procedure: <strong>enum-set-subset?</strong> <em>enum-set1 enum-set2</em></dt>
+<dt><a name="index-enum_002dset_003d_003f"></a>Scheme Procedure: <strong>enum-set=?</strong> <em>enum-set1 enum-set2</em></dt>
+<dd><p>These procedures test for membership of symbols and enum-sets in other
+enum-sets.  <code>enum-set-member?</code> returns <code>#t</code> if and only if
+<var>symbol</var> is a member of the subset specified by <var>enum-set</var>.
+<code>enum-set-subset?</code> returns <code>#t</code> if and only if the universe of
+<var>enum-set1</var> is a subset of the universe of <var>enum-set2</var> and
+every symbol in <var>enum-set1</var> is present in <var>enum-set2</var>.
+<code>enum-set=?</code> returns <code>#t</code> if and only if <var>enum-set1</var> is a
+subset, as per <code>enum-set-subset?</code> of <var>enum-set2</var> and vice
+versa.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002dunion"></a>Scheme Procedure: <strong>enum-set-union</strong> <em>enum-set1 enum-set2</em></dt>
+<dt><a name="index-enum_002dset_002dintersection"></a>Scheme Procedure: <strong>enum-set-intersection</strong> <em>enum-set1 enum-set2</em></dt>
+<dt><a name="index-enum_002dset_002ddifference"></a>Scheme Procedure: <strong>enum-set-difference</strong> <em>enum-set1 enum-set2</em></dt>
+<dd><p>These procedures return, respectively, the union, intersection, and
+difference of their enum-set arguments.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002dcomplement"></a>Scheme Procedure: <strong>enum-set-complement</strong> <em>enum-set</em></dt>
+<dd><p>Returns <var>enum-set</var>&rsquo;s complement (an enum-set), with regard to its
+universe.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-enum_002dset_002dprojection"></a>Scheme Procedure: <strong>enum-set-projection</strong> <em>enum-set1 enum-set2</em></dt>
+<dd><p>Returns the projection of the enum-set <var>enum-set1</var> onto the universe
+of the enum-set <var>enum-set2</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-define_002denumeration"></a>Scheme Syntax: <strong>define-enumeration</strong> <em>type-name (symbol ...) constructor-syntax</em></dt>
+<dd><p>Evaluates to two new definitions: A constructor bound to 
+<var>constructor-syntax</var> that behaves similarly to constructors created
+by <code>enum-set-constructor</code>, above, and creates new <var>enum-set</var>s
+in the universe specified by <code>(symbol ...)</code>; and a &ldquo;predicate 
+macro&rdquo; bound to <var>type-name</var>, which has the following form:
+</p>
+<div class="lisp">
+<pre class="lisp">(<var>type-name</var> sym)
+</pre></div>
+ 
+<p>If <var>sym</var> is a member of the universe specified by the <var>symbol</var>s
+above, this form evaluates to <var>sym</var>.  Otherwise, a <code>&amp;syntax</code> 
+condition is raised.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="rnrs.html#rnrs" accesskey="n" rel="next">rnrs</a>, Previous: <a href="rnrs-hashtables.html#rnrs-hashtables" accesskey="p" rel="prev">rnrs hashtables</a>, Up: <a href="R6RS-Standard-Libraries.html#R6RS-Standard-Libraries" accesskey="u" rel="up">R6RS Standard Libraries</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Void Pointers and Byte Access</title>
+
+<meta name="description" content="Guile Reference Manual: Void Pointers and Byte Access">
+<meta name="keywords" content="Guile Reference Manual: Void Pointers and Byte Access">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Foreign-Pointers.html#Foreign-Pointers" rel="up" title="Foreign Pointers">
+<link href="Foreign-Structs.html#Foreign-Structs" rel="next" title="Foreign Structs">
+<link href="Foreign-Variables.html#Foreign-Variables" rel="prev" title="Foreign Variables">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Void-Pointers-and-Byte-Access"></a>
+<div class="header">
+<p>
+Next: <a href="Foreign-Structs.html#Foreign-Structs" accesskey="n" rel="next">Foreign Structs</a>, Previous: <a href="Foreign-Variables.html#Foreign-Variables" accesskey="p" rel="prev">Foreign Variables</a>, Up: <a href="Foreign-Pointers.html#Foreign-Pointers" accesskey="u" rel="up">Foreign Pointers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Void-Pointers-and-Byte-Access-1"></a>
+<h4 class="subsubsection">6.20.5.3 Void Pointers and Byte Access</h4>
+
+<p>Wrapped pointers are untyped, so they are essentially equivalent to C
+<code>void</code> pointers.  As in C, the memory region pointed to by a
+pointer can be accessed at the byte level.  This is achieved using
+<em>bytevectors</em> (see <a href="Bytevectors.html#Bytevectors">Bytevectors</a>).  The <code>(rnrs bytevectors)</code>
+module contains procedures that can be used to convert byte sequences to
+Scheme objects such as strings, floating point numbers, or integers.
+</p>
+<dl>
+<dt><a name="index-pointer_002d_003ebytevector"></a>Scheme Procedure: <strong>pointer-&gt;bytevector</strong> <em>pointer len [offset [uvec_type]]</em></dt>
+<dt><a name="index-scm_005fpointer_005fto_005fbytevector"></a>C Function: <strong>scm_pointer_to_bytevector</strong> <em>(pointer, len, offset, uvec_type)</em></dt>
+<dd><p>Return a bytevector aliasing the <var>len</var> bytes pointed to by
+<var>pointer</var>.
+</p>
+<p>The user may specify an alternate default interpretation for the memory
+by passing the <var>uvec_type</var> argument, to indicate that the memory is
+an array of elements of that type.  <var>uvec_type</var> should be something
+that <code>array-type</code> would return, like <code>f32</code> or <code>s16</code>.
+</p>
+<p>When <var>offset</var> is passed, it specifies the offset in bytes relative
+to <var>pointer</var> of the memory region aliased by the returned
+bytevector.
+</p>
+<p>Mutating the returned bytevector mutates the memory pointed to by
+<var>pointer</var>, so buckle your seatbelts.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-bytevector_002d_003epointer"></a>Scheme Procedure: <strong>bytevector-&gt;pointer</strong> <em>bv [offset]</em></dt>
+<dt><a name="index-scm_005fbytevector_005fto_005fpointer"></a>C Function: <strong>scm_bytevector_to_pointer</strong> <em>(bv, offset)</em></dt>
+<dd><p>Return a pointer pointer aliasing the memory pointed to by <var>bv</var> or
+<var>offset</var> bytes after <var>bv</var> when <var>offset</var> is passed.
+</p></dd></dl>
+
+<p>In addition to these primitives, convenience procedures are available:
+</p>
+<dl>
+<dt><a name="index-dereference_002dpointer"></a>Scheme Procedure: <strong>dereference-pointer</strong> <em>pointer</em></dt>
+<dd><p>Assuming <var>pointer</var> points to a memory region that holds a pointer,
+return this pointer.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002d_003epointer"></a>Scheme Procedure: <strong>string-&gt;pointer</strong> <em>string [encoding]</em></dt>
+<dd><p>Return a foreign pointer to a nul-terminated copy of <var>string</var> in the
+given <var>encoding</var>, defaulting to the current locale encoding.  The C
+string is freed when the returned foreign pointer becomes unreachable.
+</p>
+<p>This is the Scheme equivalent of <code>scm_to_stringn</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pointer_002d_003estring"></a>Scheme Procedure: <strong>pointer-&gt;string</strong> <em>pointer [length] [encoding]</em></dt>
+<dd><p>Return the string representing the C string pointed to by <var>pointer</var>.
+If <var>length</var> is omitted or <code>-1</code>, the string is assumed to be
+nul-terminated.  Otherwise <var>length</var> is the number of bytes in memory
+pointed to by <var>pointer</var>.  The C string is assumed to be in the given
+<var>encoding</var>, defaulting to the current locale encoding.
+</p>
+<p>This is the Scheme equivalent of <code>scm_from_stringn</code>.
+</p></dd></dl>
+
+<a name="index-wrapped-pointer-types"></a>
+<p>Most object-oriented C libraries use pointers to specific data
+structures to identify objects.  It is useful in such cases to reify the
+different pointer types as disjoint Scheme types.  The
+<code>define-wrapped-pointer-type</code> macro simplifies this.
+</p>
+<dl>
+<dt><a name="index-define_002dwrapped_002dpointer_002dtype"></a>Scheme Syntax: <strong>define-wrapped-pointer-type</strong> <em>type-name pred wrap unwrap print</em></dt>
+<dd><p>Define helper procedures to wrap pointer objects into Scheme objects
+with a disjoint type.  Specifically, this macro defines:
+</p>
+<ul>
+<li> <var>pred</var>, a predicate for the new Scheme type;
+</li><li> <var>wrap</var>, a procedure that takes a pointer object and returns an
+object that satisfies <var>pred</var>;
+</li><li> <var>unwrap</var>, which does the reverse.
+</li></ul>
+
+<p><var>wrap</var> preserves pointer identity, for two pointer objects <var>p1</var>
+and <var>p2</var> that are <code>equal?</code>, <code>(eq? (<var>wrap</var> <var>p1</var>)
+(<var>wrap</var> <var>p2</var>)) &rArr; #t</code>.
+</p>
+<p>Finally, <var>print</var> should name a user-defined procedure to print such
+objects.  The procedure is passed the wrapped object and a port to write
+to.
+</p>
+<p>For example, assume we are wrapping a C library that defines a type,
+<code>bottle_t</code>, and functions that can be passed <code>bottle_t *</code>
+pointers to manipulate them.  We could write:
+</p>
+<div class="example">
+<pre class="example">(define-wrapped-pointer-type bottle
+  bottle?
+  wrap-bottle unwrap-bottle
+  (lambda (b p)
+    (format p &quot;#&lt;bottle of ~a ~x&gt;&quot;
+            (bottle-contents b)
+            (pointer-address (unwrap-bottle b)))))
+
+(define grab-bottle
+  ;; Wrapper for `bottle_t *grab (void)'.
+  (let ((grab (pointer-&gt;procedure '*
+                                  (dynamic-func &quot;grab_bottle&quot; libbottle)
+                                  '())))
+    (lambda ()
+      &quot;Return a new bottle.&quot;
+      (wrap-bottle (grab)))))
+
+(define bottle-contents
+  ;; Wrapper for `const char *bottle_contents (bottle_t *)'.
+  (let ((contents (pointer-&gt;procedure '*
+                                      (dynamic-func &quot;bottle_contents&quot;
+                                                     libbottle)
+                                      '(*))))
+    (lambda (b)
+      &quot;Return the contents of B.&quot;
+      (pointer-&gt;string (contents (unwrap-bottle b))))))
+
+(write (grab-bottle))
+&rArr; #&lt;bottle of Ch&acirc;teau Haut-Brion 803d36&gt;
+</pre></div>
+
+<p>In this example, <code>grab-bottle</code> is guaranteed to return a genuine
+<code>bottle</code> object satisfying <code>bottle?</code>.  Likewise,
+<code>bottle-contents</code> errors out when its argument is not a genuine
+<code>bottle</code> object.
+</p></dd></dl>
+
+<p>Going back to the <code>scm_numptob</code> example above, here is how we can
+read its value as a C <code>long</code> integer:
+</p>
+<div class="example">
+<pre class="example">(use-modules (rnrs bytevectors))
+
+(bytevector-uint-ref (pointer-&gt;bytevector numptob (sizeof long))
+                     0 (native-endianness)
+                     (sizeof long))
+&rArr; 8
+</pre></div>
+
+<p>If we wanted to corrupt Guile&rsquo;s internal state, we could set
+<code>scm_numptob</code> to another value; but we shouldn&rsquo;t, because that
+variable is not meant to be set.  Indeed this point applies more widely:
+the C API is a dangerous place to be.  Not only might setting a value
+crash your program, simply accessing the data pointed to by a dangling
+pointer or similar can prove equally disastrous.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Foreign-Structs.html#Foreign-Structs" accesskey="n" rel="next">Foreign Structs</a>, Previous: <a href="Foreign-Variables.html#Foreign-Variables" accesskey="p" rel="prev">Foreign Variables</a>, Up: <a href="Foreign-Pointers.html#Foreign-Pointers" accesskey="u" rel="up">Foreign Pointers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

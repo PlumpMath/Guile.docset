@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: BOM Handling</title>
+
+<meta name="description" content="Guile Reference Manual: BOM Handling">
+<meta name="keywords" content="Guile Reference Manual: BOM Handling">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Input-and-Output.html#Input-and-Output" rel="up" title="Input and Output">
+<link href="Regular-Expressions.html#Regular-Expressions" rel="next" title="Regular Expressions">
+<link href="Port-Implementation.html#Port-Implementation" rel="prev" title="Port Implementation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="BOM-Handling"></a>
+<div class="header">
+<p>
+Previous: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="p" rel="prev">I/O Extensions</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Handling-of-Unicode-byte-order-marks_002e"></a>
+<h4 class="subsection">6.14.12 Handling of Unicode byte order marks.</h4>
+<a name="index-BOM"></a>
+<a name="index-byte-order-mark"></a>
+
+<p>This section documents the finer points of Guile&rsquo;s handling of Unicode
+byte order marks (BOMs).  A byte order mark (U+FEFF) is typically found
+at the start of a UTF-16 or UTF-32 stream, to allow readers to reliably
+determine the byte order.  Occasionally, a BOM is found at the start of
+a UTF-8 stream, but this is much less common and not generally
+recommended.
+</p>
+<p>Guile attempts to handle BOMs automatically, and in accordance with the
+recommendations of the Unicode Standard, when the port encoding is set
+to <code>UTF-8</code>, <code>UTF-16</code>, or <code>UTF-32</code>.  In brief, Guile
+automatically writes a BOM at the start of a UTF-16 or UTF-32 stream,
+and automatically consumes one from the start of a UTF-8, UTF-16, or
+UTF-32 stream.
+</p>
+<p>As specified in the Unicode Standard, a BOM is only handled specially at
+the start of a stream, and only if the port encoding is set to
+<code>UTF-8</code>, <code>UTF-16</code> or <code>UTF-32</code>.  If the port encoding is
+set to <code>UTF-16BE</code>, <code>UTF-16LE</code>, <code>UTF-32BE</code>, or
+<code>UTF-32LE</code>, then BOMs are <em>not</em> handled specially, and none of
+the special handling described in this section applies.
+</p>
+<ul>
+<li> To ensure that Guile will properly detect the byte order of a UTF-16 or
+UTF-32 stream, you must perform a textual read before any writes, seeks,
+or binary I/O.  Guile will not attempt to read a BOM unless a read is
+explicitly requested at the start of the stream.
+
+</li><li> If a textual write is performed before the first read, then an arbitrary
+byte order will be chosen.  Currently, big endian is the default on all
+platforms, but that may change in the future.  If you wish to explicitly
+control the byte order of an output stream, set the port encoding to
+<code>UTF-16BE</code>, <code>UTF-16LE</code>, <code>UTF-32BE</code>, or <code>UTF-32LE</code>,
+and explicitly write a BOM (<code>#\xFEFF</code>) if desired.
+
+</li><li> If <code>set-port-encoding!</code> is called in the middle of a stream, Guile
+treats this as a new logical &ldquo;start of stream&rdquo; for purposes of BOM
+handling, and will forget about any BOMs that had previously been seen.
+Therefore, it may choose a different byte order than had been used
+previously.  This is intended to support multiple logical text streams
+embedded within a larger binary stream.
+
+</li><li> Binary I/O operations are not guaranteed to update Guile&rsquo;s notion of
+whether the port is at the &ldquo;start of the stream&rdquo;, nor are they
+guaranteed to produce or consume BOMs.
+
+</li><li> For ports that support seeking (e.g. normal files), the input and output
+streams are considered linked: if the user reads first, then a BOM will
+be consumed (if appropriate), but later writes will <em>not</em> produce a
+BOM.  Similarly, if the user writes first, then later reads will
+<em>not</em> consume a BOM.
+
+</li><li> For ports that do not support seeking (e.g. pipes, sockets, and
+terminals), the input and output streams are considered
+<em>independent</em> for purposes of BOM handling: the first read will
+consume a BOM (if appropriate), and the first write will <em>also</em>
+produce a BOM (if appropriate).  However, the input and output streams
+will always use the same byte order.
+
+</li><li> Seeks to the beginning of a file will set the &ldquo;start of stream&rdquo; flags.
+Therefore, a subsequent textual read or write will consume or produce a
+BOM.  However, unlike <code>set-port-encoding!</code>, if a byte order had
+already been chosen for the port, it will remain in effect after a seek,
+and cannot be changed by the presence of a BOM.  Seeks anywhere other
+than the beginning of a file clear the &ldquo;start of stream&rdquo; flags.
+</li></ul>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="I_002fO-Extensions.html#I_002fO-Extensions" accesskey="p" rel="prev">I/O Extensions</a>, Up: <a href="Input-and-Output.html#Input-and-Output" accesskey="u" rel="up">Input and Output</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Command-line Options</title>
+
+<meta name="description" content="Guile Reference Manual: Command-line Options">
+<meta name="keywords" content="Guile Reference Manual: Command-line Options">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Invoking-Guile.html#Invoking-Guile" rel="up" title="Invoking Guile">
+<link href="Environment-Variables.html#Environment-Variables" rel="next" title="Environment Variables">
+<link href="Invoking-Guile.html#Invoking-Guile" rel="prev" title="Invoking Guile">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Command_002dline-Options"></a>
+<div class="header">
+<p>
+Next: <a href="Environment-Variables.html#Environment-Variables" accesskey="n" rel="next">Environment Variables</a>, Up: <a href="Invoking-Guile.html#Invoking-Guile" accesskey="u" rel="up">Invoking Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Command_002dline-Options-1"></a>
+<h4 class="subsection">4.2.1 Command-line Options</h4>
+<a name="index-Command_002dline-Options"></a>
+<a name="index-command_002dline-arguments"></a>
+<a name="index-arguments-_0028command-line_0029"></a>
+<a name="index-options-_0028command-line_0029"></a>
+<a name="index-switches-_0028command-line_0029"></a>
+<a name="index-startup-_0028command_002dline-arguments_0029"></a>
+<a name="index-invocation-_0028command_002dline-arguments_0029"></a>
+
+<p>Here we describe Guile&rsquo;s command-line processing in detail.  Guile
+processes its arguments from left to right, recognizing the switches
+described below.  For examples, see <a href="Scripting-Examples.html#Scripting-Examples">Scripting Examples</a>.
+</p>
+<dl compact="compact">
+<dt><code><var>script</var> <var>arg...</var></code></dt>
+<dt><code>-s <var>script</var> <var>arg...</var></code></dt>
+<dd><a name="index-script-mode"></a>
+<p>By default, Guile will read a file named on the command line as a
+script.  Any command-line arguments <var>arg...</var> following <var>script</var>
+become the script&rsquo;s arguments; the <code>command-line</code> function returns
+a list of strings of the form <code>(<var>script</var> <var>arg...</var>)</code>.
+</p>
+<p>It is possible to name a file using a leading hyphen, for example,
+<samp>-myfile.scm</samp>.  In this case, the file name must be preceded by
+<samp>-s</samp> to tell Guile that a (script) file is being named.
+</p>
+<p>Scripts are read and evaluated as Scheme source code just as the
+<code>load</code> function would.  After loading <var>script</var>, Guile exits.
+</p>
+</dd>
+<dt><code>-c <var>expr</var> <var>arg...</var></code></dt>
+<dd><a name="index-evaluate-expression_002c-command_002dline-argument"></a>
+<p>Evaluate <var>expr</var> as Scheme code, and then exit.  Any command-line
+arguments <var>arg...</var> following <var>expr</var> become command-line
+arguments; the <code>command-line</code> function returns a list of strings of
+the form <code>(<var>guile</var> <var>arg...</var>)</code>, where <var>guile</var> is the
+path of the Guile executable.
+</p>
+</dd>
+<dt><code>-- <var>arg...</var></code></dt>
+<dd><p>Run interactively, prompting the user for expressions and evaluating
+them.  Any command-line arguments <var>arg...</var> following the <samp>--</samp>
+become command-line arguments for the interactive session; the
+<code>command-line</code> function returns a list of strings of the form
+<code>(<var>guile</var> <var>arg...</var>)</code>, where <var>guile</var> is the path of the
+Guile executable.
+</p>
+</dd>
+<dt><code>-L <var>directory</var></code></dt>
+<dd><p>Add <var>directory</var> to the front of Guile&rsquo;s module load path.  The given
+directories are searched in the order given on the command line and
+before any directories in the <code>GUILE_LOAD_PATH</code> environment
+variable.  Paths added here are <em>not</em> in effect during execution of
+the user&rsquo;s <samp>.guile</samp> file.
+</p>
+</dd>
+<dt><code>-C <var>directory</var></code></dt>
+<dd><p>Like <samp>-L</samp>, but adjusts the load path for <em>compiled</em> files.
+</p>
+</dd>
+<dt><code>-x <var>extension</var></code></dt>
+<dd><p>Add <var>extension</var> to the front of Guile&rsquo;s load extension list
+(see <a href="Load-Paths.html#Load-Paths"><code>%load-extensions</code></a>).  The specified extensions
+are tried in the order given on the command line, and before the default
+load extensions.  Extensions added here are <em>not</em> in effect during
+execution of the user&rsquo;s <samp>.guile</samp> file.
+</p>
+</dd>
+<dt><code>-l <var>file</var></code></dt>
+<dd><p>Load Scheme source code from <var>file</var>, and continue processing the
+command line.
+</p>
+</dd>
+<dt><code>-e <var>function</var></code></dt>
+<dd><p>Make <var>function</var> the <em>entry point</em> of the script.  After loading
+the script file (with <samp>-s</samp>) or evaluating the expression (with
+<samp>-c</samp>), apply <var>function</var> to a list containing the program name
+and the command-line arguments&mdash;the list provided by the
+<code>command-line</code> function.
+</p>
+<p>A <samp>-e</samp> switch can appear anywhere in the argument list, but Guile
+always invokes the <var>function</var> as the <em>last</em> action it performs.
+This is weird, but because of the way script invocation works under
+POSIX, the <samp>-s</samp> option must always come last in the list.
+</p>
+<p>The <var>function</var> is most often a simple symbol that names a function
+that is defined in the script.  It can also be of the form <code>(@
+<var>module-name</var> <var>symbol</var>)</code>, and in that case, the symbol is
+looked up in the module named <var>module-name</var>.
+</p>
+<p>For compatibility with some versions of Guile 1.4, you can also use the
+form <code>(symbol ...)</code> (that is, a list of only symbols that doesn&rsquo;t
+start with <code>@</code>), which is equivalent to <code>(@ (symbol ...)
+main)</code>, or <code>(symbol ...)  symbol</code> (that is, a list of only symbols
+followed by a symbol), which is equivalent to <code>(@ (symbol ...)
+symbol)</code>.  We recommend to use the equivalent forms directly since they
+correspond to the <code>(@ ...)</code>  read syntax that can be used in
+normal code.  See <a href="Using-Guile-Modules.html#Using-Guile-Modules">Using Guile Modules</a> and <a href="Scripting-Examples.html#Scripting-Examples">Scripting Examples</a>.
+</p>
+</dd>
+<dt><code>-ds</code></dt>
+<dd><p>Treat a final <samp>-s</samp> option as if it occurred at this point in the
+command line; load the script here.
+</p>
+<p>This switch is necessary because, although the POSIX script invocation
+mechanism effectively requires the <samp>-s</samp> option to appear last, the
+programmer may well want to run the script before other actions
+requested on the command line.  For examples, see <a href="Scripting-Examples.html#Scripting-Examples">Scripting Examples</a>.
+</p>
+</dd>
+<dt><code>\</code></dt>
+<dd><p>Read more command-line arguments, starting from the second line of the
+script file.  See <a href="The-Meta-Switch.html#The-Meta-Switch">The Meta Switch</a>.
+</p>
+</dd>
+<dt><code>--use-srfi=<var>list</var></code></dt>
+<dd><a name="index-loading-srfi-modules-_0028command-line_0029"></a>
+<p>The option <samp>--use-srfi</samp> expects a comma-separated list of numbers,
+each representing a SRFI module to be loaded into the interpreter
+before evaluating a script file or starting the REPL.  Additionally,
+the feature identifier for the loaded SRFIs is recognized by
+the procedure <code>cond-expand</code> when this option is used.
+</p>
+<p>Here is an example that loads the modules SRFI-8 (&rsquo;receive&rsquo;) and SRFI-13
+(&rsquo;string library&rsquo;) before the GUILE interpreter is started:
+</p>
+<div class="example">
+<pre class="example">guile --use-srfi=8,13
+</pre></div>
+
+</dd>
+<dt><code>--debug</code></dt>
+<dd><a name="index-debugging-virtual-machine-_0028command-line_0029"></a>
+<p>Start with the debugging virtual machine (VM) engine.  Using the
+debugging VM will enable support for VM hooks, which are needed for
+tracing, breakpoints, and accurate call counts when profiling.  The
+debugging VM is slower than the regular VM, though, by about ten
+percent.  See <a href="VM-Hooks.html#VM-Hooks">VM Hooks</a>, for more information.
+</p>
+<p>By default, the debugging VM engine is only used when entering an
+interactive session.  When executing a script with <samp>-s</samp> or
+<samp>-c</samp>, the normal, faster VM is used by default.
+</p>
+
+</dd>
+<dt><code>--no-debug</code></dt>
+<dd><a name="index-debugging-virtual-machine-_0028command-line_0029-1"></a>
+<p>Do not use the debugging VM engine, even when entering an interactive
+session.
+</p>
+<p>Note that, despite the name, Guile running with <samp>--no-debug</samp>
+<em>does</em> support the usual debugging facilities, such as printing a
+detailed backtrace upon error.  The only difference with
+<samp>--debug</samp> is lack of support for VM hooks and the facilities that
+build upon it (see above).
+</p>
+</dd>
+<dt><code>-q</code></dt>
+<dd><a name="index-init-file_002c-not-loading"></a>
+<a name="index-_002eguile-file_002c-not-loading"></a>
+<p>Do not load the initialization file, <samp>.guile</samp>.  This option only
+has an effect when running interactively; running scripts does not load
+the <samp>.guile</samp> file.  See <a href="Init-File.html#Init-File">Init File</a>.
+</p>
+</dd>
+<dt><code>--listen[=<var>p</var>]</code></dt>
+<dd><p>While this program runs, listen on a local port or a path for REPL
+clients.  If <var>p</var> starts with a number, it is assumed to be a local
+port on which to listen.  If it starts with a forward slash, it is
+assumed to be a path to a UNIX domain socket on which to listen.
+</p>
+<p>If <var>p</var> is not given, the default is local port 37146.  If you look
+at it upside down, it almost spells &ldquo;Guile&rdquo;.  If you have netcat
+installed, you should be able to <kbd>nc localhost 37146</kbd> and get a
+Guile prompt.  Alternately you can fire up Emacs and connect to the
+process; see <a href="Using-Guile-in-Emacs.html#Using-Guile-in-Emacs">Using Guile in Emacs</a> for more details.
+</p>
+<p>Note that opening a port allows anyone who can connect to that port&mdash;in
+the TCP case, any local user&mdash;to do anything Guile can do, as the user
+that the Guile process is running as.  Do not use <samp>--listen</samp> on
+multi-user machines.  Of course, if you do not pass <samp>--listen</samp> to
+Guile, no port will be opened.
+</p>
+<p>That said, <samp>--listen</samp> is great for interactive debugging and
+development.
+</p>
+
+
+</dd>
+<dt><code>--auto-compile</code></dt>
+<dd><p>Compile source files automatically (default behavior).
+</p>
+
+
+</dd>
+<dt><code>--fresh-auto-compile</code></dt>
+<dd><p>Treat the auto-compilation cache as invalid, forcing recompilation.
+</p>
+
+
+</dd>
+<dt><code>--no-auto-compile</code></dt>
+<dd><p>Disable automatic source file compilation.
+</p>
+
+
+</dd>
+<dt><code>--language=<var>lang</var></code></dt>
+<dd><p>For the remainder of the command line arguments, assume that files
+mentioned with <code>-l</code> and expressions passed with <code>-c</code> are
+written in <var>lang</var>.  <var>lang</var> must be the name of one of the
+languages supported by the compiler (see <a href="Compiler-Tower.html#Compiler-Tower">Compiler Tower</a>).  When run
+interactively, set the REPL&rsquo;s language to <var>lang</var> (see <a href="Using-Guile-Interactively.html#Using-Guile-Interactively">Using Guile Interactively</a>).
+</p>
+<p>The default language is <code>scheme</code>; other interesting values include
+<code>elisp</code> (for Emacs Lisp), and <code>ecmascript</code>.
+</p>
+<p>The example below shows the evaluation of expressions in Scheme, Emacs
+Lisp, and ECMAScript:
+</p>
+<div class="example">
+<pre class="example">guile -c &quot;(apply + '(1 2))&quot;
+guile --language=elisp -c &quot;(= (funcall (symbol-function '+) 1 2) 3)&quot;
+guile --language=ecmascript -c '(function (x) { return x * x; })(2);'
+</pre></div>
+
+<p>To load a file written in Scheme and one written in Emacs Lisp, and then
+start a Scheme REPL, type:
+</p>
+<div class="example">
+<pre class="example">guile -l foo.scm --language=elisp -l foo.el --language=scheme
+</pre></div>
+
+
+
+</dd>
+<dt><code>-h<span class="roman">, </span>--help</code></dt>
+<dd><p>Display help on invoking Guile, and then exit.
+</p>
+</dd>
+<dt><code>-v<span class="roman">, </span>--version</code></dt>
+<dd><p>Display the current version of Guile, and then exit.
+</p>
+</dd>
+</dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Environment-Variables.html#Environment-Variables" accesskey="n" rel="next">Environment Variables</a>, Up: <a href="Invoking-Guile.html#Invoking-Guile" accesskey="u" rel="up">Invoking Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

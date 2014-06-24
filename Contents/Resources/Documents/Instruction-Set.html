@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Instruction Set</title>
+
+<meta name="description" content="Guile Reference Manual: Instruction Set">
+<meta name="keywords" content="Guile Reference Manual: Instruction Set">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" rel="up" title="A Virtual Machine for Guile">
+<link href="Lexical-Environment-Instructions.html#Lexical-Environment-Instructions" rel="next" title="Lexical Environment Instructions">
+<link href="VM-Programs.html#VM-Programs" rel="prev" title="VM Programs">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Instruction-Set"></a>
+<div class="header">
+<p>
+Previous: <a href="VM-Programs.html#VM-Programs" accesskey="p" rel="prev">VM Programs</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Instruction-Set-1"></a>
+<h4 class="subsection">9.3.6 Instruction Set</h4>
+
+<p>There are about 180 instructions in Guile&rsquo;s virtual machine. These
+instructions represent atomic units of a program&rsquo;s execution. Ideally,
+they perform one task without conditional branches, then dispatch to
+the next instruction in the stream.
+</p>
+<p>Instructions themselves are one byte long. Some instructions take
+parameters, which follow the instruction byte in the instruction
+stream.
+</p>
+<p>Sometimes the compiler can figure out that it is compiling a special
+case that can be run more efficiently. So, for example, while Guile
+offers a generic test-and-branch instruction, it also offers specific
+instructions for special cases, so that the following cases all have
+their own test-and-branch instructions:
+</p>
+<div class="example">
+<pre class="example">(if pred then else)
+(if (not pred) then else)
+(if (null? l) then else)
+(if (not (null? l)) then else)
+</pre></div>
+
+<p>In addition, some Scheme primitives have their own inline
+implementations, e.g. <code>cons</code>, and <code>list</code>, as we saw in the
+previous section.
+</p>
+<p>So Guile&rsquo;s instruction set is a <em>complete</em> instruction set, in
+that it provides the instructions that are suited to the problem, and
+is not concerned with making a minimal, orthogonal set of
+instructions. More instructions may be added over time.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Lexical-Environment-Instructions.html#Lexical-Environment-Instructions" accesskey="1">Lexical Environment Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Top_002dLevel-Environment-Instructions.html#Top_002dLevel-Environment-Instructions" accesskey="2">Top-Level Environment Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Procedure-Call-and-Return-Instructions.html#Procedure-Call-and-Return-Instructions" accesskey="3">Procedure Call and Return Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Function-Prologue-Instructions.html#Function-Prologue-Instructions" accesskey="4">Function Prologue Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Trampoline-Instructions.html#Trampoline-Instructions" accesskey="5">Trampoline Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Branch-Instructions.html#Branch-Instructions" accesskey="6">Branch Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Data-Constructor-Instructions.html#Data-Constructor-Instructions" accesskey="7">Data Constructor Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Loading-Instructions.html#Loading-Instructions" accesskey="8">Loading Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Dynamic-Environment-Instructions.html#Dynamic-Environment-Instructions" accesskey="9">Dynamic Environment Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Miscellaneous-Instructions.html#Miscellaneous-Instructions">Miscellaneous Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Inlined-Scheme-Instructions.html#Inlined-Scheme-Instructions">Inlined Scheme Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Inlined-Mathematical-Instructions.html#Inlined-Mathematical-Instructions">Inlined Mathematical Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Inlined-Bytevector-Instructions.html#Inlined-Bytevector-Instructions">Inlined Bytevector Instructions</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="VM-Programs.html#VM-Programs" accesskey="p" rel="prev">VM Programs</a>, Up: <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile" accesskey="u" rel="up">A Virtual Machine for Guile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

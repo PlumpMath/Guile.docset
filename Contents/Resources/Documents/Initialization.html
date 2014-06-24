@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Initialization</title>
+
+<meta name="description" content="Guile Reference Manual: Initialization">
+<meta name="keywords" content="Guile Reference Manual: Initialization">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="API-Reference.html#API-Reference" rel="up" title="API Reference">
+<link href="Snarfing-Macros.html#Snarfing-Macros" rel="next" title="Snarfing Macros">
+<link href="The-SCM-Type.html#The-SCM-Type" rel="prev" title="The SCM Type">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Initialization"></a>
+<div class="header">
+<p>
+Next: <a href="Snarfing-Macros.html#Snarfing-Macros" accesskey="n" rel="next">Snarfing Macros</a>, Previous: <a href="The-SCM-Type.html#The-SCM-Type" accesskey="p" rel="prev">The SCM Type</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Initializing-Guile"></a>
+<h3 class="section">6.4 Initializing Guile</h3>
+<a name="index-Initializing-Guile"></a>
+
+<p>Each thread that wants to use functions from the Guile API needs to
+put itself into guile mode with either <code>scm_with_guile</code> or
+<code>scm_init_guile</code>.  The global state of Guile is initialized
+automatically when the first thread enters guile mode.
+</p>
+<p>When a thread wants to block outside of a Guile API function, it
+should leave guile mode temporarily with <code>scm_without_guile</code>,
+See <a href="Blocking.html#Blocking">Blocking</a>.
+</p>
+<p>Threads that are created by <code>call-with-new-thread</code> or
+<code>scm_spawn_thread</code> start out in guile mode so you don&rsquo;t need to
+initialize them.
+</p>
+<dl>
+<dt><a name="index-scm_005fwith_005fguile"></a>C Function: <em>void *</em> <strong>scm_with_guile</strong> <em>(void *(*func)(void *), void *data)</em></dt>
+<dd><p>Call <var>func</var>, passing it <var>data</var> and return what <var>func</var>
+returns.  While <var>func</var> is running, the current thread is in guile
+mode and can thus use the Guile API.
+</p>
+<p>When <code>scm_with_guile</code> is called from guile mode, the thread remains
+in guile mode when <code>scm_with_guile</code> returns.
+</p>
+<p>Otherwise, it puts the current thread into guile mode and, if needed,
+gives it a Scheme representation that is contained in the list returned
+by <code>all-threads</code>, for example.  This Scheme representation is not
+removed when <code>scm_with_guile</code> returns so that a given thread is
+always represented by the same Scheme value during its lifetime, if at
+all.
+</p>
+<p>When this is the first thread that enters guile mode, the global state
+of Guile is initialized before calling <code>func</code>.
+</p>
+<p>The function <var>func</var> is called via
+<code>scm_with_continuation_barrier</code>; thus, <code>scm_with_guile</code>
+returns exactly once.
+</p>
+<p>When <code>scm_with_guile</code> returns, the thread is no longer in guile
+mode (except when <code>scm_with_guile</code> was called from guile mode, see
+above).  Thus, only <code>func</code> can store <code>SCM</code> variables on the
+stack and be sure that they are protected from the garbage collector.
+See <code>scm_init_guile</code> for another approach at initializing Guile
+that does not have this restriction.
+</p>
+<p>It is OK to call <code>scm_with_guile</code> while a thread has temporarily
+left guile mode via <code>scm_without_guile</code>.  It will then simply
+temporarily enter guile mode again.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005finit_005fguile"></a>C Function: <em>void</em> <strong>scm_init_guile</strong> <em>()</em></dt>
+<dd><p>Arrange things so that all of the code in the current thread executes as
+if from within a call to <code>scm_with_guile</code>.  That is, all functions
+called by the current thread can assume that <code>SCM</code> values on their
+stack frames are protected from the garbage collector (except when the
+thread has explicitly left guile mode, of course).
+</p>
+<p>When <code>scm_init_guile</code> is called from a thread that already has been
+in guile mode once, nothing happens.  This behavior matters when you
+call <code>scm_init_guile</code> while the thread has only temporarily left
+guile mode: in that case the thread will not be in guile mode after
+<code>scm_init_guile</code> returns.  Thus, you should not use
+<code>scm_init_guile</code> in such a scenario.
+</p>
+<p>When a uncaught throw happens in a thread that has been put into guile
+mode via <code>scm_init_guile</code>, a short message is printed to the
+current error port and the thread is exited via <code>scm_pthread_exit
+(NULL)</code>.  No restrictions are placed on continuations.
+</p>
+<p>The function <code>scm_init_guile</code> might not be available on all
+platforms since it requires some stack-bounds-finding magic that might
+not have been ported to all platforms that Guile runs on.  Thus, if you
+can, it is better to use <code>scm_with_guile</code> or its variation
+<code>scm_boot_guile</code> instead of this function.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fboot_005fguile"></a>C Function: <em>void</em> <strong>scm_boot_guile</strong> <em>(int <var>argc</var>, char **<var>argv</var>, void (*<var>main_func</var>) (void *<var>data</var>, int <var>argc</var>, char **<var>argv</var>), void *<var>data</var>)</em></dt>
+<dd><p>Enter guile mode as with <code>scm_with_guile</code> and call <var>main_func</var>,
+passing it <var>data</var>, <var>argc</var>, and <var>argv</var> as indicated.  When
+<var>main_func</var> returns, <code>scm_boot_guile</code> calls <code>exit (0)</code>;
+<code>scm_boot_guile</code> never returns.  If you want some other exit value,
+have <var>main_func</var> call <code>exit</code> itself.  If you don&rsquo;t want to exit
+at all, use <code>scm_with_guile</code> instead of <code>scm_boot_guile</code>.
+</p>
+<p>The function <code>scm_boot_guile</code> arranges for the Scheme
+<code>command-line</code> function to return the strings given by <var>argc</var>
+and <var>argv</var>.  If <var>main_func</var> modifies <var>argc</var> or <var>argv</var>,
+it should call <code>scm_set_program_arguments</code> with the final list, so
+Scheme code will know which arguments have been processed
+(see <a href="Runtime-Environment.html#Runtime-Environment">Runtime Environment</a>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fshell"></a>C Function: <em>void</em> <strong>scm_shell</strong> <em>(int <var>argc</var>, char **<var>argv</var>)</em></dt>
+<dd><p>Process command-line arguments in the manner of the <code>guile</code>
+executable.  This includes loading the normal Guile initialization
+files, interacting with the user or running any scripts or expressions
+specified by <code>-s</code> or <code>-e</code> options, and then exiting.
+See <a href="Invoking-Guile.html#Invoking-Guile">Invoking Guile</a>, for more details.
+</p>
+<p>Since this function does not return, you must do all
+application-specific initialization before calling this function.
+</p></dd></dl>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Snarfing-Macros.html#Snarfing-Macros" accesskey="n" rel="next">Snarfing Macros</a>, Previous: <a href="The-SCM-Type.html#The-SCM-Type" accesskey="p" rel="prev">The SCM Type</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

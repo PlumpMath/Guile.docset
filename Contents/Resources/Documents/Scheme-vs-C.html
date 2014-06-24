@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Scheme vs C</title>
+
+<meta name="description" content="Guile Reference Manual: Scheme vs C">
+<meta name="keywords" content="Guile Reference Manual: Scheme vs C">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Programming-Overview.html#Programming-Overview" rel="up" title="Programming Overview">
+<link href="Testbed-Example.html#Testbed-Example" rel="next" title="Testbed Example">
+<link href="Dia-Advanced.html#Dia-Advanced" rel="prev" title="Dia Advanced">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Scheme-vs-C"></a>
+<div class="header">
+<p>
+Next: <a href="Testbed-Example.html#Testbed-Example" accesskey="n" rel="next">Testbed Example</a>, Previous: <a href="Extending-Dia.html#Extending-Dia" accesskey="p" rel="prev">Extending Dia</a>, Up: <a href="Programming-Overview.html#Programming-Overview" accesskey="u" rel="up">Programming Overview</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Why-Scheme-is-More-Hackable-Than-C"></a>
+<h4 class="subsection">5.7.2 Why Scheme is More Hackable Than C</h4>
+
+<p>Underlying Guile&rsquo;s value proposition is the assumption that programming
+in a high level language, specifically Guile&rsquo;s implementation of Scheme,
+is necessarily better in some way than programming in C.  What do we
+mean by this claim, and how can we be so sure?
+</p>
+<p>One class of advantages applies not only to Scheme, but more generally
+to any interpretable, high level, scripting language, such as Emacs
+Lisp, Python, Ruby, or TeX&rsquo;s macro language.  Common features of all
+such languages, when compared to C, are that:
+</p>
+<ul>
+<li> They lend themselves to rapid and experimental development cycles,
+owing usually to a combination of their interpretability and the
+integrated development environment in which they are used.
+
+</li><li> They free developers from some of the low level bookkeeping tasks
+associated with C programming, notably memory management.
+
+</li><li> They provide high level features such as container objects and exception
+handling that make common programming tasks easier.
+</li></ul>
+
+<p>In the case of Scheme, particular features that make programming easier
+&mdash; and more fun! &mdash; are its powerful mechanisms for abstracting parts
+of programs (closures &mdash; see <a href="About-Closure.html#About-Closure">About Closure</a>) and for iteration
+(see <a href="while-do.html#while-do">while do</a>).
+</p>
+<p>The evidence in support of this argument is empirical: the huge amount
+of code that has been written in extension languages for applications
+that support this mechanism.  Most notable are extensions written in
+Emacs Lisp for GNU Emacs, in TeX&rsquo;s macro language for TeX, and in
+Script-Fu for the Gimp, but there is increasingly now a significant code
+eco-system for Guile-based applications as well, such as Lilypond and
+GnuCash.  It is close to inconceivable that similar amounts of
+functionality could have been added to these applications just by
+writing new code in their base implementation languages.
+</p>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Testbed-Example.html#Testbed-Example" accesskey="n" rel="next">Testbed Example</a>, Previous: <a href="Extending-Dia.html#Extending-Dia" accesskey="p" rel="prev">Extending Dia</a>, Up: <a href="Programming-Overview.html#Programming-Overview" accesskey="u" rel="up">Programming Overview</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

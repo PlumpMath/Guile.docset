@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Merging Generics</title>
+
+<meta name="description" content="Guile Reference Manual: Merging Generics">
+<meta name="keywords" content="Guile Reference Manual: Merging Generics">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Methods-and-Generic-Functions.html#Methods-and-Generic-Functions" rel="up" title="Methods and Generic Functions">
+<link href="Next_002dmethod.html#Next_002dmethod" rel="next" title="Next-method">
+<link href="Extending-Primitives.html#Extending-Primitives" rel="prev" title="Extending Primitives">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Merging-Generics"></a>
+<div class="header">
+<p>
+Next: <a href="Next_002dmethod.html#Next_002dmethod" accesskey="n" rel="next">Next-method</a>, Previous: <a href="Extending-Primitives.html#Extending-Primitives" accesskey="p" rel="prev">Extending Primitives</a>, Up: <a href="Methods-and-Generic-Functions.html#Methods-and-Generic-Functions" accesskey="u" rel="up">Methods and Generic Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Merging-Generics-1"></a>
+<h4 class="subsection">8.6.3 Merging Generics</h4>
+
+<p>GOOPS generic functions and accessors often have short, generic names.
+For example, if a vector package provides an accessor for the X
+coordinate of a vector, that accessor may just be called <code>x</code>.  It
+doesn&rsquo;t need to be called, for example, <code>vector:x</code>, because
+GOOPS will work out, when it sees code like <code>(x <var>obj</var>)</code>, that
+the vector-specific method of <code>x</code> should be called if <var>obj</var> is
+a vector.
+</p>
+<p>That raises the question, though, of what happens when different
+packages define a generic function with the same name.  Suppose we work
+with a graphical package which needs to use two independent vector
+packages for 2D and 3D vectors respectively.  If both packages export
+<code>x</code>, what does the code using those packages end up with?
+</p>
+<p><a href="Creating-Guile-Modules.html#Creating-Guile-Modules">duplicate binding handlers</a> explains how
+this is resolved for conflicting bindings in general.  For generics,
+there is a special duplicates handler, <code>merge-generics</code>, which
+tells the module system to merge generic functions with the same name.
+Here is an example:
+</p>
+<div class="lisp">
+<pre class="lisp">(define-module (math 2D-vectors)
+  #:use-module (oop goops)
+  #:export (x y ...))
+		  
+(define-module (math 3D-vectors)
+  #:use-module (oop goops)
+  #:export (x y z ...))
+
+(define-module (my-module)
+  #:use-module (oop goops)
+  #:use-module (math 2D-vectors)
+  #:use-module (math 3D-vectors)
+  #:duplicates (merge-generics))
+</pre></div>
+
+<p>The generic function <code>x</code> in <code>(my-module)</code> will now incorporate
+all of the methods of <code>x</code> from both imported modules.
+</p>
+<p>To be precise, there will now be three distinct generic functions named
+<code>x</code>: <code>x</code> in <code>(math 2D-vectors)</code>, <code>x</code> in <code>(math
+3D-vectors)</code>, and <code>x</code> in <code>(my-module)</code>; and these functions
+share their methods in an interesting and dynamic way.
+</p>
+<p>To explain, let&rsquo;s call the imported generic functions (in <code>(math
+2D-vectors)</code> and <code>(math 3D-vectors)</code>) the <em>ancestors</em>, and the
+merged generic function (in <code>(my-module)</code>), the <em>descendant</em>.
+The general rule is that for any generic function G, the applicable
+methods are selected from the union of the methods of G&rsquo;s descendant
+functions, the methods of G itself and the methods of G&rsquo;s ancestor
+functions.
+</p>
+<p>Thus ancestor functions effectively share methods with their
+descendants, and vice versa.  In the example above, <code>x</code> in
+<code>(math 2D-vectors)</code> will share the methods of <code>x</code> in
+<code>(my-module)</code> and vice versa.<a name="DOCF30" href="#FOOT30"><sup>30</sup></a>  Sharing is
+dynamic, so adding another new method to a descendant implies adding it
+to that descendant&rsquo;s ancestors too.
+</p>
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT30" href="#DOCF30">(30)</a></h3>
+<p>But note that <code>x</code> in
+<code>(math 2D-vectors)</code> doesn&rsquo;t share methods with <code>x</code> in
+<code>(math 3D-vectors)</code>, so modularity is still preserved.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Next_002dmethod.html#Next_002dmethod" accesskey="n" rel="next">Next-method</a>, Previous: <a href="Extending-Primitives.html#Extending-Primitives" accesskey="p" rel="prev">Extending Primitives</a>, Up: <a href="Methods-and-Generic-Functions.html#Methods-and-Generic-Functions" accesskey="u" rel="up">Methods and Generic Functions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

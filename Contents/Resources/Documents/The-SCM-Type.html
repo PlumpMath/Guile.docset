@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: The SCM Type</title>
+
+<meta name="description" content="Guile Reference Manual: The SCM Type">
+<meta name="keywords" content="Guile Reference Manual: The SCM Type">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="API-Reference.html#API-Reference" rel="up" title="API Reference">
+<link href="Initialization.html#Initialization" rel="next" title="Initialization">
+<link href="Deprecation.html#Deprecation" rel="prev" title="Deprecation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="The-SCM-Type"></a>
+<div class="header">
+<p>
+Next: <a href="Initialization.html#Initialization" accesskey="n" rel="next">Initialization</a>, Previous: <a href="Deprecation.html#Deprecation" accesskey="p" rel="prev">Deprecation</a>, Up: <a href="API-Reference.html#API-Reference" accesskey="u" rel="up">API Reference</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="The-SCM-Type-1"></a>
+<h3 class="section">6.3 The SCM Type</h3>
+
+<p>Guile represents all Scheme values with the single C type <code>SCM</code>.
+For an introduction to this topic, See <a href="Dynamic-Types.html#Dynamic-Types">Dynamic Types</a>.
+</p>
+<dl>
+<dt><a name="index-SCM"></a>C Type: <strong>SCM</strong></dt>
+<dd><p><code>SCM</code> is the user level abstract C type that is used to represent
+all of Guile&rsquo;s Scheme objects, no matter what the Scheme object type is.
+No C operation except assignment is guaranteed to work with variables of
+type <code>SCM</code>, so you should only use macros and functions to work
+with <code>SCM</code> values.  Values are converted between C data types and
+the <code>SCM</code> type with utility functions and macros.
+</p></dd></dl>
+<a name="index-SCM-data-type"></a>
+
+<dl>
+<dt><a name="index-scm_005ft_005fbits"></a>C Type: <strong>scm_t_bits</strong></dt>
+<dd><p><code>scm_t_bits</code> is an unsigned integral data type that is guaranteed
+to be large enough to hold all information that is required to
+represent any Scheme object.  While this data type is mostly used to
+implement Guile&rsquo;s internals, the use of this type is also necessary to
+write certain kinds of extensions to Guile.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005ft_005fsigned_005fbits"></a>C Type: <strong>scm_t_signed_bits</strong></dt>
+<dd><p>This is a signed integral type of the same size as <code>scm_t_bits</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fUNPACK"></a>C Macro: <em>scm_t_bits</em> <strong>SCM_UNPACK</strong> <em>(SCM <var>x</var>)</em></dt>
+<dd><p>Transforms the <code>SCM</code> value <var>x</var> into its representation as an
+integral type.  Only after applying <code>SCM_UNPACK</code> it is possible to
+access the bits and contents of the <code>SCM</code> value.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-SCM_005fPACK"></a>C Macro: <em>SCM</em> <strong>SCM_PACK</strong> <em>(scm_t_bits <var>x</var>)</em></dt>
+<dd><p>Takes a valid integral representation of a Scheme object and transforms
+it into its representation as a <code>SCM</code> value.
+</p></dd></dl>
+
+
+
+
+
+</body>
+</html>

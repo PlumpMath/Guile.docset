@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: texinfo reflection</title>
+
+<meta name="description" content="Guile Reference Manual: texinfo reflection">
+<meta name="keywords" content="Guile Reference Manual: texinfo reflection">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Texinfo-Processing.html#Texinfo-Processing" rel="up" title="Texinfo Processing">
+<link href="GOOPS.html#GOOPS" rel="next" title="GOOPS">
+<link href="texinfo-serialize.html#texinfo-serialize" rel="prev" title="texinfo serialize">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="texinfo-reflection"></a>
+<div class="header">
+<p>
+Previous: <a href="texinfo-serialize.html#texinfo-serialize" accesskey="p" rel="prev">texinfo serialize</a>, Up: <a href="Texinfo-Processing.html#Texinfo-Processing" accesskey="u" rel="up">Texinfo Processing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="g_t_0028texinfo-reflection_0029"></a>
+<h4 class="subsection">7.23.8 (texinfo reflection)</h4>
+<a name="Overview-12"></a>
+<h4 class="subsubsection">7.23.8.1 Overview</h4>
+<p>Routines to generare <code>stexi</code> documentation for objects and modules.
+</p>
+<p>Note that in this context, an <em>object</em> is just a value associated
+with a location. It has nothing to do with GOOPS.
+</p>
+<a name="Usage-14"></a>
+<h4 class="subsubsection">7.23.8.2 Usage</h4>
+<a name="texinfo-reflection-module_002dstexi_002ddocumentation"></a><dl>
+<dt><a name="index-module_002dstexi_002ddocumentation"></a>Function: <strong>module-stexi-documentation</strong> <em>sym-name [%docs-resolver] [#:docs-resolver]</em></dt>
+<dd><p>Return documentation for the module named <var>sym-name</var>. The
+documentation will be formatted as <code>stexi</code>
+(see <a href="texinfo.html#texinfo">texinfo</a>).
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-script_002dstexi_002ddocumentation"></a><dl>
+<dt><a name="index-script_002dstexi_002ddocumentation"></a>Function: <strong>script-stexi-documentation</strong> <em>scriptpath</em></dt>
+<dd><p>Return documentation for given script. The documentation will be taken
+from the script&rsquo;s commentary, and will be returned in the <code>stexi</code>
+format (see <a href="texinfo.html#texinfo">texinfo</a>).
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-object_002dstexi_002ddocumentation"></a><dl>
+<dt><a name="index-object_002dstexi_002ddocumentation"></a>Function: <strong>object-stexi-documentation</strong> <em>_ [_] [#:force]</em></dt>
+</dl>
+
+<a name="texinfo-reflection-package_002dstexi_002dstandard_002dcopying"></a><dl>
+<dt><a name="index-package_002dstexi_002dstandard_002dcopying"></a>Function: <strong>package-stexi-standard-copying</strong> <em>name version updated years copyright-holder permissions</em></dt>
+<dd><p>Create a standard texinfo <code>copying</code> section.
+</p>
+<p><var>years</var> is a list of years (as integers) in which the modules being
+documented were released. All other arguments are strings.
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002dstandard_002dtitlepage"></a><dl>
+<dt><a name="index-package_002dstexi_002dstandard_002dtitlepage"></a>Function: <strong>package-stexi-standard-titlepage</strong> <em>name version updated authors</em></dt>
+<dd><p>Create a standard GNU title page.
+</p>
+<p><var>authors</var> is a list of <code>(<var>name</var> . <var>email</var>)</code> pairs. All
+other arguments are strings.
+</p>
+<p>Here is an example of the usage of this procedure:
+</p>
+<div class="smallexample">
+<pre class="smallexample"> (package-stexi-standard-titlepage
+  &quot;Foolib&quot;
+  &quot;3.2&quot;
+  &quot;26 September 2006&quot;
+  '((&quot;Alyssa P Hacker&quot; . &quot;alyssa@example.com&quot;))
+  '(2004 2005 2006)
+  &quot;Free Software Foundation, Inc.&quot;
+  &quot;Standard GPL permissions blurb goes here&quot;)
+</pre></div>
+
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002dgeneric_002dmenu"></a><dl>
+<dt><a name="index-package_002dstexi_002dgeneric_002dmenu"></a>Function: <strong>package-stexi-generic-menu</strong> <em>name entries</em></dt>
+<dd><p>Create a menu from a generic alist of entries, the car of which should
+be the node name, and the cdr the description. As an exception, an entry
+of <code>#f</code> will produce a separator.
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002dstandard_002dmenu"></a><dl>
+<dt><a name="index-package_002dstexi_002dstandard_002dmenu"></a>Function: <strong>package-stexi-standard-menu</strong> <em>name modules module-descriptions extra-entries</em></dt>
+<dd><p>Create a standard top node and menu, suitable for processing by
+makeinfo.
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002dextended_002dmenu"></a><dl>
+<dt><a name="index-package_002dstexi_002dextended_002dmenu"></a>Function: <strong>package-stexi-extended-menu</strong> <em>name module-pairs script-pairs extra-entries</em></dt>
+<dd><p>Create an &quot;extended&quot; menu, like the standard menu but with a section for
+scripts.
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002dstandard_002dprologue"></a><dl>
+<dt><a name="index-package_002dstexi_002dstandard_002dprologue"></a>Function: <strong>package-stexi-standard-prologue</strong> <em>name filename category description copying titlepage menu</em></dt>
+<dd><p>Create a standard prologue, suitable for later serialization to texinfo
+and .info creation with makeinfo.
+</p>
+<p>Returns a list of stexinfo forms suitable for passing to
+<code>package-stexi-documentation</code> as the prologue. See <a href="#texinfo-reflection-package_002dstexi_002ddocumentation">texinfo reflection package-stexi-documentation</a>, <a href="#texinfo-reflection-package_002dstexi_002dstandard_002dtitlepage">package-stexi-standard-titlepage</a>,
+<a href="#texinfo-reflection-package_002dstexi_002dstandard_002dcopying">package-stexi-standard-copying</a>, and
+<a href="#texinfo-reflection-package_002dstexi_002dstandard_002dmenu">package-stexi-standard-menu</a>.
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002ddocumentation"></a><dl>
+<dt><a name="index-package_002dstexi_002ddocumentation"></a>Function: <strong>package-stexi-documentation</strong> <em>modules name filename prologue epilogue [#:module-stexi-documentation-args] [#:scripts]</em></dt>
+<dd><p>Create stexi documentation for a <em>package</em>, where a package is a set
+of modules that is released together.
+</p>
+<p><var>modules</var> is expected to be a list of module names, where a module
+name is a list of symbols. The stexi that is returned will be titled
+<var>name</var> and a texinfo filename of <var>filename</var>.
+</p>
+<p><var>prologue</var> and <var>epilogue</var> are lists of stexi forms that will be
+spliced into the output document before and after the generated modules
+documentation, respectively. See <a href="#texinfo-reflection-package_002dstexi_002dstandard_002dprologue">texinfo reflection package-stexi-standard-prologue</a>, to create a conventional GNU texinfo
+prologue.
+</p>
+<p><var>module-stexi-documentation-args</var> is an optional argument that, if
+given, will be added to the argument list when
+<code>module-texi-documentation</code> is called. For example, it might be
+useful to define a <code>#:docs-resolver</code> argument.
+</p>
+</dd></dl>
+
+<a name="texinfo-reflection-package_002dstexi_002ddocumentation_002dfor_002dinclude"></a><dl>
+<dt><a name="index-package_002dstexi_002ddocumentation_002dfor_002dinclude"></a>Function: <strong>package-stexi-documentation-for-include</strong> <em>modules module-descriptions [#:module-stexi-documentation-args]</em></dt>
+<dd><p>Create stexi documentation for a <em>package</em>, where a package is a set
+of modules that is released together.
+</p>
+<p><var>modules</var> is expected to be a list of module names, where a module
+name is a list of symbols. Returns an stexinfo fragment.
+</p>
+<p>Unlike <code>package-stexi-documentation</code>, this function simply produces
+a menu and the module documentations instead of producing a full texinfo
+document. This can be useful if you write part of your manual by hand,
+and just use <code>@include</code> to pull in the automatically generated
+parts.
+</p>
+<p><var>module-stexi-documentation-args</var> is an optional argument that, if
+given, will be added to the argument list when
+<code>module-texi-documentation</code> is called. For example, it might be
+useful to define a <code>#:docs-resolver</code> argument.
+</p>
+</dd></dl>
+
+
+
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="texinfo-serialize.html#texinfo-serialize" accesskey="p" rel="prev">texinfo serialize</a>, Up: <a href="Texinfo-Processing.html#Texinfo-Processing" accesskey="u" rel="up">Texinfo Processing</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

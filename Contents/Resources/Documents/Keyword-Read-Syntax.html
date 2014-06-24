@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Keyword Read Syntax</title>
+
+<meta name="description" content="Guile Reference Manual: Keyword Read Syntax">
+<meta name="keywords" content="Guile Reference Manual: Keyword Read Syntax">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Keywords.html#Keywords" rel="up" title="Keywords">
+<link href="Keyword-Procedures.html#Keyword-Procedures" rel="next" title="Keyword Procedures">
+<link href="Coding-With-Keywords.html#Coding-With-Keywords" rel="prev" title="Coding With Keywords">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Keyword-Read-Syntax"></a>
+<div class="header">
+<p>
+Next: <a href="Keyword-Procedures.html#Keyword-Procedures" accesskey="n" rel="next">Keyword Procedures</a>, Previous: <a href="Coding-With-Keywords.html#Coding-With-Keywords" accesskey="p" rel="prev">Coding With Keywords</a>, Up: <a href="Keywords.html#Keywords" accesskey="u" rel="up">Keywords</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Keyword-Read-Syntax-1"></a>
+<h4 class="subsubsection">6.6.8.3 Keyword Read Syntax</h4>
+
+<p>Guile, by default, only recognizes a keyword syntax that is compatible
+with R5RS.  A token of the form <code>#:NAME</code>, where <code>NAME</code> has the
+same syntax as a Scheme symbol (see <a href="Symbol-Read-Syntax.html#Symbol-Read-Syntax">Symbol Read Syntax</a>), is the
+external representation of the keyword named <code>NAME</code>.  Keyword
+objects print using this syntax as well, so values containing keyword
+objects can be read back into Guile.  When used in an expression,
+keywords are self-quoting objects.
+</p>
+<p>If the <code>keyword</code> read option is set to <code>'prefix</code>, Guile also
+recognizes the alternative read syntax <code>:NAME</code>.  Otherwise, tokens
+of the form <code>:NAME</code> are read as symbols, as required by R5RS.
+</p>
+<a name="index-SRFI_002d88-keyword-syntax"></a>
+
+<p>If the <code>keyword</code> read option is set to <code>'postfix</code>, Guile
+recognizes the SRFI-88 read syntax <code>NAME:</code> (see <a href="SRFI_002d88.html#SRFI_002d88">SRFI-88</a>).
+Otherwise, tokens of this form are read as symbols.
+</p>
+<p>To enable and disable the alternative non-R5RS keyword syntax, you use
+the <code>read-set!</code> procedure documented <a href="Scheme-Read.html#Scheme-Read">Scheme Read</a>.  Note that
+the <code>prefix</code> and <code>postfix</code> syntax are mutually exclusive.
+</p>
+<div class="lisp">
+<pre class="lisp">(read-set! keywords 'prefix)
+
+#:type
+&rArr;
+#:type
+
+:type
+&rArr;
+#:type
+
+(read-set! keywords 'postfix)
+
+type:
+&rArr;
+#:type
+
+:type
+&rArr;
+:type
+
+(read-set! keywords #f)
+
+#:type
+&rArr;
+#:type
+
+:type
+-|
+ERROR: In expression :type:
+ERROR: Unbound variable: :type
+ABORT: (unbound-variable)
+</pre></div>
+
+
+
+
+</body>
+</html>

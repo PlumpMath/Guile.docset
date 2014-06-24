@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Loading Instructions</title>
+
+<meta name="description" content="Guile Reference Manual: Loading Instructions">
+<meta name="keywords" content="Guile Reference Manual: Loading Instructions">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Instruction-Set.html#Instruction-Set" rel="up" title="Instruction Set">
+<link href="Dynamic-Environment-Instructions.html#Dynamic-Environment-Instructions" rel="next" title="Dynamic Environment Instructions">
+<link href="Data-Constructor-Instructions.html#Data-Constructor-Instructions" rel="prev" title="Data Constructor Instructions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Loading-Instructions"></a>
+<div class="header">
+<p>
+Next: <a href="Dynamic-Environment-Instructions.html#Dynamic-Environment-Instructions" accesskey="n" rel="next">Dynamic Environment Instructions</a>, Previous: <a href="Data-Constructor-Instructions.html#Data-Constructor-Instructions" accesskey="p" rel="prev">Data Constructor Instructions</a>, Up: <a href="Instruction-Set.html#Instruction-Set" accesskey="u" rel="up">Instruction Set</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Loading-Instructions-1"></a>
+<h4 class="subsubsection">9.3.6.8 Loading Instructions</h4>
+
+<p>In addition to VM instructions, an instruction stream may contain
+variable-length data embedded within it. This data is always preceded
+by special loading instructions, which interpret the data and advance
+the instruction pointer to the next VM instruction.
+</p>
+<p>All of these loading instructions have a <code>length</code> parameter,
+indicating the size of the embedded data, in bytes. The length itself
+is encoded in 3 bytes.
+</p>
+<dl>
+<dt><a name="index-load_002dnumber"></a>Instruction: <strong>load-number</strong> <em>length</em></dt>
+<dd><p>Load an arbitrary number from the instruction stream. The number is
+embedded in the stream as a string.
+</p></dd></dl>
+<dl>
+<dt><a name="index-load_002dstring"></a>Instruction: <strong>load-string</strong> <em>length</em></dt>
+<dd><p>Load a string from the instruction stream. The string is assumed to be
+encoded in the &ldquo;latin1&rdquo; locale.
+</p></dd></dl>
+<dl>
+<dt><a name="index-load_002dwide_002dstring"></a>Instruction: <strong>load-wide-string</strong> <em>length</em></dt>
+<dd><p>Load a UTF-32 string from the instruction stream. <var>length</var> is the
+length in bytes, not in codepoints.
+</p></dd></dl>
+<dl>
+<dt><a name="index-load_002dsymbol"></a>Instruction: <strong>load-symbol</strong> <em>length</em></dt>
+<dd><p>Load a symbol from the instruction stream. The symbol is assumed to be
+encoded in the &ldquo;latin1&rdquo; locale. Symbols backed by wide strings may
+be loaded via <code>load-wide-string</code> then <code>make-symbol</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-load_002darray"></a>Instruction: <strong>load-array</strong> <em>length</em></dt>
+<dd><p>Load a uniform array from the instruction stream. The shape and type
+of the array are popped off the stack, in that order.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-load_002dprogram"></a>Instruction: <strong>load-program</strong></dt>
+<dd><p>Load bytecode from the instruction stream, and push a compiled
+procedure.
+</p>
+<p>This instruction pops one value from the stack: the program&rsquo;s object
+table, as a vector, or <code>#f</code> in the case that the program has no
+object table. A program that does not reference toplevel bindings and
+does not use <code>object-ref</code> does not need an object table.
+</p>
+<p>This instruction is unlike the rest of the loading instructions,
+because instead of parsing its data, it directly maps the instruction
+stream onto a C structure, <code>struct scm_objcode</code>. See <a href="Bytecode-and-Objcode.html#Bytecode-and-Objcode">Bytecode and Objcode</a>, for more information.
+</p>
+<p>The resulting compiled procedure will not have any free variables
+captured, so it may be loaded only once but used many times to create
+closures.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Dynamic-Environment-Instructions.html#Dynamic-Environment-Instructions" accesskey="n" rel="next">Dynamic Environment Instructions</a>, Previous: <a href="Data-Constructor-Instructions.html#Data-Constructor-Instructions" accesskey="p" rel="prev">Data Constructor Instructions</a>, Up: <a href="Instruction-Set.html#Instruction-Set" accesskey="u" rel="up">Instruction Set</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

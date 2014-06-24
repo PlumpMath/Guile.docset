@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Arithmetic</title>
+
+<meta name="description" content="Guile Reference Manual: Arithmetic">
+<meta name="keywords" content="Guile Reference Manual: Arithmetic">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Numbers.html#Numbers" rel="up" title="Numbers">
+<link href="Scientific.html#Scientific" rel="next" title="Scientific">
+<link href="Complex.html#Complex" rel="prev" title="Complex">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Arithmetic"></a>
+<div class="header">
+<p>
+Next: <a href="Scientific.html#Scientific" accesskey="n" rel="next">Scientific</a>, Previous: <a href="Complex.html#Complex" accesskey="p" rel="prev">Complex</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Arithmetic-Functions"></a>
+<h4 class="subsubsection">6.6.2.11 Arithmetic Functions</h4>
+<a name="index-max-2"></a>
+<a name="index-min-2"></a>
+<a name="index-_002b-2"></a>
+<a name="index-_002a-2"></a>
+<a name="index-_002d-2"></a>
+<a name="index-_002f-2"></a>
+<a name="index-1_002b"></a>
+<a name="index-1_002d"></a>
+<a name="index-abs-2"></a>
+<a name="index-floor-2"></a>
+<a name="index-ceiling-2"></a>
+<a name="index-truncate-3"></a>
+<a name="index-round-2"></a>
+<a name="index-euclidean_002f-1"></a>
+<a name="index-euclidean_002dquotient-1"></a>
+<a name="index-euclidean_002dremainder-1"></a>
+<a name="index-floor_002f-1"></a>
+<a name="index-floor_002dquotient-1"></a>
+<a name="index-floor_002dremainder-1"></a>
+<a name="index-ceiling_002f-1"></a>
+<a name="index-ceiling_002dquotient-1"></a>
+<a name="index-ceiling_002dremainder-1"></a>
+<a name="index-truncate_002f-1"></a>
+<a name="index-truncate_002dquotient-1"></a>
+<a name="index-truncate_002dremainder-1"></a>
+<a name="index-centered_002f-1"></a>
+<a name="index-centered_002dquotient-1"></a>
+<a name="index-centered_002dremainder-1"></a>
+<a name="index-round_002f-1"></a>
+<a name="index-round_002dquotient-1"></a>
+<a name="index-round_002dremainder-1"></a>
+
+<p>The C arithmetic functions below always takes two arguments, while the
+Scheme functions can take an arbitrary number.  When you need to
+invoke them with just one argument, for example to compute the
+equivalent of <code>(- x)</code>, pass <code>SCM_UNDEFINED</code> as the second
+one: <code>scm_difference (x, SCM_UNDEFINED)</code>.
+</p>
+<dl>
+<dt><a name="index-_002b"></a>Scheme Procedure: <strong>+</strong> <em>z1 &hellip;</em></dt>
+<dt><a name="index-scm_005fsum"></a>C Function: <strong>scm_sum</strong> <em>(z1, z2)</em></dt>
+<dd><p>Return the sum of all parameter values.  Return 0 if called without any
+parameters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_002d"></a>Scheme Procedure: <strong>-</strong> <em>z1 z2 &hellip;</em></dt>
+<dt><a name="index-scm_005fdifference"></a>C Function: <strong>scm_difference</strong> <em>(z1, z2)</em></dt>
+<dd><p>If called with one argument <var>z1</var>, -<var>z1</var> is returned. Otherwise
+the sum of all but the first argument are subtracted from the first
+argument.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_002a"></a>Scheme Procedure: <strong>*</strong> <em>z1 &hellip;</em></dt>
+<dt><a name="index-scm_005fproduct"></a>C Function: <strong>scm_product</strong> <em>(z1, z2)</em></dt>
+<dd><p>Return the product of all arguments.  If called without arguments, 1 is
+returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_002f"></a>Scheme Procedure: <strong>/</strong> <em>z1 z2 &hellip;</em></dt>
+<dt><a name="index-scm_005fdivide"></a>C Function: <strong>scm_divide</strong> <em>(z1, z2)</em></dt>
+<dd><p>Divide the first argument by the product of the remaining arguments.  If
+called with one argument <var>z1</var>, 1/<var>z1</var> is returned.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-1_002b-1"></a>Scheme Procedure: <strong>1+</strong> <em>z</em></dt>
+<dt><a name="index-scm_005foneplus"></a>C Function: <strong>scm_oneplus</strong> <em>(z)</em></dt>
+<dd><p>Return <em><var>z</var> + 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-1_002d-1"></a>Scheme Procedure: <strong>1-</strong> <em>z</em></dt>
+<dt><a name="index-scm_005foneminus"></a>C function: <strong>scm_oneminus</strong> <em>(z)</em></dt>
+<dd><p>Return <em><var>z</var> - 1</em>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-abs"></a>Scheme Procedure: <strong>abs</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fabs"></a>C Function: <strong>scm_abs</strong> <em>(x)</em></dt>
+<dd><p>Return the absolute value of <var>x</var>.
+</p>
+<p><var>x</var> must be a number with zero imaginary part.  To calculate the
+magnitude of a complex number, use <code>magnitude</code> instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-max"></a>Scheme Procedure: <strong>max</strong> <em>x1 x2 &hellip;</em></dt>
+<dt><a name="index-scm_005fmax"></a>C Function: <strong>scm_max</strong> <em>(x1, x2)</em></dt>
+<dd><p>Return the maximum of all parameter values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-min"></a>Scheme Procedure: <strong>min</strong> <em>x1 x2 &hellip;</em></dt>
+<dt><a name="index-scm_005fmin"></a>C Function: <strong>scm_min</strong> <em>(x1, x2)</em></dt>
+<dd><p>Return the minimum of all parameter values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-truncate"></a>Scheme Procedure: <strong>truncate</strong> <em>x</em></dt>
+<dt><a name="index-scm_005ftruncate_005fnumber"></a>C Function: <strong>scm_truncate_number</strong> <em>(x)</em></dt>
+<dd><p>Round the inexact number <var>x</var> towards zero.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-round"></a>Scheme Procedure: <strong>round</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fround_005fnumber"></a>C Function: <strong>scm_round_number</strong> <em>(x)</em></dt>
+<dd><p>Round the inexact number <var>x</var> to the nearest integer.  When exactly
+halfway between two integers, round to the even one.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-floor"></a>Scheme Procedure: <strong>floor</strong> <em>x</em></dt>
+<dt><a name="index-scm_005ffloor"></a>C Function: <strong>scm_floor</strong> <em>(x)</em></dt>
+<dd><p>Round the number <var>x</var> towards minus infinity.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-ceiling"></a>Scheme Procedure: <strong>ceiling</strong> <em>x</em></dt>
+<dt><a name="index-scm_005fceiling"></a>C Function: <strong>scm_ceiling</strong> <em>(x)</em></dt>
+<dd><p>Round the number <var>x</var> towards infinity.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005ftruncate"></a>C Function: <em>double</em> <strong>scm_c_truncate</strong> <em>(double x)</em></dt>
+<dt><a name="index-scm_005fc_005fround"></a>C Function: <em>double</em> <strong>scm_c_round</strong> <em>(double x)</em></dt>
+<dd><p>Like <code>scm_truncate_number</code> or <code>scm_round_number</code>,
+respectively, but these functions take and return <code>double</code>
+values.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-euclidean_002f"></a>Scheme Procedure: <em></em> <strong>euclidean/</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-euclidean_002dquotient"></a>Scheme Procedure: <em></em> <strong>euclidean-quotient</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-euclidean_002dremainder"></a>Scheme Procedure: <em></em> <strong>euclidean-remainder</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-scm_005feuclidean_005fdivide"></a>C Function: <em>void</em> <strong>scm_euclidean_divide</strong> <em>(SCM <var>x</var>, SCM <var>y</var>, SCM *<var>q</var>, SCM *<var>r</var>)</em></dt>
+<dt><a name="index-scm_005feuclidean_005fquotient"></a>C Function: <em>SCM</em> <strong>scm_euclidean_quotient</strong> <em>(SCM <var>x</var>, SCM <var>y</var>)</em></dt>
+<dt><a name="index-scm_005feuclidean_005fremainder"></a>C Function: <em>SCM</em> <strong>scm_euclidean_remainder</strong> <em>(SCM <var>x</var>, SCM <var>y</var>)</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>euclidean-quotient</code> returns the
+integer <var>q</var> and <code>euclidean-remainder</code> returns the real number
+<var>r</var> such that <em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em> and
+<em>0 &lt;= <var>r</var> &lt; |<var>y</var>|</em>.  <code>euclidean/</code> returns both <var>q</var> and
+<var>r</var>, and is more efficient than computing each separately.  Note
+that when <em><var>y</var> &gt; 0</em>, <code>euclidean-quotient</code> returns
+<em>floor(<var>x</var>/<var>y</var>)</em>, otherwise it returns
+<em>ceiling(<var>x</var>/<var>y</var>)</em>.
+</p>
+<p>Note that these operators are equivalent to the R6RS operators
+<code>div</code>, <code>mod</code>, and <code>div-and-mod</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(euclidean-quotient 123 10) &rArr; 12
+(euclidean-remainder 123 10) &rArr; 3
+(euclidean/ 123 10) &rArr; 12 and 3
+(euclidean/ 123 -10) &rArr; -12 and 3
+(euclidean/ -123 10) &rArr; -13 and 7
+(euclidean/ -123 -10) &rArr; 13 and 7
+(euclidean/ -123.2 -63.5) &rArr; 2.0 and 3.8
+(euclidean/ 16/3 -10/7) &rArr; -3 and 22/21
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-floor_002f"></a>Scheme Procedure: <em></em> <strong>floor/</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-floor_002dquotient"></a>Scheme Procedure: <em></em> <strong>floor-quotient</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-floor_002dremainder"></a>Scheme Procedure: <em></em> <strong>floor-remainder</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-scm_005ffloor_005fdivide"></a>C Function: <em>void</em> <strong>scm_floor_divide</strong> <em>(SCM <var>x</var>, SCM <var>y</var>, SCM *<var>q</var>, SCM *<var>r</var>)</em></dt>
+<dt><a name="index-scm_005ffloor_005fquotient"></a>C Function: <em>SCM</em> <strong>scm_floor_quotient</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dt><a name="index-scm_005ffloor_005fremainder"></a>C Function: <em>SCM</em> <strong>scm_floor_remainder</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>floor-quotient</code> returns the
+integer <var>q</var> and <code>floor-remainder</code> returns the real number
+<var>r</var> such that <em><var>q</var> = floor(<var>x</var>/<var>y</var>)</em> and
+<em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em>.  <code>floor/</code> returns
+both <var>q</var> and <var>r</var>, and is more efficient than computing each
+separately.  Note that <var>r</var>, if non-zero, will have the same sign
+as <var>y</var>.
+</p>
+<p>When <var>x</var> and <var>y</var> are integers, <code>floor-remainder</code> is
+equivalent to the R5RS integer-only operator <code>modulo</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(floor-quotient 123 10) &rArr; 12
+(floor-remainder 123 10) &rArr; 3
+(floor/ 123 10) &rArr; 12 and 3
+(floor/ 123 -10) &rArr; -13 and -7
+(floor/ -123 10) &rArr; -13 and 7
+(floor/ -123 -10) &rArr; 12 and -3
+(floor/ -123.2 -63.5) &rArr; 1.0 and -59.7
+(floor/ 16/3 -10/7) &rArr; -4 and -8/21
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-ceiling_002f"></a>Scheme Procedure: <em></em> <strong>ceiling/</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-ceiling_002dquotient"></a>Scheme Procedure: <em></em> <strong>ceiling-quotient</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-ceiling_002dremainder"></a>Scheme Procedure: <em></em> <strong>ceiling-remainder</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-scm_005fceiling_005fdivide"></a>C Function: <em>void</em> <strong>scm_ceiling_divide</strong> <em>(SCM <var>x</var>, SCM <var>y</var>, SCM *<var>q</var>, SCM *<var>r</var>)</em></dt>
+<dt><a name="index-scm_005fceiling_005fquotient"></a>C Function: <em>SCM</em> <strong>scm_ceiling_quotient</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dt><a name="index-scm_005fceiling_005fremainder"></a>C Function: <em>SCM</em> <strong>scm_ceiling_remainder</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>ceiling-quotient</code> returns the
+integer <var>q</var> and <code>ceiling-remainder</code> returns the real number
+<var>r</var> such that <em><var>q</var> = ceiling(<var>x</var>/<var>y</var>)</em> and
+<em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em>.  <code>ceiling/</code> returns
+both <var>q</var> and <var>r</var>, and is more efficient than computing each
+separately.  Note that <var>r</var>, if non-zero, will have the opposite sign
+of <var>y</var>.
+</p>
+<div class="lisp">
+<pre class="lisp">(ceiling-quotient 123 10) &rArr; 13
+(ceiling-remainder 123 10) &rArr; -7
+(ceiling/ 123 10) &rArr; 13 and -7
+(ceiling/ 123 -10) &rArr; -12 and 3
+(ceiling/ -123 10) &rArr; -12 and -3
+(ceiling/ -123 -10) &rArr; 13 and 7
+(ceiling/ -123.2 -63.5) &rArr; 2.0 and 3.8
+(ceiling/ 16/3 -10/7) &rArr; -3 and 22/21
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-truncate_002f"></a>Scheme Procedure: <em></em> <strong>truncate/</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-truncate_002dquotient"></a>Scheme Procedure: <em></em> <strong>truncate-quotient</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-truncate_002dremainder"></a>Scheme Procedure: <em></em> <strong>truncate-remainder</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-scm_005ftruncate_005fdivide"></a>C Function: <em>void</em> <strong>scm_truncate_divide</strong> <em>(SCM <var>x</var>, SCM <var>y</var>, SCM *<var>q</var>, SCM *<var>r</var>)</em></dt>
+<dt><a name="index-scm_005ftruncate_005fquotient"></a>C Function: <em>SCM</em> <strong>scm_truncate_quotient</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dt><a name="index-scm_005ftruncate_005fremainder"></a>C Function: <em>SCM</em> <strong>scm_truncate_remainder</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>truncate-quotient</code> returns the
+integer <var>q</var> and <code>truncate-remainder</code> returns the real number
+<var>r</var> such that <var>q</var> is <em><var>x</var>/<var>y</var></em> rounded toward zero,
+and <em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em>.  <code>truncate/</code> returns
+both <var>q</var> and <var>r</var>, and is more efficient than computing each
+separately.  Note that <var>r</var>, if non-zero, will have the same sign
+as <var>x</var>.
+</p>
+<p>When <var>x</var> and <var>y</var> are integers, these operators are
+equivalent to the R5RS integer-only operators <code>quotient</code> and
+<code>remainder</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(truncate-quotient 123 10) &rArr; 12
+(truncate-remainder 123 10) &rArr; 3
+(truncate/ 123 10) &rArr; 12 and 3
+(truncate/ 123 -10) &rArr; -12 and 3
+(truncate/ -123 10) &rArr; -12 and -3
+(truncate/ -123 -10) &rArr; 12 and -3
+(truncate/ -123.2 -63.5) &rArr; 1.0 and -59.7
+(truncate/ 16/3 -10/7) &rArr; -3 and 22/21
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-centered_002f"></a>Scheme Procedure: <em></em> <strong>centered/</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-centered_002dquotient"></a>Scheme Procedure: <em></em> <strong>centered-quotient</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-centered_002dremainder"></a>Scheme Procedure: <em></em> <strong>centered-remainder</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-scm_005fcentered_005fdivide"></a>C Function: <em>void</em> <strong>scm_centered_divide</strong> <em>(SCM <var>x</var>, SCM <var>y</var>, SCM *<var>q</var>, SCM *<var>r</var>)</em></dt>
+<dt><a name="index-scm_005fcentered_005fquotient"></a>C Function: <em>SCM</em> <strong>scm_centered_quotient</strong> <em>(SCM <var>x</var>, SCM <var>y</var>)</em></dt>
+<dt><a name="index-scm_005fcentered_005fremainder"></a>C Function: <em>SCM</em> <strong>scm_centered_remainder</strong> <em>(SCM <var>x</var>, SCM <var>y</var>)</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>centered-quotient</code> returns the
+integer <var>q</var> and <code>centered-remainder</code> returns the real number
+<var>r</var> such that <em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em> and
+<em>-|<var>y</var>/2| &lt;= <var>r</var> &lt; |<var>y</var>/2|</em>.  <code>centered/</code>
+returns both <var>q</var> and <var>r</var>, and is more efficient than computing
+each separately.
+</p>
+<p>Note that <code>centered-quotient</code> returns <em><var>x</var>/<var>y</var></em>
+rounded to the nearest integer.  When <em><var>x</var>/<var>y</var></em> lies
+exactly half-way between two integers, the tie is broken according to
+the sign of <var>y</var>.  If <em><var>y</var> &gt; 0</em>, ties are rounded toward
+positive infinity, otherwise they are rounded toward negative infinity.
+This is a consequence of the requirement that
+<em>-|<var>y</var>/2| &lt;= <var>r</var> &lt; |<var>y</var>/2|</em>.
+</p>
+<p>Note that these operators are equivalent to the R6RS operators
+<code>div0</code>, <code>mod0</code>, and <code>div0-and-mod0</code>.
+</p>
+<div class="lisp">
+<pre class="lisp">(centered-quotient 123 10) &rArr; 12
+(centered-remainder 123 10) &rArr; 3
+(centered/ 123 10) &rArr; 12 and 3
+(centered/ 123 -10) &rArr; -12 and 3
+(centered/ -123 10) &rArr; -12 and -3
+(centered/ -123 -10) &rArr; 12 and -3
+(centered/ 125 10) &rArr; 13 and -5
+(centered/ 127 10) &rArr; 13 and -3
+(centered/ 135 10) &rArr; 14 and -5
+(centered/ -123.2 -63.5) &rArr; 2.0 and 3.8
+(centered/ 16/3 -10/7) &rArr; -4 and -8/21
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-round_002f"></a>Scheme Procedure: <em></em> <strong>round/</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-round_002dquotient"></a>Scheme Procedure: <em></em> <strong>round-quotient</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-round_002dremainder"></a>Scheme Procedure: <em></em> <strong>round-remainder</strong> <em><var>x</var> <var>y</var></em></dt>
+<dt><a name="index-scm_005fround_005fdivide"></a>C Function: <em>void</em> <strong>scm_round_divide</strong> <em>(SCM <var>x</var>, SCM <var>y</var>, SCM *<var>q</var>, SCM *<var>r</var>)</em></dt>
+<dt><a name="index-scm_005fround_005fquotient"></a>C Function: <em>SCM</em> <strong>scm_round_quotient</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dt><a name="index-scm_005fround_005fremainder"></a>C Function: <em>SCM</em> <strong>scm_round_remainder</strong> <em>(<var>x</var>, <var>y</var>)</em></dt>
+<dd><p>These procedures accept two real numbers <var>x</var> and <var>y</var>, where the
+divisor <var>y</var> must be non-zero.  <code>round-quotient</code> returns the
+integer <var>q</var> and <code>round-remainder</code> returns the real number
+<var>r</var> such that <em><var>x</var> = <var>q</var>*<var>y</var> + <var>r</var></em> and
+<var>q</var> is <em><var>x</var>/<var>y</var></em> rounded to the nearest integer,
+with ties going to the nearest even integer.  <code>round/</code>
+returns both <var>q</var> and <var>r</var>, and is more efficient than computing
+each separately.
+</p>
+<p>Note that <code>round/</code> and <code>centered/</code> are almost equivalent, but
+their behavior differs when <em><var>x</var>/<var>y</var></em> lies exactly half-way
+between two integers.  In this case, <code>round/</code> chooses the nearest
+even integer, whereas <code>centered/</code> chooses in such a way to satisfy
+the constraint <em>-|<var>y</var>/2| &lt;= <var>r</var> &lt; |<var>y</var>/2|</em>, which
+is stronger than the corresponding constraint for <code>round/</code>,
+<em>-|<var>y</var>/2| &lt;= <var>r</var> &lt;= |<var>y</var>/2|</em>.  In particular,
+when <var>x</var> and <var>y</var> are integers, the number of possible remainders
+returned by <code>centered/</code> is <em>|<var>y</var>|</em>, whereas the number of
+possible remainders returned by <code>round/</code> is <em>|<var>y</var>|+1</em> when
+<var>y</var> is even.
+</p>
+<div class="lisp">
+<pre class="lisp">(round-quotient 123 10) &rArr; 12
+(round-remainder 123 10) &rArr; 3
+(round/ 123 10) &rArr; 12 and 3
+(round/ 123 -10) &rArr; -12 and 3
+(round/ -123 10) &rArr; -12 and -3
+(round/ -123 -10) &rArr; 12 and -3
+(round/ 125 10) &rArr; 12 and 5
+(round/ 127 10) &rArr; 13 and -3
+(round/ 135 10) &rArr; 14 and -5
+(round/ -123.2 -63.5) &rArr; 2.0 and 3.8
+(round/ 16/3 -10/7) &rArr; -4 and -8/21
+</pre></div>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Scientific.html#Scientific" accesskey="n" rel="next">Scientific</a>, Previous: <a href="Complex.html#Complex" accesskey="p" rel="prev">Complex</a>, Up: <a href="Numbers.html#Numbers" accesskey="u" rel="up">Numbers</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

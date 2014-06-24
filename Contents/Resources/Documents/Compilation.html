@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Compilation</title>
+
+<meta name="description" content="Guile Reference Manual: Compilation">
+<meta name="keywords" content="Guile Reference Manual: Compilation">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" rel="up" title="Read/Load/Eval/Compile">
+<link href="Loading.html#Loading" rel="next" title="Loading">
+<link href="Fly-Evaluation.html#Fly-Evaluation" rel="prev" title="Fly Evaluation">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Compilation"></a>
+<div class="header">
+<p>
+Next: <a href="Loading.html#Loading" accesskey="n" rel="next">Loading</a>, Previous: <a href="Fly-Evaluation.html#Fly-Evaluation" accesskey="p" rel="prev">Fly Evaluation</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Compiling-Scheme-Code"></a>
+<h4 class="subsection">6.17.5 Compiling Scheme Code</h4>
+
+<p>The <code>eval</code> procedure directly interprets the S-expression
+representation of Scheme. An alternate strategy for evaluation is to
+determine ahead of time what computations will be necessary to
+evaluate the expression, and then use that recipe to produce the
+desired results. This is known as <em>compilation</em>.
+</p>
+<p>While it is possible to compile simple Scheme expressions such as
+<code>(+ 2 2)</code> or even <code>&quot;Hello world!&quot;</code>, compilation is most
+interesting in the context of procedures. Compiling a lambda expression
+produces a compiled procedure, which is just like a normal procedure
+except typically much faster, because it can bypass the generic
+interpreter.
+</p>
+<p>Functions from system modules in a Guile installation are normally
+compiled already, so they load and run quickly.
+</p>
+<a name="index-automatic-compilation"></a>
+<p>Note that well-written Scheme programs will not typically call the
+procedures in this section, for the same reason that it is often bad
+taste to use <code>eval</code>.  By default, Guile automatically compiles any
+files it encounters that have not been compiled yet (see <a href="Invoking-Guile.html#Invoking-Guile"><code>--auto-compile</code></a>).  The compiler can also be invoked
+explicitly from the shell as <code>guild compile foo.scm</code>.
+</p>
+<p>(Why are calls to <code>eval</code> and <code>compile</code> usually in bad taste?
+Because they are limited, in that they can only really make sense for
+top-level expressions. Also, most needs for &ldquo;compile-time&rdquo;
+computation are fulfilled by macros and closures. Of course one good
+counterexample is the REPL itself, or any code that reads expressions
+from a port.)
+</p>
+<p>Automatic compilation generally works transparently, without any need
+for user intervention.  However Guile does not yet do proper dependency
+tracking, so that if file <samp><var>a</var>.scm</samp> uses macros from
+<samp><var>b</var>.scm</samp>, and <var><var>b</var>.scm</var> changes, <code><var>a</var>.scm</code>
+would not be automatically recompiled.  To forcibly invalidate the
+auto-compilation cache, pass the <code>--fresh-auto-compile</code> option to
+Guile, or set the <code>GUILE_AUTO_COMPILE</code> environment variable to
+<code>fresh</code> (instead of to <code>0</code> or <code>1</code>).
+</p>
+<p>For more information on the compiler itself, see <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine">Compiling to the Virtual Machine</a>. For information on the virtual machine, see <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile">A Virtual Machine for Guile</a>.
+</p>
+<p>The command-line interface to Guile&rsquo;s compiler is the <code>guild
+compile</code> command:
+</p>
+<dl>
+<dt><a name="index-guild-compile"></a>Command: <strong>guild compile</strong> <em>[<samp>option</samp>...] <var>file</var>...</em></dt>
+<dd><p>Compile <var>file</var>, a source file, and store bytecode in the compilation cache
+or in the file specified by the <samp>-o</samp> option.  The following options are
+available:
+</p>
+<dl compact="compact">
+<dt><samp>-L <var>dir</var></samp></dt>
+<dt><samp>--load-path=<var>dir</var></samp></dt>
+<dd><p>Add <var>dir</var> to the front of the module load path.
+</p>
+</dd>
+<dt><samp>-o <var>ofile</var></samp></dt>
+<dt><samp>--output=<var>ofile</var></samp></dt>
+<dd><p>Write output bytecode to <var>ofile</var>.  By convention, bytecode file
+names end in <code>.go</code>.  When <samp>-o</samp> is omitted, the output file
+name is as for <code>compile-file</code> (see below).
+</p>
+</dd>
+<dt><samp>-W <var>warning</var></samp></dt>
+<dt><samp>--warn=<var>warning</var></samp></dt>
+<dd><a name="index-warnings_002c-compiler"></a>
+<p>Emit warnings of type <var>warning</var>; use <code>--warn=help</code> for a list
+of available warnings and their description.  Currently recognized
+warnings include <code>unused-variable</code>, <code>unused-toplevel</code>,
+<code>unbound-variable</code>, <code>arity-mismatch</code>, <code>format</code>,
+<code>duplicate-case-datum</code>, and <code>bad-case-datum</code>.
+</p>
+</dd>
+<dt><samp>-f <var>lang</var></samp></dt>
+<dt><samp>--from=<var>lang</var></samp></dt>
+<dd><p>Use <var>lang</var> as the source language of <var>file</var>.  If this option is omitted,
+<code>scheme</code> is assumed.
+</p>
+</dd>
+<dt><samp>-t <var>lang</var></samp></dt>
+<dt><samp>--to=<var>lang</var></samp></dt>
+<dd><p>Use <var>lang</var> as the target language of <var>file</var>.  If this option is omitted,
+<code>objcode</code> is assumed.
+</p>
+</dd>
+<dt><samp>-T <var>target</var></samp></dt>
+<dt><samp>--target=<var>target</var></samp></dt>
+<dd><p>Produce bytecode for <var>target</var> instead of <var>%host-type</var>
+(see <a href="Build-Config.html#Build-Config">%host-type</a>).  Target must be a valid GNU triplet,
+such as <code>armv5tel-unknown-linux-gnueabi</code> (see <a href="http://www.gnu.org/software/autoconf/manual/html_node/Specifying-Target-Triplets.html#Specifying-Target-Triplets">Specifying Target
+Triplets</a> in <cite>GNU Autoconf Manual</cite>).
+</p>
+</dd>
+</dl>
+
+<p>Each <var>file</var> is assumed to be UTF-8-encoded, unless it contains a
+coding declaration as recognized by <code>file-encoding</code>
+(see <a href="Character-Encoding-of-Source-Files.html#Character-Encoding-of-Source-Files">Character Encoding of Source Files</a>).
+</p></dd></dl>
+
+<p>The compiler can also be invoked directly by Scheme code using the procedures
+below:
+</p>
+<dl>
+<dt><a name="index-compile-1"></a>Scheme Procedure: <strong>compile</strong> <em>exp [#:env=#f]                           [#:from=(current-language)]                           [#:to=value] [#:opts=()]</em></dt>
+<dd><p>Compile the expression <var>exp</var> in the environment <var>env</var>. If
+<var>exp</var> is a procedure, the result will be a compiled procedure;
+otherwise <code>compile</code> is mostly equivalent to <code>eval</code>.
+</p>
+<p>For a discussion of languages and compiler options, See <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine">Compiling to the Virtual Machine</a>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-compile_002dfile-1"></a>Scheme Procedure: <strong>compile-file</strong> <em>file [#:output-file=#f]                           [#:from=(current-language)] [#:to='objcode]                           [#:env=(default-environment from)]                           [#:opts='()]                           [#:canonicalization='relative]</em></dt>
+<dd><p>Compile the file named <var>file</var>.
+</p>
+<p>Output will be written to a <var>output-file</var>.   If you do not supply an
+output file name, output is written to a file in the cache directory, as
+computed by <code>(compiled-file-name <var>file</var>)</code>.
+</p>
+<p><var>from</var> and <var>to</var> specify the source and target languages.
+See <a href="Compiling-to-the-Virtual-Machine.html#Compiling-to-the-Virtual-Machine">Compiling to the Virtual Machine</a>, for more information on these
+options, and on <var>env</var> and <var>opts</var>.
+</p>
+<p>As with <code>guild compile</code>, <var>file</var> is assumed to be
+UTF-8-encoded unless it contains a coding declaration.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-compiled_002dfile_002dname"></a>Scheme Procedure: <strong>compiled-file-name</strong> <em>file</em></dt>
+<dd><p>Compute a cached location for a compiled version of a Scheme file named
+<var>file</var>.
+</p>
+<p>This file will usually be below the <samp>$HOME/.cache/guile/ccache</samp>
+directory, depending on the value of the <code>XDG_CACHE_HOME</code>
+environment variable.  The intention is that <code>compiled-file-name</code>
+provides a fallback location for caching auto-compiled files.  If you
+want to place a compile file in the <code>%load-compiled-path</code>, you
+should pass the <var>output-file</var> option to <code>compile-file</code>,
+explicitly.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-_0025auto_002dcompilation_002doptions"></a>Scheme Variable: <strong>%auto-compilation-options</strong></dt>
+<dd><p>This variable contains the options passed to the <code>compile-file</code>
+procedure when auto-compiling source files.  By default, it enables
+useful compilation warnings.  It can be customized from <samp>~/.guile</samp>.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Loading.html#Loading" accesskey="n" rel="next">Loading</a>, Previous: <a href="Fly-Evaluation.html#Fly-Evaluation" accesskey="p" rel="prev">Fly Evaluation</a>, Up: <a href="Read_002fLoad_002fEval_002fCompile.html#Read_002fLoad_002fEval_002fCompile" accesskey="u" rel="up">Read/Load/Eval/Compile</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: begin</title>
+
+<meta name="description" content="Guile Reference Manual: begin">
+<meta name="keywords" content="Guile Reference Manual: begin">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Control-Mechanisms.html#Control-Mechanisms" rel="up" title="Control Mechanisms">
+<link href="Conditionals.html#Conditionals" rel="next" title="Conditionals">
+<link href="Control-Mechanisms.html#Control-Mechanisms" rel="prev" title="Control Mechanisms">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="begin"></a>
+<div class="header">
+<p>
+Next: <a href="Conditionals.html#Conditionals" accesskey="n" rel="next">Conditionals</a>, Up: <a href="Control-Mechanisms.html#Control-Mechanisms" accesskey="u" rel="up">Control Mechanisms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Sequencing-and-Splicing"></a>
+<h4 class="subsection">6.13.1 Sequencing and Splicing</h4>
+
+<a name="index-begin"></a>
+<a name="index-sequencing"></a>
+<a name="index-expression-sequencing"></a>
+
+<p>As an expression, the <code>begin</code> syntax is used to evaluate a sequence
+of sub-expressions in order.  Consider the conditional expression below:
+</p>
+<div class="lisp">
+<pre class="lisp">(if (&gt; x 0)
+    (begin (display &quot;greater&quot;) (newline)))
+</pre></div>
+
+<p>If the test is true, we want to display &ldquo;greater&rdquo; to the current
+output port, then display a newline.  We use <code>begin</code> to form a
+compound expression out of this sequence of sub-expressions.
+</p>
+<dl>
+<dt><a name="index-begin-1"></a>syntax: <strong>begin</strong> <em>expr &hellip;</em></dt>
+<dd><p>The expression(s) are evaluated in left-to-right order and the value of
+the last expression is returned as the value of the
+<code>begin</code>-expression.  This expression type is used when the
+expressions before the last one are evaluated for their side effects.
+</p></dd></dl>
+
+<a name="index-splicing"></a>
+<a name="index-definition-splicing"></a>
+
+<p>The <code>begin</code> syntax has another role in definition context
+(see <a href="Internal-Definitions.html#Internal-Definitions">Internal Definitions</a>).  A <code>begin</code> form in a definition
+context <em>splices</em> its subforms into its place.  For example,
+consider the following procedure:
+</p>
+<div class="lisp">
+<pre class="lisp">(define (make-seal)
+  (define-sealant seal open)
+  (values seal open))
+</pre></div>
+
+<p>Let us assume the existence of a <code>define-sealant</code> macro that
+expands out to some definitions wrapped in a <code>begin</code>, like so:
+</p>
+<div class="lisp">
+<pre class="lisp">(define (make-seal)
+  (begin
+    (define seal-tag
+      (list 'seal))
+    (define (seal x)
+      (cons seal-tag x))
+    (define (sealed? x)
+      (and (pair? x) (eq? (car x) seal-tag)))
+    (define (open x)
+      (if (sealed? x)
+          (cdr x)
+          (error &quot;Expected a sealed value:&quot; x))))
+  (values seal open))
+</pre></div>
+
+<p>Here, because the <code>begin</code> is in definition context, its subforms
+are <em>spliced</em> into the place of the <code>begin</code>.  This allows the
+definitions created by the macro to be visible to the following
+expression, the <code>values</code> form.
+</p>
+<p>It is a fine point, but splicing and sequencing are different.  It can
+make sense to splice zero forms, because it can make sense to have zero
+internal definitions before the expressions in a procedure or lexical
+binding form.  However it does not make sense to have a sequence of zero
+expressions, because in that case it would not be clear what the value
+of the sequence would be, because in a sequence of zero expressions,
+there can be no last value.  Sequencing zero expressions is an error.
+</p>
+<p>It would be more elegant in some ways to eliminate splicing from the
+Scheme language, and without macros (see <a href="Macros.html#Macros">Macros</a>), that would be a
+good idea.  But it is useful to be able to write macros that expand out
+to multiple definitions, as in <code>define-sealant</code> above, so Scheme
+abuses the <code>begin</code> form for these two tasks.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Conditionals.html#Conditionals" accesskey="n" rel="next">Conditionals</a>, Up: <a href="Control-Mechanisms.html#Control-Mechanisms" accesskey="u" rel="up">Control Mechanisms</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

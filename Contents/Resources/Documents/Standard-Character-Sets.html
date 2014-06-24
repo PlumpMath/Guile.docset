@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Standard Character Sets</title>
+
+<meta name="description" content="Guile Reference Manual: Standard Character Sets">
+<meta name="keywords" content="Guile Reference Manual: Standard Character Sets">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Character-Sets.html#Character-Sets" rel="up" title="Character Sets">
+<link href="Strings.html#Strings" rel="next" title="Strings">
+<link href="Character_002dSet-Algebra.html#Character_002dSet-Algebra" rel="prev" title="Character-Set Algebra">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Standard-Character-Sets"></a>
+<div class="header">
+<p>
+Previous: <a href="Character_002dSet-Algebra.html#Character_002dSet-Algebra" accesskey="p" rel="prev">Character-Set Algebra</a>, Up: <a href="Character-Sets.html#Character-Sets" accesskey="u" rel="up">Character Sets</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Standard-Character-Sets-1"></a>
+<h4 class="subsubsection">6.6.4.6 Standard Character Sets</h4>
+
+<p>In order to make the use of the character set data type and procedures
+useful, several predefined character set variables exist.
+</p>
+<a name="index-codeset"></a>
+<a name="index-charset"></a>
+<a name="index-locale"></a>
+
+<p>These character sets are locale independent and are not recomputed
+upon a <code>setlocale</code> call.  They contain characters from the whole
+range of Unicode code points. For instance, <code>char-set:letter</code>
+contains about 100,000 characters.
+</p>
+<dl>
+<dt><a name="index-char_002dset_003alower_002dcase"></a>Scheme Variable: <strong>char-set:lower-case</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005flower_005fcase"></a>C Variable: <strong>scm_char_set_lower_case</strong></dt>
+<dd><p>All lower-case characters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aupper_002dcase"></a>Scheme Variable: <strong>char-set:upper-case</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fupper_005fcase"></a>C Variable: <strong>scm_char_set_upper_case</strong></dt>
+<dd><p>All upper-case characters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003atitle_002dcase"></a>Scheme Variable: <strong>char-set:title-case</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005ftitle_005fcase"></a>C Variable: <strong>scm_char_set_title_case</strong></dt>
+<dd><p>All single characters that function as if they were an upper-case
+letter followed by a lower-case letter.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aletter"></a>Scheme Variable: <strong>char-set:letter</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fletter"></a>C Variable: <strong>scm_char_set_letter</strong></dt>
+<dd><p>All letters.  This includes <code>char-set:lower-case</code>,
+<code>char-set:upper-case</code>, <code>char-set:title-case</code>, and many
+letters that have no case at all.  For example, Chinese and Japanese
+characters typically have no concept of case.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003adigit"></a>Scheme Variable: <strong>char-set:digit</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fdigit"></a>C Variable: <strong>scm_char_set_digit</strong></dt>
+<dd><p>All digits.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aletter_002bdigit"></a>Scheme Variable: <strong>char-set:letter+digit</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fletter_005fand_005fdigit"></a>C Variable: <strong>scm_char_set_letter_and_digit</strong></dt>
+<dd><p>The union of <code>char-set:letter</code> and <code>char-set:digit</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003agraphic"></a>Scheme Variable: <strong>char-set:graphic</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fgraphic"></a>C Variable: <strong>scm_char_set_graphic</strong></dt>
+<dd><p>All characters which would put ink on the paper.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aprinting"></a>Scheme Variable: <strong>char-set:printing</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fprinting"></a>C Variable: <strong>scm_char_set_printing</strong></dt>
+<dd><p>The union of <code>char-set:graphic</code> and <code>char-set:whitespace</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003awhitespace"></a>Scheme Variable: <strong>char-set:whitespace</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fwhitespace"></a>C Variable: <strong>scm_char_set_whitespace</strong></dt>
+<dd><p>All whitespace characters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003ablank"></a>Scheme Variable: <strong>char-set:blank</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fblank"></a>C Variable: <strong>scm_char_set_blank</strong></dt>
+<dd><p>All horizontal whitespace characters, which notably includes
+<code>#\space</code> and <code>#\tab</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aiso_002dcontrol"></a>Scheme Variable: <strong>char-set:iso-control</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fiso_005fcontrol"></a>C Variable: <strong>scm_char_set_iso_control</strong></dt>
+<dd><p>The ISO control characters are the C0 control characters (U+0000 to
+U+001F), delete (U+007F), and the C1 control characters (U+0080 to
+U+009F).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003apunctuation"></a>Scheme Variable: <strong>char-set:punctuation</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fpunctuation"></a>C Variable: <strong>scm_char_set_punctuation</strong></dt>
+<dd><p>All punctuation characters, such as the characters
+<code>!&quot;#%&amp;'()*,-./:;?@[\\]_{}</code>
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003asymbol"></a>Scheme Variable: <strong>char-set:symbol</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fsymbol"></a>C Variable: <strong>scm_char_set_symbol</strong></dt>
+<dd><p>All symbol characters, such as the characters <code>$+&lt;=&gt;^`|~</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003ahex_002ddigit"></a>Scheme Variable: <strong>char-set:hex-digit</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fhex_005fdigit"></a>C Variable: <strong>scm_char_set_hex_digit</strong></dt>
+<dd><p>The hexadecimal digits <code>0123456789abcdefABCDEF</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aascii"></a>Scheme Variable: <strong>char-set:ascii</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fascii"></a>C Variable: <strong>scm_char_set_ascii</strong></dt>
+<dd><p>All ASCII characters.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003aempty"></a>Scheme Variable: <strong>char-set:empty</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fempty"></a>C Variable: <strong>scm_char_set_empty</strong></dt>
+<dd><p>The empty character set.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003adesignated"></a>Scheme Variable: <strong>char-set:designated</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005fdesignated"></a>C Variable: <strong>scm_char_set_designated</strong></dt>
+<dd><p>This character set contains all designated code points.  This includes
+all the code points to which Unicode has assigned a character or other
+meaning.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-char_002dset_003afull"></a>Scheme Variable: <strong>char-set:full</strong></dt>
+<dt><a name="index-scm_005fchar_005fset_005ffull"></a>C Variable: <strong>scm_char_set_full</strong></dt>
+<dd><p>This character set contains all possible code points.  This includes
+both designated and reserved code points.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Previous: <a href="Character_002dSet-Algebra.html#Character_002dSet-Algebra" accesskey="p" rel="prev">Character-Set Algebra</a>, Up: <a href="Character-Sets.html#Character-Sets" accesskey="u" rel="up">Character Sets</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Method Definition Internals</title>
+
+<meta name="description" content="Guile Reference Manual: Method Definition Internals">
+<meta name="keywords" content="Guile Reference Manual: Method Definition Internals">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" rel="up" title="The Metaobject Protocol">
+<link href="Generic-Function-Internals.html#Generic-Function-Internals" rel="next" title="Generic Function Internals">
+<link href="Method-Definition.html#Method-Definition" rel="prev" title="Method Definition">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Method-Definition-Internals"></a>
+<div class="header">
+<p>
+Next: <a href="Generic-Function-Internals.html#Generic-Function-Internals" accesskey="n" rel="next">Generic Function Internals</a>, Previous: <a href="Method-Definition.html#Method-Definition" accesskey="p" rel="prev">Method Definition</a>, Up: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="u" rel="up">The Metaobject Protocol</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Method-Definition-Internals-1"></a>
+<h4 class="subsection">8.11.8 Method Definition Internals</h4>
+
+<p><code>define-method</code>:
+</p>
+<ul>
+<li> checks the form of the first parameter, and applies the following steps
+to the accessor&rsquo;s setter if it has the <code>(setter &hellip;)</code> form
+
+</li><li> interpolates a call to <code>define-generic</code> or <code>define-accessor</code>
+if a generic function is not already defined with the supplied name
+
+</li><li> calls <code>method</code> with the <var>parameter</var>s and <var>body</var>, to make a
+new method instance
+
+</li><li> calls <code>add-method!</code> to add this method to the relevant generic
+function.
+</li></ul>
+
+<dl>
+<dt><a name="index-method"></a>syntax: <strong>method</strong> <em>(parameter &hellip;) body &hellip;</em></dt>
+<dd><p>Make a method whose specializers are defined by the classes in
+<var>parameter</var>s and whose procedure definition is constructed from the
+<var>parameter</var> symbols and <var>body</var> forms.
+</p>
+<p>The <var>parameter</var> and <var>body</var> parameters should be as for
+<code>define-method</code> (see <a href="Methods-and-Generic-Functions.html#Methods-and-Generic-Functions">define-method</a>).
+</p></dd></dl>
+
+<p><code>method</code>:
+</p>
+<ul>
+<li> extracts formals and specializing classes from the <var>parameter</var>s,
+defaulting the class for unspecialized parameters to <code>&lt;top&gt;</code>
+
+</li><li> creates a closure using the formals and the <var>body</var> forms
+
+</li><li> calls <code>make</code> with metaclass <code>&lt;method&gt;</code> and the specializers
+and closure using the <code>#:specializers</code> and <code>#:procedure</code>
+keywords.
+</li></ul>
+
+<dl>
+<dt><a name="index-make_002dmethod"></a>procedure: <strong>make-method</strong> <em>specializers procedure</em></dt>
+<dd><p>Make a method using <var>specializers</var> and <var>procedure</var>.
+</p>
+<p><var>specializers</var> should be a list of classes that specifies the
+parameter combinations to which this method will be applicable.
+</p>
+<p><var>procedure</var> should be the closure that will applied to the generic
+function parameters when this method is invoked.
+</p></dd></dl>
+
+<p><code>make-method</code> is a simple wrapper around <code>make</code> with metaclass
+<code>&lt;method&gt;</code>.
+</p>
+<dl>
+<dt><a name="index-add_002dmethod_0021"></a>generic: <strong>add-method!</strong> <em>target method</em></dt>
+<dd><p>Generic function for adding method <var>method</var> to <var>target</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-add_002dmethod_0021-1"></a>method: <strong>add-method!</strong> <em>(generic &lt;generic&gt;) (method &lt;method&gt;)</em></dt>
+<dd><p>Add method <var>method</var> to the generic function <var>generic</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-add_002dmethod_0021-2"></a>method: <strong>add-method!</strong> <em>(proc &lt;procedure&gt;) (method &lt;method&gt;)</em></dt>
+<dd><p>If <var>proc</var> is a procedure with generic capability (see <a href="Extending-Primitives.html#Extending-Primitives">generic-capability?</a>), upgrade it to a primitive generic
+and add <var>method</var> to its generic function definition.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-add_002dmethod_0021-3"></a>method: <strong>add-method!</strong> <em>(pg &lt;primitive-generic&gt;) (method &lt;method&gt;)</em></dt>
+<dd><p>Add method <var>method</var> to the generic function definition of <var>pg</var>.
+</p>
+<p>Implementation: <code>(add-method! (primitive-generic-generic pg) method)</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-add_002dmethod_0021-4"></a>method: <strong>add-method!</strong> <em>(whatever &lt;top&gt;) (method &lt;method&gt;)</em></dt>
+<dd><p>Raise an error indicating that <var>whatever</var> is not a valid generic
+function.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Generic-Function-Internals.html#Generic-Function-Internals" accesskey="n" rel="next">Generic Function Internals</a>, Previous: <a href="Method-Definition.html#Method-Definition" accesskey="p" rel="prev">Method Definition</a>, Up: <a href="The-Metaobject-Protocol.html#The-Metaobject-Protocol" accesskey="u" rel="up">The Metaobject Protocol</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

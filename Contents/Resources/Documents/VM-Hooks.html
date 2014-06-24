@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: VM Hooks</title>
+
+<meta name="description" content="Guile Reference Manual: VM Hooks">
+<meta name="keywords" content="Guile Reference Manual: VM Hooks">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Traps.html#Traps" rel="up" title="Traps">
+<link href="Trap-Interface.html#Trap-Interface" rel="next" title="Trap Interface">
+<link href="Traps.html#Traps" rel="prev" title="Traps">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="VM-Hooks"></a>
+<div class="header">
+<p>
+Next: <a href="Trap-Interface.html#Trap-Interface" accesskey="n" rel="next">Trap Interface</a>, Up: <a href="Traps.html#Traps" accesskey="u" rel="up">Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="VM-Hooks-1"></a>
+<h4 class="subsubsection">6.25.4.1 VM Hooks</h4>
+
+<p>Everything that runs in Guile runs on its virtual machine, a C program
+that defines a number of operations that Scheme programs can
+perform.
+</p>
+<p>Note that there are multiple VM &ldquo;engines&rdquo; for Guile. Only some of them
+have support for hooks compiled in. Normally the deal is that you get
+hooks if you are running interactively, and otherwise they are disabled,
+as they do have some overhead (about 10 or 20 percent).
+</p>
+<p>To ensure that you are running with hooks, pass <code>--debug</code> to Guile
+when running your program, or otherwise use the <code>call-with-vm</code> and
+<code>set-vm-engine!</code>  procedures to ensure that you are running in a VM
+with the <code>debug</code> engine.
+</p>
+<p>To digress, Guile&rsquo;s VM has 6 different hooks (see <a href="Hooks.html#Hooks">Hooks</a>) that can be
+fired at different times, which may be accessed with the following
+procedures.
+</p>
+<p>All hooks are called with one argument, the frame in
+question. See <a href="Frames.html#Frames">Frames</a>.  Since these hooks may be fired very
+frequently, Guile does a terrible thing: it allocates the frames on the
+C stack instead of the garbage-collected heap.
+</p>
+<p>The upshot here is that the frames are only valid within the dynamic
+extent of the call to the hook. If a hook procedure keeps a reference to
+the frame outside the extent of the hook, bad things will happen.
+</p>
+<p>The interface to hooks is provided by the <code>(system vm vm)</code> module:
+</p>
+<div class="example">
+<pre class="example">(use-modules (system vm vm))
+</pre></div>
+
+<p>The result of calling <code>the-vm</code> is usually passed as the <var>vm</var>
+argument to all of these procedures.
+</p>
+<dl>
+<dt><a name="index-vm_002dnext_002dhook"></a>Scheme Procedure: <strong>vm-next-hook</strong> <em>vm</em></dt>
+<dd><p>The hook that will be fired before an instruction is retired (and
+executed).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vm_002dpush_002dcontinuation_002dhook"></a>Scheme Procedure: <strong>vm-push-continuation-hook</strong> <em>vm</em></dt>
+<dd><p>The hook that will be fired after preparing a new frame. Fires just
+before applying a procedure in a non-tail context, just before the
+corresponding apply-hook.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vm_002dpop_002dcontinuation_002dhook"></a>Scheme Procedure: <strong>vm-pop-continuation-hook</strong> <em>vm</em></dt>
+<dd><p>The hook that will be fired before returning from a frame.
+</p>
+<p>This hook is a bit trickier than the rest, in that there is a particular
+interpretation of the values on the stack. Specifically, the top value
+on the stack is the number of values being returned, and the next
+<var>n</var> values are the actual values being returned, with the last value
+highest on the stack.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vm_002dapply_002dhook"></a>Scheme Procedure: <strong>vm-apply-hook</strong> <em>vm</em></dt>
+<dd><p>The hook that will be fired before a procedure is applied. The frame&rsquo;s
+procedure will have already been set to the new procedure.
+</p>
+<p>Note that procedure application is somewhat orthogonal to continuation
+pushes and pops. A non-tail call to a procedure will result first in a
+firing of the push-continuation hook, then this application hook,
+whereas a tail call will run without having fired a push-continuation
+hook.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vm_002dabort_002dcontinuation_002dhook"></a>Scheme Procedure: <strong>vm-abort-continuation-hook</strong> <em>vm</em></dt>
+<dd><p>The hook that will be called after aborting to a
+prompt. See <a href="Prompts.html#Prompts">Prompts</a>. The stack will be in the same state as for
+<code>vm-pop-continuation-hook</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-vm_002drestore_002dcontinuation_002dhook"></a>Scheme Procedure: <strong>vm-restore-continuation-hook</strong> <em>vm</em></dt>
+<dd><p>The hook that will be called after restoring an undelimited
+continuation. Unfortunately it&rsquo;s not currently possible to introspect on
+the values that were given to the continuation.
+</p></dd></dl>
+
+<a name="index-VM-trace-level"></a>
+<p>These hooks do impose a performance penalty, if they are on. Obviously,
+the <code>vm-next-hook</code> has quite an impact, performance-wise. Therefore
+Guile exposes a single, heavy-handed knob to turn hooks on or off, the
+<em>VM trace level</em>. If the trace level is positive, hooks run;
+otherwise they don&rsquo;t.
+</p>
+<p>For convenience, when the VM fires a hook, it does so with the trap
+level temporarily set to 0.  That way the hooks don&rsquo;t fire while you&rsquo;re
+handling a hook.  The trace level is restored to whatever it was once the hook
+procedure finishes.
+</p>
+<dl>
+<dt><a name="index-vm_002dtrace_002dlevel"></a>Scheme Procedure: <strong>vm-trace-level</strong> <em>vm</em></dt>
+<dd><p>Retrieve the &ldquo;trace level&rdquo; of the VM. If positive, the trace hooks
+associated with <var>vm</var> will be run. The initial trace level is 0.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-set_002dvm_002dtrace_002dlevel_0021"></a>Scheme Procedure: <strong>set-vm-trace-level!</strong> <em>vm level</em></dt>
+<dd><p>Set the &ldquo;trace level&rdquo; of the VM.
+</p></dd></dl>
+
+<p>See <a href="A-Virtual-Machine-for-Guile.html#A-Virtual-Machine-for-Guile">A Virtual Machine for Guile</a>, for more information on Guile&rsquo;s
+virtual machine.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Trap-Interface.html#Trap-Interface" accesskey="n" rel="next">Trap Interface</a>, Up: <a href="Traps.html#Traps" accesskey="u" rel="up">Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI Support</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI Support">
+<meta name="keywords" content="Guile Reference Manual: SRFI Support">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="About-SRFI-Usage.html#About-SRFI-Usage" rel="next" title="About SRFI Usage">
+<link href="option_002dref-Reference.html#option_002dref-Reference" rel="prev" title="option-ref Reference">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI-Support"></a>
+<div class="header">
+<p>
+Next: <a href="R6RS-Support.html#R6RS-Support" accesskey="n" rel="next">R6RS Support</a>, Previous: <a href="getopt_002dlong.html#getopt_002dlong" accesskey="p" rel="prev">getopt-long</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI-Support-Modules"></a>
+<h3 class="section">7.5 SRFI Support Modules</h3>
+<a name="index-SRFI"></a>
+
+<p>SRFI is an acronym for Scheme Request For Implementation.  The SRFI
+documents define a lot of syntactic and procedure extensions to standard
+Scheme as defined in R5RS.
+</p>
+<p>Guile has support for a number of SRFIs.  This chapter gives an overview
+over the available SRFIs and some usage hints.  For complete
+documentation, design rationales and further examples, we advise you to
+get the relevant SRFI documents from the SRFI home page
+<a href="http://srfi.schemers.org/">http://srfi.schemers.org/</a>.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="About-SRFI-Usage.html#About-SRFI-Usage" accesskey="1">About SRFI Usage</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">What to know about Guile&rsquo;s SRFI support.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d0.html#SRFI_002d0" accesskey="2">SRFI-0</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">cond-expand
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d1.html#SRFI_002d1" accesskey="3">SRFI-1</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">List library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d2.html#SRFI_002d2" accesskey="4">SRFI-2</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">and-let*.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d4.html#SRFI_002d4" accesskey="5">SRFI-4</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Homogeneous numeric vector datatypes.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d6.html#SRFI_002d6" accesskey="6">SRFI-6</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Basic String Ports.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d8.html#SRFI_002d8" accesskey="7">SRFI-8</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">receive.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d9.html#SRFI_002d9" accesskey="8">SRFI-9</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">define-record-type.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d10.html#SRFI_002d10" accesskey="9">SRFI-10</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Hash-Comma Reader Extension.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d11.html#SRFI_002d11">SRFI-11</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">let-values and let*-values.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d13.html#SRFI_002d13">SRFI-13</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">String library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d14.html#SRFI_002d14">SRFI-14</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Character-set library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d16.html#SRFI_002d16">SRFI-16</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">case-lambda
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d17.html#SRFI_002d17">SRFI-17</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Generalized set!
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d18.html#SRFI_002d18">SRFI-18</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Multithreading support
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d19.html#SRFI_002d19">SRFI-19</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Time/Date library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d23.html#SRFI_002d23">SRFI-23</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Error reporting
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d26.html#SRFI_002d26">SRFI-26</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Specializing parameters
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d27.html#SRFI_002d27">SRFI-27</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Sources of Random Bits
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d30.html#SRFI_002d30">SRFI-30</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Nested multi-line block comments
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d31.html#SRFI_002d31">SRFI-31</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">A special form &lsquo;rec&rsquo; for recursive evaluation
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d34.html#SRFI_002d34">SRFI-34</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Exception handling.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d35.html#SRFI_002d35">SRFI-35</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Conditions.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d37.html#SRFI_002d37">SRFI-37</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">args-fold program argument processor
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d38.html#SRFI_002d38">SRFI-38</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">External Representation for Data With Shared Structure
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d39.html#SRFI_002d39">SRFI-39</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Parameter objects
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d41.html#SRFI_002d41">SRFI-41</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Streams.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d42.html#SRFI_002d42">SRFI-42</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Eager comprehensions
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d43.html#SRFI_002d43">SRFI-43</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Vector Library.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d45.html#SRFI_002d45">SRFI-45</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Primitives for expressing iterative lazy algorithms
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d46.html#SRFI_002d46">SRFI-46</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Basic syntax-rules Extensions.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d55.html#SRFI_002d55">SRFI-55</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Requiring Features.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d60.html#SRFI_002d60">SRFI-60</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Integers as bits.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d61.html#SRFI_002d61">SRFI-61</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">A more general &lsquo;cond&rsquo; clause
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d62.html#SRFI_002d62">SRFI-62</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">S-expression comments.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d64.html#SRFI_002d64">SRFI-64</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">A Scheme API for test suites.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d67.html#SRFI_002d67">SRFI-67</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Compare procedures
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d69.html#SRFI_002d69">SRFI-69</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Basic hash tables.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d87.html#SRFI_002d87">SRFI-87</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">=&gt; in case clauses.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d88.html#SRFI_002d88">SRFI-88</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Keyword objects.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d98.html#SRFI_002d98">SRFI-98</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Accessing environment variables.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d105.html#SRFI_002d105">SRFI-105</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Curly-infix expressions.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="SRFI_002d111.html#SRFI_002d111">SRFI-111</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Boxes.
+</td></tr>
+</table>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="R6RS-Support.html#R6RS-Support" accesskey="n" rel="next">R6RS Support</a>, Previous: <a href="getopt_002dlong.html#getopt_002dlong" accesskey="p" rel="prev">getopt-long</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

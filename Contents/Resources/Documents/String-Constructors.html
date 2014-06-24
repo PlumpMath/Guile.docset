@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: String Constructors</title>
+
+<meta name="description" content="Guile Reference Manual: String Constructors">
+<meta name="keywords" content="Guile Reference Manual: String Constructors">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Strings.html#Strings" rel="up" title="Strings">
+<link href="List_002fString-Conversion.html#List_002fString-Conversion" rel="next" title="List/String Conversion">
+<link href="String-Predicates.html#String-Predicates" rel="prev" title="String Predicates">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="String-Constructors"></a>
+<div class="header">
+<p>
+Next: <a href="List_002fString-Conversion.html#List_002fString-Conversion" accesskey="n" rel="next">List/String Conversion</a>, Previous: <a href="String-Predicates.html#String-Predicates" accesskey="p" rel="prev">String Predicates</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="String-Constructors-1"></a>
+<h4 class="subsubsection">6.6.5.3 String Constructors</h4>
+
+<p>The string constructor procedures create new string objects, possibly
+initializing them with some specified character data.  See also
+See <a href="String-Selection.html#String-Selection">String Selection</a>, for ways to create strings from existing
+strings.
+</p>
+
+<dl>
+<dt><a name="index-string"></a>Scheme Procedure: <strong>string</strong> <em>char&hellip;</em></dt>
+<dd><a name="index-string-2"></a>
+<p>Return a newly allocated string made from the given character
+arguments.
+</p>
+<div class="example">
+<pre class="example">(string #\x #\y #\z) &rArr; &quot;xyz&quot;
+(string)             &rArr; &quot;&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-list_002d_003estring"></a>Scheme Procedure: <strong>list-&gt;string</strong> <em>lst</em></dt>
+<dt><a name="index-scm_005fstring"></a>C Function: <strong>scm_string</strong> <em>(lst)</em></dt>
+<dd><a name="index-list_002d_003estring-2"></a>
+<p>Return a newly allocated string made from a list of characters.
+</p>
+<div class="example">
+<pre class="example">(list-&gt;string '(#\a #\b #\c)) &rArr; &quot;abc&quot;
+</pre></div>
+</dd></dl>
+
+<dl>
+<dt><a name="index-reverse_002dlist_002d_003estring"></a>Scheme Procedure: <strong>reverse-list-&gt;string</strong> <em>lst</em></dt>
+<dt><a name="index-scm_005freverse_005flist_005fto_005fstring"></a>C Function: <strong>scm_reverse_list_to_string</strong> <em>(lst)</em></dt>
+<dd><p>Return a newly allocated string made from a list of characters, in
+reverse order.
+</p>
+<div class="example">
+<pre class="example">(reverse-list-&gt;string '(#\a #\B #\c)) &rArr; &quot;cBa&quot;
+</pre></div>
+</dd></dl>
+
+<a name="index-make_002dstring-2"></a>
+<dl>
+<dt><a name="index-make_002dstring"></a>Scheme Procedure: <strong>make-string</strong> <em>k [chr]</em></dt>
+<dt><a name="index-scm_005fmake_005fstring"></a>C Function: <strong>scm_make_string</strong> <em>(k, chr)</em></dt>
+<dd><p>Return a newly allocated string of
+length <var>k</var>.  If <var>chr</var> is given, then all elements of
+the string are initialized to <var>chr</var>, otherwise the contents
+of the string are unspecified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-scm_005fc_005fmake_005fstring"></a>C Function: <em>SCM</em> <strong>scm_c_make_string</strong> <em>(size_t len, SCM chr)</em></dt>
+<dd><p>Like <code>scm_make_string</code>, but expects the length as a
+<code>size_t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002dtabulate"></a>Scheme Procedure: <strong>string-tabulate</strong> <em>proc len</em></dt>
+<dt><a name="index-scm_005fstring_005ftabulate"></a>C Function: <strong>scm_string_tabulate</strong> <em>(proc, len)</em></dt>
+<dd><p><var>proc</var> is an integer-&gt;char procedure.  Construct a string
+of size <var>len</var> by applying <var>proc</var> to each index to
+produce the corresponding string element.  The order in which
+<var>proc</var> is applied to the indices is not specified.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-string_002djoin"></a>Scheme Procedure: <strong>string-join</strong> <em>ls [delimiter [grammar]]</em></dt>
+<dt><a name="index-scm_005fstring_005fjoin"></a>C Function: <strong>scm_string_join</strong> <em>(ls, delimiter, grammar)</em></dt>
+<dd><p>Append the string in the string list <var>ls</var>, using the string
+<var>delimiter</var> as a delimiter between the elements of <var>ls</var>.
+<var>grammar</var> is a symbol which specifies how the delimiter is
+placed between the strings, and defaults to the symbol
+<code>infix</code>.
+</p>
+<dl compact="compact">
+<dt><code>infix</code></dt>
+<dd><p>Insert the separator between list elements.  An empty string
+will produce an empty list.
+</p></dd>
+<dt><code>strict-infix</code></dt>
+<dd><p>Like <code>infix</code>, but will raise an error if given the empty
+list.
+</p></dd>
+<dt><code>suffix</code></dt>
+<dd><p>Insert the separator after every list element.
+</p></dd>
+<dt><code>prefix</code></dt>
+<dd><p>Insert the separator before each list element.
+</p></dd>
+</dl>
+</dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="List_002fString-Conversion.html#List_002fString-Conversion" accesskey="n" rel="next">List/String Conversion</a>, Previous: <a href="String-Predicates.html#String-Predicates" accesskey="p" rel="prev">String Predicates</a>, Up: <a href="Strings.html#Strings" accesskey="u" rel="up">Strings</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

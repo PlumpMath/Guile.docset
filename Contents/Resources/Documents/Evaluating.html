@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Evaluating</title>
+
+<meta name="description" content="Guile Reference Manual: Evaluating">
+<meta name="keywords" content="Guile Reference Manual: Evaluating">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="About-Expressions.html#About-Expressions" rel="up" title="About Expressions">
+<link href="Eval-Literal.html#Eval-Literal" rel="next" title="Eval Literal">
+<link href="About-Expressions.html#About-Expressions" rel="prev" title="About Expressions">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Evaluating"></a>
+<div class="header">
+<p>
+Next: <a href="Tail-Calls.html#Tail-Calls" accesskey="n" rel="next">Tail Calls</a>, Up: <a href="About-Expressions.html#About-Expressions" accesskey="u" rel="up">About Expressions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Evaluating-Expressions-and-Executing-Programs"></a>
+<h4 class="subsection">3.3.1 Evaluating Expressions and Executing Programs</h4>
+
+<p>In Scheme, the process of executing an expression is known as
+<em>evaluation</em>.  Evaluation has two kinds of result:
+</p>
+<ul>
+<li> the <em>value</em> of the evaluated expression
+
+</li><li> the <em>side effects</em> of the evaluation, which consist of any effects of
+evaluating the expression that are not represented by the value.
+</li></ul>
+
+<p>Of the expressions that we have met so far, <code>define</code> and
+<code>set!</code> expressions have side effects &mdash; the creation or
+modification of a variable &mdash; but no value; <code>lambda</code> expressions
+have values &mdash; the newly constructed procedures &mdash; but no side
+effects; and procedure invocation expressions, in general, have either
+values, or side effects, or both.
+</p>
+<p>It is tempting to try to define more intuitively what we mean by
+&ldquo;value&rdquo; and &ldquo;side effects&rdquo;, and what the difference between them is.
+In general, though, this is extremely difficult.  It is also
+unnecessary; instead, we can quite happily define the behaviour of a
+Scheme program by specifying how Scheme executes a program as a whole,
+and then by describing the value and side effects of evaluation for each
+type of expression individually.
+</p>
+<p>So, some<a name="DOCF1" href="#FOOT1"><sup>1</sup></a> definitions&hellip;
+</p>
+<ul>
+<li> A Scheme program consists of a sequence of expressions.
+
+</li><li> A Scheme interpreter executes the program by evaluating these
+expressions in order, one by one.
+
+</li><li> An expression can be
+
+<ul>
+<li> a piece of literal data, such as a number <code>2.3</code> or a string
+<code>&quot;Hello world!&quot;</code>
+</li><li> a variable name
+</li><li> a procedure invocation expression
+</li><li> one of Scheme&rsquo;s special syntactic expressions.
+</li></ul>
+</li></ul>
+
+<p>The following subsections describe how each of these types of expression
+is evaluated.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Eval-Literal.html#Eval-Literal" accesskey="1">Eval Literal</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Evaluating literal data.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Eval-Variable.html#Eval-Variable" accesskey="2">Eval Variable</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Evaluating variable references.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Eval-Procedure.html#Eval-Procedure" accesskey="3">Eval Procedure</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Evaluating procedure invocation expressions.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Eval-Special.html#Eval-Special" accesskey="4">Eval Special</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Evaluating special syntactic expressions.
+</td></tr>
+</table>
+
+<div class="footnote">
+<hr>
+<h4 class="footnotes-heading">Footnotes</h4>
+
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>These definitions are approximate.  For the whole
+and detailed truth, see <a href="../r5rs/Formal-syntax-and-semantics.html#Formal-syntax-and-semantics">R5RS
+syntax</a> in <cite>The Revised(5) Report on the Algorithmic Language
+Scheme</cite>.</p>
+</div>
+<hr>
+<div class="header">
+<p>
+Next: <a href="Tail-Calls.html#Tail-Calls" accesskey="n" rel="next">Tail Calls</a>, Up: <a href="About-Expressions.html#About-Expressions" accesskey="u" rel="up">About Expressions</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

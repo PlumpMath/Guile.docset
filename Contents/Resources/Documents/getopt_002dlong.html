@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: getopt-long</title>
+
+<meta name="description" content="Guile Reference Manual: getopt-long">
+<meta name="keywords" content="Guile Reference Manual: getopt-long">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Guile-Modules.html#Guile-Modules" rel="up" title="Guile Modules">
+<link href="getopt_002dlong-Example.html#getopt_002dlong-Example" rel="next" title="getopt-long Example">
+<link href="Web-Examples.html#Web-Examples" rel="prev" title="Web Examples">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="getopt_002dlong"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI-Support.html#SRFI-Support" accesskey="n" rel="next">SRFI Support</a>, Previous: <a href="Web.html#Web" accesskey="p" rel="prev">Web</a>, Up: <a href="Guile-Modules.html#Guile-Modules" accesskey="u" rel="up">Guile Modules</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="The-_0028ice_002d9-getopt_002dlong_0029-Module"></a>
+<h3 class="section">7.4 The (ice-9 getopt-long) Module</h3>
+
+<p>The <code>(ice-9 getopt-long)</code> module exports two procedures:
+<code>getopt-long</code> and <code>option-ref</code>.
+</p>
+<ul>
+<li> <code>getopt-long</code> takes a list of strings &mdash; the command line
+arguments &mdash; an <em>option specification</em>, and some optional keyword
+parameters.  It parses the command line arguments according to the
+option specification and keyword parameters, and returns a data
+structure that encapsulates the results of the parsing.
+
+</li><li> <code>option-ref</code> then takes the parsed data structure and a specific
+option&rsquo;s name, and returns information about that option in particular.
+</li></ul>
+
+<p>To make these procedures available to your Guile script, include the
+expression <code>(use-modules (ice-9 getopt-long))</code> somewhere near the
+top, before the first usage of <code>getopt-long</code> or <code>option-ref</code>.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="getopt_002dlong-Example.html#getopt_002dlong-Example" accesskey="1">getopt-long Example</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">A short getopt-long example.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Option-Specification.html#Option-Specification" accesskey="2">Option Specification</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How to write an option specification.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Command-Line-Format.html#Command-Line-Format" accesskey="3">Command Line Format</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The expected command line format.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="getopt_002dlong-Reference.html#getopt_002dlong-Reference" accesskey="4">getopt-long Reference</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Full documentation for <code>getopt-long</code>.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="option_002dref-Reference.html#option_002dref-Reference" accesskey="5">option-ref Reference</a>:</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Full documentation for <code>option-ref</code>.
+</td></tr>
+</table>
+
+
+
+
+
+</body>
+</html>

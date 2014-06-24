@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Autoconf Macros</title>
+
+<meta name="description" content="Guile Reference Manual: Autoconf Macros">
+<meta name="keywords" content="Guile Reference Manual: Autoconf Macros">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Autoconf-Support.html#Autoconf-Support" rel="up" title="Autoconf Support">
+<link href="Using-Autoconf-Macros.html#Using-Autoconf-Macros" rel="next" title="Using Autoconf Macros">
+<link href="Autoconf-Background.html#Autoconf-Background" rel="prev" title="Autoconf Background">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Autoconf-Macros"></a>
+<div class="header">
+<p>
+Next: <a href="Using-Autoconf-Macros.html#Using-Autoconf-Macros" accesskey="n" rel="next">Using Autoconf Macros</a>, Previous: <a href="Autoconf-Background.html#Autoconf-Background" accesskey="p" rel="prev">Autoconf Background</a>, Up: <a href="Autoconf-Support.html#Autoconf-Support" accesskey="u" rel="up">Autoconf Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Autoconf-Macros-1"></a>
+<h4 class="subsection">5.8.2 Autoconf Macros</h4>
+
+<p>As mentioned earlier in this chapter, Guile supports parallel
+installation, and uses <code>pkg-config</code> to let the user choose which
+version of Guile they are interested in.  <code>pkg-config</code> has its own
+set of Autoconf macros that are probably installed on most every
+development system.  The most useful of these macros is
+<code>PKG_CHECK_MODULES</code>.
+</p>
+<a name="index-PKG_005fCHECK_005fMODULES"></a>
+
+<div class="example">
+<pre class="example">PKG_CHECK_MODULES([GUILE], [guile-2.0])
+</pre></div>
+
+<p>This example looks for Guile and sets the <code>GUILE_CFLAGS</code> and
+<code>GUILE_LIBS</code> variables accordingly, or prints an error and exits if
+Guile was not found.
+</p>
+<p>Guile comes with additional Autoconf macros providing more information,
+installed as <samp><var>prefix</var>/share/aclocal/guile.m4</samp>.  Their names
+all begin with <code>GUILE_</code>.
+</p>
+<dl>
+<dt><a name="index-GUILE_005fPKG"></a>Autoconf Macro: <strong>GUILE_PKG</strong> <em>[VERSIONS] </em></dt>
+<dd>
+<p>This macro runs the <code>pkg-config</code> tool to find development files
+for an available version of Guile.
+</p>
+<p>By default, this macro will search for the latest stable version of
+Guile (e.g. 2.0), falling back to the previous stable version
+(e.g. 1.8) if it is available.  If no guile-<var>VERSION</var>.pc file is
+found, an error is signalled.  The found version is stored in
+<var>GUILE_EFFECTIVE_VERSION</var>.
+</p>
+<p>If <code>GUILE_PROGS</code> was already invoked, this macro ensures that the
+development files have the same effective version as the Guile
+program.
+</p>
+<p><var>GUILE_EFFECTIVE_VERSION</var> is marked for substitution, as by
+<code>AC_SUBST</code>.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fFLAGS"></a>Autoconf Macro: <strong>GUILE_FLAGS</strong></dt>
+<dd>
+<p>This macro runs the <code>pkg-config</code> tool to find out how to compile
+and link programs against Guile.  It sets four variables:
+<var>GUILE_CFLAGS</var>, <var>GUILE_LDFLAGS</var>, <var>GUILE_LIBS</var>, and
+<var>GUILE_LTLIBS</var>.
+</p>
+<p><var>GUILE_CFLAGS</var>: flags to pass to a C or C++ compiler to build code that
+uses Guile header files.  This is almost always just one or more <code>-I</code>
+flags.
+</p>
+<p><var>GUILE_LDFLAGS</var>: flags to pass to the compiler to link a program
+against Guile.  This includes <code>-lguile-<var>VERSION</var></code> for the
+Guile library itself, and may also include one or more <code>-L</code> flag
+to tell the compiler where to find the libraries.  But it does not
+include flags that influence the program&rsquo;s runtime search path for
+libraries, and will therefore lead to a program that fails to start,
+unless all necessary libraries are installed in a standard location
+such as <samp>/usr/lib</samp>.
+</p>
+<p><var>GUILE_LIBS</var> and <var>GUILE_LTLIBS</var>: flags to pass to the compiler or to
+libtool, respectively, to link a program against Guile.  It includes flags
+that augment the program&rsquo;s runtime search path for libraries, so that shared
+libraries will be found at the location where they were during linking, even
+in non-standard locations.  <var>GUILE_LIBS</var> is to be used when linking the
+program directly with the compiler, whereas <var>GUILE_LTLIBS</var> is to be used
+when linking the program is done through libtool.
+</p>
+<p>The variables are marked for substitution, as by <code>AC_SUBST</code>.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fSITE_005fDIR"></a>Autoconf Macro: <strong>GUILE_SITE_DIR</strong></dt>
+<dd>
+<p>This looks for Guile&rsquo;s &quot;site&quot; directory, usually something like
+PREFIX/share/guile/site, and sets var <var>GUILE_SITE</var> to the path.
+Note that the var name is different from the macro name.
+</p>
+<p>The variable is marked for substitution, as by <code>AC_SUBST</code>.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fPROGS"></a>Autoconf Macro: <strong>GUILE_PROGS</strong> <em>[VERSION] </em></dt>
+<dd>
+<p>This macro looks for programs <code>guile</code> and <code>guild</code>, setting
+variables <var>GUILE</var> and <var>GUILD</var> to their paths, respectively.
+If <code>guile</code> is not found, signal an error.
+</p>
+<p>By default, this macro will search for the latest stable version of
+Guile (e.g. 2.0). x.y or x.y.z versions can be specified. If an older
+version is found, the macro will signal an error.
+</p>
+<p>The effective version of the found <code>guile</code> is set to
+<var>GUILE_EFFECTIVE_VERSION</var>.  This macro ensures that the effective
+version is compatible with the result of a previous invocation of
+<code>GUILE_FLAGS</code>, if any.
+</p>
+<p>As a legacy interface, it also looks for <code>guile-config</code> and
+<code>guile-tools</code>, setting <var>GUILE_CONFIG</var> and <var>GUILE_TOOLS</var>.
+</p>
+<p>The variables are marked for substitution, as by <code>AC_SUBST</code>.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fCHECK_005fRETVAL"></a>Autoconf Macro: <strong>GUILE_CHECK_RETVAL</strong> <em>var check </em></dt>
+<dd>
+<p><var>var</var> is a shell variable name to be set to the return value.
+<var>check</var> is a Guile Scheme expression, evaluated with &quot;$GUILE -c&quot;, and
+   returning either 0 or non-#f to indicate the check passed.
+   Non-0 number or #f indicates failure.
+   Avoid using the character &quot;#&quot; since that confuses autoconf.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fMODULE_005fCHECK"></a>Autoconf Macro: <strong>GUILE_MODULE_CHECK</strong> <em>var module featuretest description </em></dt>
+<dd>
+<p><var>var</var> is a shell variable name to be set to &quot;yes&quot; or &quot;no&quot;.
+<var>module</var> is a list of symbols, like: (ice-9 common-list).
+<var>featuretest</var> is an expression acceptable to GUILE_CHECK, q.v.
+<var>description</var> is a present-tense verb phrase (passed to AC_MSG_CHECKING).
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fMODULE_005fAVAILABLE"></a>Autoconf Macro: <strong>GUILE_MODULE_AVAILABLE</strong> <em>var module </em></dt>
+<dd>
+<p><var>var</var> is a shell variable name to be set to &quot;yes&quot; or &quot;no&quot;.
+<var>module</var> is a list of symbols, like: (ice-9 common-list).
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fMODULE_005fREQUIRED"></a>Autoconf Macro: <strong>GUILE_MODULE_REQUIRED</strong> <em>symlist </em></dt>
+<dd>
+<p><var>symlist</var> is a list of symbols, WITHOUT surrounding parens,
+like: ice-9 common-list.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fMODULE_005fEXPORTS"></a>Autoconf Macro: <strong>GUILE_MODULE_EXPORTS</strong> <em>var module modvar </em></dt>
+<dd>
+<p><var>var</var> is a shell variable to be set to &quot;yes&quot; or &quot;no&quot;.
+<var>module</var> is a list of symbols, like: (ice-9 common-list).
+<var>modvar</var> is the Guile Scheme variable to check.
+</p>
+</dd></dl>
+
+<dl>
+<dt><a name="index-GUILE_005fMODULE_005fREQUIRED_005fEXPORT"></a>Autoconf Macro: <strong>GUILE_MODULE_REQUIRED_EXPORT</strong> <em>module modvar </em></dt>
+<dd>
+<p><var>module</var> is a list of symbols, like: (ice-9 common-list).
+<var>modvar</var> is the Guile Scheme variable to check.
+</p>
+</dd></dl>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Using-Autoconf-Macros.html#Using-Autoconf-Macros" accesskey="n" rel="next">Using Autoconf Macros</a>, Previous: <a href="Autoconf-Background.html#Autoconf-Background" accesskey="p" rel="prev">Autoconf Background</a>, Up: <a href="Autoconf-Support.html#Autoconf-Support" accesskey="u" rel="up">Autoconf Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

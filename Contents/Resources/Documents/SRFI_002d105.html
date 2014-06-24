@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: SRFI-105</title>
+
+<meta name="description" content="Guile Reference Manual: SRFI-105">
+<meta name="keywords" content="Guile Reference Manual: SRFI-105">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="SRFI-Support.html#SRFI-Support" rel="up" title="SRFI Support">
+<link href="SRFI_002d111.html#SRFI_002d111" rel="next" title="SRFI-111">
+<link href="SRFI_002d98.html#SRFI_002d98" rel="prev" title="SRFI-98">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="SRFI_002d105"></a>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d111.html#SRFI_002d111" accesskey="n" rel="next">SRFI-111</a>, Previous: <a href="SRFI_002d98.html#SRFI_002d98" accesskey="p" rel="prev">SRFI-98</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="SRFI_002d105-Curly_002dinfix-expressions_002e"></a>
+<h4 class="subsection">7.5.42 SRFI-105 Curly-infix expressions.</h4>
+<a name="index-SRFI_002d105"></a>
+<a name="index-curly_002dinfix"></a>
+<a name="index-curly_002dinfix_002dand_002dbracket_002dlists"></a>
+
+<p>Guile&rsquo;s built-in reader includes support for SRFI-105 curly-infix
+expressions.  See <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">the specification of SRFI-105</a>.  Some examples:
+</p>
+<div class="example">
+<pre class="example">{n &lt;= 5}                &rArr;  (&lt;= n 5)
+{a + b + c}             &rArr;  (+ a b c)
+{a * {b + c}}           &rArr;  (* a (+ b c))
+{(- a) / b}             &rArr;  (/ (- a) b)
+{-(a) / b}              &rArr;  (/ (- a) b) as well
+{(f a b) + (g h)}       &rArr;  (+ (f a b) (g h))
+{f(a b) + g(h)}         &rArr;  (+ (f a b) (g h)) as well
+{f[a b] + g(h)}         &rArr;  (+ ($bracket-apply$ f a b) (g h))
+'{a + f(b) + x}         &rArr;  '(+ a (f b) x)
+{length(x) &gt;= 6}        &rArr;  (&gt;= (length x) 6)
+{n-1 + n-2}             &rArr;  (+ n-1 n-2)
+{n * factorial{n - 1}}  &rArr;  (* n (factorial (- n 1)))
+{{a &gt; 0} and {b &gt;= 1}}  &rArr;  (and (&gt; a 0) (&gt;= b 1))
+{f{n - 1}(x)}           &rArr;  ((f (- n 1)) x)
+{a . z}                 &rArr;  ($nfx$ a . z)
+{a + b - c}             &rArr;  ($nfx$ a + b - c)
+</pre></div>
+
+<p>To enable curly-infix expressions within a file, place the reader
+directive <code>#!curly-infix</code> before the first use of curly-infix
+notation.  To globally enable curly-infix expressions in Guile&rsquo;s reader,
+set the <code>curly-infix</code> read option.
+</p>
+<p>Guile also implements the following non-standard extension to SRFI-105:
+if <code>curly-infix</code> is enabled and there is no other meaning assigned
+to square brackets (i.e. the <code>square-brackets</code> read option is
+turned off), then lists within square brackets are read as normal lists
+but with the special symbol <code>$bracket-list$</code> added to the front.
+To enable this combination of read options within a file, use the reader
+directive <code>#!curly-infix-and-bracket-lists</code>.  For example:
+</p>
+<div class="example">
+<pre class="example">[a b]    &rArr;  ($bracket-list$ a b)
+[a . b]  &rArr;  ($bracket-list$ a . b)
+</pre></div>
+
+
+<p>For more information on reader options, See <a href="Scheme-Read.html#Scheme-Read">Scheme Read</a>.
+</p>
+<hr>
+<div class="header">
+<p>
+Next: <a href="SRFI_002d111.html#SRFI_002d111" accesskey="n" rel="next">SRFI-111</a>, Previous: <a href="SRFI_002d98.html#SRFI_002d98" accesskey="p" rel="prev">SRFI-98</a>, Up: <a href="SRFI-Support.html#SRFI-Support" accesskey="u" rel="up">SRFI Support</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

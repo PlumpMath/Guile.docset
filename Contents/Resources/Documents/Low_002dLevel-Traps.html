@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- This manual documents Guile version 2.0.11.
+
+Copyright (C) 1996, 1997, 2000, 2001, 2002, 2003, 2004, 2005, 2009,
+2010, 2011, 2012, 2013, 2014 Free Software Foundation.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled "GNU Free
+Documentation License." -->
+<!-- Created by GNU Texinfo 5.2, http://www.gnu.org/software/texinfo/ -->
+<head>
+<title>Guile Reference Manual: Low-Level Traps</title>
+
+<meta name="description" content="Guile Reference Manual: Low-Level Traps">
+<meta name="keywords" content="Guile Reference Manual: Low-Level Traps">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="index.html#Top" rel="start" title="Top">
+<link href="Concept-Index.html#Concept-Index" rel="index" title="Concept Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Traps.html#Traps" rel="up" title="Traps">
+<link href="Tracing-Traps.html#Tracing-Traps" rel="next" title="Tracing Traps">
+<link href="Trap-Interface.html#Trap-Interface" rel="prev" title="Trap Interface">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.indentedblock {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+div.smalldisplay {margin-left: 3.2em}
+div.smallexample {margin-left: 3.2em}
+div.smallindentedblock {margin-left: 3.2em; font-size: smaller}
+div.smalllisp {margin-left: 3.2em}
+kbd {font-style:oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: inherit; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: inherit; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.nocodebreak {white-space:nowrap}
+span.nolinebreak {white-space:nowrap}
+span.roman {font-family:serif; font-weight:normal}
+span.sansserif {font-family:sans-serif; font-weight:normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+<a name="Low_002dLevel-Traps"></a>
+<div class="header">
+<p>
+Next: <a href="Tracing-Traps.html#Tracing-Traps" accesskey="n" rel="next">Tracing Traps</a>, Previous: <a href="Trap-Interface.html#Trap-Interface" accesskey="p" rel="prev">Trap Interface</a>, Up: <a href="Traps.html#Traps" accesskey="u" rel="up">Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<a name="Low_002dLevel-Traps-1"></a>
+<h4 class="subsubsection">6.25.4.3 Low-Level Traps</h4>
+
+<p>To summarize the last sections, traps are enabled or disabled, and when
+they are enabled, they add to various VM hooks.
+</p>
+<p>Note, however, that <em>traps do not increase the VM trace level</em>. So
+if you create a trap, it will be enabled, but unless something else
+increases the VM&rsquo;s trace level (see <a href="VM-Hooks.html#VM-Hooks">VM Hooks</a>), the trap will not
+fire.  It turns out that getting the VM trace level right is tricky
+without a global view of what traps are enabled.  See <a href="Trap-States.html#Trap-States">Trap States</a>,
+for Guile&rsquo;s answer to this problem.
+</p>
+<p>Traps are created by calling procedures. Most of these procedures share
+a set of common keyword arguments, so rather than document them
+separately, we discuss them all together here:
+</p>
+<dl compact="compact">
+<dt><code>#:vm</code></dt>
+<dd><p>The VM to instrument. Defaults to the current thread&rsquo;s VM.
+</p></dd>
+<dt><code>#:closure?</code></dt>
+<dd><p>For traps that depend on the current frame&rsquo;s procedure, this argument
+specifies whether to trap on the only the specific procedure given, or
+on any closure that has the given procedure&rsquo;s code. Defaults to
+<code>#f</code>.
+</p></dd>
+<dt><code>#:current-frame</code></dt>
+<dd><p>For traps that enable more hooks depending on their dynamic context,
+this argument gives the current frame that the trap is running in.
+Defaults to <code>#f</code>.
+</p></dd>
+</dl>
+
+<p>To have access to these procedures, you&rsquo;ll need to have imported the
+<code>(system vm traps)</code> module:
+</p>
+<div class="lisp">
+<pre class="lisp">(use-modules (system vm traps))
+</pre></div>
+
+<dl>
+<dt><a name="index-trap_002dat_002dprocedure_002dcall"></a>Scheme Procedure: <strong>trap-at-procedure-call</strong> <em>proc handler        [#:vm] [#:closure?]</em></dt>
+<dd><p>A trap that calls <var>handler</var> when <var>proc</var> is applied.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002din_002dprocedure"></a>Scheme Procedure: <strong>trap-in-procedure</strong> <em>proc        enter-handler exit-handler [#:current-frame] [#:vm] [#:closure?]</em></dt>
+<dd><p>A trap that calls <var>enter-handler</var> when control enters <var>proc</var>,
+and <var>exit-handler</var> when control leaves <var>proc</var>.
+</p>
+<p>Control can enter a procedure via:
+</p><ul>
+<li> A procedure call.
+</li><li> A return to a procedure&rsquo;s frame on the stack.
+</li><li> A continuation returning directly to an application of this procedure.
+</li></ul>
+
+<p>Control can leave a procedure via:
+</p><ul>
+<li> A normal return from the procedure.
+</li><li> An application of another procedure.
+</li><li> An invocation of a continuation.
+</li><li> An abort.
+</li></ul>
+</dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dinstructions_002din_002dprocedure"></a>Scheme Procedure: <strong>trap-instructions-in-procedure</strong> <em>proc        next-handler exit-handler [#:current-frame] [#:vm] [#:closure?]</em></dt>
+<dd><p>A trap that calls <var>next-handler</var> for every instruction executed in
+<var>proc</var>, and <var>exit-handler</var> when execution leaves <var>proc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dat_002dprocedure_002dip_002din_002drange"></a>Scheme Procedure: <strong>trap-at-procedure-ip-in-range</strong> <em>proc range        handler [#:current-frame] [#:vm] [#:closure?]</em></dt>
+<dd><p>A trap that calls <var>handler</var> when execution enters a range of
+instructions in <var>proc</var>. <var>range</var> is a simple of pairs,
+<code>((<var>start</var> . <var>end</var>) ...)</code>. The <var>start</var> addresses are
+inclusive, and <var>end</var> addresses are exclusive.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dat_002dsource_002dlocation"></a>Scheme Procedure: <strong>trap-at-source-location</strong> <em>file user-line handler        [#:current-frame] [#:vm]</em></dt>
+<dd><p>A trap that fires when control reaches a given source location.  The
+<var>user-line</var> parameter is one-indexed, as a user counts lines,
+instead of zero-indexed, as Guile counts lines.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dframe_002dfinish"></a>Scheme Procedure: <strong>trap-frame-finish</strong> <em>frame        return-handler abort-handler [#:vm]</em></dt>
+<dd><p>A trap that fires when control leaves the given frame. <var>frame</var>
+should be a live frame in the current continuation. <var>return-handler</var>
+will be called on a normal return, and <var>abort-handler</var> on a nonlocal
+exit.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002din_002ddynamic_002dextent"></a>Scheme Procedure: <strong>trap-in-dynamic-extent</strong> <em>proc        enter-handler return-handler abort-handler [#:vm] [#:closure?]</em></dt>
+<dd><p>A more traditional dynamic-wind trap, which fires <var>enter-handler</var>
+when control enters <var>proc</var>, <var>return-handler</var> on a normal return,
+and <var>abort-handler</var> on a nonlocal exit.
+</p>
+<p>Note that rewinds are not handled, so there is no rewind handler.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dcalls_002din_002ddynamic_002dextent"></a>Scheme Procedure: <strong>trap-calls-in-dynamic-extent</strong> <em>proc        apply-handler return-handler [#:current-frame] [#:vm] [#:closure?]</em></dt>
+<dd><p>A trap that calls <var>apply-handler</var> every time a procedure is applied,
+and <var>return-handler</var> for returns, but only during the dynamic extent
+of an application of <var>proc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dinstructions_002din_002ddynamic_002dextent"></a>Scheme Procedure: <strong>trap-instructions-in-dynamic-extent</strong> <em>proc        next-handler [#:current-frame] [#:vm] [#:closure?]</em></dt>
+<dd><p>A trap that calls <var>next-handler</var> for all retired instructions within
+the dynamic extent of a call to <var>proc</var>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dcalls_002dto_002dprocedure"></a>Scheme Procedure: <strong>trap-calls-to-procedure</strong> <em>proc        apply-handler return-handler [#:vm]</em></dt>
+<dd><p>A trap that calls <var>apply-handler</var> whenever <var>proc</var> is applied,
+and <var>return-handler</var> when it returns, but with an additional
+argument, the call depth.
+</p>
+<p>That is to say, the handlers will get two arguments: the frame in
+question, and the call depth (a non-negative integer).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-trap_002dmatching_002dinstructions"></a>Scheme Procedure: <strong>trap-matching-instructions</strong> <em>frame-pred handler [#:vm]</em></dt>
+<dd><p>A trap that calls <var>frame-pred</var> at every instruction, and if
+<var>frame-pred</var> returns a true value, calls <var>handler</var> on the
+frame.
+</p></dd></dl>
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Tracing-Traps.html#Tracing-Traps" accesskey="n" rel="next">Tracing Traps</a>, Previous: <a href="Trap-Interface.html#Trap-Interface" accesskey="p" rel="prev">Trap Interface</a>, Up: <a href="Traps.html#Traps" accesskey="u" rel="up">Traps</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Concept-Index.html#Concept-Index" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>
